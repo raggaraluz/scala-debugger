@@ -7,6 +7,7 @@ object DummyMain extends App {
   def runMe(x: Int = 3) = println(x)
 
   while (true) {
+    val z = x + y
     println("Running " + runMe())
     Thread.sleep(1000)
   }

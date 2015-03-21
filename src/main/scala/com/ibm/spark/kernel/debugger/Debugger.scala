@@ -6,7 +6,7 @@ import com.sun.jdi.event._
 
 import collection.JavaConverters._
 
-import com.sun.jdi.{VirtualMachine, Bootstrap}
+import com.sun.jdi._
 
 import scala.util.Try
 
@@ -79,6 +79,87 @@ class Debugger(address: String, port: Int) {
                 eventSet.resume()
               case ev: BreakpointEvent =>
                 println(s"Hit breakpoint at location: ${ev.location()}")
+
+                println("<FRAME>")
+                val stackFrame = ev.thread().frames().asScala.head
+                Try({
+                  val location = stackFrame.location()
+                  println(s"${location.sourceName()}:${location.lineNumber()}")
+                })
+
+                def printFieldValue(field:Field, value: Value, maxRecursion: Int = 0, currentRecursion: Int = 1): Unit = {
+                  if (maxRecursion > 0 && currentRecursion > maxRecursion)
+                    return
+
+                  print(s"${field.name()} == ")
+                  value match {
+                    case booleanValue: BooleanValue =>
+                      println(booleanValue.value())
+                    case byteValue: ByteValue =>
+                      println(byteValue.value())
+                    case charValue: CharValue =>
+                      println(charValue.value())
+                    case doubleValue: DoubleValue =>
+                      println(doubleValue.value())
+                    case floatValue: FloatValue =>
+                      println(floatValue.value())
+                    case integerValue: IntegerValue =>
+                      println(integerValue.value())
+                    case longValue: LongValue =>
+                      println(longValue.value())
+                    case shortValue: ShortValue =>
+                      println(shortValue.value())
+                    case primitiveValue: PrimitiveValue =>
+                      println("Unknown primitive: " + primitiveValue)
+                      //throw new RuntimeException("Unknown primitive: " + primitiveValue)
+                    case objectReference: ObjectReference =>
+                      println(objectReference)
+                      objectReference.referenceType().visibleFields().asScala
+                        .map(field => Try((field, objectReference.getValue(field))).getOrElse((field, null)))
+                        .filterNot(_._2 == null)
+                        .filterNot(_._2.eq(objectReference))
+                        .foreach(t => printFieldValue(t._1, t._2, maxRecursion, currentRecursion + 1))
+                    case _ =>
+                      println("Unknown value: " + value)
+                      //throw new RuntimeException("Unknown value: " + value)
+                  }
+                }
+
+                println("<FRAME OBJECT VARIABLES>")
+                val stackObject = stackFrame.thisObject()
+                val stackObjectReferenceType = stackObject.referenceType()
+                val fieldsAndValues = stackObjectReferenceType.visibleFields().asScala.map { field =>
+                  (field, stackObject.getValue(field))
+                }
+                fieldsAndValues.foreach { case (field, value) =>
+                    printFieldValue(field, value, maxRecursion = 2)
+                }
+
+                println("<FRAME LOCAL VARIABLES>")
+                Try(stackFrame.visibleVariables())
+                  .map(_.asScala).getOrElse(Nil)
+                  .filterNot(_.isArgument)
+                  .foreach { localVariable =>
+                  Try(println(localVariable))
+                }
+
+                /*ev.thread().frames().asScala.foreach { stackFrame =>
+                  Try({
+                    val location = stackFrame.location()
+                    println(s"${location.sourceName()}:${location.lineNumber()}")
+                  })
+
+                  Try(stackFrame.visibleVariables())
+                    .map(_.asScala).getOrElse(Nil)
+                    .filterNot(_.isArgument)
+                    .foreach { localVariable =>
+                      Try(println(localVariable.signature()))
+                    }
+                }*/
+
+                while ({print("Continue(y/n): "); Console.readLine()} != "y") {
+                  Thread.sleep(1)
+                }
                 eventSet.resume()
               case ev: Event => // Log unhandled event
                 println(s"Not handling event: ${ev.toString}")
