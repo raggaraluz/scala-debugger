@@ -18,7 +18,9 @@ import scala.util.Try
  */
 class Debugger(address: String, port: Int) {
   private val ConnectorClassString = "com.sun.jdi.SocketListen"
-  private val virtualMachines = new util.Vector[VirtualMachine]
+  @volatile private var virtualMachines: List[VirtualMachine] = Nil
+
+  def getVirtualMachines = synchronized { virtualMachines }
 
   /**
    * Represents the JVM options to feed to remote JVMs whom will connect to
@@ -41,12 +43,23 @@ class Debugger(address: String, port: Int) {
 
     connector.startListening(arguments)
 
+    // Virtual machine connection thread
     new Thread(new Runnable {
       override def run(): Unit = while (true) try {
         val newVirtualMachine = Try(connector.accept(arguments))
-        newVirtualMachine.foreach(virtualMachines.add)
+        newVirtualMachine.foreach(virtualMachines +:= _)
 
-        virtualMachines.asScala.foreach { virtualMachine =>
+        // Give resources back to CPU
+        Thread.sleep(1)
+      } catch {
+        case ex: Exception => ex.printStackTrace()
+      }
+    }).start()
+
+    // Event processing thread
+    new Thread(new Runnable {
+      override def run(): Unit = while (true) try {
+        virtualMachines.foreach { virtualMachine =>
           val virtualMachineName = virtualMachine.name()
           val eventQueue = virtualMachine.eventQueue()
           val eventSet = eventQueue.remove()
@@ -59,7 +72,7 @@ class Debugger(address: String, port: Int) {
                 eventSet.resume()
               case _: VMDisconnectEvent =>
                 println(s"($virtualMachineName) Disconnected!")
-                virtualMachines.remove(virtualMachine)
+                virtualMachines = virtualMachines diff List(virtualMachine)
                 eventSet.resume()
               case ev: ClassPrepareEvent =>
                 println(s"($virtualMachineName) New class: ${ev.referenceType().name()}")
@@ -73,14 +86,14 @@ class Debugger(address: String, port: Int) {
             }
           }
         }
+
+        // Give resources back to CPU
         Thread.sleep(1)
       } catch {
         case ex: Exception => ex.printStackTrace()
       }
     }).start()
   }
-
-  def getVirtualMachines = synchronized { virtualMachines.asScala }
 
   /*private val updateVirtualMachines =
     (connector: ListeningConnector, arguments: Map[String, Connector.Argument]) => {

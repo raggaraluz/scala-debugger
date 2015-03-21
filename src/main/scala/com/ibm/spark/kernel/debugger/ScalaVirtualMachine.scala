@@ -132,10 +132,16 @@ class ScalaVirtualMachine(private val _virtualMachine: VirtualMachine) {
       linesAndLocations(lineNumber)
     }
 
+    // Pause the virtual machine while we add the breakpoints
+    _virtualMachine.suspend()
+
     // Create an enable breakpoints for all underlying locations
     locations
       .map(eventRequestManager.createBreakpointRequest)
       .foreach(_.setEnabled(true))
+
+    // Resume the virtual machine now that breakpoints have been added
+    _virtualMachine.resume()
   }
 }
 

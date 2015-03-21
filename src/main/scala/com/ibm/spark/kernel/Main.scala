@@ -23,8 +23,9 @@ object Main extends App {
 
       println("Classes: " + scalaVirtualMachine.allClassNames.mkString(","))
 
+      /*
       val name = "DummyMain"
-      //scalaVirtualMachine.allClassNames.foreach { name =>
+      scalaVirtualMachine.allClassNames.foreach { name =>
         val classLines = scalaVirtualMachine.availableLinesForClass(name)
         val classStaticFields = scalaVirtualMachine.staticFieldsForClass(name)
 
@@ -34,10 +35,11 @@ object Main extends App {
         classStaticFields.foreach { case (field, value) =>
           println(s"${field.name()} == $value")
         }
-      //}
+      }
+      */
 
-      //println("Setting breakpoint on DummyMain:11")
-      //scalaVirtualMachine.setBreakpointOnClassLine("DummyMain", 11)
+      println("Setting breakpoint on DummyMain:11")
+      scalaVirtualMachine.setBreakpointOnClassLine("DummyMain", 11)
 
       /*val eventRequestManager = virtualMachine.eventRequestManager()
 
