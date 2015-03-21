@@ -38,8 +38,12 @@ object Main extends App {
       }
       */
 
-      println("Setting breakpoint on DummyMain:11")
-      scalaVirtualMachine.setBreakpointOnClassLine("DummyMain", 11)
+      // NOTE: Periodic call to get command line arguments! Does not get the
+      // name of the class, though...
+      Debugger.printCommandLineArguments(virtualMachine)
+
+      //println("Setting breakpoint on DummyMain:11")
+      //scalaVirtualMachine.setBreakpointOnClassLine("DummyMain", 13)
 
       /*val eventRequestManager = virtualMachine.eventRequestManager()
 

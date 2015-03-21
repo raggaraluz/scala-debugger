@@ -1,6 +1,7 @@
 package com.ibm.spark.kernel.debugger
 
 import java.util
+import java.util.concurrent.atomic.AtomicBoolean
 
 import com.sun.jdi.event._
 
@@ -9,6 +10,46 @@ import collection.JavaConverters._
 import com.sun.jdi._
 
 import scala.util.Try
+
+object Debugger {
+
+  // TODO: Use this to get the executor id from the forked executors in Spark
+  // E.g. CoarseGrainedExecutorBackend <driverUrl> <executorId> <hostname>
+  //                                   <cores> <appid> [<workerUrl>]
+  def printCommandLineArguments(virtualMachine: VirtualMachine) = {
+    def printArguments(values: Seq[Value]): Unit = {
+      values.foreach {
+        case arrayReference: ArrayReference =>
+          printArguments(arrayReference.getValues.asScala)
+        case stringReference: StringReference =>
+          println("ARG: " + stringReference.value())
+        case objectReference: ObjectReference =>
+          println("CLASS: " + objectReference.referenceType().name())
+        case v => // Ignore any other values (some show up due to Scala)
+          println("ARG: " + v)
+      }
+    }
+
+    // Get the main thread of execution
+    val mainThread = virtualMachine.allThreads().asScala
+      .find(_.name() == "main").get
+
+    // Print out command line arguments for connected JVM
+    virtualMachine.suspend()
+    mainThread.suspend()
+    println("===MAIN===")
+    mainThread.frames().asScala
+      .find(_.location().method().name() == "main")
+      .map(stackFrame => {
+      val stackFrameArgumentValues =
+        stackFrame.getArgumentValues.asScala.toSeq
+      stackFrameArgumentValues
+    }).foreach(printArguments)
+    println("===MEND===")
+    mainThread.resume()
+    virtualMachine.resume()
+  }
+}
 
 /**
  * Represents the main entrypoint for the debugger against the internal
@@ -67,8 +108,18 @@ class Debugger(address: String, port: Int) {
           while (eventSetIterator.hasNext) {
             val event = eventSetIterator.next()
             event match {
-              case _: VMStartEvent =>
+              case ev: VMStartEvent =>
                 println(s"($virtualMachineName) Connected!")
+
+                // Sometimes this event is not triggered! Need to do this
+                // request outside of this event, maybe? Or just not know
+                // which executor is being matched...
+
+                // NOTE: If this succeeds, we get an extra argument which IS
+                // the main executing class name! Is there a way to guarantee
+                // that this is executed? Should we just assume it will be?
+                Debugger.printCommandLineArguments(virtualMachine)
+
                 eventSet.resume()
               case _: VMDisconnectEvent =>
                 println(s"($virtualMachineName) Disconnected!")
@@ -156,6 +207,8 @@ class Debugger(address: String, port: Int) {
                       Try(println(localVariable.signature()))
                     }
                 }*/
+
+                println()
 
                 while ({print("Continue(y/n): "); Console.readLine()} != "y") {
                   Thread.sleep(1)
