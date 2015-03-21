@@ -16,12 +16,11 @@ object Main extends App {
   while (true) {
     println("Total connected JVMs: " + debugger.getVirtualMachines.size)
 
-    debugger.getVirtualMachines.foreach(virtualMachine => {
+    debugger.getVirtualMachines.foreach { case (virtualMachine, scalaVirtualMachine) =>
       println("Virtual Machine: " + virtualMachine.name())
 
-      val scalaVirtualMachine = new ScalaVirtualMachine(virtualMachine)
-
-      println("Classes: " + scalaVirtualMachine.allClassNames.mkString(","))
+      println("Classes: " +
+        scalaVirtualMachine.classManager.allClassNames().mkString(","))
 
       /*
       val name = "DummyMain"
@@ -42,8 +41,14 @@ object Main extends App {
       // name of the class, though...
       Debugger.printCommandLineArguments(virtualMachine)
 
-      //println("Setting breakpoint on DummyMain:11")
-      //scalaVirtualMachine.setBreakpointOnClassLine("DummyMain", 13)
+      println("Lines: " + scalaVirtualMachine.availableLinesForClass("DummyMain"))
+
+      scalaVirtualMachine.breakpointManager
+        .setLineBreakpoint("DummyMain", 13)
+
+      /*println(s"Removing breakpoint for DummyMain:13")
+      scalaVirtualMachine.breakpointManager
+        .removeBreakpointOnClassLine("DummyMain", 13)*/
 
       /*val eventRequestManager = virtualMachine.eventRequestManager()
 
@@ -122,7 +127,7 @@ object Main extends App {
           thread.resume()
         })*/
       }*/
-    })
+    }
 
     Thread.sleep(5000)
   }

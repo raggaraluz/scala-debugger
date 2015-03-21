@@ -3,6 +3,7 @@ package com.ibm.spark.kernel.debugger
 import java.util
 import java.util.concurrent.atomic.AtomicBoolean
 
+import com.ibm.spark.kernel.utils.LogLike
 import com.sun.jdi.event._
 
 import collection.JavaConverters._
@@ -57,9 +58,10 @@ object Debugger {
  * @param address The address to use for remote JVMs to attach to this debugger
  * @param port The port to use for remote JVMs to attach to this debugger
  */
-class Debugger(address: String, port: Int) {
+class Debugger(address: String, port: Int) extends LogLike {
   private val ConnectorClassString = "com.sun.jdi.SocketListen"
-  @volatile private var virtualMachines: List[VirtualMachine] = Nil
+  @volatile private var virtualMachines =
+    List[(VirtualMachine, ScalaVirtualMachine)]()
 
   def getVirtualMachines = synchronized { virtualMachines }
 
@@ -88,7 +90,10 @@ class Debugger(address: String, port: Int) {
     new Thread(new Runnable {
       override def run(): Unit = while (true) try {
         val newVirtualMachine = Try(connector.accept(arguments))
-        newVirtualMachine.foreach(virtualMachines +:= _)
+        newVirtualMachine
+          .map(virtualMachine =>
+            (virtualMachine, new ScalaVirtualMachine(virtualMachine))
+          ).foreach(virtualMachines +:= _)
 
         // Give resources back to CPU
         Thread.sleep(1)
@@ -100,7 +105,7 @@ class Debugger(address: String, port: Int) {
     // Event processing thread
     new Thread(new Runnable {
       override def run(): Unit = while (true) try {
-        virtualMachines.foreach { virtualMachine =>
+        virtualMachines.foreach { case (virtualMachine, scalaVirtualMachine) =>
           val virtualMachineName = virtualMachine.name()
           val eventQueue = virtualMachine.eventQueue()
           val eventSet = eventQueue.remove()
@@ -109,7 +114,7 @@ class Debugger(address: String, port: Int) {
             val event = eventSetIterator.next()
             event match {
               case ev: VMStartEvent =>
-                println(s"($virtualMachineName) Connected!")
+                logger.debug(s"($virtualMachineName) Connected!")
 
                 // Sometimes this event is not triggered! Need to do this
                 // request outside of this event, maybe? Or just not know
@@ -122,14 +127,14 @@ class Debugger(address: String, port: Int) {
 
                 eventSet.resume()
               case _: VMDisconnectEvent =>
-                println(s"($virtualMachineName) Disconnected!")
+                logger.debug(s"($virtualMachineName) Disconnected!")
                 virtualMachines = virtualMachines diff List(virtualMachine)
                 eventSet.resume()
               case ev: ClassPrepareEvent =>
-                println(s"($virtualMachineName) New class: ${ev.referenceType().name()}")
+                logger.debug(s"($virtualMachineName) New class: ${ev.referenceType().name()}")
                 eventSet.resume()
               case ev: BreakpointEvent =>
-                println(s"Hit breakpoint at location: ${ev.location()}")
+                logger.debug(s"Hit breakpoint at location: ${ev.location()}")
 
                 println("<FRAME>")
                 val stackFrame = ev.thread().frames().asScala.head
@@ -213,9 +218,13 @@ class Debugger(address: String, port: Int) {
                 while ({print("Continue(y/n): "); Console.readLine()} != "y") {
                   Thread.sleep(1)
                 }
+
+                scalaVirtualMachine.breakpointManager
+                  .removeLineBreakpoint("DummyMain", 13)
+
                 eventSet.resume()
               case ev: Event => // Log unhandled event
-                println(s"Not handling event: ${ev.toString}")
+                logger.warn(s"Not handling event: ${ev.toString}")
               case _ => // Ignore other events
             }
           }

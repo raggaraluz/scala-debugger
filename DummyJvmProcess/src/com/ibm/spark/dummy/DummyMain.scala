@@ -11,6 +11,7 @@ object DummyMain extends App {
     val z = x + y
     println("Running " + runMe())
     Thread.sleep(1000)
+    println("Past sleep!")
   }
 
   y = 5
