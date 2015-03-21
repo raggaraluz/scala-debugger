@@ -2,7 +2,7 @@ package com.ibm.spark.kernel.debugger
 
 import java.util
 
-import com.sun.jdi.event.{BreakpointEvent, VMStartEvent, ClassPrepareEvent, VMDisconnectEvent}
+import com.sun.jdi.event._
 
 import collection.JavaConverters._
 
@@ -67,6 +67,8 @@ class Debugger(address: String, port: Int) {
               case ev: BreakpointEvent =>
                 println(s"Hit breakpoint at location: ${ev.location()}")
                 eventSet.resume()
+              case ev: Event => // Log unhandled event
+                println(s"Not handling event: ${ev.toString}")
               case _ => // Ignore other events
             }
           }

@@ -1,6 +1,6 @@
 package com.ibm.spark.kernel
 
-import com.ibm.spark.kernel.debugger.Debugger
+import com.ibm.spark.kernel.debugger.{ScalaVirtualMachine, Debugger}
 import com.sun.jdi._
 import collection.JavaConverters._
 import scala.collection.mutable
@@ -15,12 +15,40 @@ object Main extends App {
 
   while (true) {
     println("Total connected JVMs: " + debugger.getVirtualMachines.size)
+
     debugger.getVirtualMachines.foreach(virtualMachine => {
       println("Virtual Machine: " + virtualMachine.name())
-      val eventRequestManager = virtualMachine.eventRequestManager()
+
+      val scalaVirtualMachine = new ScalaVirtualMachine(virtualMachine)
+
+      println("Classes: " + scalaVirtualMachine.allClassNames.mkString(","))
+
+      val name = "DummyMain"
+      //scalaVirtualMachine.allClassNames.foreach { name =>
+        val classLines = scalaVirtualMachine.availableLinesForClass(name)
+        val classStaticFields = scalaVirtualMachine.staticFieldsForClass(name)
+
+        println(s"<$name>")
+        println(s"Lines: ${classLines.sorted.mkString(",")}")
+        println(s"<$name:FIELDS>")
+        classStaticFields.foreach { case (field, value) =>
+          println(s"${field.name()} == $value")
+        }
+      //}
+
+      //println("Setting breakpoint on DummyMain:11")
+      //scalaVirtualMachine.setBreakpointOnClassLine("DummyMain", 11)
+
+      /*val eventRequestManager = virtualMachine.eventRequestManager()
 
       val mapOfReferenceTypes = virtualMachine.allClasses().asScala.groupBy(
-        referenceType => Try(referenceType.sourceName()).getOrElse("UNKNOWN"))
+        referenceType =>
+          Try(referenceType.sourceName())
+          .getOrElse(
+            if (referenceType.name().endsWith("[]")) "ARRAY"
+            else "UNKNOWN"
+          )
+      )*/
 
       //println("<KEYS>")
       //mapOfReferenceTypes.keys.foreach(println)
@@ -33,17 +61,30 @@ object Main extends App {
       //val dummyMainClassRef = virtualMachine.allClasses().asScala
         //.filter(_.name().contains("DummyMain"))
         //.find(_.name().contains("DummyMain"))
-      println("<DummyMain.scala LOCATIONS>")
-      val line = 10
-      val locations = Helpers.locations("DummyMain.scala", line, mapOfReferenceTypes)
-      println("Locations for line " + line)
-      locations.foreach(println)
+      //println("<DummyMain.scala LOCATIONS>")
+      //val line = 10
+      //val locations = Helpers.locations("DummyMain.scala", line, mapOfReferenceTypes)
+      //println("Locations for line " + line)
+      //locations.foreach(println)
 
-      println("<DummyMain.scala>")
+/*      println("<DummyMain.scala>")
       mapOfReferenceTypes("DummyMain.scala").foreach { referenceType =>
         println(referenceType.name())
-        println("comes from " + referenceType.sourceName())
-        println("source debug extension: " + Try(referenceType.sourceDebugExtension()).getOrElse("NONE"))
+        //println("comes from " + referenceType.sourceName())
+        println("Lines: " + Try(referenceType.allLineLocations())
+          .map(_.asScala).getOrElse(Nil)
+          .filter(location => Try(location.lineNumber()).isSuccess)
+          .map(location => s"""${location.lineNumber()}""")
+          .mkString(",")
+        )
+        println("Fields: " + Try(referenceType.allFields())
+          .map(_.asScala).getOrElse(Nil)
+          .filter(field => Try(field.name()).isSuccess)
+          .map(field => s"""${field.name()} == ${Try(referenceType.getValue(field)).getOrElse("NON-STATIC")}""")
+          .mkString(",")
+        )
+
+        //println("source debug extension: " + Try(referenceType.sourceDebugExtension()).getOrElse("NONE"))
         /*println("Available Strata: " +
           referenceType.availableStrata().asScala.mkString(","))
 
@@ -74,7 +115,7 @@ object Main extends App {
           })
           thread.resume()
         })*/
-      }
+      }*/
     })
 
     Thread.sleep(5000)
