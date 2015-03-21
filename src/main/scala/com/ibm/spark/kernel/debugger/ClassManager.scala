@@ -69,6 +69,9 @@ class ClassManager(protected val _virtualMachine: VirtualMachine)
    */
   private def refreshAllClasses() =
     allClasses = _virtualMachine.allClasses().asScala
+      // TODO: Do not use sourceName as it is not the fully-qualified name!
+      //       There is the chance for overlap if two classes have the same
+      //       name!
       .groupBy(referenceType => Try(referenceType.sourceName()).getOrElse(
       if (referenceType.name().endsWith("[]")) DefaultArrayGroupName
       else DefaultUnknownGroupName

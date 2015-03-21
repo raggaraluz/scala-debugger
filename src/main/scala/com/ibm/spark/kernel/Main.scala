@@ -46,6 +46,9 @@ object Main extends App {
       scalaVirtualMachine.breakpointManager
         .setLineBreakpoint("DummyMain", 13)
 
+      val bp = scalaVirtualMachine.breakpointManager
+        .getLineBreakpoint("DummyMain", 13)
+
       /*println(s"Removing breakpoint for DummyMain:13")
       scalaVirtualMachine.breakpointManager
         .removeBreakpointOnClassLine("DummyMain", 13)*/
