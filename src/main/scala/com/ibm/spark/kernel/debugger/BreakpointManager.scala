@@ -9,7 +9,9 @@ class BreakpointManager(
   private val _classManager: ClassManager
 ) extends JDIHelperMethods with LogLike {
   private val eventRequestManager = _virtualMachine.eventRequestManager()
-  private var lineBreakpoints = Map[(String, Int), Seq[BreakpointRequest]]()
+
+  type BreakpointBundleKey = (String, Int) // Class Name, Line Number
+  private var lineBreakpoints = Map[BreakpointBundleKey, BreakpointBundle]()
 
   /**
    * Creates and enables a breakpoint on the specified line of the class.
@@ -39,19 +41,21 @@ class BreakpointManager(
 
     // Create and enable breakpoints for all underlying locations
     val result = suspendVirtualMachineAndExecute {
-      locations
-        .map(eventRequestManager.createBreakpointRequest)
-        .foreach(breakpointRequest => {
-          val key = (className, lineNumber)
-          val previousBreakpoints =
-            if (lineBreakpoints.contains(key)) lineBreakpoints(key)
-            else Nil
+      // Our key is using the class name and line number relevant to the
+      // line breakpoint
+      val key: BreakpointBundleKey = (className, lineNumber)
 
-          lineBreakpoints += (className, lineNumber) ->
-            (previousBreakpoints :+ breakpointRequest)
-          breakpointRequest.setSuspendPolicy(suspendPolicy)
-          breakpointRequest.setEnabled(enabled)
-        })
+      // Build our bundle of breakpoints
+      val breakpointBundle = new BreakpointBundle(
+        locations.map(eventRequestManager.createBreakpointRequest)
+      )
+
+      // Set relevant information over all breakpoints
+      breakpointBundle.setSuspendPolicy(suspendPolicy)
+      breakpointBundle.setEnabled(enabled)
+
+      // Add the bundle to our list of line breakpoints
+      lineBreakpoints += key -> breakpointBundle
     }
 
     // Log the error if one occurred
@@ -75,8 +79,17 @@ class BreakpointManager(
   def hasLineBreakpoint(className: String, lineNumber: Int): Boolean =
     lineBreakpoints.contains((className, lineNumber))
 
-  // TODO: Switch over to ScalaBreakpoint
-  def getLineBreakpoint(className: String, lineNumber: Int) =
+  /**
+   * Returns the bundle of breakpoints representing the breakpoint for the
+   * specified line.
+   *
+   * @param className The name of the class whose line to reference
+   * @param lineNumber The number of the line to check for breakpoints
+   *
+   * @return The bundle of breakpoints for the specified line, or an error if
+   *         the specified line has no breakpoints
+   */
+  def getLineBreakpoint(className: String, lineNumber: Int): BreakpointBundle =
     lineBreakpoints((className, lineNumber))
 
   /**
@@ -90,11 +103,13 @@ class BreakpointManager(
   def removeLineBreakpoint(className: String, lineNumber: Int): Boolean = {
     // Remove breakpoints for all underlying locations
     val result = suspendVirtualMachineAndExecute {
-      val breakpointsToRemove = lineBreakpoints((className, lineNumber))
+      val key: BreakpointBundleKey = (className, lineNumber)
 
-      lineBreakpoints -= ((className, lineNumber))
+      val breakpointBundleToRemove = lineBreakpoints(key)
 
-      breakpointsToRemove.foreach(eventRequestManager.deleteEventRequest)
+      lineBreakpoints -= key
+
+      breakpointBundleToRemove.foreach(eventRequestManager.deleteEventRequest)
     }
 
     // Log the error if one occurred

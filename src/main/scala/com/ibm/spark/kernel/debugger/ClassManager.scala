@@ -1,5 +1,7 @@
 package com.ibm.spark.kernel.debugger
 
+import java.io.File
+
 import com.sun.jdi.{VirtualMachine, Location, ReferenceType}
 import collection.JavaConverters._
 
@@ -60,6 +62,21 @@ class ClassManager(protected val _virtualMachine: VirtualMachine)
     allClasses(sourceName)
   }
 
+  /**
+   * Converts a source path to a fully-qualified class name.
+   *
+   * @example scala/util/Try.scala becomes scala.util.Try
+   *
+   * @param sourcePath The source path to convert
+   *
+   * @return The fully-qualified class name as a string
+   */
+  private def sourcePathToFullClassName(sourcePath: String): String = {
+    val fullSourcePlusExtension = sourcePath.replace(File.separatorChar, '.')
+    fullSourcePlusExtension.substring(
+      0, fullSourcePlusExtension.lastIndexOf(".scala")
+    )
+  }
 
   /**
    * Refresh the list of classes contained by the underlying virtual machine.
@@ -69,9 +86,6 @@ class ClassManager(protected val _virtualMachine: VirtualMachine)
    */
   private def refreshAllClasses() =
     allClasses = _virtualMachine.allClasses().asScala
-      // TODO: Do not use sourceName as it is not the fully-qualified name!
-      //       There is the chance for overlap if two classes have the same
-      //       name!
       .groupBy(referenceType => Try(referenceType.sourceName()).getOrElse(
       if (referenceType.name().endsWith("[]")) DefaultArrayGroupName
       else DefaultUnknownGroupName

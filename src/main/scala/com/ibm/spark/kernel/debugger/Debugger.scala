@@ -63,8 +63,6 @@ class Debugger(address: String, port: Int) extends LogLike {
   @volatile private var virtualMachines =
     List[(VirtualMachine, ScalaVirtualMachine)]()
 
-  def getVirtualMachines = synchronized { virtualMachines }
-
   /**
    * Represents the JVM options to feed to remote JVMs whom will connect to
    * this debugger.
@@ -87,7 +85,7 @@ class Debugger(address: String, port: Int) extends LogLike {
     connector.startListening(arguments)
 
     // Virtual machine connection thread
-    new Thread(new Runnable {
+    val connectionThread = new Thread(new Runnable {
       override def run(): Unit = while (true) try {
         val newVirtualMachine = Try(connector.accept(arguments))
         newVirtualMachine
@@ -100,10 +98,10 @@ class Debugger(address: String, port: Int) extends LogLike {
       } catch {
         case ex: Exception => ex.printStackTrace()
       }
-    }).start()
+    })
 
     // Event processing thread
-    new Thread(new Runnable {
+    val processingThread = new Thread(new Runnable {
       override def run(): Unit = while (true) try {
         virtualMachines.foreach { case (virtualMachine, scalaVirtualMachine) =>
           val virtualMachineName = virtualMachine.name()
@@ -235,8 +233,15 @@ class Debugger(address: String, port: Int) extends LogLike {
       } catch {
         case ex: Exception => ex.printStackTrace()
       }
-    }).start()
+    })
+
+    // Ensure that we start processing first to avoid missing some event
+    // when receiving a connection???
+    processingThread.start()
+    connectionThread.start()
   }
+
+  def getVirtualMachines = synchronized { virtualMachines }
 
   /*private val updateVirtualMachines =
     (connector: ListeningConnector, arguments: Map[String, Connector.Argument]) => {
