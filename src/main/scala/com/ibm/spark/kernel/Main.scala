@@ -53,8 +53,8 @@ object Main extends App {
         val classObject = bp.location().declaringType().classObject()
       }
 
-      scalaVirtualMachine.breakpointManager
-        .removeLineBreakpoint(testMainClass, 13)
+//      scalaVirtualMachine.breakpointManager
+//        .removeLineBreakpoint(testMainClass, 13)
     }
 
     Thread.sleep(5000)

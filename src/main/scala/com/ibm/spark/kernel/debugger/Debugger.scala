@@ -74,7 +74,40 @@ class Debugger(address: String, port: Int) extends LogLike {
       s"address=$address:$port" ::
       Nil).mkString(",")
 
+  /**
+   * Checks if the needed JDK exists on our classpath to use the Java debugger
+   * interface.
+   *
+   * @param classLoader The class loader to use to check for JDI (default is
+   *                    this class)
+   *
+   * @return True if it does, otherwise false
+   */
+  def isJdiAvailable(
+    classLoader: ClassLoader = this.getClass.getClassLoader
+  ): Boolean = {
+    try {
+      val rootJdiClass = "com.sun.jdi.Bootstrap"
+
+      // Should throw an exception if JDI is not available
+      Class.forName(rootJdiClass, false, classLoader)
+
+      true
+    } catch {
+      case _: ClassNotFoundException  => false
+      case ex: Throwable => throw ex
+    }
+  }
+
   def start(): Unit = {
+    require(isJdiAvailable(),
+      """
+        |Unable to load Java Debugger Interface! This is part of tools.jar
+        |provided by OpenJDK/Oracle JDK and is the core of the debugger! Please
+        |make sure that JAVA_HOME has been set and that tools.jar is available
+        |on the classpath!
+      """.stripMargin)
+
     val connector = getConnector.getOrElse(throw new IllegalArgumentException)
 
     val arguments = connector.defaultArguments()

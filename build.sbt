@@ -17,3 +17,8 @@ internalDependencyClasspath in Compile += { Attributed.blank(Build.JavaTools) }
 internalDependencyClasspath in Runtime += { Attributed.blank(Build.JavaTools) }
 
 internalDependencyClasspath in Test += { Attributed.blank(Build.JavaTools) }
+
+packSettings
+
+packMain := Map("scala-debugger" -> "com.ibm.spark.kernel.Main")
+
