@@ -1,5 +1,7 @@
 package com.ibm.spark.kernel.debugger
 
+import java.io.File
+
 import com.ibm.spark.kernel.utils.LogLike
 import com.sun.jdi.{Location, ReferenceType, VirtualMachine}
 import collection.JavaConverters._
@@ -31,5 +33,48 @@ trait JDIHelperMethods extends LogLike {
 
     // Return the result of the operation
     result
+  }
+
+  /**
+   * Converts a source path to a fully-qualified class name.
+   *
+   * @example scala/util/Try.scala becomes scala.util.Try
+   *
+   * @param sourcePath The source path to convert
+   *
+   * @return The fully-qualified class name as a string
+   */
+  private def sourcePathToFullClassName(sourcePath: String): String = {
+    val fullSourcePlusExtension = sourcePath.replace(File.separatorChar, '.')
+    fullSourcePlusExtension.substring(
+      0, fullSourcePlusExtension.lastIndexOf(".scala")
+    )
+  }
+
+  /**
+   * Retrieves the full class name (java.util.File) of the original instance in
+   * Scala rather than the fragmented creations when going from Scala to Java.
+   *
+   * @example package.SomeClass$ will return package.SomeClass
+   *
+   * @param referenceType The reference instance whose original class name to
+   *                      determine
+   *
+   * @return The fully-quantified original class name
+   */
+  protected def fullOriginalClassName(referenceType: ReferenceType): String = {
+    val sourcePaths =
+      referenceType.sourcePaths(_virtualMachine.getDefaultStratum).asScala
+
+    val sourcePath = sourcePaths.foldLeft(sourcePaths.head) { case (a, b) =>
+      // If we have different paths, there is no way to determine a full
+      // original class name
+      require(a == b, "Source paths are divergent!")
+
+      // Should all be the same
+      b
+    }
+
+    sourcePathToFullClassName(sourcePath)
   }
 }

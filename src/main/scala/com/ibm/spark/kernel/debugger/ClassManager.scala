@@ -63,33 +63,19 @@ class ClassManager(protected val _virtualMachine: VirtualMachine)
   }
 
   /**
-   * Converts a source path to a fully-qualified class name.
-   *
-   * @example scala/util/Try.scala becomes scala.util.Try
-   *
-   * @param sourcePath The source path to convert
-   *
-   * @return The fully-qualified class name as a string
-   */
-  private def sourcePathToFullClassName(sourcePath: String): String = {
-    val fullSourcePlusExtension = sourcePath.replace(File.separatorChar, '.')
-    fullSourcePlusExtension.substring(
-      0, fullSourcePlusExtension.lastIndexOf(".scala")
-    )
-  }
-
-  /**
    * Refresh the list of classes contained by the underlying virtual machine.
    * Groups by source name, falling back to a standard "ARRAY" grouping for
    * references to array structures and "UNKNOWN" for references with no
    * source name or known name.
    */
-  private def refreshAllClasses() =
-    allClasses = _virtualMachine.allClasses().asScala
-      .groupBy(referenceType => Try(referenceType.sourceName()).getOrElse(
-      if (referenceType.name().endsWith("[]")) DefaultArrayGroupName
-      else DefaultUnknownGroupName
-    ))
+  private def refreshAllClasses() = {
+    allClasses = _virtualMachine.allClasses().asScala.groupBy { referenceType =>
+      Try(fullOriginalClassName(referenceType) + ".scala").getOrElse(
+        if (referenceType.name().endsWith("[]")) DefaultArrayGroupName
+        else DefaultUnknownGroupName
+      )
+    }
+  }
 
   /**
    * Retrieves a list of abstracted class names (not underlying Java classes).

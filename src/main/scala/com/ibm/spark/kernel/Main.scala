@@ -10,6 +10,7 @@ import scala.util.Try
 
 object Main extends App {
   val debugger = new Debugger("127.0.0.1", 9877)
+  val testMainClass = "com.ibm.spark.dummy.DummyMain"
 
   debugger.start()
 
@@ -28,13 +29,14 @@ object Main extends App {
       // name of the class, though...
       Debugger.printCommandLineArguments(virtualMachine)
 
-      println("Lines: " + scalaVirtualMachine.availableLinesForClass("DummyMain"))
+      println("Lines: " +
+        scalaVirtualMachine.availableLinesForClass(testMainClass))
 
       scalaVirtualMachine.breakpointManager
-        .setLineBreakpoint("DummyMain", 13)
+        .setLineBreakpoint(testMainClass, 13)
 
       val bps = scalaVirtualMachine.breakpointManager
-        .getLineBreakpoint("DummyMain", 13)
+        .getLineBreakpoint(testMainClass, 13)
 
       bps.foreach { bp =>
         println("CLASS: " + bp.location().declaringType().name())
@@ -52,7 +54,7 @@ object Main extends App {
       }
 
       scalaVirtualMachine.breakpointManager
-        .removeLineBreakpoint("DummyMain", 13)
+        .removeLineBreakpoint(testMainClass, 13)
     }
 
     Thread.sleep(5000)
