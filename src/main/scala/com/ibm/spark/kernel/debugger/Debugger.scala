@@ -25,7 +25,7 @@ class Debugger(address: String, port: Int) extends LogLike {
    * Represents the JVM options to feed to remote JVMs whom will connect to
    * this debugger.
    */
-  val RemoteJvmOptions = (
+  val remoteJvmOptions = (
     s"-agentlib:jdwp=transport=dt_socket" ::
       s"server=n" ::
       s"suspend=n" ::
@@ -98,7 +98,7 @@ class Debugger(address: String, port: Int) extends LogLike {
                 // the main executing class name! Is there a way to guarantee
                 // that this is executed? Should we just assume it will be?
                 //Debugger.printCommandLineArguments(virtualMachine)
-                scalaVirtualMachine.commandLineArguments().foreach(arg =>
+                scalaVirtualMachine.commandLineArguments.foreach(arg =>
                   println("ARG: " + arg)
                 )
 
@@ -173,8 +173,8 @@ class Debugger(address: String, port: Int) extends LogLike {
                   .map(_.asScala).getOrElse(Nil)
                   .filterNot(_.isArgument)
                   .foreach { localVariable =>
-                  Try(println(localVariable))
-                }
+                    Try(println(stackFrame.getValue(localVariable)))
+                  }
 
                 /*ev.thread().frames().asScala.foreach { stackFrame =>
                   Try({

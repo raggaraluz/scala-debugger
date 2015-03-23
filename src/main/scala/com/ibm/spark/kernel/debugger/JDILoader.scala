@@ -10,9 +10,19 @@ import scala.util.Try
 class JDILoader(
   private val _classLoader: ClassLoader = classOf[JDILoader].getClassLoader
 ) extends LogLike {
+  /** The directory containing JDK libraries relative to the root of the JDK */
+  private val BaseLibDir    = "lib"
+
+  /** The jar containing the JDI classes */
+  private val NeededJdiJar  = "tools.jar"
+
+  /** The path to the jar containing JDI relative to the root of the JDK */
+  private val JdiJarPath    = s"$BaseLibDir/$NeededJdiJar"
+
+
   /**
-   * Checks if the needed JDK exists on our classpath to use the Java debugger
-   * interface.
+   * Checks if it is possible to use the JDI using either the given class
+   * loader or by using a jar located in the JDK (if possible).
    *
    * @param classLoader The class loader to use to check for JDI (default is
    *                    this class's class loader)
@@ -21,19 +31,7 @@ class JDILoader(
    */
   def isJdiAvailable(
     classLoader: ClassLoader = _classLoader
-  ): Boolean = {
-    try {
-      val rootJdiClass = "com.sun.jdi.Bootstrap"
-
-      // Should throw an exception if JDI is not available
-      Class.forName(rootJdiClass, false, classLoader)
-
-      true
-    } catch {
-      case _: ClassNotFoundException  => false
-      case ex: Throwable              => throw ex
-    }
-  }
+  ): Boolean = checkJdiAndGetClassLoader(classLoader)._1
 
   /**
    * Attempts to ensure that the JDI is loaded. First, checks if the JDI is
@@ -48,29 +46,12 @@ class JDILoader(
     classLoader: ClassLoader = _classLoader
   ): Boolean = {
     // If the interface is available, quit early
-    if (isJdiAvailable(classLoader)) return true
+    if (canJdiBeLoaded(classLoader)) return true
 
     // Report that we are going to have to "hackily" look around for the JDI
     logger.warn("JDI not found on classpath! Searching standard locations!")
 
-    val baseLibDir = "lib"
-    val neededJar = "tools.jar"
-    val jarPath = s"$baseLibDir/$neededJar"
-
-    // Get path to the Java installation being used to run this debugger
-    val potentialJarPaths = findPotentialJdkJarPaths(jarPath)
-
-    logger.trace(s"Found the following potential paths for $neededJar: " +
-      potentialJarPaths.mkString(","))
-
-    // Lookup each path to see if the jar exists
-    val validJarFiles = potentialJarPaths.map(new File(_)).filter(_.exists())
-
-    // Attempt loading each jar and checking if JDI is available
-    val validClassLoader = validJarFiles.map(jar => {
-      logger.trace(s"Checking $jar for JDI")
-      new URLClassLoader(Array(jar.toURI.toURL), classLoader)
-    }).find(isJdiAvailable)
+    val validClassLoader = findValidJdiUrlClassLoader(_classLoader)
 
     // If there was no class loader that worked, exit
     if (validClassLoader.isEmpty) return false
@@ -88,7 +69,84 @@ class JDILoader(
     }
 
     // Final check to ensure that it was loaded
-    isJdiAvailable()
+    canJdiBeLoaded()
+  }
+
+  /**
+   * Determines if JDI is possible and, if so, returns the class loader
+   * responsible for loading it.
+   *
+   * @param classLoader The initial class loader to use to check if it is
+   *                    possible to load JDI
+   *
+   * @return A tuple indicating whether or not JDI can be loaded along with the
+   *         class loader if it can be loaded
+   */
+  private def checkJdiAndGetClassLoader(
+    classLoader: ClassLoader
+  ): (Boolean, Option[ClassLoader]) = {
+    // If the interface is available, quit early
+    if (canJdiBeLoaded(classLoader)) return (true, Some(classLoader))
+
+    // Report that we are going to have to "hackily" look around for the JDI
+    logger.warn("JDI not found on classpath! Searching standard locations!")
+
+    val validClassLoader = findValidJdiUrlClassLoader(_classLoader)
+
+    // If there is a class loader that works, we are good to go
+    (validClassLoader.nonEmpty, validClassLoader)
+  }
+
+  /**
+   * Checks if the needed JDK exists on our classpath to use the Java debugger
+   * interface.
+   *
+   * @param classLoader The class loader to use to check for JDI (default is
+   *                    this class's class loader)
+   *
+   * @return True if JDI is able to be loaded, otherwise false
+   */
+  private def canJdiBeLoaded(
+    classLoader: ClassLoader = _classLoader
+    ): Boolean = {
+    try {
+      val rootJdiClass = "com.sun.jdi.Bootstrap"
+
+      // Should throw an exception if JDI is not available
+      Class.forName(rootJdiClass, false, classLoader)
+
+      true
+    } catch {
+      case _: ClassNotFoundException  => false
+      case ex: Throwable              => throw ex
+    }
+  }
+
+  /**
+   * Attempts to find a class loader that can successfully load the JDI.
+   *
+   * @param classLoader The class loader to use as the parent for all created
+   *                    class loaders (while attempting to find a working one)
+   *
+   * @return Some class loader if one works, otherwise None
+   */
+  private def findValidJdiUrlClassLoader(
+    classLoader: ClassLoader
+  ): Option[URLClassLoader] = {
+    // Get path to the Java installation being used to run this debugger
+    val potentialJarPaths = findPotentialJdkJarPaths(JdiJarPath)
+
+    logger.trace(s"Found the following potential paths for $NeededJdiJar: " +
+      potentialJarPaths.mkString(","))
+
+    // Lookup each path to see if the jar exists
+    val validJarFiles = potentialJarPaths.map(new File(_)).filter(_.exists())
+
+    // Attempt loading each jar and checking if JDI is available
+    validJarFiles.map(jar => {
+      logger.trace(s"Checking $jar for JDI")
+      new URLClassLoader(Array(jar.toURI.toURL), classLoader)
+    }).find(canJdiBeLoaded)
   }
 
   /**
