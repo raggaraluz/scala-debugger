@@ -27,7 +27,14 @@ object Main extends App {
 
       // NOTE: Periodic call to get command line arguments! Does not get the
       // name of the class, though...
-      Debugger.printCommandLineArguments(virtualMachine)
+      println("-" * 10)
+      println("Main class name: " + scalaVirtualMachine.mainClassName())
+      println("-" * 10)
+      println("Asking for args...")
+      scalaVirtualMachine.commandLineArguments().foreach(arg =>
+        println("ARG: " + arg)
+      )
+      println("-" * 10)
 
       println("Lines: " +
         scalaVirtualMachine.availableLinesForClass(testMainClass))

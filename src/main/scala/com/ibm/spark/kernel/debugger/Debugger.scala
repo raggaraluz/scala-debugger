@@ -1,8 +1,5 @@
 package com.ibm.spark.kernel.debugger
 
-import java.io.File
-import java.net.{URL, URLClassLoader}
-
 import com.ibm.spark.kernel.utils.LogLike
 import com.sun.jdi.event._
 
@@ -11,46 +8,6 @@ import collection.JavaConverters._
 import com.sun.jdi._
 
 import scala.util.Try
-
-object Debugger {
-
-  // TODO: Use this to get the executor id from the forked executors in Spark
-  // E.g. CoarseGrainedExecutorBackend <driverUrl> <executorId> <hostname>
-  //                                   <cores> <appid> [<workerUrl>]
-  def printCommandLineArguments(virtualMachine: VirtualMachine) = {
-    def printArguments(values: Seq[Value]): Unit = {
-      values.foreach {
-        case arrayReference: ArrayReference =>
-          printArguments(arrayReference.getValues.asScala)
-        case stringReference: StringReference =>
-          println("ARG: " + stringReference.value())
-        case objectReference: ObjectReference =>
-          println("CLASS: " + objectReference.referenceType().name())
-        case v => // Ignore any other values (some show up due to Scala)
-          println("ARG: " + v)
-      }
-    }
-
-    // Get the main thread of execution
-    val mainThread = virtualMachine.allThreads().asScala
-      .find(_.name() == "main").get
-
-    // Print out command line arguments for connected JVM
-    virtualMachine.suspend()
-    mainThread.suspend()
-    println("===MAIN===")
-    mainThread.frames().asScala
-      .find(_.location().method().name() == "main")
-      .map(stackFrame => {
-      val stackFrameArgumentValues =
-        stackFrame.getArgumentValues.asScala.toSeq
-      stackFrameArgumentValues
-    }).foreach(printArguments)
-    println("===MEND===")
-    mainThread.resume()
-    virtualMachine.resume()
-  }
-}
 
 /**
  * Represents the main entrypoint for the debugger against the internal
@@ -140,7 +97,10 @@ class Debugger(address: String, port: Int) extends LogLike {
                 // NOTE: If this succeeds, we get an extra argument which IS
                 // the main executing class name! Is there a way to guarantee
                 // that this is executed? Should we just assume it will be?
-                Debugger.printCommandLineArguments(virtualMachine)
+                //Debugger.printCommandLineArguments(virtualMachine)
+                scalaVirtualMachine.commandLineArguments().foreach(arg =>
+                  println("ARG: " + arg)
+                )
 
                 eventSet.resume()
               case _: VMDisconnectEvent =>

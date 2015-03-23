@@ -3,7 +3,7 @@ package com.ibm.spark.kernel.debugger
 import java.io.File
 
 import com.ibm.spark.kernel.utils.LogLike
-import com.sun.jdi.{Location, ReferenceType, VirtualMachine}
+import com.sun.jdi.{ThreadReference, Location, ReferenceType, VirtualMachine}
 import collection.JavaConverters._
 
 import scala.util.Try
@@ -34,6 +34,24 @@ trait JDIHelperMethods extends LogLike {
     // Return the result of the operation
     result
   }
+
+  /**
+   * Determines the main executing thread of the _virtualMachine instance.
+   *
+   * @return The reference to the main thread
+   */
+  protected def findMainThread(): ThreadReference =
+    findMainThread(_virtualMachine)
+
+  /**
+   * Determines the main executing thread of the specified virtual machine.
+   *
+   * @param virtualMachine The virtual machine whose main thread to determine
+   *
+   * @return The reference to the main thread
+   */
+  protected def findMainThread(virtualMachine: VirtualMachine) =
+    virtualMachine.allThreads().asScala.find(_.name() == "main").get
 
   /**
    * Converts a source path to a fully-qualified class name.
