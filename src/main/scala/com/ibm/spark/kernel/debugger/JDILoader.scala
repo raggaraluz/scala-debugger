@@ -1,0 +1,149 @@
+package com.ibm.spark.kernel.debugger
+
+import java.io.File
+import java.net.{URL, URLClassLoader}
+
+import com.ibm.spark.kernel.utils.LogLike
+
+import scala.util.Try
+
+class JDILoader(
+  private val _classLoader: ClassLoader = classOf[JDILoader].getClassLoader
+) extends LogLike {
+  /**
+   * Checks if the needed JDK exists on our classpath to use the Java debugger
+   * interface.
+   *
+   * @param classLoader The class loader to use to check for JDI (default is
+   *                    this class's class loader)
+   *
+   * @return True if JDI is able to be loaded, otherwise false
+   */
+  def isJdiAvailable(
+    classLoader: ClassLoader = _classLoader
+  ): Boolean = {
+    try {
+      val rootJdiClass = "com.sun.jdi.Bootstrap"
+
+      // Should throw an exception if JDI is not available
+      Class.forName(rootJdiClass, false, classLoader)
+
+      true
+    } catch {
+      case _: ClassNotFoundException  => false
+      case ex: Throwable              => throw ex
+    }
+  }
+
+  /**
+   * Attempts to ensure that the JDI is loaded. First, checks if the JDI is
+   * already available. If not, attempts to find a JDK path and load it.
+   *
+   * @param classLoader The class loader to use to check for JDI (default is
+   *                    this class's class loader)
+   *
+   * @return True if successful, otherwise false
+   */
+  def tryLoadJdi(
+    classLoader: ClassLoader = _classLoader
+  ): Boolean = {
+    // If the interface is available, quit early
+    if (isJdiAvailable(classLoader)) return true
+
+    // Report that we are going to have to "hackily" look around for the JDI
+    logger.warn("JDI not found on classpath! Searching standard locations!")
+
+    val baseLibDir = "lib"
+    val neededJar = "tools.jar"
+    val jarPath = s"$baseLibDir/$neededJar"
+
+    // Get path to the Java installation being used to run this debugger
+    val potentialJarPaths = findPotentialJdkJarPaths(jarPath)
+
+    logger.trace(s"Found the following potential paths for $neededJar: " +
+      potentialJarPaths.mkString(","))
+
+    // Lookup each path to see if the jar exists
+    val validJarFiles = potentialJarPaths.map(new File(_)).filter(_.exists())
+
+    // Attempt loading each jar and checking if JDI is available
+    val validClassLoader = validJarFiles.map(jar => {
+      logger.trace(s"Checking $jar for JDI")
+      new URLClassLoader(Array(jar.toURI.toURL), classLoader)
+    }).find(isJdiAvailable)
+
+    // If there was no class loader that worked, exit
+    if (validClassLoader.isEmpty) return false
+
+    // Add the valid class loader to our system
+    val validJarUrl = validClassLoader.get.getURLs.head
+
+    logger.info(s"Using ${validJarUrl.getFile} for JDI")
+    if (!addUrlToSystemClassLoader(validJarUrl)) {
+      logger.warn(
+        """
+          |Found valid tools.jar, but unable to add to system class loader as
+          |it is not an instance of a URL class loader!
+        """.stripMargin.replace("\n", " "))
+    }
+
+    // Final check to ensure that it was loaded
+    isJdiAvailable()
+  }
+
+  /**
+   * Attempts to find potential paths for a jar in the JDK.
+   *
+   * @param jarPath The path to the jar relative to the JDK
+   *
+   * @return The sequence of potential paths
+   */
+  private def findPotentialJdkJarPaths(jarPath: String): Seq[String] = {
+    // Try to retrieve paths using various means
+    val possiblePaths = Seq(
+      Try(System.getenv("JDK_HOME")),
+      Try(System.getenv("JAVA_HOME")),
+      Try(new File(System.getProperty("java.home")).getParent),
+      Try(System.getProperty("java.home"))
+    )
+
+    // Find potential valid paths
+    val paths = possiblePaths
+      .flatMap(_.toOption.flatMap(Option(_))) // Convert null to None
+      .map(_.trim)
+      .filter(_.nonEmpty)
+      .map(_ + "/" + jarPath)
+      .distinct
+
+    paths
+  }
+
+  /**
+   * Adds a url to the system class loader if it represents a URL class loader.
+   *
+   * @param url The url to add
+   *
+   * @return True if able to add the url to the system class loader, otherwise
+   *         false
+   */
+  private def addUrlToSystemClassLoader(url: URL) = {
+    ClassLoader.getSystemClassLoader match {
+      case urlClassLoader: URLClassLoader =>
+        val addUrlMethod = {
+          val method =
+            classOf[URLClassLoader].getDeclaredMethod("addURL", classOf[URL])
+          method.setAccessible(true)
+
+          method
+        }
+
+        // Add the jar to our system class loader
+        addUrlMethod.invoke(urlClassLoader, url)
+
+        true
+
+      // Not a URL Class Loader, so cannot add the url
+      case _ => false
+    }
+  }
+}
