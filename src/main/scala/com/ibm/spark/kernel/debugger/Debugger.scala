@@ -1,7 +1,7 @@
 package com.ibm.spark.kernel.debugger
 
-import java.util
-import java.util.concurrent.atomic.AtomicBoolean
+import java.io.File
+import java.net.{URL, URLClassLoader}
 
 import com.ibm.spark.kernel.utils.LogLike
 import com.sun.jdi.event._
@@ -11,6 +11,7 @@ import collection.JavaConverters._
 import com.sun.jdi._
 
 import scala.util.Try
+import com.ibm.spark.kernel.utils.TryExtras.TryImplicits
 
 object Debugger {
 
@@ -79,9 +80,9 @@ class Debugger(address: String, port: Int) extends LogLike {
    * interface.
    *
    * @param classLoader The class loader to use to check for JDI (default is
-   *                    this class)
+   *                    this class's class loader)
    *
-   * @return True if it does, otherwise false
+   * @return True if JDI is able to be loaded, otherwise false
    */
   def isJdiAvailable(
     classLoader: ClassLoader = this.getClass.getClassLoader
@@ -99,14 +100,94 @@ class Debugger(address: String, port: Int) extends LogLike {
     }
   }
 
+  /**
+   * Attempts to ensure that the JDI is loaded. First, checks if the JDI is
+   * already available. If not, attempts to find a JDK path and load it.
+   *
+   * @param classLoader The class loader to use to check for JDI (default is
+   *                    this class's class loader)
+   *
+   * @return True if successful, otherwise false
+   */
+  def tryLoadJdi(
+    classLoader: ClassLoader = this.getClass.getClassLoader
+  ): Boolean = {
+    // If the interface is available, quit early
+    if (isJdiAvailable(classLoader)) return true
+
+    // Report that we are going to have to "hackily" look around for the JDI
+    logger.warn("JDI not found on classpath! Searching standard locations!")
+
+    val baseLibDir = "lib"
+    val neededJar = "tools.jar"
+    val jarPath = s"$baseLibDir/$neededJar"
+
+    // Get path to the Java installation being used to run this debugger
+    val potentialJarPaths = {
+      val paths = Seq(
+        Try(System.getenv("JDK_HOME")),
+        Try(System.getenv("JAVA_HOME")),
+        Try(new File(System.getProperty("java.home")).getParent),
+        Try(System.getProperty("java.home"))
+      ).flatMap(_.toFilteredOption).map(_.trim).filter(_.nonEmpty)
+        .map(_ + "/" + jarPath).distinct
+
+      logger.trace(s"Found the following potential paths for $neededJar: " +
+        paths.mkString(","))
+
+      paths
+    }
+
+    // Lookup each path to see if the jar exists
+    val validJarFiles = potentialJarPaths.map(new File(_)).filter(_.exists())
+
+    // Attempt loading each jar and checking if JDI is available
+    val validClassLoader = validJarFiles.map(jar => {
+      logger.trace(s"Checking $jar for JDI")
+      new URLClassLoader(Array(jar.toURI.toURL), classLoader)
+    }).find(isJdiAvailable)
+
+    // If there was no class loader that worked, exit
+    if (validClassLoader.isEmpty) return false
+
+    // Add the valid class loader to our system
+    ClassLoader.getSystemClassLoader match {
+      case urlClassLoader: URLClassLoader =>
+        val validJarUrl = validClassLoader.get.getURLs.head
+
+        // Add the jar to our system class loader
+        val addUrlMethod = {
+          val method =
+            classOf[URLClassLoader].getDeclaredMethod("addURL", classOf[URL])
+          method.setAccessible(true)
+
+          method
+        }
+
+        logger.info(s"Using ${validJarUrl.getFile} for JDI")
+        addUrlMethod.invoke(urlClassLoader, validJarUrl)
+
+        // Final check to ensure that it was loaded
+        isJdiAvailable()
+
+      case _ =>
+        logger.warn(
+          """
+            |Found valid tools.jar, but unable to add to system class loader as
+            |it is not an instance of a URL class loader!
+          """.stripMargin.replace("\n", " "))
+        false
+    }
+  }
+
   def start(): Unit = {
-    require(isJdiAvailable(),
+    require(tryLoadJdi(),
       """
         |Unable to load Java Debugger Interface! This is part of tools.jar
         |provided by OpenJDK/Oracle JDK and is the core of the debugger! Please
         |make sure that JAVA_HOME has been set and that tools.jar is available
         |on the classpath!
-      """.stripMargin)
+      """.stripMargin.replace("\n", " "))
 
     val connector = getConnector.getOrElse(throw new IllegalArgumentException)
 
