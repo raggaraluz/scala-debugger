@@ -22,12 +22,12 @@ class ScalaVirtualMachine(protected val _virtualMachine: VirtualMachine)
     classManager.linesAndLocationsForClass(className).keys.toSeq.sorted
 
   /**
-   * Determines the fully-qualified class name that invoked the main method of
+   * Represents the fully-qualified class name that invoked the main method of
    * this virtual machine.
    *
    * @return The name as a string
    */
-  def mainClassName(): String = {
+  lazy val mainClassName: String = {
     val mainThread = findMainThread()
 
     val tryClassName = suspendVirtualMachineAndExecute {
@@ -47,11 +47,11 @@ class ScalaVirtualMachine(protected val _virtualMachine: VirtualMachine)
   }
 
   /**
-   * Determines the command line arguments used to start this virtual machine.
+   * Represents the command line arguments used to start this virtual machine.
    *
    * @return The sequence of arguments as strings
    */
-  def commandLineArguments(): Seq[String] = {
+  lazy val commandLineArguments: Seq[String] = {
     def processArguments(values: Seq[Value]): Seq[String] = {
       values.flatMap {
         // Should represent the whole array of string arguments, drill down
