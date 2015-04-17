@@ -202,6 +202,7 @@ class Debugger(address: String, port: Int) extends LogLike {
                 eventSet.resume()
               case ev: Event => // Log unhandled event
                 logger.warn(s"Not handling event: ${ev.toString}")
+
               case _ => // Ignore other events
             }
           }

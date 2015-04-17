@@ -19,7 +19,6 @@ class JDILoader(
   /** The path to the jar containing JDI relative to the root of the JDK */
   private val JdiJarPath    = s"$BaseLibDir/$NeededJdiJar"
 
-
   /**
    * Checks if it is possible to use the JDI using either the given class
    * loader or by using a jar located in the JDK (if possible).

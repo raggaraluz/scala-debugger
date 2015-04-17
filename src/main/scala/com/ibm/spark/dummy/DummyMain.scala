@@ -12,6 +12,7 @@ object DummyMain extends App {
     println("Running " + runMe())
     Thread.sleep(1000)
     println("Past sleep!")
+    println(z)
   }
 
   y = 5
