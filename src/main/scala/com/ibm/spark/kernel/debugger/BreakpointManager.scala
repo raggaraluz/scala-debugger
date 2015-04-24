@@ -14,6 +14,14 @@ class BreakpointManager(
   private var lineBreakpoints = Map[BreakpointBundleKey, BreakpointBundle]()
 
   /**
+   * Retrieves the list of breakpoints contained by this manager.
+   *
+   * @return The collection of breakpoints in the form of
+   *         (class name, line number)
+   */
+  def breakpointList: Seq[BreakpointBundleKey] = lineBreakpoints.keys.toSeq
+
+  /**
    * Creates and enables a breakpoint on the specified line of the class.
    *
    * @param className The name of the class to set a breakpoint
