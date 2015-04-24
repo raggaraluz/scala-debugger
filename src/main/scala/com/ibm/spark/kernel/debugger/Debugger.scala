@@ -9,6 +9,8 @@ import com.sun.jdi._
 
 import scala.util.Try
 
+import com.ibm.spark.kernel.debugger.wrapper._
+
 /**
  * Represents the main entrypoint for the debugger against the internal
  * interpreters and the Spark cluster.
@@ -120,75 +122,19 @@ class Debugger(address: String, port: Int) extends LogLike {
                   println(s"${location.sourceName()}:${location.lineNumber()}")
                 })
 
-                def printFieldValue(field:Field, value: Value, maxRecursion: Int = 0, currentRecursion: Int = 1): Unit = {
-                  if (maxRecursion > 0 && currentRecursion > maxRecursion)
-                    return
-
-                  print(s"${field.name()} == ")
-                  value match {
-                    case booleanValue: BooleanValue =>
-                      println(booleanValue.value())
-                    case byteValue: ByteValue =>
-                      println(byteValue.value())
-                    case charValue: CharValue =>
-                      println(charValue.value())
-                    case doubleValue: DoubleValue =>
-                      println(doubleValue.value())
-                    case floatValue: FloatValue =>
-                      println(floatValue.value())
-                    case integerValue: IntegerValue =>
-                      println(integerValue.value())
-                    case longValue: LongValue =>
-                      println(longValue.value())
-                    case shortValue: ShortValue =>
-                      println(shortValue.value())
-                    case primitiveValue: PrimitiveValue =>
-                      println("Unknown primitive: " + primitiveValue)
-                      //throw new RuntimeException("Unknown primitive: " + primitiveValue)
-                    case objectReference: ObjectReference =>
-                      println(objectReference)
-                      objectReference.referenceType().visibleFields().asScala
-                        .map(field => Try((field, objectReference.getValue(field))).getOrElse((field, null)))
-                        .filterNot(_._2 == null)
-                        .filterNot(_._2.eq(objectReference))
-                        .foreach(t => printFieldValue(t._1, t._2, maxRecursion, currentRecursion + 1))
-                    case _ =>
-                      println("Unknown value: " + value)
-                      //throw new RuntimeException("Unknown value: " + value)
-                  }
-                }
-
                 println("<FRAME OBJECT VARIABLES>")
-                val stackObject = stackFrame.thisObject()
-                val stackObjectReferenceType = stackObject.referenceType()
-                val fieldsAndValues = stackObjectReferenceType.visibleFields().asScala.map { field =>
-                  (field, stackObject.getValue(field))
-                }
-                fieldsAndValues.foreach { case (field, value) =>
-                    printFieldValue(field, value, maxRecursion = 2)
+                stackFrame.scalaThisVisibleFieldMap().foreach {
+                  case (field, value) => Try(println(
+                    field.name() + ": " + value.toString(2)
+                  ))
                 }
 
                 println("<FRAME LOCAL VARIABLES>")
-                Try(stackFrame.visibleVariables())
-                  .map(_.asScala).getOrElse(Nil)
-                  .filterNot(_.isArgument)
-                  .foreach { localVariable =>
-                    Try(println(stackFrame.getValue(localVariable)))
-                  }
-
-                /*ev.thread().frames().asScala.foreach { stackFrame =>
-                  Try({
-                    val location = stackFrame.location()
-                    println(s"${location.sourceName()}:${location.lineNumber()}")
-                  })
-
-                  Try(stackFrame.visibleVariables())
-                    .map(_.asScala).getOrElse(Nil)
-                    .filterNot(_.isArgument)
-                    .foreach { localVariable =>
-                      Try(println(localVariable.signature()))
-                    }
-                }*/
+                stackFrame.scalaLocalVisibleVariableMap().foreach {
+                  case (localVariable, value) => Try(println(
+                    localVariable.name() + ": " + value.toString
+                  ))
+                }
 
                 println()
 
