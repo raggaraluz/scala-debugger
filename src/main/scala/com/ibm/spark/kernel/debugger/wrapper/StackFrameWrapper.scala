@@ -11,7 +11,7 @@ import scala.util.{Failure, Success, Try}
  *
  * @param _stackFrame The stack frame to wrap
  */
-class StackFrameWrapper(_stackFrame: StackFrame) extends LogLike {
+class StackFrameWrapper(private val _stackFrame: StackFrame) extends LogLike {
   require(_stackFrame != null, "Stack frame cannot be null!")
 
   /**
