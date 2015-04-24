@@ -36,11 +36,13 @@ object Main extends App {
       )
       println("-" * 10)
 
-      println("Lines: " +
-        scalaVirtualMachine.availableLinesForClass(testMainClass))
+      println("Lines: " + scalaVirtualMachine
+        .availableLinesForClass(testMainClass).mkString(", "))
 
-      scalaVirtualMachine.breakpointManager
-        .setLineBreakpoint(testMainClass, 13)
+      // Add the breakpoint if it does not already exist
+      if (!scalaVirtualMachine.breakpointManager.hasLineBreakpoint(testMainClass, 13))
+        scalaVirtualMachine.breakpointManager
+          .setLineBreakpoint(testMainClass, 13)
 
       val bps = scalaVirtualMachine.breakpointManager
         .getLineBreakpoint(testMainClass, 13)
@@ -58,6 +60,7 @@ object Main extends App {
         println("FULL SOURCE: " + fullSource)
 
         val classObject = bp.location().declaringType().classObject()
+
       }
 
 //      scalaVirtualMachine.breakpointManager

@@ -1,5 +1,6 @@
 package com.ibm.spark.kernel.debugger
 
+import com.ibm.spark.kernel.Main
 import com.ibm.spark.kernel.utils.LogLike
 import com.sun.jdi.event._
 
@@ -60,6 +61,9 @@ class Debugger(address: String, port: Int) extends LogLike {
     arguments.get("localAddress").setValue(address)
     arguments.get("port").setValue(port.toString)
 
+    println("MULTIPLE CONNECTIONS ALLOWED: " +
+      connector.supportsMultipleConnections())
+
     connector.startListening(arguments)
 
     // Virtual machine connection thread
@@ -116,6 +120,7 @@ class Debugger(address: String, port: Int) extends LogLike {
                 logger.debug(s"Hit breakpoint at location: ${ev.location()}")
 
                 println("<FRAME>")
+                println("THREAD STATUS: " + ev.thread().status())
                 val stackFrame = ev.thread().frames().asScala.head
                 Try({
                   val location = stackFrame.location()
@@ -143,7 +148,7 @@ class Debugger(address: String, port: Int) extends LogLike {
                 }
 
                 scalaVirtualMachine.breakpointManager
-                  .removeLineBreakpoint("DummyMain", 13)
+                  .removeLineBreakpoint(Main.testMainClass, 13)
 
                 eventSet.resume()
               case ev: Event => // Log unhandled event
