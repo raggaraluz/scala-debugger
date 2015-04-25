@@ -2,11 +2,11 @@ package com.ibm.spark.kernel.debugger
 
 import com.ibm.spark.kernel.utils.LogLike
 import com.sun.jdi.VirtualMachine
-import com.sun.jdi.request.{EventRequest, BreakpointRequest}
+import com.sun.jdi.request.{ EventRequest, BreakpointRequest }
 
 class BreakpointManager(
-  protected val _virtualMachine: VirtualMachine,
-  private val _classManager: ClassManager
+    protected val _virtualMachine: VirtualMachine,
+    private val _classManager: ClassManager
 ) extends JDIHelperMethods with LogLike {
   private val eventRequestManager = _virtualMachine.eventRequestManager()
 

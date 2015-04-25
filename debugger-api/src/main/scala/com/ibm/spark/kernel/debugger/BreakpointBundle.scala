@@ -1,6 +1,6 @@
 package com.ibm.spark.kernel.debugger
 
-import com.sun.jdi.{VirtualMachine, ThreadReference, ObjectReference}
+import com.sun.jdi.{ VirtualMachine, ThreadReference, ObjectReference }
 import com.sun.jdi.request.BreakpointRequest
 
 /**
@@ -9,7 +9,7 @@ import com.sun.jdi.request.BreakpointRequest
  * @param breakpointRequests The initial collection of breakpoint requests
  */
 class BreakpointBundle(
-  private var breakpointRequests: Seq[BreakpointRequest] = Nil
+    private var breakpointRequests: Seq[BreakpointRequest] = Nil
 ) extends Seq[BreakpointRequest] {
   /**
    * Returns the breakpoint at the specified index.

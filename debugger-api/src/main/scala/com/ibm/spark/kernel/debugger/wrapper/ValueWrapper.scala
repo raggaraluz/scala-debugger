@@ -120,8 +120,7 @@ class ValueWrapper(private val _value: Value) {
   private def buildString(
     stringBuilder: StringBuilder,
     maxRecursionLevel: Int,
-    currentRecursionLevel: Int
-  ): Unit = {
+    currentRecursionLevel: Int): Unit = {
     // Exit if reached maximum level of recursion
     if (currentRecursionLevel >= maxRecursionLevel) return
 
@@ -132,12 +131,13 @@ class ValueWrapper(private val _value: Value) {
     val newRecursionLevel = currentRecursionLevel + 1
     val valueWrapper = new ValueWrapper(_value)
     if (valueWrapper.isObject && newRecursionLevel < maxRecursionLevel) {
-      valueWrapper.fieldsAndValues().foreach { case (field, value) =>
-        stringBuilder.append("\t" * newRecursionLevel + field.name() + ": ")
+      valueWrapper.fieldsAndValues().foreach {
+        case (field, value) =>
+          stringBuilder.append("\t" * newRecursionLevel + field.name() + ": ")
 
-        new ValueWrapper(value).buildString(
-          stringBuilder, maxRecursionLevel, newRecursionLevel
-        )
+          new ValueWrapper(value).buildString(
+            stringBuilder, maxRecursionLevel, newRecursionLevel
+          )
       }
     }
   }

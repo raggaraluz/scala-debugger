@@ -5,8 +5,7 @@ import com.sun.jdi._
 import collection.JavaConverters._
 
 class ScalaVirtualMachine(protected val _virtualMachine: VirtualMachine)
-  extends JDIHelperMethods with LogLike
-{
+    extends JDIHelperMethods with LogLike {
   val classManager = new ClassManager(_virtualMachine)
   val breakpointManager = new BreakpointManager(_virtualMachine, classManager)
   val fieldManager = new FieldManager(_virtualMachine, classManager)
@@ -69,7 +68,7 @@ class ScalaVirtualMachine(protected val _virtualMachine: VirtualMachine)
 
         // Ignore any other values (some show up due to Scala)
         case v =>
-          logger.trace("Unknown value during processing arguments: " + v)
+          logger.warn("Unknown value during processing arguments: " + v)
           Nil
       }
     }

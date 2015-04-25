@@ -2,14 +2,13 @@ package com.ibm.spark.kernel.debugger
 
 import java.io.File
 
-import com.sun.jdi.{VirtualMachine, Location, ReferenceType}
+import com.sun.jdi.{ VirtualMachine, Location, ReferenceType }
 import collection.JavaConverters._
 
 import scala.util.Try
 
 class ClassManager(protected val _virtualMachine: VirtualMachine)
-  extends JDIHelperMethods
-{
+    extends JDIHelperMethods {
   private val DefaultArrayGroupName = "ARRAY"
   private val DefaultUnknownGroupName = "UNKNOWN"
 

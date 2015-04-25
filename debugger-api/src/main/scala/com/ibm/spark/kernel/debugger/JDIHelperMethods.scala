@@ -3,7 +3,7 @@ package com.ibm.spark.kernel.debugger
 import java.io.File
 
 import com.ibm.spark.kernel.utils.LogLike
-import com.sun.jdi.{ThreadReference, Location, ReferenceType, VirtualMachine}
+import com.sun.jdi.{ ThreadReference, Location, ReferenceType, VirtualMachine }
 import collection.JavaConverters._
 
 import scala.util.Try
@@ -84,13 +84,14 @@ trait JDIHelperMethods extends LogLike {
     val sourcePaths =
       referenceType.sourcePaths(_virtualMachine.getDefaultStratum).asScala
 
-    val sourcePath = sourcePaths.foldLeft(sourcePaths.head) { case (a, b) =>
-      // If we have different paths, there is no way to determine a full
-      // original class name
-      require(a == b, "Source paths are divergent!")
+    val sourcePath = sourcePaths.foldLeft(sourcePaths.head) {
+      case (a, b) =>
+        // If we have different paths, there is no way to determine a full
+        // original class name
+        require(a == b, "Source paths are divergent!")
 
-      // Should all be the same
-      b
+        // Should all be the same
+        b
     }
 
     sourcePathToFullClassName(sourcePath)

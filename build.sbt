@@ -1,24 +1,45 @@
+import scalariform.formatter.preferences._
+
 name := "DebuggerServer"
 
-version := "1.0"
+//
+// DEBUGGER API PROJECT CONFIGURATION
+//
+lazy val debuggerApi = project
+  .in(file("debugger-api"))
+  .settings(Common.settings: _*)
+  .settings(scalariformSettings: _*)
+  .settings(ScalariformKeys.preferences := ScalariformKeys.preferences.value
+    .setPreference(PreserveDanglingCloseParenthesis, true)
+    .setPreference(CompactControlReadability, true)
+  ).settings(Seq(
+    libraryDependencies ++= Seq(
+      "org.slf4j" % "slf4j-api" % "1.7.5", // MIT
+      "org.slf4j" % "slf4j-log4j12" % "1.7.5", // MIT
+      "log4j" % "log4j" % "1.2.17"
+    ),
+    // JDK Dependency (just for sbt, must exist on classpath for execution,
+    // cannot be redistributed)
+    internalDependencyClasspath in Compile +=
+      { Attributed.blank(Build.JavaTools) },
+    internalDependencyClasspath in Runtime +=
+      { Attributed.blank(Build.JavaTools) },
+    internalDependencyClasspath in Test +=
+      { Attributed.blank(Build.JavaTools) }
+  ): _*)
+  .dependsOn(debuggerTest % "test->compile")
 
-scalaVersion := "2.10.4"
+//
+// DEBUGGER TEST CODE PROJECT CONFIGURATION
+//
+lazy val debuggerTest = project
+  .in(file("debugger-test"))
+  .settings(Common.settings: _*)
 
-libraryDependencies ++= Seq(
-  "org.slf4j" % "slf4j-api" % "1.7.5", // MIT
-  "org.slf4j" % "slf4j-log4j12" % "1.7.5", // MIT
-  "log4j" % "log4j" % "1.2.17"
-)
-
-// JDK Dependency (just for sbt, must exist on classpath for execution, cannot
-// be redistributed)
-internalDependencyClasspath in Compile += { Attributed.blank(Build.JavaTools) }
-
-internalDependencyClasspath in Runtime += { Attributed.blank(Build.JavaTools) }
-
-internalDependencyClasspath in Test += { Attributed.blank(Build.JavaTools) }
-
-packSettings
-
-packMain := Map("scala-debugger" -> "com.ibm.spark.kernel.Main")
+//
+// MAIN PROJECT CONFIGURATION
+//
+lazy val root = project
+  .in(file("."))
+  .aggregate(debuggerApi, debuggerTest)
 

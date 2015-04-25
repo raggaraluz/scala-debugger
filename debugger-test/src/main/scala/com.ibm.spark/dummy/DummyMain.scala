@@ -1,5 +1,7 @@
 package com.ibm.spark.dummy
 
+import scala.language.reflectiveCalls
+
 object DummyMain extends App {
   val x = 3
   var y = 4

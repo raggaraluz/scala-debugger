@@ -1,23 +1,23 @@
 package com.ibm.spark.kernel.debugger
 
 import java.io.File
-import java.net.{URL, URLClassLoader}
+import java.net.{ URL, URLClassLoader }
 
 import com.ibm.spark.kernel.utils.LogLike
 
 import scala.util.Try
 
 class JDILoader(
-  private val _classLoader: ClassLoader = classOf[JDILoader].getClassLoader
+    private val _classLoader: ClassLoader = classOf[JDILoader].getClassLoader
 ) extends LogLike {
   /** The directory containing JDK libraries relative to the root of the JDK */
-  private val BaseLibDir    = "lib"
+  private val BaseLibDir = "lib"
 
   /** The jar containing the JDI classes */
-  private val NeededJdiJar  = "tools.jar"
+  private val NeededJdiJar = "tools.jar"
 
   /** The path to the jar containing JDI relative to the root of the JDK */
-  private val JdiJarPath    = s"$BaseLibDir/$NeededJdiJar"
+  private val JdiJarPath = s"$BaseLibDir/$NeededJdiJar"
 
   /**
    * Checks if it is possible to use the JDI using either the given class
@@ -28,9 +28,8 @@ class JDILoader(
    *
    * @return True if JDI is able to be loaded, otherwise false
    */
-  def isJdiAvailable(
-    classLoader: ClassLoader = _classLoader
-  ): Boolean = checkJdiAndGetClassLoader(classLoader)._1
+  def isJdiAvailable(classLoader: ClassLoader = _classLoader): Boolean =
+    checkJdiAndGetClassLoader(classLoader)._1
 
   /**
    * Attempts to ensure that the JDI is loaded. First, checks if the JDI is
@@ -42,8 +41,7 @@ class JDILoader(
    * @return True if successful, otherwise false
    */
   def tryLoadJdi(
-    classLoader: ClassLoader = _classLoader
-  ): Boolean = {
+    classLoader: ClassLoader = _classLoader): Boolean = {
     // If the interface is available, quit early
     if (canJdiBeLoaded(classLoader)) return true
 
@@ -82,8 +80,7 @@ class JDILoader(
    *         class loader if it can be loaded
    */
   private def checkJdiAndGetClassLoader(
-    classLoader: ClassLoader
-  ): (Boolean, Option[ClassLoader]) = {
+    classLoader: ClassLoader): (Boolean, Option[ClassLoader]) = {
     // If the interface is available, quit early
     if (canJdiBeLoaded(classLoader)) return (true, Some(classLoader))
 
@@ -106,8 +103,7 @@ class JDILoader(
    * @return True if JDI is able to be loaded, otherwise false
    */
   private def canJdiBeLoaded(
-    classLoader: ClassLoader = _classLoader
-    ): Boolean = {
+    classLoader: ClassLoader = _classLoader): Boolean = {
     try {
       val rootJdiClass = "com.sun.jdi.Bootstrap"
 
@@ -116,8 +112,8 @@ class JDILoader(
 
       true
     } catch {
-      case _: ClassNotFoundException  => false
-      case ex: Throwable              => throw ex
+      case _: ClassNotFoundException => false
+      case ex: Throwable => throw ex
     }
   }
 
@@ -130,8 +126,7 @@ class JDILoader(
    * @return Some class loader if one works, otherwise None
    */
   private def findValidJdiUrlClassLoader(
-    classLoader: ClassLoader
-  ): Option[URLClassLoader] = {
+    classLoader: ClassLoader): Option[URLClassLoader] = {
     // Get path to the Java installation being used to run this debugger
     val potentialJarPaths = findPotentialJdkJarPaths(JdiJarPath)
 

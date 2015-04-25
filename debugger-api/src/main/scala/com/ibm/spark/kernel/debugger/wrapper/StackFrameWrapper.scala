@@ -4,7 +4,7 @@ import com.ibm.spark.kernel.utils.LogLike
 import com.sun.jdi._
 
 import scala.collection.JavaConverters._
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 /**
  * Represents a wrapper around a stack frame, providing additional methods.

@@ -1,6 +1,6 @@
 package com.ibm.spark.kernel.utils
 
-import org.slf4j.{Logger, LoggerFactory}
+import org.slf4j.{ Logger, LoggerFactory }
 
 /**
  * A trait for mixing in logging. This trait
