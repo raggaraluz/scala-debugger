@@ -30,7 +30,7 @@ class StackFrameWrapper(private val _stackFrame: StackFrame) extends LogLike {
    *
    * @return The map of local variables paired with their respective values
    */
-  def scalaLocalVisibleVariableMap(): Map[LocalVariable, Value] =
+  def localVisibleVariableMap(): Map[LocalVariable, Value] =
     Try(_stackFrame.visibleVariables()).map(_.asScala).getOrElse(Nil)
       .filterNot(_.isArgument)
       .map(variable => variable -> _stackFrame.getValue(variable))
@@ -42,7 +42,7 @@ class StackFrameWrapper(private val _stackFrame: StackFrame) extends LogLike {
    *
    * @return The map of fields paired with their respective values
    */
-  def scalaThisVisibleFieldMap(): Map[Field, Value] = {
+  def thisVisibleFieldMap(): Map[Field, Value] = {
     val stackThisObject = thisObjectAsOption match {
       case Some(obj) => obj
 

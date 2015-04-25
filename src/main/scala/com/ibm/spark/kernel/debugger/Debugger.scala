@@ -128,14 +128,14 @@ class Debugger(address: String, port: Int) extends LogLike {
                 })
 
                 println("<FRAME OBJECT VARIABLES>")
-                stackFrame.scalaThisVisibleFieldMap().foreach {
+                stackFrame.thisVisibleFieldMap().foreach {
                   case (field, value) => Try(println(
                     field.name() + ": " + value.toString(2)
                   ))
                 }
 
                 println("<FRAME LOCAL VARIABLES>")
-                stackFrame.scalaLocalVisibleVariableMap().foreach {
+                stackFrame.localVisibleVariableMap().foreach {
                   case (localVariable, value) => Try(println(
                     localVariable.name() + ": " + value.toString
                   ))

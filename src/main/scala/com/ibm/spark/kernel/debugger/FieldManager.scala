@@ -18,8 +18,7 @@ class FieldManager(
    * @return The list of static fields and their respective values
    */
   def staticFieldsForClass(className: String): Seq[(Field, Value)] = {
-    _classManager.underlyingReferencesFor(className)
-      .map { ref =>
+    _classManager.underlyingReferencesFor(className).map { ref =>
       (ref, Try(ref.allFields()).map(_.asScala).getOrElse(Nil))
     } map { case (ref, fields) =>
       val staticFields =
