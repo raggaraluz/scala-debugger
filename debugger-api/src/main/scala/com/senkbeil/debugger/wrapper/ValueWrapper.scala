@@ -55,6 +55,13 @@ class ValueWrapper(private val _value: Value) {
   }
 
   /**
+   * Retrieves the actual value as an option.
+   *
+   * @return Some value if available, otherwise None
+   */
+  def valueAsOption(): Option[AnyVal] = Try(this.value()).toOption
+
+  /**
    * Retrieves the immediate visible fields and associated values for this
    * specific value.
    *
@@ -81,6 +88,15 @@ class ValueWrapper(private val _value: Value) {
         throw new RuntimeException("Unknown object: " + obj)
     }
   }
+
+  /**
+   * Retrieves the immediate visible fields and associated values for this
+   * specific value.
+   *
+   * @return Some map of fields and values if available, otherwise None
+   */
+  def fieldsAndValuesAsOption(): Option[Map[Field, Value]] =
+    Try(this.fieldsAndValues()).toOption
 
   /**
    * Constructs a string representing this value (with no recursion).
