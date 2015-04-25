@@ -1,12 +1,8 @@
-package com.ibm.spark.kernel
+package com.senkbeil
 
 import java.io.File
 
-import com.ibm.spark.kernel.debugger.{ BreakpointBundle, ScalaVirtualMachine, Debugger }
-import com.sun.jdi._
-import collection.JavaConverters._
-import scala.collection.mutable
-import scala.util.Try
+import com.senkbeil.debugger.Debugger
 
 object Main extends App {
   val debugger = new Debugger("127.0.0.1", 9877)

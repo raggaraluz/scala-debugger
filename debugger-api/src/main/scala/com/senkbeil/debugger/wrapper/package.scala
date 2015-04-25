@@ -1,4 +1,4 @@
-package com.ibm.spark.kernel.debugger
+package com.senkbeil.debugger
 
 import scala.language.implicitConversions
 
@@ -15,6 +15,5 @@ package object wrapper {
     new StackFrameWrapper(stackFrame)
 
   implicit def threadReferenceToWrapper(
-    threadReference: ThreadReference
-  ): ThreadReferenceWrapper = new ThreadReferenceWrapper(threadReference)
+    threadReference: ThreadReference): ThreadReferenceWrapper = new ThreadReferenceWrapper(threadReference)
 }

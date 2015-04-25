@@ -1,4 +1,4 @@
-package com.ibm.spark.kernel.debugger
+package com.senkbeil.debugger
 
 import com.sun.jdi.{ VirtualMachine, ThreadReference, ObjectReference }
 import com.sun.jdi.request.BreakpointRequest

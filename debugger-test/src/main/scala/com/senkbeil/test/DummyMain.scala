@@ -1,4 +1,4 @@
-package com.ibm.spark.dummy
+package com.senkbeil.test
 
 import scala.language.reflectiveCalls
 

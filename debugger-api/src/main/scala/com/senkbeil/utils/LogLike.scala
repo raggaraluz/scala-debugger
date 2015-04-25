@@ -1,4 +1,4 @@
-package com.ibm.spark.kernel.utils
+package com.senkbeil.utils
 
 import org.slf4j.{ Logger, LoggerFactory }
 

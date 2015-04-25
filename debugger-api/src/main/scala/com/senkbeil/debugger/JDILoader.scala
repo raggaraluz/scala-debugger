@@ -1,9 +1,9 @@
-package com.ibm.spark.kernel.debugger
+package com.senkbeil.debugger
 
 import java.io.File
 import java.net.{ URL, URLClassLoader }
 
-import com.ibm.spark.kernel.utils.LogLike
+import com.senkbeil.utils.LogLike
 
 import scala.util.Try
 
@@ -111,7 +111,8 @@ class JDILoader(
       Class.forName(rootJdiClass, false, classLoader)
 
       true
-    } catch {
+    }
+    catch {
       case _: ClassNotFoundException => false
       case ex: Throwable => throw ex
     }

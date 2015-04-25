@@ -1,8 +1,7 @@
-package com.ibm.spark.kernel.debugger
+package com.senkbeil.debugger
 
 import java.io.File
-
-import com.ibm.spark.kernel.utils.LogLike
+import com.senkbeil.utils.LogLike
 import com.sun.jdi.{ ThreadReference, Location, ReferenceType, VirtualMachine }
 import collection.JavaConverters._
 

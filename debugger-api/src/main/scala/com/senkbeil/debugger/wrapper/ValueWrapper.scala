@@ -1,4 +1,4 @@
-package com.ibm.spark.kernel.debugger.wrapper
+package com.senkbeil.debugger.wrapper
 
 import com.sun.jdi._
 

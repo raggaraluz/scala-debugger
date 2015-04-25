@@ -1,6 +1,6 @@
-package com.ibm.spark.kernel.debugger
+package com.senkbeil.debugger
 
-import com.ibm.spark.kernel.utils.LogLike
+import com.senkbeil.utils.LogLike
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.request.{ EventRequest, BreakpointRequest }
 
@@ -36,8 +36,7 @@ class BreakpointManager(
     className: String,
     lineNumber: Int,
     enabled: Boolean = true,
-    suspendPolicy: Int = EventRequest.SUSPEND_ALL
-  ): Boolean = {
+    suspendPolicy: Int = EventRequest.SUSPEND_ALL): Boolean = {
     // Retrieve the available locations for the specified line
     val locations = {
       val linesAndLocations = _classManager.linesAndLocationsForClass(className)

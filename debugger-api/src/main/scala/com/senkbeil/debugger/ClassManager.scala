@@ -1,4 +1,4 @@
-package com.ibm.spark.kernel.debugger
+package com.senkbeil.debugger
 
 import java.io.File
 

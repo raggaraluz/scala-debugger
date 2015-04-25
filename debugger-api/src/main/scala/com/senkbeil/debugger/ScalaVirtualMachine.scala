@@ -1,6 +1,6 @@
-package com.ibm.spark.kernel.debugger
+package com.senkbeil.debugger
 
-import com.ibm.spark.kernel.utils.LogLike
+import com.senkbeil.utils.LogLike
 import com.sun.jdi._
 import collection.JavaConverters._
 

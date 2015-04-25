@@ -1,7 +1,8 @@
-package com.ibm.spark.kernel.debugger
+package com.senkbeil.debugger
 
-import com.ibm.spark.kernel.Main
-import com.ibm.spark.kernel.utils.LogLike
+import com.senkbeil.Main
+import com.senkbeil.utils.LogLike
+import com.senkbeil.debugger.wrapper._
 import com.sun.jdi.event._
 
 import collection.JavaConverters._
@@ -9,8 +10,6 @@ import collection.JavaConverters._
 import com.sun.jdi._
 
 import scala.util.Try
-
-import com.ibm.spark.kernel.debugger.wrapper._
 
 /**
  * Represents the main entrypoint for the debugger against the internal

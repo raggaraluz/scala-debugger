@@ -8,11 +8,11 @@ name := "DebuggerServer"
 lazy val debuggerApi = project
   .in(file("debugger-api"))
   .settings(Common.settings: _*)
-  .settings(scalariformSettings: _*)
+  /*.settings(scalariformSettings: _*)
   .settings(ScalariformKeys.preferences := ScalariformKeys.preferences.value
     .setPreference(PreserveDanglingCloseParenthesis, true)
     .setPreference(CompactControlReadability, true)
-  ).settings(Seq(
+  )*/.settings(Seq(
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % "1.7.5", // MIT
       "org.slf4j" % "slf4j-log4j12" % "1.7.5", // MIT
