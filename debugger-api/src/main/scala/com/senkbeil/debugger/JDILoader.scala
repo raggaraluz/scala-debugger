@@ -41,7 +41,8 @@ class JDILoader(
    * @return True if successful, otherwise false
    */
   def tryLoadJdi(
-    classLoader: ClassLoader = _classLoader): Boolean = {
+    classLoader: ClassLoader = _classLoader
+  ): Boolean = {
     // If the interface is available, quit early
     if (canJdiBeLoaded(classLoader)) return true
 
@@ -80,7 +81,8 @@ class JDILoader(
    *         class loader if it can be loaded
    */
   private def checkJdiAndGetClassLoader(
-    classLoader: ClassLoader): (Boolean, Option[ClassLoader]) = {
+    classLoader: ClassLoader): (Boolean, Option[ClassLoader]
+  ) = {
     // If the interface is available, quit early
     if (canJdiBeLoaded(classLoader)) return (true, Some(classLoader))
 
@@ -103,7 +105,8 @@ class JDILoader(
    * @return True if JDI is able to be loaded, otherwise false
    */
   private def canJdiBeLoaded(
-    classLoader: ClassLoader = _classLoader): Boolean = {
+    classLoader: ClassLoader = _classLoader
+  ): Boolean = {
     try {
       val rootJdiClass = "com.sun.jdi.Bootstrap"
 
@@ -127,7 +130,8 @@ class JDILoader(
    * @return Some class loader if one works, otherwise None
    */
   private def findValidJdiUrlClassLoader(
-    classLoader: ClassLoader): Option[URLClassLoader] = {
+    classLoader: ClassLoader
+  ): Option[URLClassLoader] = {
     // Get path to the Java installation being used to run this debugger
     val potentialJarPaths = findPotentialJdkJarPaths(JdiJarPath)
 

@@ -2,7 +2,7 @@ package com.senkbeil.test
 
 import scala.language.reflectiveCalls
 
-object DummyMain extends App {
+object Main extends App {
   val x = 3
   var y = 4
   val x123 = "huh?"

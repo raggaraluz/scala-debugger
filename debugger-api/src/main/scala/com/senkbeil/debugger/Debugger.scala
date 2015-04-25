@@ -60,7 +60,7 @@ class Debugger(address: String, port: Int) extends LogLike {
     arguments.get("localAddress").setValue(address)
     arguments.get("port").setValue(port.toString)
 
-    println("MULTIPLE CONNECTIONS ALLOWED: " +
+    logger.info("Multiple Connections Allowed: " +
       connector.supportsMultipleConnections())
 
     connector.startListening(arguments)
@@ -143,7 +143,7 @@ class Debugger(address: String, port: Int) extends LogLike {
 
                   println()
 
-                  while ({ print("Continue(y/n): "); Console.readLine() } != "y") {
+                  while ({ print("Continue(y/n): "); Console.in.readLine() } != "y") {
                     Thread.sleep(1)
                   }
 
