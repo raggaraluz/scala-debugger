@@ -123,7 +123,7 @@ class ValueWrapper(private val _value: Value) {
       currentRecursionLevel = 0
     )
 
-    returnStringBuilder.toString()
+    returnStringBuilder.toString().trim
   }
 
   /**
