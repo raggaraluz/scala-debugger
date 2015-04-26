@@ -50,7 +50,7 @@ class ValueWrapper(private val _value: Value) {
       case longValue: LongValue => longValue.value()
       case shortValue: ShortValue => shortValue.value()
       case primitiveValue: PrimitiveValue =>
-        throw new RuntimeException("Unknown primitive: " + primitiveValue)
+        throw new Throwable("Unknown primitive: " + primitiveValue)
     }
   }
 
@@ -85,7 +85,7 @@ class ValueWrapper(private val _value: Value) {
             field -> Try(objectReference.getValue(field)).getOrElse(null)
           }.toMap
       case obj =>
-        throw new RuntimeException("Unknown object: " + obj)
+        throw new Throwable("Unknown object: " + obj)
     }
   }
 

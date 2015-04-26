@@ -14,9 +14,9 @@ lazy val debuggerApi = project
     .setPreference(CompactControlReadability, true)
   )*/.settings(Seq(
     libraryDependencies ++= Seq(
-      "org.slf4j" % "slf4j-api" % "1.7.5", // MIT
-      "org.slf4j" % "slf4j-log4j12" % "1.7.5", // MIT
-      "log4j" % "log4j" % "1.2.17",
+      "org.slf4j" % "slf4j-api" % "1.7.5",
+      "org.slf4j" % "slf4j-log4j12" % "1.7.5" % "test",
+      "log4j" % "log4j" % "1.2.17" % "test",
       "org.scalatest" %% "scalatest" % "2.2.1" % "test",
       "org.scalamock" %% "scalamock-scalatest-support" % "3.2" % "test"
     ),

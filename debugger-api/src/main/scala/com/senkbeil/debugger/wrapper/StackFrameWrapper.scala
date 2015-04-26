@@ -33,8 +33,17 @@ class StackFrameWrapper(private val _stackFrame: StackFrame) extends LogLike {
   def localVisibleVariableMap(): Map[LocalVariable, Value] =
     Try(_stackFrame.visibleVariables()).map(_.asScala).getOrElse(Nil)
       .filterNot(_.isArgument)
-      .map(variable => variable -> _stackFrame.getValue(variable))
-      .toMap
+      .map(variable =>
+        variable -> (Try(_stackFrame.getValue(variable)) match {
+          // Successfully retrieved local variable value, so just return it
+          case Success(v) => v
+
+          // Failed to retrieve value of local variable, so log and return null
+          case Failure(ex) =>
+            logger.throwable(ex)
+            null
+        })
+      ).toMap
 
   /**
    * Retrieves fields and values for the "this" object contained in the

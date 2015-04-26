@@ -8,6 +8,14 @@ class ThreadReferenceWrapperSpec extends FunSpec with Matchers
   with MockFactory
 {
   describe("ThreadReferenceWrapper") {
+    describe("constructor") {
+      it("should throw an exception if wrapping a null pointer") {
+        intercept[IllegalArgumentException] {
+          new ThreadReferenceWrapper(null)
+        }
+      }
+    }
+
     describe("#isUnknown") {
       it("should return true if the status of the thread reference is unknown") {
         val threadReference = stub[ThreadReference]

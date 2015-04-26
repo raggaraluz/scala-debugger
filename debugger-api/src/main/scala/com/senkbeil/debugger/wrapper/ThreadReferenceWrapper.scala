@@ -8,6 +8,8 @@ import com.sun.jdi.ThreadReference
  * @param _threadReference The thread reference to wrap
  */
 class ThreadReferenceWrapper(private val _threadReference: ThreadReference) {
+  require(_threadReference != null, "Thread reference cannot be null!")
+
   /**
    * Indicates whether or not the status of this thread is known.
    *
