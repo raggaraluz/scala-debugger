@@ -20,6 +20,10 @@ Debugger API
 
     - Will expose bugs from not checking for the state of the JVM, thread, etc.
 
+- Refactor references to "class name" in class manager/breakpoint manager
+  to "file name" as it appears that classes with different names in the same
+  file must have breakpoints created using that file as a reference
+
 - Add step functionality
 
     - Stepping over
