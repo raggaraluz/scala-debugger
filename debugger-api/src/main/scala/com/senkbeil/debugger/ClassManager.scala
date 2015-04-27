@@ -2,28 +2,40 @@ package com.senkbeil.debugger
 
 import java.io.File
 
+import com.senkbeil.utils.LogLike
 import com.sun.jdi.{ VirtualMachine, Location, ReferenceType }
 import collection.JavaConverters._
 
 import scala.util.Try
 
-class ClassManager(protected val _virtualMachine: VirtualMachine)
-    extends JDIHelperMethods {
+/**
+ * Represents a manager of classes available on the virtual machine and their
+ * associated files.
+ *
+ * @param _virtualMachine The virtual machine whose classes to manage
+ * @param loadClasses Whether or not to load all classes from the virtual
+ *                    machine on initialization of this manager
+ */
+class ClassManager(
+  protected val _virtualMachine: VirtualMachine,
+  loadClasses: Boolean = true
+) extends JDIHelperMethods with LogLike {
   private val DefaultArrayGroupName = "ARRAY"
   private val DefaultUnknownGroupName = "UNKNOWN"
 
-  private var allClasses: Map[String, Seq[ReferenceType]] = Map()
+  /** Mapping of file names to associated classes. */
+  private var fileToClasses: Map[String, Seq[ReferenceType]] = Map()
 
   /**
-   * Retrieves the mapping of lines to locations available for a specific class.
+   * Retrieves the mapping of lines to locations available for a specific file.
    *
-   * @param className The name of the class whose lines and underlying
+   * @param fileName The name of the file whose lines and underlying
    *                  locations to retrieve
    *
-   * @return The mapping of class lines to associated locations in underlying
+   * @return The mapping of file lines to associated locations in underlying
    *         JVM classes
    */
-  def linesAndLocationsForClass(className: String) = {
+  def linesAndLocationsForFile(fileName: String): Map[Int, Seq[Location]] = {
     /**
      * Retrieve the available locations for the specified reference type.
      *
@@ -38,57 +50,60 @@ class ClassManager(protected val _virtualMachine: VirtualMachine)
     }
 
     // Combine all lines for underlying reference types together
-    underlyingReferencesFor(className)
+    underlyingReferencesFor(fileName)
       .map(linesForReferenceType)
       .reduce(_ ++ _)
       .groupBy(_.lineNumber())
   }
 
   /**
-   * Retrieves the list of underlying JVM classes for the specified class.
+   * Retrieves the list of underlying JVM classes for the specified file.
    *
-   * @param className The name of the class whose underlying representations
+   * @param fileName The name of the file whose underlying representations
    *                  to retrieve
    *
    * @return The list of underlying class references
    */
-  def underlyingReferencesFor(className: String) = {
-    require(allClassNames(refresh = true).contains(className),
-      s"$className not found!")
+  def underlyingReferencesFor(fileName: String): Seq[ReferenceType] = {
+    require(allScalaFileNames.contains(fileName), s"$fileName not found!")
 
-    val sourceName = className + ".scala"
-
-    allClasses(sourceName)
+    fileToClasses(fileName)
   }
 
   /**
    * Refresh the list of classes contained by the underlying virtual machine.
-   * Groups by source name, falling back to a standard "ARRAY" grouping for
+   * Groups by source path, falling back to a standard "ARRAY" grouping for
    * references to array structures and "UNKNOWN" for references with no
    * source name or known name.
    */
-  private def refreshAllClasses() = {
-    allClasses = _virtualMachine.allClasses().asScala.groupBy { referenceType =>
-      Try(fullOriginalClassName(referenceType) + ".scala").getOrElse(
-        if (referenceType.name().endsWith("[]")) DefaultArrayGroupName
-        else DefaultUnknownGroupName
-      )
-    }
+  def refreshAllClasses(): ClassManager = {
+    fileToClasses = _virtualMachine.allClasses().asScala
+      .groupBy { referenceType =>
+        Try(sourcePath(referenceType)).getOrElse(
+          if (referenceType.name().endsWith("[]")) DefaultArrayGroupName
+          else DefaultUnknownGroupName
+        )
+      }
+
+    this
   }
 
   /**
-   * Retrieves a list of abstracted class names (not underlying Java classes).
+   * Retrieves a list of Scala file names available.
    *
-   * @param refresh If true, refreshes the internal cache of classes known to
-   *                be present in the virtual machine
-   *
-   * @return The list of names
+   * @return The list of file names
    */
-  def allClassNames(refresh: Boolean = true): Seq[String] = {
-    if (refresh) refreshAllClasses()
-    allClasses
+  def allScalaFileNames: Seq[String] = {
+    fileToClasses
       .filter { case (key, _) => key.endsWith("scala") }
-      .map { case (key, _) => key.substring(0, key.lastIndexOf('.')) }
+      .map { case (key, _) => key }
       .toSeq
   }
+
+  // ==========================================================================
+  // = CONSTRUCTOR
+  // ==========================================================================
+
+  // If marked to load classes during the constructor, do so now
+  if (loadClasses) refreshAllClasses()
 }

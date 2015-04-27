@@ -94,6 +94,7 @@ class Debugger(address: String, port: Int) extends LogLike {
               val event = eventSetIterator.next()
               event match {
                 case ev: VMStartEvent =>
+                  println("CONNECTED!!!")
                   logger.debug(s"($virtualMachineName) Connected!")
 
                   // Sometimes this event is not triggered! Need to do this
@@ -104,9 +105,8 @@ class Debugger(address: String, port: Int) extends LogLike {
                   // the main executing class name! Is there a way to guarantee
                   // that this is executed? Should we just assume it will be?
                   //Debugger.printCommandLineArguments(virtualMachine)
-                  scalaVirtualMachine.commandLineArguments.foreach(arg =>
-                    println("ARG: " + arg)
-                  )
+                  println("ARGS: " +
+                    scalaVirtualMachine.commandLineArguments.mkString(","))
 
                   eventSet.resume()
                 case _: VMDisconnectEvent =>
@@ -143,12 +143,12 @@ class Debugger(address: String, port: Int) extends LogLike {
 
                   println()
 
-                  while ({ print("Continue(y/n): "); Console.in.readLine() } != "y") {
+                  /*while ({ print("Continue(y/n): "); Console.in.readLine() } != "y") {
                     Thread.sleep(1)
-                  }
+                  }*/
 
                   scalaVirtualMachine.breakpointManager
-                    .removeLineBreakpoint(Main.testMainClass, 13)
+                    .removeLineBreakpoint(Main.testMainFile, 42)
 
                   eventSet.resume()
                 case ev: Event => // Log unhandled event

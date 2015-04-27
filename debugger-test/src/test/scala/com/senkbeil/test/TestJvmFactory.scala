@@ -36,7 +36,7 @@ object TestJvmFactory {
    * @return The reference to the JVM instance
    */
   def create(klass: Class[_], jvmOptions: Seq[String]): TestJvm = {
-    // Determine the path to our executing Java instance
+    // Determine the path to our executing Java instance (assume on PATH)
     val javaProgram = "which java".!!
 
     // Determine path to the main class
@@ -44,10 +44,18 @@ object TestJvmFactory {
       klass.getProtectionDomain.getCodeSource.getLocation.getPath
 
     // Create the process builder to execute our JVM
-    val jvmProcessBuilder = Process(javaProgram, jvmOptions :+ mainClassPath)
+    val jvmProcessBuilder = Process(
+      javaProgram,
+      jvmOptions
+        :+ createClasspathArgument(".", mainClassPath)
+        :+ klass.getName
+    )
 
     val jvmProcess = jvmProcessBuilder.run()
 
     new TestJvm(jvmProcess)
   }
+
+  @inline private def createClasspathArgument(paths: String*) =
+    "-cp " + paths.mkString(java.io.File.pathSeparator)
 }

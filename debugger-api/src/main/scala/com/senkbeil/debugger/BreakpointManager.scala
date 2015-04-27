@@ -24,7 +24,7 @@ class BreakpointManager(
   /**
    * Creates and enables a breakpoint on the specified line of the class.
    *
-   * @param className The name of the class to set a breakpoint
+   * @param fileName The name of the file to set a breakpoint
    * @param lineNumber The number of the line to break
    * @param enabled If true, enables the breakpoint (default is true)
    * @param suspendPolicy Indicates the policy for suspending when the
@@ -33,24 +33,26 @@ class BreakpointManager(
    * @return True if successfully added breakpoints, otherwise false
    */
   def setLineBreakpoint(
-    className: String,
+    fileName: String,
     lineNumber: Int,
     enabled: Boolean = true,
     suspendPolicy: Int = EventRequest.SUSPEND_ALL): Boolean = {
     // Retrieve the available locations for the specified line
     val locations = {
-      val linesAndLocations = _classManager.linesAndLocationsForClass(className)
+      val linesAndLocations = _classManager.linesAndLocationsForFile(fileName)
       require(linesAndLocations.contains(lineNumber),
-        s"$lineNumber is not an available line for $className!")
+        s"$lineNumber is not an available line for $fileName!")
 
       linesAndLocations(lineNumber)
     }
 
+    // TODO: Investigate what level of suspension we need (the entire VM?) and
+    //       what code within this block actually needs the suspension
     // Create and enable breakpoints for all underlying locations
     val result = suspendVirtualMachineAndExecute {
       // Our key is using the class name and line number relevant to the
       // line breakpoint
-      val key: BreakpointBundleKey = (className, lineNumber)
+      val key: BreakpointBundleKey = (fileName, lineNumber)
 
       // Build our bundle of breakpoints
       val breakpointBundle = new BreakpointBundle(
@@ -70,47 +72,47 @@ class BreakpointManager(
 
     // Log if successful
     if (result.isSuccess)
-      logger.trace(s"Added breakpoint $className:$lineNumber")
+      logger.trace(s"Added breakpoint $fileName:$lineNumber")
 
     result.isSuccess
   }
 
   /**
-   * Determines whether or not the breakpoint for the specific class's line.
+   * Determines whether or not the breakpoint for the specific file's line.
    *
-   * @param className The name of the class whose line to reference
+   * @param fileName The name of the file whose line to reference
    * @param lineNumber The number of the line to check for a breakpoint
    *
    * @return True if a breakpoint exists, otherwise false
    */
-  def hasLineBreakpoint(className: String, lineNumber: Int): Boolean =
-    lineBreakpoints.contains((className, lineNumber))
+  def hasLineBreakpoint(fileName: String, lineNumber: Int): Boolean =
+    lineBreakpoints.contains((fileName, lineNumber))
 
   /**
    * Returns the bundle of breakpoints representing the breakpoint for the
    * specified line.
    *
-   * @param className The name of the class whose line to reference
+   * @param fileName The name of the file whose line to reference
    * @param lineNumber The number of the line to check for breakpoints
    *
    * @return The bundle of breakpoints for the specified line, or an error if
    *         the specified line has no breakpoints
    */
-  def getLineBreakpoint(className: String, lineNumber: Int): BreakpointBundle =
-    lineBreakpoints((className, lineNumber))
+  def getLineBreakpoint(fileName: String, lineNumber: Int): BreakpointBundle =
+    lineBreakpoints((fileName, lineNumber))
 
   /**
-   * Removes the breakpoint on the specified line of the class.
+   * Removes the breakpoint on the specified line of the file.
    *
-   * @param className The name of the class to remove the breakpoint
+   * @param fileName The name of the file to remove the breakpoint
    * @param lineNumber The number of the line to break
    *
    * @return True if successfully removed breakpoint, otherwise false
    */
-  def removeLineBreakpoint(className: String, lineNumber: Int): Boolean = {
+  def removeLineBreakpoint(fileName: String, lineNumber: Int): Boolean = {
     // Remove breakpoints for all underlying locations
     val result = suspendVirtualMachineAndExecute {
-      val key: BreakpointBundleKey = (className, lineNumber)
+      val key: BreakpointBundleKey = (fileName, lineNumber)
 
       val breakpointBundleToRemove = lineBreakpoints(key)
 
@@ -124,7 +126,7 @@ class BreakpointManager(
 
     // Log if successful
     if (result.isSuccess)
-      logger.trace(s"Removed breakpoint $className:$lineNumber")
+      logger.trace(s"Removed breakpoint $fileName:$lineNumber")
 
     result.isSuccess
   }

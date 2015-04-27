@@ -6,7 +6,7 @@ import com.senkbeil.debugger.Debugger
 
 object Main extends App {
   val debugger = new Debugger("127.0.0.1", 9877)
-  val testMainClass = "com.ibm.spark.dummy.DummyMain"
+  val testMainFile = "com/senkbeil/test/Main.scala"
 
   debugger.start()
 
@@ -19,8 +19,8 @@ object Main extends App {
       case (virtualMachine, scalaVirtualMachine) =>
         println("Virtual Machine: " + virtualMachine.name())
 
-        println("Classes: " +
-          scalaVirtualMachine.classManager.allClassNames().mkString(","))
+        println("Files: " +
+          scalaVirtualMachine.classManager.allScalaFileNames.mkString("\n"))
 
         // NOTE: Periodic call to get command line arguments! Does not get the
         // name of the class, though...
@@ -34,15 +34,15 @@ object Main extends App {
         println("-" * 10)
 
         println("Lines: " + scalaVirtualMachine
-          .availableLinesForClass(testMainClass).mkString(", "))
+          .availableLinesForFile(testMainFile).mkString(", "))
 
         // Add the breakpoint if it does not already exist
-        if (!scalaVirtualMachine.breakpointManager.hasLineBreakpoint(testMainClass, 13))
+        if (!scalaVirtualMachine.breakpointManager.hasLineBreakpoint(testMainFile, 42))
           scalaVirtualMachine.breakpointManager
-            .setLineBreakpoint(testMainClass, 13)
+            .setLineBreakpoint(testMainFile, 42)
 
         val bps = scalaVirtualMachine.breakpointManager
-          .getLineBreakpoint(testMainClass, 13)
+          .getLineBreakpoint(testMainFile, 42)
 
         bps.foreach { bp =>
           println("CLASS: " + bp.location().declaringType().name())

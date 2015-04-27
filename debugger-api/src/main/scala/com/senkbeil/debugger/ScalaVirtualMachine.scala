@@ -5,20 +5,26 @@ import com.sun.jdi._
 import collection.JavaConverters._
 
 class ScalaVirtualMachine(protected val _virtualMachine: VirtualMachine)
-    extends JDIHelperMethods with LogLike {
-  val classManager = new ClassManager(_virtualMachine)
-  val breakpointManager = new BreakpointManager(_virtualMachine, classManager)
-  val fieldManager = new FieldManager(_virtualMachine, classManager)
+    extends JDIHelperMethods with LogLike
+{
+  // Lazily-load the class manager (and as a result, the other managers) to
+  // give enough time to retrieve all of the classes
+  lazy val classManager =
+    new ClassManager(_virtualMachine, loadClasses = true)
+  lazy val breakpointManager =
+    new BreakpointManager(_virtualMachine, classManager)
+  lazy val fieldManager =
+    new FieldManager(_virtualMachine, classManager)
 
   /**
-   * Retrieves the list of available lines for a specific class.
+   * Retrieves the list of available lines for a specific file.
    *
-   * @param className The name of the class whose lines to retrieve
+   * @param fileName The name of the file whose lines to retrieve
    *
    * @return The list of breakpointable lines
    */
-  def availableLinesForClass(className: String): Seq[Int] =
-    classManager.linesAndLocationsForClass(className).keys.toSeq.sorted
+  def availableLinesForFile(fileName: String): Seq[Int] =
+    classManager.linesAndLocationsForFile(fileName).keys.toSeq.sorted
 
   /**
    * Represents the fully-qualified class name that invoked the main method of
@@ -29,6 +35,8 @@ class ScalaVirtualMachine(protected val _virtualMachine: VirtualMachine)
   lazy val mainClassName: String = {
     val mainThread = findMainThread()
 
+    // TODO: Investigate if necessary to suspend entire virtual machine or
+    //       just the main thread
     val tryClassName = suspendVirtualMachineAndExecute {
       val mainMethodFrame = mainThread.frames().asScala
         .find(_.location().method().name() == "main")
@@ -76,6 +84,8 @@ class ScalaVirtualMachine(protected val _virtualMachine: VirtualMachine)
     // Get the main thread of execution
     val mainThread = findMainThread()
 
+    // TODO: Investigate if necessary to suspend entire virtual machine or
+    //       just the main thread
     // Print out command line arguments for connected JVM
     suspendVirtualMachineAndExecute {
       mainThread.suspend()
