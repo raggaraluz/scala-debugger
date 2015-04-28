@@ -37,7 +37,7 @@ object TestJvmFactory {
    */
   def create(klass: Class[_], jvmOptions: Seq[String]): TestJvm = {
     // Determine the path to our executing Java instance (assume on PATH)
-    val javaProgram = "which java".!!
+    val javaProgram = "java" //"which java".!!
 
     // Determine path to the main class
     val mainClassPath =

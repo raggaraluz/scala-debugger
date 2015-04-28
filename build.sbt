@@ -7,7 +7,9 @@ name := "DebuggerServer"
 //
 lazy val debuggerApi = project
   .in(file("debugger-api"))
+  .configs(IntegrationTest)
   .settings(Common.settings: _*)
+  .settings(Defaults.itSettings: _*)
   /*.settings(scalariformSettings: _*)
   .settings(ScalariformKeys.preferences := ScalariformKeys.preferences.value
     .setPreference(PreserveDanglingCloseParenthesis, true)
@@ -15,10 +17,10 @@ lazy val debuggerApi = project
   )*/.settings(Seq(
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % "1.7.5",
-      "org.slf4j" % "slf4j-log4j12" % "1.7.5" % "test",
-      "log4j" % "log4j" % "1.2.17" % "test",
-      "org.scalatest" %% "scalatest" % "2.2.1" % "test",
-      "org.scalamock" %% "scalamock-scalatest-support" % "3.2" % "test"
+      "org.slf4j" % "slf4j-log4j12" % "1.7.5" % "test,it",
+      "log4j" % "log4j" % "1.2.17" % "test,it",
+      "org.scalatest" %% "scalatest" % "2.2.1" % "test,it",
+      "org.scalamock" %% "scalamock-scalatest-support" % "3.2" % "test,it"
     ),
     // JDK Dependency (just for sbt, must exist on classpath for execution,
     // cannot be redistributed)
