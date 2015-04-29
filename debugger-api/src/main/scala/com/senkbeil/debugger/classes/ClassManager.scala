@@ -64,7 +64,7 @@ class ClassManager(
    * @return The list of underlying class references
    */
   def underlyingReferencesForFile(fileName: String): Seq[ReferenceType] = {
-    require(allScalaFileNames.contains(fileName), s"$fileName not found!")
+    require(allFileNames.contains(fileName), s"$fileName not found!")
 
     fileToClasses(fileName)
   }

@@ -3,32 +3,24 @@ package com.senkbeil.debugger.classes
 import com.sun.jdi.{ReferenceType, VirtualMachine}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers, OneInstancePerTest}
+import test.JDIMockHelpers
 
 import scala.collection.JavaConverters._
 
 class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
-  with MockFactory with OneInstancePerTest
+  with MockFactory with OneInstancePerTest with JDIMockHelpers
 {
   private val TotalMockReferenceTypes = 5
 
-  // Create N reference types with unique names and paths
-  // (mixed Scala/Java/unknown) and
-  private val stubReferenceTypes =
-    (1 to TotalMockReferenceTypes).map(_ => stub[ReferenceType])
-  stubReferenceTypes.foreach(r =>
-    (r.name _).when().returns(java.util.UUID.randomUUID().toString))
-  stubReferenceTypes.zipWithIndex.foreach { case (r, i) =>
-    val extension =
-      if (i % 3 == 0) "scala"
-      else if (i % 3 == 1) "java"
-      else "unknown"
+  private def indexToExtension(index: Int) =
+    if (index % 3 == 0)       "scala"
+    else if (index % 3 == 1)  "java"
+    else                      "unknown"
 
-    (r.sourcePaths _).when(*).returns(
-      Seq(java.util.UUID.randomUUID().toString + "." + extension).asJava
-    )
+  private val stubReferenceTypes = (1 to TotalMockReferenceTypes).map { i =>
+    createRandomReferenceTypeStub(indexToExtension(i))
   }
 
-  // Create virtual machine with stubbed reference types for classes
   private val stubVirtualMachine = stub[VirtualMachine]
   (stubVirtualMachine.allClasses _).when().returns(stubReferenceTypes.asJava)
 
@@ -51,16 +43,27 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
     }
 
     describe("#linesAndLocationsForFile") {
-      it("should return a map whose keys represent available lines") {
-        fail()
+      it("should return a map containing lines and associated locations for the file") {
+        val referenceType = stubReferenceTypes.head
+        val fileName = referenceType.sourcePaths("STUBBED").asScala.head
+
+        val expected =
+          referenceType.allLineLocations().asScala.groupBy(_.lineNumber())
+        val actual = classManager.linesAndLocationsForFile(fileName)
+
+        actual should contain theSameElementsAs expected
       }
 
-      it("should return a map whose values correspond to available locations per line") {
+      it("should not include locations whose line numbers cannot be retrieved") {
+        // TODO: Should use static data like line 1, 2, 3, 4 and file1, file2,
+        //       etc to test without doing things like groupBy above
         fail()
       }
 
       it("should throw an exception if the file is not found in the cache") {
-        fail()
+        intercept[IllegalArgumentException] {
+          classManager.linesAndLocationsForFile("asdf")
+        }
       }
     }
 

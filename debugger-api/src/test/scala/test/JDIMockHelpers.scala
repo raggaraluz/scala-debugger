@@ -138,8 +138,19 @@ trait JDIMockHelpers { self: MockFactory =>
     value
   }
 
+  /**
+   * Creates a stub for a reference type using random values for needed
+   * properties.
+   *
+   * @param extension The extension to use for the end of the file name
+   * @param totalLocations The total number of locations to generate for this
+   *                       reference type (use 0 for none, and -1 to throw an
+   *                       exception)
+   *
+   * @return The new, stubbed reference type
+   */
   def createRandomReferenceTypeStub(
-    extension: String,
+    extension: String = java.util.UUID.randomUUID().toString,
     totalLocations: Int = 10
   ): ReferenceType = {
     val stubReferenceType = stub[ReferenceType]
@@ -151,8 +162,16 @@ trait JDIMockHelpers { self: MockFactory =>
       Seq(java.util.UUID.randomUUID().toString + "." + extension).asJava
     )
 
-    (stubReferenceType.allLineLocations: Function0[java.util.List[Location]])
-      .when().returns((1 to totalLocations).map(_ => createRandomLocationStub()).asJava)
+    if (totalLocations > 0) {
+      (stubReferenceType.allLineLocations: Function0[java.util.List[Location]])
+        .when().returns((1 to totalLocations).map(_ => createRandomLocationStub()).asJava)
+    } else if (totalLocations == 0) {
+      (stubReferenceType.allLineLocations: Function0[java.util.List[Location]])
+        .when().returns(Seq[Location]().asJava)
+    } else {
+      (stubReferenceType.allLineLocations: Function0[java.util.List[Location]])
+        .when().throws(new Throwable)
+    }
 
     stubReferenceType
   }
