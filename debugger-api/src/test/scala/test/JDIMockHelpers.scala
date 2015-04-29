@@ -4,11 +4,14 @@ import com.sun.jdi._
 import org.scalamock.scalatest.MockFactory
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
+import scala.util.Random
 
 /**
  * Contains helper methods to facilitate smaller test code for JDI.
  */
 trait JDIMockHelpers { self: MockFactory =>
+  private val random = new Random()
+
   def createStackFrameStub(
     thisObject: Option[ObjectReference] = None,
     visibleVariablesWithValues: Option[Seq[(LocalVariable, Value)]] = None,
@@ -133,5 +136,32 @@ trait JDIMockHelpers { self: MockFactory =>
     })
 
     value
+  }
+
+  def createRandomReferenceTypeStub(
+    extension: String,
+    totalLocations: Int = 10
+  ): ReferenceType = {
+    val stubReferenceType = stub[ReferenceType]
+
+    (stubReferenceType.name _).when()
+      .returns(java.util.UUID.randomUUID().toString)
+
+    (stubReferenceType.sourcePaths _).when(*).returns(
+      Seq(java.util.UUID.randomUUID().toString + "." + extension).asJava
+    )
+
+    (stubReferenceType.allLineLocations: Function0[java.util.List[Location]])
+      .when().returns((1 to totalLocations).map(_ => createRandomLocationStub()).asJava)
+
+    stubReferenceType
+  }
+
+  def createRandomLocationStub(): Location = {
+    val stubLocation = stub[Location]
+
+    (stubLocation.lineNumber: Function0[Int]).when().returns(random.nextInt())
+
+    stubLocation
   }
 }

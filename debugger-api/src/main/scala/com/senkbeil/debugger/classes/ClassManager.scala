@@ -1,11 +1,10 @@
-package com.senkbeil.debugger
+package com.senkbeil.debugger.classes
 
-import java.io.File
-
+import com.senkbeil.debugger.jdi.JDIHelperMethods
 import com.senkbeil.utils.LogLike
-import com.sun.jdi.{ VirtualMachine, Location, ReferenceType }
-import collection.JavaConverters._
+import com.sun.jdi.{Location, ReferenceType, VirtualMachine}
 
+import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**
@@ -50,7 +49,7 @@ class ClassManager(
     }
 
     // Combine all lines for underlying reference types together
-    underlyingReferencesFor(fileName)
+    underlyingReferencesForFile(fileName)
       .map(linesForReferenceType)
       .reduce(_ ++ _)
       .groupBy(_.lineNumber())
@@ -64,7 +63,7 @@ class ClassManager(
    *
    * @return The list of underlying class references
    */
-  def underlyingReferencesFor(fileName: String): Seq[ReferenceType] = {
+  def underlyingReferencesForFile(fileName: String): Seq[ReferenceType] = {
     require(allScalaFileNames.contains(fileName), s"$fileName not found!")
 
     fileToClasses(fileName)
@@ -89,16 +88,37 @@ class ClassManager(
   }
 
   /**
-   * Retrieves a list of Scala file names available.
+   * Retrieves a list of available Scala file names.
    *
-   * @return The list of file names
+   * @return The collection of file names
    */
-  def allScalaFileNames: Seq[String] = {
-    fileToClasses
-      .filter { case (key, _) => key.endsWith("scala") }
-      .map { case (key, _) => key }
-      .toSeq
-  }
+  def allScalaFileNames: Seq[String] =
+    allFileNamesWithExtension("scala")
+
+  /**
+   * Retrieves a list of available Java file names.
+   *
+   * @return The collection of file names
+   */
+  def allJavaFileNames: Seq[String] =
+    allFileNamesWithExtension("java")
+
+  /**
+   * Retrieves a list of available file names with the provided extension.
+   *
+   * @param extension The extension of the file names (Scala/Java/etc)
+   *
+   * @return The collection of file names
+   */
+  def allFileNamesWithExtension(extension: String): Seq[String] =
+      allFileNames.filter(_.endsWith(extension))
+
+  /**
+   * Retrieves a list of all available file names.
+   *
+   * @return The collection of file names
+   */
+  def allFileNames: Seq[String] = fileToClasses.keys.toSeq
 
   // ==========================================================================
   // = CONSTRUCTOR

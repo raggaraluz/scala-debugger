@@ -1,8 +1,10 @@
-package com.senkbeil.debugger
+package com.senkbeil.debugger.breakpoints
 
+import com.senkbeil.debugger.classes.ClassManager
+import com.senkbeil.debugger.jdi.JDIHelperMethods
 import com.senkbeil.utils.LogLike
 import com.sun.jdi.VirtualMachine
-import com.sun.jdi.request.{ EventRequest, BreakpointRequest }
+import com.sun.jdi.request.EventRequest
 
 class BreakpointManager(
     protected val _virtualMachine: VirtualMachine,

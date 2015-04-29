@@ -1,8 +1,10 @@
 package com.senkbeil.debugger
 
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
 
-class ScalaVirtualMachineSpec extends FunSpec with Matchers {
+class ScalaVirtualMachineSpec extends FunSpec with Matchers
+  with OneInstancePerTest
+{
   describe("ScalaVirtualMachine") {
     describe("#availableLinesForClass") {
       it("should return the lines (sorted) that can have breakpoints") {

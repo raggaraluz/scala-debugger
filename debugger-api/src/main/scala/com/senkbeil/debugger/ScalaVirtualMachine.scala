@@ -1,5 +1,9 @@
 package com.senkbeil.debugger
 
+import com.senkbeil.debugger.breakpoints.BreakpointManager
+import com.senkbeil.debugger.classes.ClassManager
+import com.senkbeil.debugger.fields.FieldManager
+import com.senkbeil.debugger.jdi.JDIHelperMethods
 import com.senkbeil.utils.LogLike
 import com.sun.jdi._
 import collection.JavaConverters._

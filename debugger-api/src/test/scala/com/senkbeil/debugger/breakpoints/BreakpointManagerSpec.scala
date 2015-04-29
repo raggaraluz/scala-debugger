@@ -1,8 +1,10 @@
-package com.senkbeil.debugger
+package com.senkbeil.debugger.breakpoints
 
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 
-class BreakpointManagerSpec extends FunSpec with Matchers {
+class BreakpointManagerSpec extends FunSpec with Matchers
+  with OneInstancePerTest
+{
   describe("BreakpointManager") {
     describe("#breakpointList") {
       it("should return a collection of breakpoint file names and lines") {

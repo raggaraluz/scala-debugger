@@ -1,8 +1,8 @@
-package com.senkbeil.debugger
+package com.senkbeil.debugger.fields
 
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 
-class FieldManagerSpec extends FunSpec with Matchers {
+class FieldManagerSpec extends FunSpec with Matchers with OneInstancePerTest {
   describe("FieldManager") {
     describe("#staticFieldsForClass") {
       it("should throw an exception if the class is not found") {

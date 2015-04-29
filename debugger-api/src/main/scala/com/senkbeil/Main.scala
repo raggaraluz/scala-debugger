@@ -2,10 +2,10 @@ package com.senkbeil
 
 import java.io.File
 
-import com.senkbeil.debugger.Debugger
+import com.senkbeil.debugger.ListeningDebugger
 
 object Main extends App {
-  val debugger = new Debugger("127.0.0.1", 9877)
+  val debugger = new ListeningDebugger("127.0.0.1", 9877)
   val testMainFile = "com/senkbeil/test/Main.scala"
 
   debugger.start()

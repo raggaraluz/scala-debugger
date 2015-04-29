@@ -1,9 +1,9 @@
 package com.senkbeil.debugger
 
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
 
-class DebuggerSpec extends FunSpec with Matchers {
-  describe("Debugger") {
+class ListeningDebuggerSpec extends FunSpec with Matchers with OneInstancePerTest {
+  describe("ListeningDebugger") {
     describe("#isAvailable") {
       it("should return true if JDI is available") {
         fail()

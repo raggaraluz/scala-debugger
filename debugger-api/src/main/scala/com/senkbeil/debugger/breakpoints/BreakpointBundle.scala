@@ -1,7 +1,7 @@
-package com.senkbeil.debugger
+package com.senkbeil.debugger.breakpoints
 
-import com.sun.jdi.{ VirtualMachine, ThreadReference, ObjectReference }
 import com.sun.jdi.request.BreakpointRequest
+import com.sun.jdi.{ObjectReference, ThreadReference, VirtualMachine}
 
 /**
  * Represents a collection of breakpoint requests.

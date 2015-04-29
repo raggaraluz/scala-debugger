@@ -1,8 +1,10 @@
-package com.senkbeil.debugger
+package com.senkbeil.debugger.jdi
 
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 
-class JDIHelperMethodsSpec extends FunSpec with Matchers {
+class JDIHelperMethodsSpec extends FunSpec with Matchers
+  with OneInstancePerTest
+{
   describe("JDIHelperMethods") {
     describe("#suspendVirtualMachineAndExecute") {
       it("should suspend the virtual machine while executing the code") {

@@ -1,9 +1,11 @@
-package com.senkbeil.debugger
+package com.senkbeil.debugger.fields
 
+import com.senkbeil.debugger.classes.ClassManager
+import com.senkbeil.debugger.jdi.JDIHelperMethods
 import com.senkbeil.utils.LogLike
-import com.sun.jdi.{ VirtualMachine, Value, Field }
-import collection.JavaConverters._
+import com.sun.jdi.{Field, Value, VirtualMachine}
 
+import scala.collection.JavaConverters._
 import scala.util.Try
 
 class FieldManager(
@@ -18,7 +20,7 @@ class FieldManager(
    * @return The list of static fields and their respective values
    */
   def staticFieldsForClass(className: String): Seq[(Field, Value)] = {
-    _classManager.underlyingReferencesFor(className).map { ref =>
+    _classManager.underlyingReferencesForFile(className).map { ref =>
       (ref, Try(ref.allFields()).map(_.asScala).getOrElse(Nil))
     } map {
       case (ref, fields) =>

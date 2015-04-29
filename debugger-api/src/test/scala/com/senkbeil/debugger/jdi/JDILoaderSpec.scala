@@ -1,8 +1,8 @@
-package com.senkbeil.debugger
+package com.senkbeil.debugger.jdi
 
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 
-class JDILoaderSpec extends FunSpec with Matchers {
+class JDILoaderSpec extends FunSpec with Matchers with OneInstancePerTest {
   describe("JDILoader") {
     describe("#isJdiAvailable") {
       it("should return false if JDI is not available") {

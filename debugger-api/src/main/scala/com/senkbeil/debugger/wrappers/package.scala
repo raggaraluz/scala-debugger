@@ -7,7 +7,7 @@ import com.sun.jdi.{ ThreadReference, StackFrame, Value }
 /**
  * Contains helper implicits to convert to wrapper classes.
  */
-package object wrapper {
+package object wrappers {
   implicit def valueToWrapper(value: Value): ValueWrapper =
     new ValueWrapper(value)
 

@@ -1,7 +1,7 @@
-package com.senkbeil.debugger
+package com.senkbeil.debugger.jdi
 
 import java.io.File
-import java.net.{ URL, URLClassLoader }
+import java.net.{URL, URLClassLoader}
 
 import com.senkbeil.utils.LogLike
 

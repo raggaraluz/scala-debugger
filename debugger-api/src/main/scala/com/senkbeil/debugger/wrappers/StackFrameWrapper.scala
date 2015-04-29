@@ -1,4 +1,4 @@
-package com.senkbeil.debugger.wrapper
+package com.senkbeil.debugger.wrappers
 
 import com.senkbeil.utils.LogLike
 import com.sun.jdi._

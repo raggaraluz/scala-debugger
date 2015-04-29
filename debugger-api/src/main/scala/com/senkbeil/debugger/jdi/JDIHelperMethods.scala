@@ -1,10 +1,9 @@
-package com.senkbeil.debugger
+package com.senkbeil.debugger.jdi
 
-import java.io.File
 import com.senkbeil.utils.LogLike
-import com.sun.jdi.{ ThreadReference, Location, ReferenceType, VirtualMachine }
-import collection.JavaConverters._
+import com.sun.jdi.{ReferenceType, ThreadReference, VirtualMachine}
 
+import scala.collection.JavaConverters._
 import scala.util.Try
 
 trait JDIHelperMethods extends LogLike {

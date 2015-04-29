@@ -1,4 +1,4 @@
-package com.senkbeil.debugger.wrapper
+package com.senkbeil.debugger.wrappers
 
 import com.sun.jdi._
 import org.scalamock.scalatest.MockFactory

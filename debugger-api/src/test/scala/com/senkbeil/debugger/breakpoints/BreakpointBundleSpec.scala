@@ -1,20 +1,15 @@
-package com.senkbeil.debugger
+package com.senkbeil.debugger.breakpoints
 
-import com.sun.jdi.{VirtualMachine, ThreadReference, ObjectReference}
 import com.sun.jdi.request.BreakpointRequest
+import com.sun.jdi.{ObjectReference, ThreadReference, VirtualMachine}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
+import org.scalatest.{BeforeAndAfter, FunSpec, Matchers, OneInstancePerTest}
 
 class BreakpointBundleSpec extends FunSpec with Matchers with BeforeAndAfter
-  with MockFactory
+  with MockFactory with OneInstancePerTest
 {
-  private var breakpointRequests: Seq[BreakpointRequest] = _
-  private var breakpointBundle: BreakpointBundle = _
-
-  before {
-    breakpointRequests = Seq(mock[BreakpointRequest], mock[BreakpointRequest])
-    breakpointBundle = new BreakpointBundle(breakpointRequests)
-  }
+  val breakpointRequests = Seq(mock[BreakpointRequest], mock[BreakpointRequest])
+  val breakpointBundle = new BreakpointBundle(breakpointRequests)
 
   describe("BreakpointBundle") {
     describe("#apply") {
