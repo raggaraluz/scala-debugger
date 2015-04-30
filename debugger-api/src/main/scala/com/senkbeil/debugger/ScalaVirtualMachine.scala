@@ -2,15 +2,23 @@ package com.senkbeil.debugger
 
 import com.senkbeil.debugger.breakpoints.BreakpointManager
 import com.senkbeil.debugger.classes.ClassManager
+import com.senkbeil.debugger.events.{LoopingTaskRunner, EventManager}
 import com.senkbeil.debugger.fields.FieldManager
 import com.senkbeil.debugger.jdi.JDIHelperMethods
 import com.senkbeil.utils.LogLike
 import com.sun.jdi._
 import collection.JavaConverters._
 
-class ScalaVirtualMachine(protected val _virtualMachine: VirtualMachine)
-    extends JDIHelperMethods with LogLike
-{
+/**
+ * Represents a virtual machine running Scala code.
+ *
+ * @param _virtualMachine The underlying virtual machine
+ * @param loopingTaskRunner The runner used to process events
+ */
+class ScalaVirtualMachine(
+  protected val _virtualMachine: VirtualMachine,
+  private val loopingTaskRunner: LoopingTaskRunner
+) extends JDIHelperMethods with LogLike {
   // Lazily-load the class manager (and as a result, the other managers) to
   // give enough time to retrieve all of the classes
   lazy val classManager =
@@ -19,6 +27,8 @@ class ScalaVirtualMachine(protected val _virtualMachine: VirtualMachine)
     new BreakpointManager(_virtualMachine, classManager)
   lazy val fieldManager =
     new FieldManager(_virtualMachine, classManager)
+  lazy val eventManager =
+    new EventManager(_virtualMachine, loopingTaskRunner)
 
   /**
    * Retrieves the list of available lines for a specific file.
