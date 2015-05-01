@@ -23,16 +23,16 @@ class EventManager(
   private val eventMap =
     new ConcurrentHashMap[Class[_ <: Event], Seq[EventFunction]]()
 
-  private var eventTaskId: String = _
+  private var eventTaskId: Option[String] = None
 
   /**
    * Begins the processing of events from the virtual machine.
    */
   def start(): Unit = {
-    require(eventTaskId == null, "Event manager already started!")
+    require(eventTaskId.isEmpty, "Event manager already started!")
 
     logger.trace("Starting event manager for virtual machine!")
-    eventTaskId = loopingTaskRunner.addTask {
+    eventTaskId = Some(loopingTaskRunner.addTask {
       val eventQueue = _virtualMachine.eventQueue()
       val eventSet = eventQueue.remove()
       val eventSetIterator = eventSet.iterator()
@@ -42,23 +42,26 @@ class EventManager(
         val eventClass = event.getClass
 
         // Execute all event functions for this event
-        Try(eventMap.get(eventClass)).foreach(
-          _.foreach(func => Try(func(event))))
+        Try(eventMap.get(eventClass)).foreach(events =>
+          if (events != null) events.foreach(func => Try(func(event))))
       }
 
       eventSet.resume()
-    }
-    logger.trace(s"Event process task: $eventTaskId")
+    })
+
+    eventTaskId.foreach(id =>
+      logger.trace(s"Event process task: $id"))
   }
 
   /**
    * Ends the processing of events from the virtual machine.
    */
   def stop(): Unit = {
-    require(eventTaskId != null, "Event manager not started!")
+    require(eventTaskId.nonEmpty, "Event manager not started!")
 
     logger.trace(s"Stopping event manager ($eventTaskId) for virtual machine!")
-    loopingTaskRunner.removeTask(eventTaskId)
+    loopingTaskRunner.removeTask(eventTaskId.get)
+    eventTaskId = None
   }
 
   /**
@@ -80,6 +83,18 @@ class EventManager(
   }
 
   /**
+   * Retrieves the collection of event handler functions for the specific
+   * event class.
+   *
+   * @param eventClass The class whose event functions to retrieve
+   * @tparam T The type associated with the class
+   *
+   * @return The collection of event functions
+   */
+  def getEventHandlers[T <: Event](eventClass: Class[T]) : Seq[EventFunction] =
+    if (eventMap.contains(eventClass)) eventMap.get(eventClass) else Nil
+
+  /**
    * Removes the event function from this manager.
    *
    * @param eventClass The class of the event whose function to remove
@@ -90,10 +105,9 @@ class EventManager(
     eventClass: Class[T],
     eventFunction: EventFunction
   ): Unit = eventMap.synchronized {
-    val oldEventFunctions =
-      if (eventMap.contains(eventClass)) eventMap.get(eventClass)
-      else Nil
-
-    eventMap.put(eventClass, oldEventFunctions.filterNot(_ eq eventFunction))
+    if (eventMap.contains(eventClass)) {
+      val oldEventFunctions = eventMap.get(eventClass)
+      eventMap.put(eventClass, oldEventFunctions.filterNot(_ eq eventFunction))
+    }
   }
 }
