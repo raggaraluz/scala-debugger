@@ -24,16 +24,16 @@ class LoopingTaskRunner(
   private val taskMap = new ConcurrentHashMap[TaskId, Runnable]()
 
   /** Represents the executors used to execute the tasks. */
-  @volatile private var executorService: ExecutorService = null
+  @volatile private var executorService: Option[ExecutorService] = None
 
   /**
    * Executing begins the process of executing queued up tasks.
    */
   def start(): Unit = {
-    require(executorService == null, "Runner already started!")
+    require(executorService.isEmpty, "Runner already started!")
 
     // Create our thread pool with X workers to process tasks
-    executorService = Executors.newFixedThreadPool(maxWorkers)
+    executorService = Some(Executors.newFixedThreadPool(maxWorkers))
 
     // Start X tasks to be run
     (1 to maxWorkers).foreach(_ => runNextTask())
@@ -43,9 +43,10 @@ class LoopingTaskRunner(
    * Prevents the runner from executing any more tasks.
    */
   def stop(): Unit = {
-    require(executorService != null, "Runner not started!")
+    require(executorService.nonEmpty, "Runner not started!")
 
-    executorService.shutdown()
+    executorService.get.shutdown()
+    executorService = None
   }
 
   /**
@@ -81,10 +82,10 @@ class LoopingTaskRunner(
   }
 
   /**
-   * Queues up the next task to be executed.
+   * Executes next available task.
    */
-  private def runNextTask(): Unit =
-    executorService.execute(new Runnable {
+  protected def runNextTask(): Unit =
+    executorService.foreach(_.execute(new Runnable {
       override def run(): Unit = {
         // Determine the next task to execute (waits if no task available)
         val taskId = taskQueue.take()
@@ -100,5 +101,5 @@ class LoopingTaskRunner(
         // Start next task once this is free
         runNextTask()
       }
-    })
+    }))
 }

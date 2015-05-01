@@ -5,7 +5,6 @@ import com.senkbeil.utils.LogLike
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.event.Event
 
-import scala.concurrent.{ExecutionContext, future}
 import java.util.concurrent.ConcurrentHashMap
 
 import scala.util.Try

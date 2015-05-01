@@ -1,6 +1,7 @@
 package debug
 
-import scala.io.StdIn
+//import scala.io.StdIn
+import Console.{in => StdIn}
 
 object SayHelloWorld {
 
