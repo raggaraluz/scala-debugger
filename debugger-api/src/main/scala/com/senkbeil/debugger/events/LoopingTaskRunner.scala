@@ -2,7 +2,6 @@ package com.senkbeil.debugger.events
 
 import java.util.concurrent.{ExecutorService, Executors, ConcurrentHashMap, LinkedBlockingQueue}
 
-import scala.annotation.tailrec
 import scala.util.Try
 
 /**
@@ -41,12 +40,19 @@ class LoopingTaskRunner(
 
   /**
    * Prevents the runner from executing any more tasks.
+   *
+   * @param removeAllTasks If true, removes all tasks after being stopped
    */
-  def stop(): Unit = {
+  def stop(removeAllTasks: Boolean = true): Unit = {
     require(executorService.nonEmpty, "Runner not started!")
 
     executorService.get.shutdown()
     executorService = None
+
+    if (removeAllTasks) {
+      taskQueue.clear()
+      taskMap.clear()
+    }
   }
 
   /**
@@ -98,8 +104,9 @@ class LoopingTaskRunner(
         // NOTE: Only do so if the map knows about our task (allows removal)
         if (tryTask.isSuccess) taskQueue.put(taskId)
 
-        // Start next task once this is free
-        runNextTask()
+        // Start next task once this is free (suppress exceptions in the
+        // situation that this runner has been stopped)
+        Try(runNextTask())
       }
     }))
 }
