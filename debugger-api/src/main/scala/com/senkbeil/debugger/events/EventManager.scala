@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 import scala.util.Try
 
+import EventType._
+
 /**
  * Represents a manager for events coming in from a virtual machine.
  *
@@ -21,7 +23,7 @@ class EventManager(
 ) extends JDIHelperMethods with LogLike {
   type EventFunction = (Event) => Unit
   private val eventMap =
-    new ConcurrentHashMap[Class[_ <: Event], Seq[EventFunction]]()
+    new ConcurrentHashMap[EventType, Seq[EventFunction]]()
 
   private var eventTaskId: Option[String] = None
 
@@ -39,10 +41,10 @@ class EventManager(
 
       while (eventSetIterator.hasNext) {
         val event = eventSetIterator.next()
-        val eventClass = event.getClass
+        val eventType = EventType.eventToEventType(event)
 
         // Execute all event functions for this event
-        Try(eventMap.get(eventClass)).foreach(events =>
+        eventType.map(eventMap.get).foreach(events =>
           if (events != null) events.foreach(func => Try(func(event))))
       }
 
@@ -67,47 +69,47 @@ class EventManager(
   /**
    * Adds the event function to this manager.
    *
-   * @param eventClass The class of the event to add a function
+   * @param eventType The type of the event to add a function
    * @param eventFunction The function to add
    * @tparam T The class of the event
    */
   def addEventHandler[T <: Event](
-    eventClass: Class[T],
+    eventType: EventType,
     eventFunction: EventFunction
   ): Unit = eventMap.synchronized {
     val oldEventFunctions =
-      if (eventMap.contains(eventClass)) eventMap.get(eventClass)
+      if (eventMap.containsKey(eventType)) eventMap.get(eventType)
       else Nil
 
-    eventMap.put(eventClass, oldEventFunctions :+ eventFunction)
+    eventMap.put(eventType, oldEventFunctions :+ eventFunction)
   }
 
   /**
    * Retrieves the collection of event handler functions for the specific
    * event class.
    *
-   * @param eventClass The class whose event functions to retrieve
+   * @param eventType The type of event whose functions to retrieve
    * @tparam T The type associated with the class
    *
    * @return The collection of event functions
    */
-  def getEventHandlers[T <: Event](eventClass: Class[T]) : Seq[EventFunction] =
-    if (eventMap.contains(eventClass)) eventMap.get(eventClass) else Nil
+  def getEventHandlers[T <: Event](eventType: EventType) : Seq[EventFunction] =
+    if (eventMap.containsKey(eventType)) eventMap.get(eventType) else Nil
 
   /**
    * Removes the event function from this manager.
    *
-   * @param eventClass The class of the event whose function to remove
+   * @param eventType The event type whose function to remove
    * @param eventFunction The function to remove
    * @tparam T The class of the event
    */
   def removeEventHandler[T <: Event](
-    eventClass: Class[T],
+    eventType: EventType,
     eventFunction: EventFunction
   ): Unit = eventMap.synchronized {
-    if (eventMap.contains(eventClass)) {
-      val oldEventFunctions = eventMap.get(eventClass)
-      eventMap.put(eventClass, oldEventFunctions.filterNot(_ eq eventFunction))
+    if (eventMap.containsKey(eventType)) {
+      val oldEventFunctions = eventMap.get(eventType)
+      eventMap.put(eventType, oldEventFunctions.filterNot(_ eq eventFunction))
     }
   }
 }

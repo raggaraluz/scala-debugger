@@ -1,7 +1,7 @@
 package com.senkbeil.debugger
 
 import com.senkbeil.Main
-import com.senkbeil.debugger.events.LoopingTaskRunner
+import com.senkbeil.debugger.events.{EventType, LoopingTaskRunner}
 import com.senkbeil.debugger.jdi.JDILoader
 import com.senkbeil.utils.LogLike
 import com.senkbeil.debugger.wrappers._
@@ -75,8 +75,7 @@ class ListeningDebugger(address: String, port: Int)
         val (virtualMachine, scalaVirtualMachine) = virtualMachines.last
 
         val virtualMachineName = virtualMachine.name()
-        scalaVirtualMachine.eventManager
-          .addEventHandler(classOf[VMStartEvent], (ev) => {
+        scalaVirtualMachine.eventManager.addEventHandler(EventType.VMStartEventType, (ev) => {
           println("CONNECTED!!!")
           logger.debug(s"($virtualMachineName) Connected!")
 
@@ -92,17 +91,17 @@ class ListeningDebugger(address: String, port: Int)
             scalaVirtualMachine.commandLineArguments.mkString(","))
         })
 
-        scalaVirtualMachine.eventManager.addEventHandler(classOf[VMDisconnectEvent], (_) => {
+        scalaVirtualMachine.eventManager.addEventHandler(EventType.VMDisconnectEventType, (_) => {
           logger.debug(s"($virtualMachineName) Disconnected!")
           virtualMachines = virtualMachines diff List(virtualMachine)
         })
 
-        scalaVirtualMachine.eventManager.addEventHandler(classOf[ClassPrepareEvent], (e) => {
+        scalaVirtualMachine.eventManager.addEventHandler(EventType.ClassPrepareEventType, (e) => {
           val ev = e.asInstanceOf[ClassPrepareEvent]
           logger.debug(s"($virtualMachineName) New class: ${ev.referenceType().name()}")
         })
 
-        scalaVirtualMachine.eventManager.addEventHandler(classOf[BreakpointEvent], (e) => {
+        scalaVirtualMachine.eventManager.addEventHandler(EventType.BreakpointEventType, (e) => {
           val ev = e.asInstanceOf[BreakpointEvent]
           logger.debug(s"Hit breakpoint at location: ${ev.location()}")
 

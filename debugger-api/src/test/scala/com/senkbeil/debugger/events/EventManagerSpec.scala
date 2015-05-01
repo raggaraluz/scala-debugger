@@ -1,11 +1,12 @@
 package com.senkbeil.debugger.events
 
 import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.{Event, EventSet, EventQueue}
+import com.sun.jdi.event.{VMStartEvent, Event, EventSet, EventQueue}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
 
 import scala.util.Try
+import EventType._
 
 class EventManagerSpec extends FunSpec with Matchers with MockFactory
   with OneInstancePerTest
@@ -58,11 +59,14 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
         }
 
         it("should iterate through each event and execute the associated handlers") {
-          val mockEvent = mock[Event]
+          // Use specific type such that EventType.eventToEventType works
+          val eventType = VMStartEventType
+          val mockEvent = mock[VMStartEvent]
+
           var addTaskFunction: Option[() => Any] = None
           var isInvoked = false
 
-          eventManager.addEventHandler(mockEvent.getClass, (event) => {
+          eventManager.addEventHandler(eventType, (event) => {
             isInvoked = true
           })
 
@@ -106,13 +110,14 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
         }
 
         it("should not invoke a handler not associated with the event") {
+          val stubEventType = stub[EventType]
           val mockEvent = mock[Event]
           var addTaskFunction: Option[() => Any] = None
           var isInvoked = false
 
           trait OtherEvent extends Event
 
-          eventManager.addEventHandler(classOf[OtherEvent], (event) => {
+          eventManager.addEventHandler(stubEventType, (event) => {
             isInvoked = true
           })
 
@@ -177,35 +182,74 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
 
     describe("#addEventHandler") {
       it("should add to the existing collection of handlers") {
-        fail()
+        val totalHandlers = 3
+        val stubEventType = stub[EventType]
+
+        val eventHandlers = (1 to totalHandlers)
+          .map(_ => stub[EventManager#EventFunction])
+
+        eventHandlers.foreach { eventHandler =>
+          eventManager.addEventHandler(stubEventType, eventHandler)
+        }
+
+        eventManager.getEventHandlers(stubEventType) should
+          contain theSameElementsAs eventHandlers
       }
 
-      it("should become the first handler if no others exist for the class") {
-        fail()
+      it("should become the first handler if no others exist for the event type") {
+        val stubEventType = stub[EventType]
+        val eventHandler = stub[EventManager#EventFunction]
+
+        eventManager.addEventHandler(stubEventType, eventHandler)
+
+        eventManager.getEventHandlers(stubEventType) should have length 1
+        eventManager.getEventHandlers(stubEventType) should
+          contain (eventHandler)
       }
     }
 
     describe("#getEventHandlers") {
       it("should return a collection of event handlers for the specific class") {
         val totalEventFunctions = 7
+        val stubEventType = stub[EventType]
 
         (1 to totalEventFunctions).foreach(_ =>
-          eventManager.addEventHandler(classOf[Event], (_) => {}))
+          eventManager.addEventHandler(stubEventType, (_) => {}))
 
         // TODO: This is not working because eventMap.contains(class) is false
         //       even though eventMap.get(class) returns list
-        eventManager.getEventHandlers(classOf[Event]) should
+        eventManager.getEventHandlers(stubEventType) should
           have length totalEventFunctions
       }
 
       it("should return an empty collection if the class is not registered") {
-        eventManager.getEventHandlers(classOf[Event]) should be (empty)
+        eventManager.getEventHandlers(stub[EventType]) should be (empty)
       }
     }
 
     describe("#removeEventHandler") {
-      it("should remove the handler if it exists for the specific class") {
-        fail()
+      it("should do nothing if the function is not found in the list of handlers") {
+        val stubEventType = stub[EventType]
+        val stubEventHandler = stub[EventManager#EventFunction]
+
+        eventManager.getEventHandlers(stubEventType) should be (empty)
+
+        eventManager.removeEventHandler(stubEventType, stubEventHandler)
+
+        eventManager.getEventHandlers(stubEventType) should be (empty)
+      }
+
+      it("should remove the handler if it exists for the specific event type") {
+        val stubEventType = stub[EventType]
+        val stubEventHandler = stub[EventManager#EventFunction]
+
+        eventManager.addEventHandler(stubEventType, stubEventHandler)
+        eventManager.getEventHandlers(stubEventType) should
+          contain (stubEventHandler)
+
+        eventManager.removeEventHandler(stubEventType, stubEventHandler)
+        eventManager.getEventHandlers(stubEventType) should
+          not contain stubEventHandler
       }
     }
   }
