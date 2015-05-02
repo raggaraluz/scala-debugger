@@ -7,6 +7,19 @@ import com.sun.jdi.{Location, ReferenceType, VirtualMachine}
 import scala.collection.JavaConverters._
 import scala.util.Try
 
+import ClassManager._
+
+/**
+ * Represents the container for constants used in the class manager.
+ */
+object ClassManager {
+  /** Used as the "file name" for classes with no 'file' that match arrays. */
+  val DefaultArrayGroupName = "ARRAY"
+
+  /** Used as the "file name" for classes with no 'file' that match nothing. */
+  val DefaultUnknownGroupName = "UNKNOWN"
+}
+
 /**
  * Represents a manager of classes available on the virtual machine and their
  * associated files.
@@ -19,9 +32,6 @@ class ClassManager(
   protected val _virtualMachine: VirtualMachine,
   loadClasses: Boolean = true
 ) extends JDIHelperMethods with LogLike {
-  private val DefaultArrayGroupName = "ARRAY"
-  private val DefaultUnknownGroupName = "UNKNOWN"
-
   /** Mapping of file names to associated classes. */
   private var fileToClasses: Map[String, Seq[ReferenceType]] = Map()
 

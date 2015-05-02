@@ -155,31 +155,57 @@ trait JDIMockHelpers { self: MockFactory =>
   ): ReferenceType = {
     val stubReferenceType = stub[ReferenceType]
 
-    (stubReferenceType.name _).when()
-      .returns(java.util.UUID.randomUUID().toString)
-
-    (stubReferenceType.sourcePaths _).when(*).returns(
-      Seq(java.util.UUID.randomUUID().toString + "." + extension).asJava
+    val name = java.util.UUID.randomUUID().toString
+    val sourcePaths = Seq(
+      java.util.UUID.randomUUID().toString + "." + extension
     )
 
+    var locations: Seq[Location] = Nil
+    var throwExceptionForLocations = false
     if (totalLocations > 0) {
-      (stubReferenceType.allLineLocations: Function0[java.util.List[Location]])
-        .when().returns((1 to totalLocations).map(_ => createRandomLocationStub()).asJava)
+      locations = (1 to totalLocations).map(_ => createRandomLocationStub())
     } else if (totalLocations == 0) {
-      (stubReferenceType.allLineLocations: Function0[java.util.List[Location]])
-        .when().returns(Seq[Location]().asJava)
+      locations = Nil
     } else {
-      (stubReferenceType.allLineLocations: Function0[java.util.List[Location]])
-        .when().throws(new Throwable)
+      locations = Nil
+      throwExceptionForLocations = true
     }
+
+    createReferenceTypeStub(
+      name = name,
+      sourcePaths = sourcePaths,
+      locations = locations,
+      throwExceptionForLocations = throwExceptionForLocations
+    )
+  }
+
+  def createReferenceTypeStub(
+    name: String,
+    sourcePaths: Seq[String],
+    locations: Seq[Location],
+    throwExceptionForLocations: Boolean = false
+  ): ReferenceType = {
+    val stubReferenceType = stub[ReferenceType]
+
+    (stubReferenceType.name _).when().returns(name)
+    (stubReferenceType.sourcePaths _).when(*).returns(sourcePaths.asJava)
+    (stubReferenceType.allLineLocations: Function0[java.util.List[Location]])
+      .when().returns(locations.asJava)
 
     stubReferenceType
   }
 
   def createRandomLocationStub(): Location = {
+    createLocationStub(random.nextInt())
+  }
+
+  def createLocationStub(lineNumber: Int, throwException: Boolean = false): Location = {
     val stubLocation = stub[Location]
 
-    (stubLocation.lineNumber: Function0[Int]).when().returns(random.nextInt())
+    if (!throwException)
+      (stubLocation.lineNumber: Function0[Int]).when().returns(lineNumber)
+    else
+      (stubLocation.lineNumber: Function0[Int]).when().throws(new Throwable)
 
     stubLocation
   }

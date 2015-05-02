@@ -1,6 +1,6 @@
 package com.senkbeil.debugger.classes
 
-import com.sun.jdi.{ReferenceType, VirtualMachine}
+import com.sun.jdi.{Location, ReferenceType, VirtualMachine}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers, OneInstancePerTest}
 import test.JDIMockHelpers
@@ -22,14 +22,21 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
   }
 
   private val stubVirtualMachine = stub[VirtualMachine]
-  (stubVirtualMachine.allClasses _).when().returns(stubReferenceTypes.asJava)
 
   private val classManager =
-    new ClassManager(stubVirtualMachine, loadClasses = true)
+    new ClassManager(stubVirtualMachine, loadClasses = false)
 
   describe("ClassManager") {
     describe("constructor") {
       it("should refresh the class listing if told to load classes") {
+        // Set up the virtual machine to return the generated classes
+        (stubVirtualMachine.allClasses _).when()
+          .returns(stubReferenceTypes.asJava)
+
+        // Create a class manager that automatically loads classes
+        val classManager =
+          new ClassManager(stubVirtualMachine, loadClasses = true)
+
         classManager.allFileNames should contain theSameElementsAs
           stubReferenceTypes.map(_.sourcePaths("").asScala.head)
       }
@@ -44,20 +51,56 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
 
     describe("#linesAndLocationsForFile") {
       it("should return a map containing lines and associated locations for the file") {
-        val referenceType = stubReferenceTypes.head
-        val fileName = referenceType.sourcePaths("STUBBED").asScala.head
+        val fileName = "test.scala"
+        val locations = Seq(
+          createRandomLocationStub(),
+          createRandomLocationStub(),
+          createRandomLocationStub()
+        )
 
-        val expected =
-          referenceType.allLineLocations().asScala.groupBy(_.lineNumber())
+        // Create our class with two locations
+        val stubReferenceType = createReferenceTypeStub(
+          name = "some reference type",
+          sourcePaths = Seq(fileName),
+          locations = locations
+        )
+
+        // Set up the virtual machine to return that class
+        (stubVirtualMachine.allClasses _).when()
+          .returns(Seq(stubReferenceType).asJava)
+
+        // Load our classes
+        classManager.refreshAllClasses()
+
+        val expected = locations.groupBy(_.lineNumber())
         val actual = classManager.linesAndLocationsForFile(fileName)
 
         actual should contain theSameElementsAs expected
       }
 
       it("should not include locations whose line numbers cannot be retrieved") {
-        // TODO: Should use static data like line 1, 2, 3, 4 and file1, file2,
-        //       etc to test without doing things like groupBy above
-        fail()
+        val fileName = "test.scala"
+        val goodLocation = createLocationStub(3, throwException = false)
+        val badLocation = createLocationStub(4, throwException = true)
+
+        // Create our class with two locations
+        val stubReferenceType = createReferenceTypeStub(
+          name = "some reference type",
+          sourcePaths = Seq(fileName),
+          locations = Seq(goodLocation, badLocation)
+        )
+
+        // Set up the virtual machine to return that class
+        (stubVirtualMachine.allClasses _).when()
+          .returns(Seq(stubReferenceType).asJava)
+
+        // Load our classes
+        classManager.refreshAllClasses()
+
+        val expected = Seq(goodLocation).groupBy(_.lineNumber())
+        val actual = classManager.linesAndLocationsForFile(fileName)
+
+        actual should contain theSameElementsAs expected
       }
 
       it("should throw an exception if the file is not found in the cache") {
@@ -68,30 +111,297 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
     }
 
     describe("#underlyingReferencesFor") {
-      it("should return a collection of reference types matching the class found in the cache") {
-        fail()
+      it("should return a collection of reference types matching the filename found in the cache") {
+        val fileName = "test.scala"
+
+        // Create our classes with file name
+        val stubReferenceTypes = Seq(
+          createReferenceTypeStub(
+            name = "some reference type",
+            sourcePaths = Seq(fileName),
+            locations = Nil
+          ),
+          createReferenceTypeStub(
+            name = "some other reference type",
+            sourcePaths = Seq(fileName),
+            locations = Nil
+          )
+        )
+
+        // Set up the virtual machine to return the classes
+        (stubVirtualMachine.allClasses _).when()
+          .returns(stubReferenceTypes.asJava)
+
+        // Load the classes into the manager
+        classManager.refreshAllClasses()
+
+        // Verify that we have the classes available
+        classManager.underlyingReferencesForFile(fileName) should
+          contain theSameElementsAs stubReferenceTypes
       }
 
-      it("should throw an exception if the class is not found in the cache") {
-        fail()
+      it("should throw an exception if the filename is not found in the cache") {
+        intercept[IllegalArgumentException] {
+          classManager.underlyingReferencesForFile("does not exist")
+        }
       }
     }
 
-    describe("#allClassNames") {
-      it("should refresh the classes and references") {
-        fail()
+    describe("#refreshAllClasses") {
+      it("should group classes by file name") {
+        val referencesPerFile = 3
+        val fileNames = Seq(
+          "test1.scala",
+          "test2.scala",
+          "test3.scala"
+        )
+
+        // Create our classes with file names
+        val filesToReferences = fileNames.map { fileName =>
+          fileName -> (1 to referencesPerFile).map { i =>
+            createReferenceTypeStub(
+              name = "stub" + i,
+              sourcePaths = Seq(fileName),
+              locations = Nil
+            )
+          }
+        }.toMap
+        val stubReferenceTypes = filesToReferences.values.flatten.toSeq
+
+        // Set up the virtual machine to return the classes
+        (stubVirtualMachine.allClasses _).when()
+          .returns(stubReferenceTypes.asJava)
+
+        // Load the classes into the manager
+        classManager.refreshAllClasses()
+
+        // Verify that we have the classes grouped by file name
+        fileNames.foreach { fileName =>
+          val expected = filesToReferences(fileName)
+          val actual = classManager.underlyingReferencesForFile(fileName)
+
+          actual should contain theSameElementsAs (expected)
+        }
       }
 
-      it("should not refresh the classes and references if refresh == false") {
-        fail()
+      it("should group arrays into the array group") {
+        val referencesPerFile = 3
+        val fileNames = Seq(
+          "test1.scala",
+          "test2.scala",
+          "test3.scala"
+        )
+
+        // Create our classes with file names
+        val filesToReferences = fileNames.map { fileName =>
+          fileName -> (1 to referencesPerFile).map { i =>
+            createReferenceTypeStub(
+              name = "stub" + i,
+              sourcePaths = Seq(fileName),
+              locations = Nil
+            )
+          }
+        }.toMap
+        val arrayReferences = Seq(
+          createReferenceTypeStub("array1[]", Seq("a", "b"), Nil),
+          createReferenceTypeStub("array2[]", Seq("a", "b"), Nil)
+        )
+        val stubReferenceTypes =
+          filesToReferences.values.flatten.toSeq ++ arrayReferences
+
+        // Set up the virtual machine to return the classes
+        (stubVirtualMachine.allClasses _).when()
+          .returns(stubReferenceTypes.asJava)
+
+        // Load the classes into the manager
+        classManager.refreshAllClasses()
+
+        // Verify that we have the classes grouped by file name
+        val expected = arrayReferences
+        val actual = classManager
+          .underlyingReferencesForFile(ClassManager.DefaultArrayGroupName)
+
+        actual should contain theSameElementsAs expected
       }
 
-      it("should retrieve only Scala classes") {
-        fail()
-      }
+      it("should group unknown classes (no file name and not array) into unknown") {
+        val referencesPerFile = 3
+        val fileNames = Seq(
+          "test1.scala",
+          "test2.scala",
+          "test3.scala"
+        )
 
-      it("should return a collection of Scala class names") {
-        fail()
+        // Create our classes with file names
+        val filesToReferences = fileNames.map { fileName =>
+          fileName -> (1 to referencesPerFile).map { i =>
+            createReferenceTypeStub(
+              name = "stub" + i,
+              sourcePaths = Seq(fileName),
+              locations = Nil
+            )
+          }
+        }.toMap
+        val unknownReferences = Seq(
+          createReferenceTypeStub("???1", Seq("a", "b"), Nil),
+          createReferenceTypeStub("???2", Seq("a", "b"), Nil)
+        )
+        val stubReferenceTypes =
+          filesToReferences.values.flatten.toSeq ++ unknownReferences
+
+        // Set up the virtual machine to return the classes
+        (stubVirtualMachine.allClasses _).when()
+          .returns(stubReferenceTypes.asJava)
+
+        // Load the classes into the manager
+        classManager.refreshAllClasses()
+
+        // Verify that we have the classes grouped by file name
+        val expected = unknownReferences
+        val actual = classManager
+          .underlyingReferencesForFile(ClassManager.DefaultUnknownGroupName)
+
+        actual should contain theSameElementsAs expected
+      }
+    }
+
+    describe("#allScalaFileNames") {
+      it("should return all file names that have .scala as the extension") {
+        val totalFileNamesPerExtension = 3
+        val scalaFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".scala")
+        val javaFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".java")
+        val extFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".myExt")
+        val otherFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".asdf")
+        val fileNames =
+          scalaFileNames ++ javaFileNames ++ extFileNames ++ otherFileNames
+
+        val stubReferenceTypes = fileNames.map { fileName =>
+          createReferenceTypeStub(
+            name = "stub",
+            sourcePaths = Seq(fileName),
+            locations = Nil
+          )
+        }
+
+        // Set up the virtual machine to return the classes
+        (stubVirtualMachine.allClasses _).when()
+          .returns(stubReferenceTypes.asJava)
+
+        // Load the classes into the manager
+        classManager.refreshAllClasses()
+
+        // Verify we have the right file names
+        classManager.allScalaFileNames should
+          contain theSameElementsAs scalaFileNames
+      }
+    }
+
+    describe("#allJavaFileNames") {
+      it("should return all file names that have .java as the extension") {
+        val totalFileNamesPerExtension = 3
+        val scalaFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".scala")
+        val javaFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".java")
+        val extFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".myExt")
+        val otherFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".asdf")
+        val fileNames =
+          scalaFileNames ++ javaFileNames ++ extFileNames ++ otherFileNames
+
+        val stubReferenceTypes = fileNames.map { fileName =>
+          createReferenceTypeStub(
+            name = "stub",
+            sourcePaths = Seq(fileName),
+            locations = Nil
+          )
+        }
+
+        // Set up the virtual machine to return the classes
+        (stubVirtualMachine.allClasses _).when()
+          .returns(stubReferenceTypes.asJava)
+
+        // Load the classes into the manager
+        classManager.refreshAllClasses()
+
+        // Verify we have the right file names
+        classManager.allJavaFileNames should
+          contain theSameElementsAs javaFileNames
+      }
+    }
+
+    describe("#allFileNamesWithExtension") {
+      it("should return all file names that have the specified extension") {
+        val totalFileNamesPerExtension = 3
+        val scalaFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".scala")
+        val javaFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".java")
+        val extFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".myExt")
+        val otherFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".asdf")
+        val fileNames =
+          scalaFileNames ++ javaFileNames ++ extFileNames ++ otherFileNames
+
+        val stubReferenceTypes = fileNames.map { fileName =>
+          createReferenceTypeStub(
+            name = "stub",
+            sourcePaths = Seq(fileName),
+            locations = Nil
+          )
+        }
+
+        // Set up the virtual machine to return the classes
+        (stubVirtualMachine.allClasses _).when()
+          .returns(stubReferenceTypes.asJava)
+
+        // Load the classes into the manager
+        classManager.refreshAllClasses()
+
+        // Verify we have the right file names
+        classManager.allFileNamesWithExtension("myExt") should
+          contain theSameElementsAs extFileNames
+      }
+    }
+
+    describe("#allFileNames") {
+      it("should return all file names") {
+        val totalFileNamesPerExtension = 3
+        val scalaFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".scala")
+        val javaFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".java")
+        val extFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".myExt")
+        val otherFileNames = (1 to totalFileNamesPerExtension)
+          .map("test" + _ + ".asdf")
+        val fileNames =
+          scalaFileNames ++ javaFileNames ++ extFileNames ++ otherFileNames
+
+        val stubReferenceTypes = fileNames.map { fileName =>
+          createReferenceTypeStub(
+            name = "stub",
+            sourcePaths = Seq(fileName),
+            locations = Nil
+          )
+        }
+
+        // Set up the virtual machine to return the classes
+        (stubVirtualMachine.allClasses _).when()
+          .returns(stubReferenceTypes.asJava)
+
+        // Load the classes into the manager
+        classManager.refreshAllClasses()
+
+        // Verify we have the right file names
+        classManager.allFileNames should
+          contain theSameElementsAs fileNames
       }
     }
   }
