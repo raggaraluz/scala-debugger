@@ -38,11 +38,12 @@ class BreakpointManager(
     fileName: String,
     lineNumber: Int,
     enabled: Boolean = true,
-    suspendPolicy: Int = EventRequest.SUSPEND_ALL): Boolean = {
+    suspendPolicy: Int = EventRequest.SUSPEND_ALL
+  ): Boolean = {
     // Retrieve the available locations for the specified line
     val locations = {
       val linesAndLocations = _classManager.linesAndLocationsForFile(fileName)
-      require(linesAndLocations.contains(lineNumber),
+      assert(linesAndLocations.contains(lineNumber),
         s"$lineNumber is not an available line for $fileName!")
 
       linesAndLocations(lineNumber)

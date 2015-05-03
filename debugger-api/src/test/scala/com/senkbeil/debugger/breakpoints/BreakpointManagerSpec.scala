@@ -1,18 +1,51 @@
 package com.senkbeil.debugger.breakpoints
 
+import com.senkbeil.debugger.classes.ClassManager
+import com.sun.jdi.VirtualMachine
+import com.sun.jdi.request.EventRequestManager
+import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 
 class BreakpointManagerSpec extends FunSpec with Matchers
-  with OneInstancePerTest
+  with OneInstancePerTest with MockFactory
 {
+  private val mockEventRequestManager = mock[EventRequestManager]
+  private val stubVirtualMachine = stub[VirtualMachine]
+  (stubVirtualMachine.eventRequestManager _).when()
+    .returns(mockEventRequestManager)
+
+  // NOTE: Needed until https://github.com/paulbutcher/ScalaMock/issues/56
+  class ZeroArgClassManager
+    extends ClassManager(stubVirtualMachine, loadClasses = false)
+  private val mockClassManager = mock[ZeroArgClassManager]
+
+  private val breakpointManager = new BreakpointManager(
+    stubVirtualMachine,
+    mockClassManager
+  )
+
   describe("BreakpointManager") {
     describe("#breakpointList") {
       it("should return a collection of breakpoint file names and lines") {
-        fail()
+        val expected = Seq(("file", 1), ("file", 2))
+
+        expected.foreach(b => breakpointManager.setLineBreakpoint(b._1, b._2))
+
+        val actual = breakpointManager.breakpointList
+
+        actual should contain theSameElementsAs expected
+      }
+
+      it("should return an empty collection if no breakpoints have been set") {
+        breakpointManager.breakpointList should be (empty)
       }
     }
 
     describe("#setLineBreakpoint") {
+      it("should throw an exception if the file is not available") {
+        fail()
+      }
+
       it("should throw an exception if the line is not available") {
         fail()
       }
