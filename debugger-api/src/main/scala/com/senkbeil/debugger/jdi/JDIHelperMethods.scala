@@ -54,20 +54,17 @@ trait JDIHelperMethods extends LogLike {
   /**
    * Retrieves the convergent source path of the provided reference type.
    *
-   * @example package.SomeClass$ will return package.SomeClass
-   *
    * @param referenceType The reference instance whose source path to determine
    *
-   * @throws AssertionError If the source paths for the reference type are not
-   *                        convergent (basically, not the same)
-   *
-   * @return The source path as a string
+   * @return Some source path as a string if convergent, otherwise None
    */
-  protected def sourcePath(referenceType: ReferenceType): String = {
+  protected def singleSourcePath(
+    referenceType: ReferenceType
+  ): Option[String] = {
     val sourcePaths =
       referenceType.sourcePaths(_virtualMachine.getDefaultStratum).asScala
 
-    val sourcePath = sourcePaths.foldLeft(sourcePaths.head) {
+    val sourcePath = Try(sourcePaths.foldLeft(sourcePaths.head) {
       case (a, b) =>
         // If we have different paths, there is no way to determine a full
         // original class name
@@ -75,8 +72,8 @@ trait JDIHelperMethods extends LogLike {
 
         // Should all be the same
         b
-    }
+    })
 
-    sourcePath
+    sourcePath.toOption
   }
 }

@@ -34,12 +34,12 @@ class JDIHelperMethodsSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#fullOriginalClassName") {
-      it("should get the original class name of the reference object") {
+    describe("#sourcePath") {
+      it("should return a single source path if all source paths for the reference type are the same") {
         fail()
       }
 
-      it("should throw an exception if the refrence object comes from multiple sources") {
+      it("should return None if the reference type comes from multiple sources") {
         fail()
       }
     }

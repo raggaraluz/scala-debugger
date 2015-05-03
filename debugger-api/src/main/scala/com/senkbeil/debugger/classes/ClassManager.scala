@@ -91,7 +91,7 @@ class ClassManager(
   def refreshAllClasses(): ClassManager = {
     fileToClasses = _virtualMachine.allClasses().asScala
       .groupBy { referenceType =>
-        Try(sourcePath(referenceType)).getOrElse(
+        singleSourcePath(referenceType).getOrElse(
           if (referenceType.name().endsWith("[]")) DefaultArrayGroupName
           else DefaultUnknownGroupName
         )
