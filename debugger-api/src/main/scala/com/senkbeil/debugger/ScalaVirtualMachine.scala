@@ -45,7 +45,7 @@ class ScalaVirtualMachine(
    * @return The name as a string
    */
   lazy val mainClassName: String = {
-    val mainThread = findMainThread()
+    val mainThread = findMainThread().get
 
     // TODO: Investigate if necessary to suspend entire virtual machine or
     //       just the main thread
@@ -94,7 +94,7 @@ class ScalaVirtualMachine(
     }
 
     // Get the main thread of execution
-    val mainThread = findMainThread()
+    val mainThread = findMainThread().get
 
     // TODO: Investigate if necessary to suspend entire virtual machine or
     //       just the main thread

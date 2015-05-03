@@ -36,9 +36,10 @@ trait JDIHelperMethods extends LogLike {
   /**
    * Determines the main executing thread of the _virtualMachine instance.
    *
-   * @return The reference to the main thread
+   * @return Some reference to the main thread if it can be determined,
+   *         otherwise None
    */
-  protected def findMainThread(): ThreadReference =
+  protected def findMainThread(): Option[ThreadReference] =
     findMainThread(_virtualMachine)
 
   /**
@@ -46,10 +47,13 @@ trait JDIHelperMethods extends LogLike {
    *
    * @param virtualMachine The virtual machine whose main thread to determine
    *
-   * @return The reference to the main thread
+   * @return Some reference to the main thread if it can be determined,
+   *         otherwise None
    */
-  protected def findMainThread(virtualMachine: VirtualMachine) =
-    virtualMachine.allThreads().asScala.find(_.name() == "main").get
+  protected def findMainThread(
+    virtualMachine: VirtualMachine
+  ): Option[ThreadReference] =
+    virtualMachine.allThreads().asScala.find(_.name() == "main")
 
   /**
    * Retrieves the convergent source path of the provided reference type.
