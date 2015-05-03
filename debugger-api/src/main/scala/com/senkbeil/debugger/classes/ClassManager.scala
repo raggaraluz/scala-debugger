@@ -101,7 +101,7 @@ class ClassManager(
   }
 
   /**
-   * Retrieves a list of available Scala file names.
+   * Retrieves a list of available (cached) Scala file names.
    *
    * @return The collection of file names
    */
@@ -109,7 +109,7 @@ class ClassManager(
     allFileNamesWithExtension("scala")
 
   /**
-   * Retrieves a list of available Java file names.
+   * Retrieves a list of available (cached) Java file names.
    *
    * @return The collection of file names
    */
@@ -117,7 +117,8 @@ class ClassManager(
     allFileNamesWithExtension("java")
 
   /**
-   * Retrieves a list of available file names with the provided extension.
+   * Retrieves a list of available (cached) file names with the provided
+   * extension.
    *
    * @param extension The extension of the file names (Scala/Java/etc)
    *
@@ -127,11 +128,18 @@ class ClassManager(
       allFileNames.filter(_.endsWith(extension))
 
   /**
-   * Retrieves a list of all available file names.
+   * Retrieves a list of all available (cached) file names.
    *
    * @return The collection of file names
    */
   def allFileNames: Seq[String] = fileToClasses.keys.toSeq
+
+  /**
+   * Retrieves a list of all available (cached) classes.
+   *
+   * @return The collection of reference types
+   */
+  def allClasses: Seq[ReferenceType] = fileToClasses.values.toSeq.flatten
 
   // ==========================================================================
   // = CONSTRUCTOR

@@ -114,8 +114,7 @@ class JDILoader(
       Class.forName(rootJdiClass, false, classLoader)
 
       true
-    }
-    catch {
+    } catch {
       case _: ClassNotFoundException => false
       case ex: Throwable => throw ex
     }

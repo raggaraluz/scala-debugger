@@ -402,5 +402,20 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
           contain theSameElementsAs fileNames
       }
     }
+
+    describe("#allClasses") {
+      it("should return a collection of all available reference types") {
+        // Set up the virtual machine to return the classes
+        (stubVirtualMachine.allClasses _).when()
+          .returns(stubReferenceTypes.asJava)
+
+        // Load the classes into the manager
+        classManager.refreshAllClasses()
+
+        // Verify we have the same reference types
+        classManager.allClasses should
+          contain theSameElementsAs stubReferenceTypes
+      }
+    }
   }
 }
