@@ -3,7 +3,6 @@ package com.senkbeil.debugger
 import com.senkbeil.debugger.breakpoints.BreakpointManager
 import com.senkbeil.debugger.classes.ClassManager
 import com.senkbeil.debugger.events.{LoopingTaskRunner, EventManager}
-import com.senkbeil.debugger.fields.FieldManager
 import com.senkbeil.debugger.jdi.JDIHelperMethods
 import com.senkbeil.utils.LogLike
 import com.sun.jdi._
@@ -25,8 +24,6 @@ class ScalaVirtualMachine(
     new ClassManager(_virtualMachine, loadClasses = true)
   lazy val breakpointManager =
     new BreakpointManager(_virtualMachine, classManager)
-  lazy val fieldManager =
-    new FieldManager(_virtualMachine, classManager)
   lazy val eventManager =
     new EventManager(_virtualMachine, loopingTaskRunner)
 
@@ -35,10 +32,11 @@ class ScalaVirtualMachine(
    *
    * @param fileName The name of the file whose lines to retrieve
    *
-   * @return The list of breakpointable lines
+   * @return Some list of breakpointable lines if the file exists, otherwise
+   *         None
    */
-  def availableLinesForFile(fileName: String): Seq[Int] =
-    classManager.linesAndLocationsForFile(fileName).keys.toSeq.sorted
+  def availableLinesForFile(fileName: String): Option[Seq[Int]] =
+    classManager.linesAndLocationsForFile(fileName).map(_.keys.toSeq.sorted)
 
   /**
    * Represents the fully-qualified class name that invoked the main method of

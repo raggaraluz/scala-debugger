@@ -41,10 +41,12 @@ class ClassManager(
    * @param fileName The name of the file whose lines and underlying
    *                  locations to retrieve
    *
-   * @return The mapping of file lines to associated locations in underlying
-   *         JVM classes
+   * @return Some mapping of file lines to associated locations in underlying
+   *         JVM classes if the file exists, otherwise None
    */
-  def linesAndLocationsForFile(fileName: String): Map[Int, Seq[Location]] = {
+  def linesAndLocationsForFile(
+    fileName: String
+  ): Option[Map[Int, Seq[Location]]] = {
     /**
      * Retrieve the available locations for the specified reference type.
      *
@@ -59,10 +61,12 @@ class ClassManager(
     }
 
     // Combine all lines for underlying reference types together
-    underlyingReferencesForFile(fileName)
-      .map(linesForReferenceType)
-      .reduce(_ ++ _)
-      .groupBy(_.lineNumber())
+    underlyingReferencesForFile(fileName).map { referenceTypes =>
+      referenceTypes
+        .map(linesForReferenceType)
+        .reduce(_ ++ _)
+        .groupBy(_.lineNumber())
+    }
   }
 
   /**
@@ -71,13 +75,12 @@ class ClassManager(
    * @param fileName The name of the file whose underlying representations
    *                  to retrieve
    *
-   * @return The list of underlying class references
+   * @return Some list of underlying class references if the file name can
+   *         be found, otherwise None
    */
-  def underlyingReferencesForFile(fileName: String): Seq[ReferenceType] = {
-    require(allFileNames.contains(fileName), s"$fileName not found!")
-
-    fileToClasses(fileName)
-  }
+  def underlyingReferencesForFile(
+    fileName: String
+  ): Option[Seq[ReferenceType]] = fileToClasses.get(fileName)
 
   /**
    * Refresh the list of classes contained by the underlying virtual machine.

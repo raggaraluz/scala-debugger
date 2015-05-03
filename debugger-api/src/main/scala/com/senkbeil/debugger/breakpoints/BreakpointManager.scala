@@ -41,13 +41,13 @@ class BreakpointManager(
     suspendPolicy: Int = EventRequest.SUSPEND_ALL
   ): Boolean = {
     // Retrieve the available locations for the specified line
-    val locations = {
-      val linesAndLocations = _classManager.linesAndLocationsForFile(fileName)
-      assert(linesAndLocations.contains(lineNumber),
-        s"$lineNumber is not an available line for $fileName!")
+    val locations = _classManager
+      .linesAndLocationsForFile(fileName)
+      .flatMap(_.get(lineNumber))
+      .getOrElse(Nil)
 
-      linesAndLocations(lineNumber)
-    }
+    // Exit early if no locations are available
+    if (locations.isEmpty) return false
 
     // TODO: Investigate what level of suspension we need (the entire VM?) and
     //       what code within this block actually needs the suspension
@@ -58,6 +58,7 @@ class BreakpointManager(
       val key: BreakpointBundleKey = (fileName, lineNumber)
 
       // Build our bundle of breakpoints
+      // TODO: Need to undo this if creating a request failed
       val breakpointBundle = new BreakpointBundle(
         locations.map(eventRequestManager.createBreakpointRequest)
       )
@@ -98,11 +99,13 @@ class BreakpointManager(
    * @param fileName The name of the file whose line to reference
    * @param lineNumber The number of the line to check for breakpoints
    *
-   * @return The bundle of breakpoints for the specified line, or an error if
+   * @return Some bundle of breakpoints for the specified line, or None if
    *         the specified line has no breakpoints
    */
-  def getLineBreakpoint(fileName: String, lineNumber: Int): BreakpointBundle =
-    lineBreakpoints((fileName, lineNumber))
+  def getLineBreakpoint(
+    fileName: String,
+    lineNumber: Int
+  ): Option[BreakpointBundle] = lineBreakpoints.get((fileName, lineNumber))
 
   /**
    * Removes the breakpoint on the specified line of the file.

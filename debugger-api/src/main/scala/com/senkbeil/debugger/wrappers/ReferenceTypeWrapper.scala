@@ -1,0 +1,28 @@
+package com.senkbeil.debugger.wrappers
+
+import com.senkbeil.utils.LogLike
+import com.sun.jdi.{Value, Field, ReferenceType}
+import scala.collection.JavaConverters._
+
+import scala.util.Try
+
+/**
+ * Represents a wrapper around a reference type, providing additional methods.
+ *
+ * @param _referenceType The reference type to wrap
+ */
+class ReferenceTypeWrapper(private val _referenceType: ReferenceType)
+  extends LogLike
+{
+  /**
+   * Retrieves the static fields and their values.
+   *
+   * @return The list of static fields and their respective values
+   */
+  def staticFieldsAndValues: Seq[(Field, Value)] =
+    Try(_referenceType.allFields()).map(_.asScala)
+      .getOrElse(Nil)
+      .map(field => (field, Try(_referenceType.getValue(field))))
+      .filter(_._2.isSuccess)
+      .map(t => (t._1, t._2.get))
+}

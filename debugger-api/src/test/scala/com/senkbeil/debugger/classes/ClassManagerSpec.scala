@@ -50,7 +50,7 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
     }
 
     describe("#linesAndLocationsForFile") {
-      it("should return a map containing lines and associated locations for the file") {
+      it("should return Some(map containing lines and associated locations for the file)") {
         val fileName = "test.scala"
         val locations = Seq(
           createRandomLocationStub(),
@@ -73,7 +73,7 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
         classManager.refreshAllClasses()
 
         val expected = locations.groupBy(_.lineNumber())
-        val actual = classManager.linesAndLocationsForFile(fileName)
+        val actual = classManager.linesAndLocationsForFile(fileName).get
 
         actual should contain theSameElementsAs expected
       }
@@ -98,20 +98,18 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
         classManager.refreshAllClasses()
 
         val expected = Seq(goodLocation).groupBy(_.lineNumber())
-        val actual = classManager.linesAndLocationsForFile(fileName)
+        val actual = classManager.linesAndLocationsForFile(fileName).get
 
         actual should contain theSameElementsAs expected
       }
 
-      it("should throw an exception if the file is not found in the cache") {
-        intercept[IllegalArgumentException] {
-          classManager.linesAndLocationsForFile("asdf")
-        }
+      it("should return None if the file is not found in the cache") {
+        classManager.linesAndLocationsForFile("asdf") should be (None)
       }
     }
 
     describe("#underlyingReferencesFor") {
-      it("should return a collection of reference types matching the filename found in the cache") {
+      it("should return Some(collection of reference types matching the filename found in the cache)") {
         val fileName = "test.scala"
 
         // Create our classes with file name
@@ -136,14 +134,13 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
         classManager.refreshAllClasses()
 
         // Verify that we have the classes available
-        classManager.underlyingReferencesForFile(fileName) should
+        classManager.underlyingReferencesForFile(fileName).get should
           contain theSameElementsAs stubReferenceTypes
       }
 
-      it("should throw an exception if the filename is not found in the cache") {
-        intercept[IllegalArgumentException] {
-          classManager.underlyingReferencesForFile("does not exist")
-        }
+      it("should return None if the filename is not found in the cache") {
+        classManager.underlyingReferencesForFile("does not exist") should
+          be (None)
       }
     }
 
@@ -178,7 +175,7 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
         // Verify that we have the classes grouped by file name
         fileNames.foreach { fileName =>
           val expected = filesToReferences(fileName)
-          val actual = classManager.underlyingReferencesForFile(fileName)
+          val actual = classManager.underlyingReferencesForFile(fileName).get
 
           actual should contain theSameElementsAs (expected)
         }
@@ -219,7 +216,7 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
         // Verify that we have the classes grouped by file name
         val expected = arrayReferences
         val actual = classManager
-          .underlyingReferencesForFile(ClassManager.DefaultArrayGroupName)
+          .underlyingReferencesForFile(ClassManager.DefaultArrayGroupName).get
 
         actual should contain theSameElementsAs expected
       }
@@ -260,6 +257,7 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
         val expected = unknownReferences
         val actual = classManager
           .underlyingReferencesForFile(ClassManager.DefaultUnknownGroupName)
+          .get
 
         actual should contain theSameElementsAs expected
       }

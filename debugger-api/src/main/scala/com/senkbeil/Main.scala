@@ -41,10 +41,10 @@ object Main extends App {
           scalaVirtualMachine.breakpointManager
             .setLineBreakpoint(testMainFile, 42)
 
-        val bps = scalaVirtualMachine.breakpointManager
+        val breakpointBundle = scalaVirtualMachine.breakpointManager
           .getLineBreakpoint(testMainFile, 42)
 
-        bps.foreach { bp =>
+        breakpointBundle.foreach { _.foreach { bp =>
           println("CLASS: " + bp.location().declaringType().name())
           println("SOURCE NAME: " + bp.location().sourceName())
           println("SOURCE PATH: " + bp.location().sourcePath())
@@ -57,8 +57,7 @@ object Main extends App {
           println("FULL SOURCE: " + fullSource)
 
           val classObject = bp.location().declaringType().classObject()
-
-        }
+        }}
 
       //      scalaVirtualMachine.breakpointManager
       //        .removeLineBreakpoint(testMainClass, 13)
