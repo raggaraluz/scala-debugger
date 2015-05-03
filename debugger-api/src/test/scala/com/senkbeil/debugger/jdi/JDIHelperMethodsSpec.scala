@@ -11,12 +11,18 @@ class JDIHelperMethodsSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory
 {
   private val mockReferenceType = mock[ReferenceType]
+  private val mockThreadReference = mock[ThreadReference]
   private val mockVirtualMachine = mock[VirtualMachine]
   private class PublicJDIHelperMethods extends JDIHelperMethods {
     override protected val _virtualMachine: VirtualMachine = mockVirtualMachine
 
     override def suspendVirtualMachineAndExecute[T](thunk: => T): Try[T] =
       super.suspendVirtualMachineAndExecute(thunk)
+
+    override def suspendThreadAndExecute[T](
+      threadReference: ThreadReference
+    )(thunk: => T): Try[T] =
+      super.suspendThreadAndExecute(threadReference)(thunk)
 
     override def findMainThread(): Option[ThreadReference] =
       super.findMainThread()
@@ -81,6 +87,68 @@ class JDIHelperMethodsSpec extends FunSpec with Matchers
 
         val actual =
           jdiHelperMethods.suspendVirtualMachineAndExecute(mockCode())
+
+        actual should be (Failure(expected))
+      }
+    }
+
+    describe("#suspendThreadAndExecute") {
+      it("should suspend and then resume the thread reference") {
+        // Should attempt to suspend and then resume the virtual machine
+        inSequence {
+          (mockThreadReference.suspend _).expects().once()
+          (mockThreadReference.resume _).expects().once()
+        }
+
+        jdiHelperMethods.suspendThreadAndExecute(mockThreadReference) {}
+      }
+
+      it("should invoke the code while suspended and resume afterwards") {
+        val mockCode = mockFunction[Unit]
+
+        inSequence {
+          (mockThreadReference.suspend _).expects().once()
+          mockCode.expects().once()
+          (mockThreadReference.resume _).expects().once()
+        }
+
+        jdiHelperMethods.suspendThreadAndExecute(mockThreadReference) {
+          mockCode()
+        }
+      }
+
+      it("should return the result of the code execution wrapped in a try") {
+        val expected = 3
+        val mockCode = mockFunction[Int]
+
+        inSequence {
+          (mockThreadReference.suspend _).expects().once()
+          mockCode.expects().returning(expected).once()
+          (mockThreadReference.resume _).expects().once()
+        }
+
+        val actual =
+          jdiHelperMethods.suspendThreadAndExecute(mockThreadReference) {
+            mockCode()
+          }
+
+        actual should be (Success(expected))
+      }
+
+      it("should wrap the exceptions in a Try when executing the code") {
+        val expected = new Throwable
+        val mockCode = mockFunction[Unit]
+
+        inSequence {
+          (mockThreadReference.suspend _).expects().once()
+          mockCode.expects().throwing(expected).once()
+          (mockThreadReference.resume _).expects().once()
+        }
+
+        val actual =
+          jdiHelperMethods.suspendThreadAndExecute(mockThreadReference) {
+            mockCode()
+          }
 
         actual should be (Failure(expected))
       }

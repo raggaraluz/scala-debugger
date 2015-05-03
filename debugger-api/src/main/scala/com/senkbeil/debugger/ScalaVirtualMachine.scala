@@ -51,15 +51,15 @@ class ScalaVirtualMachine(
     //       just the main thread
     val tryClassName = suspendVirtualMachineAndExecute {
       val mainMethodFrame = mainThread.frames().asScala
-        .find(_.location().method().name() == "main")
+        .map(_.location()).find(_.method().name() == "main")
 
       assert(mainMethodFrame.nonEmpty, "Error locating main method!")
 
-      mainMethodFrame.get.location()
+      mainMethodFrame.get
     }.map(_.declaringType().name())
 
     // Throw our exception if we get one
-    if (tryClassName.isFailure) tryClassName.failed.foreach(ex => throw ex)
+    tryClassName.failed.foreach(ex => throw ex)
 
     // Return the resulting class name
     tryClassName.get
@@ -98,20 +98,25 @@ class ScalaVirtualMachine(
 
     // TODO: Investigate if necessary to suspend entire virtual machine or
     //       just the main thread
-    // Print out command line arguments for connected JVM
-    suspendVirtualMachineAndExecute {
-      mainThread.suspend()
+    // Retrieve command line arguments for connected JVM
+    val tryArguments = suspendVirtualMachineAndExecute {
+      suspendThreadAndExecute(mainThread) {
+        val arguments = mainThread.frames().asScala
+          .find(_.location().method().name() == "main")
+          .map(_.getArgumentValues.asScala.toSeq)
+          .map(processArguments)
 
-      val arguments = mainThread.frames().asScala
-        .find(_.location().method().name() == "main")
-        .map(_.getArgumentValues.asScala.toSeq)
-        .map(processArguments)
-        .getOrElse(Nil)
+        assert(arguments.nonEmpty, "Error locating main method!")
 
-      mainThread.resume()
+        arguments.get
+      }
+    }.flatten
 
-      arguments
-    }.getOrElse(Nil)
+    // Throw our exception if we get one
+    tryArguments.failed.foreach(ex => throw ex)
+
+    // Return the resulting arguments
+    tryArguments.get
   }
 }
 
