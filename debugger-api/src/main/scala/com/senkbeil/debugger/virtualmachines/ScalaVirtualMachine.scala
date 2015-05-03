@@ -1,12 +1,13 @@
-package com.senkbeil.debugger
+package com.senkbeil.debugger.virtualmachines
 
 import com.senkbeil.debugger.breakpoints.BreakpointManager
 import com.senkbeil.debugger.classes.ClassManager
-import com.senkbeil.debugger.events.{LoopingTaskRunner, EventManager}
+import com.senkbeil.debugger.events.{EventManager, LoopingTaskRunner}
 import com.senkbeil.debugger.jdi.JDIHelperMethods
 import com.senkbeil.utils.LogLike
 import com.sun.jdi._
-import collection.JavaConverters._
+
+import scala.collection.JavaConverters._
 
 /**
  * Represents a virtual machine running Scala code.

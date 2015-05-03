@@ -3,6 +3,7 @@ package com.senkbeil.debugger
 import com.senkbeil.Main
 import com.senkbeil.debugger.events.{EventType, LoopingTaskRunner}
 import com.senkbeil.debugger.jdi.JDILoader
+import com.senkbeil.debugger.virtualmachines.ScalaVirtualMachine
 import com.senkbeil.utils.LogLike
 import com.senkbeil.debugger.wrappers._
 import com.sun.jdi.event._
