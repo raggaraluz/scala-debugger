@@ -66,8 +66,8 @@ class JDILoader(
         """.stripMargin.replace("\n", " "))
     }
 
-    // Final check to ensure that it was loaded
-    canJdiBeLoaded()
+    // Final check to ensure that it was loaded into the system class loader
+    canJdiBeLoaded(getSystemClassLoader)
   }
 
   /**
@@ -111,7 +111,7 @@ class JDILoader(
       val rootJdiClass = "com.sun.jdi.Bootstrap"
 
       // Should throw an exception if JDI is not available
-      Class.forName(rootJdiClass, false, classLoader)
+      classForName(rootJdiClass, initialize = false, classLoader = classLoader)
 
       true
     } catch {
@@ -154,7 +154,7 @@ class JDILoader(
    *
    * @return The sequence of potential paths
    */
-  private def findPotentialJdkJarPaths(jarPath: String): Seq[String] = {
+  protected def findPotentialJdkJarPaths(jarPath: String): Seq[String] = {
     // Try to retrieve paths using various means
     val possiblePaths = Seq(
       Try(System.getenv("JDK_HOME")),
@@ -183,7 +183,7 @@ class JDILoader(
    *         false
    */
   private def addUrlToSystemClassLoader(url: URL) = {
-    ClassLoader.getSystemClassLoader match {
+    getSystemClassLoader match {
       case urlClassLoader: URLClassLoader =>
         val addUrlMethod = {
           val method =
@@ -202,4 +202,35 @@ class JDILoader(
       case _ => false
     }
   }
+
+  /**
+   * Attempts to load the specified class.
+   *
+   * @param name The full name of the class to load
+   * @param initialize If true, initializes the class
+   * @param classLoader The class loader to use for loading the class, defaults
+   *                    to the system class loader
+   *
+   * @note Exposed for testing!
+   *
+   * @throws ClassNotFoundException If the class was not found using the
+   *                                class loader or any of its parents
+   *
+   * @return The class loaded by the class loader
+   */
+  protected def classForName(
+    name: String,
+    initialize: Boolean = true,
+    classLoader: ClassLoader = getSystemClassLoader
+  ): Class[_] = Class.forName(name, initialize, classLoader)
+
+  /**
+   * Retrieves the class loader used by the JVM.
+   *
+   * @note Wraps ClassLoader.getSystemClassLoader(), used for testing.
+   *
+   * @return The class loader used by default for the JVM system
+   */
+  protected def getSystemClassLoader: ClassLoader =
+    ClassLoader.getSystemClassLoader
 }
