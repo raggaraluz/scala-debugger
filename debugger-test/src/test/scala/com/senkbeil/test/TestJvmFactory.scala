@@ -1,5 +1,7 @@
 package com.senkbeil.test
 
+import _root_.java.io.File
+
 import sys.process._
 
 /**
@@ -57,5 +59,5 @@ object TestJvmFactory {
   }
 
   @inline private def createClasspathArgument(paths: String*) =
-    "-cp " + paths.mkString(java.io.File.pathSeparator)
+    "-cp " + paths.mkString(File.pathSeparator)
 }

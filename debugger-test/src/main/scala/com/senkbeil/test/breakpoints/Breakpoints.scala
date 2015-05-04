@@ -1,4 +1,4 @@
-package breakpoints
+package com.senkbeil.test.breakpoints
 
 import Helper._
 

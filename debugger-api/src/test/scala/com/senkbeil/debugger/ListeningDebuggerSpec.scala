@@ -2,20 +2,16 @@ package com.senkbeil.debugger
 
 import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
 
-class ListeningDebuggerSpec extends FunSpec with Matchers with OneInstancePerTest {
+class ListeningDebuggerSpec extends FunSpec with Matchers
+  with OneInstancePerTest
+{
   describe("ListeningDebugger") {
-    describe("#isAvailable") {
-      it("should return true if JDI is available") {
-        fail()
-      }
-
-      it("should return false if JDI is not available") {
-        fail()
-      }
-    }
-
     describe("#start") {
       it("should throw an exception if unable to load JDI") {
+        fail()
+      }
+
+      it("should throw an exception if already started") {
         fail()
       }
 
@@ -26,10 +22,32 @@ class ListeningDebuggerSpec extends FunSpec with Matchers with OneInstancePerTes
       it("should begin listening for virtual machine connections") {
         fail()
       }
+
+      it("should create an executor service using the provided function") {
+        fail()
+      }
+
+      it("should spawn X workers to listen for incoming JVM connections") {
+        fail()
+      }
     }
 
-    describe("#getVirtualMachines") {
-      it("should return a list of connected virtual machines") {
+    describe("#stop") {
+      it("should throw an exception if not started") {
+        fail()
+      }
+
+      it("should stop listening for incoming JVM connections") {
+        fail()
+      }
+
+      it("should shutdown all workers listening for incoming connections") {
+        fail()
+      }
+    }
+
+    describe("#connectedVirtualMachines") {
+      it("should return a collection of connected virtual machines") {
         fail()
       }
     }

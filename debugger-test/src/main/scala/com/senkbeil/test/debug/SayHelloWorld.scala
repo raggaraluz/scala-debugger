@@ -1,4 +1,4 @@
-package debug
+package com.senkbeil.test.debug
 
 //import scala.io.StdIn
 import Console.{in => StdIn}

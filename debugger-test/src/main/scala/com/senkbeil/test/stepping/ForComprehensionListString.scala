@@ -1,4 +1,4 @@
-package stepping
+package com.senkbeil.test.stepping
 
 object ForComprehensionListString {
 

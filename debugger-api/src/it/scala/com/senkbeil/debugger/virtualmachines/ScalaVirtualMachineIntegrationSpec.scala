@@ -2,15 +2,15 @@ package com.senkbeil.debugger.virtualmachines
 
 import com.senkbeil.debugger.LaunchingDebugger
 import com.senkbeil.debugger.events.LoopingTaskRunner
-import org.scalatest.{BeforeAndAfterAll, FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{BeforeAndAfterAll, FunSpec, Matchers}
 
 class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
   with BeforeAndAfterAll
 {
-  private val testClass = classOf[com.senkbeil.test.java.Main]
+  private val testClass = "com.senkbeil.test.Main"
   private val testArguments = Seq("a", "b", "c")
   private val launchingDebugger = new LaunchingDebugger(
-    className = testClass.getName,
+    className = testClass,
     commandLineArguments = testArguments,
     jvmOptions = Seq("-classpath", System.getProperty("java.class.path")),
     suspend = false // TODO: Investigate race condition resulting in failing
@@ -27,12 +27,13 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
 
   override def afterAll() = {
     launchingDebugger.stop()
+    scalaVirtualMachine = None
   }
 
   describe("ScalaVirtualMachine") {
     describe("#mainClassName") {
       it("should return the class name entrypoint of the virtual machine") {
-        val expected = testClass.getName
+        val expected = testClass
 
         val actual = scalaVirtualMachine.get.mainClassName
 
