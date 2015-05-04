@@ -14,3 +14,9 @@ Potential Gotchas
   use the Sun-based `com.sun.jdi` package for a Java debugger interface rather
   than C++.
 
+- When using the launching debugger, I noticed that it was creating an address
+  of senkbeil.org:RANDOMPORT. _senkbeil.org_ corresponded to my host name.
+  Attempting to telnet into the address and port provided resulted in a failed
+  connection. Switching my hostname to _locahost_ allowed the main process
+  (and telnet) to connect and use the JVM process.
+
