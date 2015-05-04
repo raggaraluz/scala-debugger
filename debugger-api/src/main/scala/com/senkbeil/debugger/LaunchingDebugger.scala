@@ -42,14 +42,16 @@ class LaunchingDebugger(
       throw new AssertionError("Unable to retrieve connector!"))
 
     val arguments = connector.defaultArguments()
+    val main = (className +: commandLineArguments).mkString(" ")
+    val options = (arguments.get("options").value() +: jvmOptions).mkString(" ")
 
-    arguments.get("main")
-      .setValue((className +: commandLineArguments).mkString(" "))
-    arguments.get("options").setValue(jvmOptions.mkString(" "))
+    arguments.get("main").setValue(main)
+    arguments.get("options").setValue(options)
     arguments.get("suspend").setValue(suspend.toString)
 
-    logger.info("Launching process: " +
-      (className :+ commandLineArguments).mkString(" "))
+    logger.info("Launching main: " + main)
+    logger.info("Launching options: " + options)
+    logger.info("Launching suspend: " + suspend)
     virtualMachine = Some(connector.launch(arguments))
     newVirtualMachineFunc(virtualMachine.get)
   }
@@ -62,7 +64,7 @@ class LaunchingDebugger(
 
     // Kill the process associated with the local virtual machine
     logger.info("Shutting down process: " +
-      (className :+ commandLineArguments).mkString(" "))
+      (className +: commandLineArguments).mkString(" "))
     virtualMachine.get.process().destroy()
 
     // Wipe our reference to the old virtual machine
