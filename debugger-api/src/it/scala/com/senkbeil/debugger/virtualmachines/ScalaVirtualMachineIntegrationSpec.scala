@@ -13,6 +13,8 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
     className = testClass,
     commandLineArguments = testArguments,
     jvmOptions = Seq("-classpath", System.getProperty("java.class.path")),
+    hostname = Some("localhost"), // Needed to ensure that the local process
+                                  // can be connected to on the machine
     suspend = false // TODO: Investigate race condition resulting in failing
                     //       to get a listing of threads (too early) when true
   )
