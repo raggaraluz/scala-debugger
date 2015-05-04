@@ -1,6 +1,6 @@
 package com.senkbeil.debugger.jdi
 
-import com.sun.jdi.{ThreadReference, ReferenceType, VirtualMachine}
+import com.sun.jdi.{AbsentInformationException, ThreadReference, ReferenceType, VirtualMachine}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import scala.collection.JavaConverters._
@@ -207,6 +207,21 @@ class JDIHelperMethodsSpec extends FunSpec with Matchers
         // Set source paths as convergent
         (mockReferenceType.sourcePaths _).expects(*)
           .returning(sourcePaths.asJava)
+
+        val actual = jdiHelperMethods.singleSourcePath(mockReferenceType)
+
+        actual should be (expected)
+      }
+
+      it("should return None if the sourcePaths throws AbsentInformationException") {
+        val expected = None
+
+        // Attempts to retrieve default stratum
+        (mockVirtualMachine.getDefaultStratum _).expects()
+
+        // Throw exception trying to access source information
+        (mockReferenceType.sourcePaths _).expects(*)
+          .throwing(new AbsentInformationException())
 
         val actual = jdiHelperMethods.singleSourcePath(mockReferenceType)
 

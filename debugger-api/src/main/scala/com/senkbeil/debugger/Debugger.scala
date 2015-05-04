@@ -1,6 +1,7 @@
 package com.senkbeil.debugger
 
 import com.senkbeil.debugger.jdi.JDILoader
+import com.sun.jdi.VirtualMachine
 
 /**
  * Represents the generic interface that all debugger instances implement.
@@ -16,11 +17,30 @@ trait Debugger {
   def isAvailable: Boolean = jdiLoader.isJdiAvailable()
 
   /**
+   * Attempts to load the JDI, asserting that it can be and is loaded.
+   *
+   * @throws AssertionError If failed to load the JDI
+   */
+  protected def assertJdiLoaded(): Unit =
+    assert(jdiLoader.tryLoadJdi(),
+      """
+        |Unable to load Java Debugger Interface! This is part of tools.jar
+        |provided by OpenJDK/Oracle JDK and is the core of the debugger! Please
+        |make sure that JAVA_HOME has been set and that tools.jar is available
+        |on the classpath!
+      """.stripMargin.replace("\n", " "))
+
+  /**
    * Starts the debugger, performing any necessary setup and ending with
    * an initialized debugger that is or will be capable of connecting to one or
    * more virtual machine instances.
+   *
+   * @param newVirtualMachineFunc The function that will be called when a new
+   *                              virtual machine connection is created as a
+   *                              result of this debugger
+   * @tparam T The type of return
    */
-  def start(): Unit
+  def start[T](newVirtualMachineFunc: VirtualMachine => T): Unit
 
   /**
    * Shuts down the debugger, releasing any connected virtual machines.

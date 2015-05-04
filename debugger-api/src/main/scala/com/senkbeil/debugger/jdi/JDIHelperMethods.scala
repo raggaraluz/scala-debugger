@@ -92,17 +92,19 @@ trait JDIHelperMethods extends LogLike {
   protected def singleSourcePath(
     referenceType: ReferenceType
   ): Option[String] = {
-    val sourcePaths =
-      referenceType.sourcePaths(_virtualMachine.getDefaultStratum).asScala
+    val trySourcePaths =
+      Try(referenceType.sourcePaths(_virtualMachine.getDefaultStratum).asScala)
 
-    val sourcePath = Try(sourcePaths.foldLeft(sourcePaths.head) {
-      case (a, b) =>
-        // If we have different paths, there is no way to determine a full
-        // original class name
-        assert(a == b, "Source paths are divergent!")
+    val sourcePath = trySourcePaths.map(sourcePaths => {
+      sourcePaths.foldLeft(sourcePaths.head) {
+        case (a, b) =>
+          // If we have different paths, there is no way to determine a full
+          // original class name
+          assert(a == b, "Source paths are divergent!")
 
-        // Should all be the same
-        b
+          // Should all be the same
+          b
+      }
     })
 
     sourcePath.toOption

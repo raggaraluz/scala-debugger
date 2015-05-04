@@ -1,6 +1,4 @@
-import scalariform.formatter.preferences._
-
-name := "DebuggerServer"
+name := "ScalaDebugger"
 
 //
 // DEBUGGER API PROJECT CONFIGURATION

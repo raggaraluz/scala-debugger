@@ -1,12 +1,9 @@
 package com.senkbeil.debugger
 
-import com.senkbeil.Main
-import com.senkbeil.debugger.events.{EventType, LoopingTaskRunner}
-import com.senkbeil.debugger.jdi.JDILoader
-import com.senkbeil.debugger.virtualmachines.ScalaVirtualMachine
+import java.util.concurrent.{Executors, ExecutorService}
+
 import com.senkbeil.utils.LogLike
-import com.senkbeil.debugger.wrappers._
-import com.sun.jdi.event._
+import com.sun.jdi.connect.{Connector, ListeningConnector}
 
 import collection.JavaConverters._
 
@@ -15,18 +12,40 @@ import com.sun.jdi._
 import scala.util.Try
 
 /**
- * Represents the main entrypoint for the debugger against the internal
- * interpreters and the Spark cluster.
+ * Represents a debugger that listens for connections from remote JVMs.
+ *
  * @param address The address to use for remote JVMs to attach to this debugger
  * @param port The port to use for remote JVMs to attach to this debugger
+ * @param executorServiceFunc The function used to create a new executor
+ *                            service to use to spawn worker threads
+ * @param workers The total number of worker tasks to spawn
  */
-class ListeningDebugger(address: String, port: Int)
-  extends Debugger with LogLike
-{
+class ListeningDebugger(
+  address: String,
+  port: Int,
+  executorServiceFunc: () => ExecutorService,
+  workers: Int
+) extends Debugger with LogLike {
+  /**
+   * Creates a new ListeningDebugger with the specified address and port, using
+   * a single thread executor with one worker.
+   *
+   * @param address The address to use for remote JVMs to attach to this
+   *                debugger
+   * @param port The port to use for remote JVMs to attach to this debugger
+   *
+   * @return A new ListeningDebugger instance
+   */
+  def this(address: String, port: Int) =
+    this(address, port, () => Executors.newSingleThreadExecutor(), 1)
+
   private val ConnectorClassString = "com.sun.jdi.SocketListen"
-  private val loopingTaskRunner = new LoopingTaskRunner()
-  @volatile private var virtualMachines =
-    List[(VirtualMachine, ScalaVirtualMachine)]()
+  private val virtualMachineManager = Bootstrap.virtualMachineManager()
+
+  // Contains all components for the currently-running debugger
+  @volatile private var components: Option[(
+    ExecutorService, ListeningConnector, Map[String, _ <: Connector.Argument]
+  )] = None
 
   /**
    * Represents the JVM options to feed to remote JVMs whom will connect to
@@ -40,18 +59,20 @@ class ListeningDebugger(address: String, port: Int)
     Nil).mkString(",")
 
   /**
-   * Starts the debugger.
+   * Starts the debugger, resulting in opening the specified socket to listen
+   * for remote JVM connections.
+   *
+   * @param newVirtualMachineFunc The function to be invoked once per JVM that
+   *                              connects to this debugger
+   * @tparam T The return type of the callback function
    */
-  def start(): Unit = {
-    require(jdiLoader.tryLoadJdi(),
-      """
-        |Unable to load Java Debugger Interface! This is part of tools.jar
-        |provided by OpenJDK/Oracle JDK and is the core of the debugger! Please
-        |make sure that JAVA_HOME has been set and that tools.jar is available
-        |on the classpath!
-      """.stripMargin.replace("\n", " "))
+  def start[T](newVirtualMachineFunc: VirtualMachine => T): Unit = {
+    require(components.isEmpty, "Debugger already started!")
+    assertJdiLoaded()
 
-    val connector = getConnector.getOrElse(throw new IllegalArgumentException)
+    // Retrieve the listening connector, or throw an exception if failed
+    val connector = findListeningConnector.getOrElse(
+      throw new AssertionError("Unable to retrieve connector!"))
 
     val arguments = connector.defaultArguments()
 
@@ -61,112 +82,65 @@ class ListeningDebugger(address: String, port: Int)
     logger.info("Multiple Connections Allowed: " +
       connector.supportsMultipleConnections())
 
+    // Open port for listening to JVM connections
+    logger.info(s"Listening on $address:$port")
     connector.startListening(arguments)
 
-    // Virtual machine connection thread
-    val connectionThread = new Thread(new Runnable {
-      override def run(): Unit = while (true) try {
+    // Create the executor service to use
+    logger.info("Creating executor service")
+    val executorService = executorServiceFunc()
+
+    // Store the connector and arguments (used for shutdown)
+    components = Some((executorService, connector, arguments.asScala.toMap))
+
+    // Start X workers to process connection requests
+    logger.info(s"Spawning $workers worker tasks")
+    (1 to workers).foreach(_ => executorService.execute(new Runnable {
+      override def run(): Unit = while (!Thread.interrupted()) {
         val newVirtualMachine = Try(connector.accept(arguments))
-        newVirtualMachine
-          .map(virtualMachine => (
-            virtualMachine,
-            new ScalaVirtualMachine(virtualMachine, loopingTaskRunner)
-          )).foreach(virtualMachines +:= _)
 
-        val (virtualMachine, scalaVirtualMachine) = virtualMachines.last
+        // Invoke our callback upon receiving a new virtual machine
+        newVirtualMachine.foreach(newVirtualMachineFunc)
 
-        val virtualMachineName = virtualMachine.name()
-        scalaVirtualMachine.eventManager.addEventHandler(EventType.VMStartEventType, (ev) => {
-          println("CONNECTED!!!")
-          logger.debug(s"($virtualMachineName) Connected!")
-
-          // Sometimes this event is not triggered! Need to do this
-          // request outside of this event, maybe? Or just not know
-          // which executor is being matched...
-
-          // NOTE: If this succeeds, we get an extra argument which IS
-          // the main executing class name! Is there a way to guarantee
-          // that this is executed? Should we just assume it will be?
-          //Debugger.printCommandLineArguments(virtualMachine)
-          println("ARGS: " +
-            scalaVirtualMachine.commandLineArguments.mkString(","))
-        })
-
-        scalaVirtualMachine.eventManager.addEventHandler(EventType.VMDisconnectEventType, (_) => {
-          logger.debug(s"($virtualMachineName) Disconnected!")
-          virtualMachines = virtualMachines diff List(virtualMachine)
-        })
-
-        scalaVirtualMachine.eventManager.addEventHandler(EventType.ClassPrepareEventType, (e) => {
-          val ev = e.asInstanceOf[ClassPrepareEvent]
-          logger.debug(s"($virtualMachineName) New class: ${ev.referenceType().name()}")
-        })
-
-        scalaVirtualMachine.eventManager.addEventHandler(EventType.BreakpointEventType, (e) => {
-          val ev = e.asInstanceOf[BreakpointEvent]
-          logger.debug(s"Hit breakpoint at location: ${ev.location()}")
-
-          println("<FRAME>")
-          println("THREAD STATUS: " + ev.thread().status())
-          val stackFrame = ev.thread().frames().asScala.head
-          Try({
-            val location = stackFrame.location()
-            println(s"${location.sourceName()}:${location.lineNumber()}")
-          })
-
-          println("<FRAME OBJECT VARIABLES>")
-          stackFrame.thisVisibleFieldMap().foreach {
-            case (field, value) => Try(println(
-              field.name() + ": " + value.toString(2)
-            ))
-          }
-
-          println("<FRAME LOCAL VARIABLES>")
-          stackFrame.localVisibleVariableMap().foreach {
-            case (localVariable, value) => Try(println(
-              localVariable.name() + ": " + value.toString
-            ))
-          }
-
-          println()
-
-          /*while ({ print("Continue(y/n): "); Console.in.readLine() } != "y") {
-            Thread.sleep(1)
-          }*/
-
-          scalaVirtualMachine.breakpointManager
-            .removeLineBreakpoint(Main.testMainFile, 42)
-        })
-
-        // Give resources back to CPU
+        // Release CPU
         Thread.sleep(1)
-      } catch {
-        case ex: Exception => ex.printStackTrace()
       }
-    })
-
-    connectionThread.start()
+    }))
   }
 
-  def stop(): Unit = {}
+  def stop(): Unit = {
+    require(components.nonEmpty,
+      "Debugger has not been started!")
+
+    val (executorService, connector, arguments) = components.get
+
+    // Close the listening port
+    logger.info(s"Shutting down $address:$port")
+    connector.stopListening(arguments.asJava)
+
+    // Cancel all worker threads via interrupt
+    logger.info("Cancelling worker threads")
+    executorService.shutdownNow()
+
+    // Mark that we have completely stopped the debugger
+    components = None
+  }
 
   /**
    * Retrieves the current listing of virtual machines that have connected to
    * this debugger.
    *
-   * @return The list of virtual machines
+   * @return The collection of connected virtual machines
    */
-  def getVirtualMachines = synchronized { virtualMachines }
+  def connectedVirtualMachines =
+    virtualMachineManager.connectedVirtualMachines().asScala.toSeq
 
-  /*private val updateVirtualMachines =
-    (connector: ListeningConnector, arguments: Map[String, Connector.Argument]) => {
-      val newVirtualMachine = Try(connector.accept(arguments.asJava))
-      newVirtualMachine.foreach(virtualMachines.add)
-    }*/
-
-  private def getConnector = {
-    val virtualMachineManager = Bootstrap.virtualMachineManager()
-
+  /**
+   * Retrieves the connector to be used to listen for incoming JVM connections.
+   *
+   * @return Some connector if available, otherwise None
+   */
+  private def findListeningConnector: Option[ListeningConnector] = {
     virtualMachineManager.listeningConnectors().asScala
       .find(_.name() == ConnectorClassString)
   }

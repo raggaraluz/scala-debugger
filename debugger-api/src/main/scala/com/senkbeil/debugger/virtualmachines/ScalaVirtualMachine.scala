@@ -29,6 +29,14 @@ class ScalaVirtualMachine(
     new EventManager(_virtualMachine, loopingTaskRunner)
 
   /**
+   * Represents the underlying virtual machine represented by this Scala
+   * virtual machine.
+   *
+   * @return The JDI VirtualMachine instance
+   */
+  val underlyingVirtualMachine: VirtualMachine = _virtualMachine
+
+  /**
    * Retrieves the list of available lines for a specific file.
    *
    * @param fileName The name of the file whose lines to retrieve
