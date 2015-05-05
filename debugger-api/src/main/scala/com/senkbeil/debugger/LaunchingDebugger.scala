@@ -21,9 +21,11 @@ class LaunchingDebugger(
   private val commandLineArguments: Seq[String] = Nil,
   private val jvmOptions: Seq[String] = Nil,
   private val suspend: Boolean = true
+)(
+  implicit virtualMachineManager: VirtualMachineManager =
+    Bootstrap.virtualMachineManager()
 ) extends Debugger with LogLike {
   private val ConnectorClassString = "com.sun.jdi.CommandLineLaunch"
-  private val virtualMachineManager = Bootstrap.virtualMachineManager()
   @volatile private var virtualMachine: Option[VirtualMachine] = None
 
   /**
