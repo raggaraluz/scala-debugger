@@ -50,5 +50,21 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
         actual should contain theSameElementsInOrderAs expected
       }
     }
+
+    describe("#availableLinesForFile") {
+      it("should return the breakpointable line numbers for the file") {
+        val expected = Seq(10, 11)
+
+        scalaVirtualMachine.get.classManager.allFileNames
+          .filter(_.contains("senkbeil"))
+          .foreach(println)
+
+        val file =
+          testClass.replace('.', java.io.File.separatorChar) + ".scala"
+        val actual = scalaVirtualMachine.get.availableLinesForFile(file).get
+
+        actual should contain theSameElementsInOrderAs expected
+      }
+    }
   }
 }

@@ -5,11 +5,14 @@ package com.senkbeil.test.misc
  * main method.
  *
  * @note Should have a class name of com.senkbeil.test.misc.MainUsingMethod
- * @note Should have breakpoint lines on 10 and 13
+ * @note Should have breakpoint lines on 10, 13, and 16
  */
 object MainUsingMethod {
   def main(args: Array[String]) = {
     // Print out our arguments
     args.foreach(println)
+
+    // Needed for tests to examine JVM without needing to set breakpoints
+    while (true) { Thread.sleep(1) }
   }
 }

@@ -5,10 +5,13 @@ package com.senkbeil.test.misc
  * main method.
  *
  * @note Should have a class name of com.senkbeil.test.msic.MainUsingApp
- * @note Should have breakpoint lines on 9, 10, and 12
+ * @note Should have breakpoint lines on 10 and 11
  */
 object MainUsingApp extends App {
   val x = 3
 
   println(x)
+
+  // Needed for tests to examine JVM without needing to set breakpoints
+  while (true) { Thread.sleep(1) }
 }
