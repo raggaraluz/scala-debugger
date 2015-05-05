@@ -7,14 +7,12 @@ import org.scalatest.{BeforeAndAfterAll, FunSpec, Matchers}
 class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
   with BeforeAndAfterAll
 {
-  private val testClass = "com.senkbeil.test.Main"
+  private val testClass = "com.senkbeil.test.misc.MainUsingApp"
   private val testArguments = Seq("a", "b", "c")
   private val launchingDebugger = new LaunchingDebugger(
     className = testClass,
     commandLineArguments = testArguments,
     jvmOptions = Seq("-classpath", System.getProperty("java.class.path")),
-    hostname = Some("localhost"), // Needed to ensure that the local process
-                                  // can be connected to on the machine
     suspend = false // TODO: Investigate race condition resulting in failing
                     //       to get a listing of threads (too early) when true
   )

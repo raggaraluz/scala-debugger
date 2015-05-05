@@ -15,15 +15,12 @@ import scala.collection.JavaConverters._
  *                             process
  * @param jvmOptions The options to provide to the new process' JVM
  * @param suspend If true, suspends the JVM until it connects to the debugger
- * @param hostname If provided, sets the hostname to use for the launching
- *                 debugger, otherwise uses the default hostname
  */
 class LaunchingDebugger(
   private val className: String,
   private val commandLineArguments: Seq[String] = Nil,
   private val jvmOptions: Seq[String] = Nil,
-  private val suspend: Boolean = true,
-  private val hostname: Option[String] = None
+  private val suspend: Boolean = true
 ) extends Debugger with LogLike {
   private val ConnectorClassString = "com.sun.jdi.CommandLineLaunch"
   private val virtualMachineManager = Bootstrap.virtualMachineManager()
@@ -51,7 +48,6 @@ class LaunchingDebugger(
     arguments.get("main").setValue(main)
     arguments.get("options").setValue(options)
     arguments.get("suspend").setValue(suspend.toString)
-    hostname.foreach(arguments.get("hostname").setValue)
 
     logger.info("Launching main: " + main)
     logger.info("Launching options: " + options)
