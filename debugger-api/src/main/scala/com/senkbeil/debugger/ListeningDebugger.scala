@@ -19,12 +19,18 @@ import scala.util.Try
  * @param executorServiceFunc The function used to create a new executor
  *                            service to use to spawn worker threads
  * @param workers The total number of worker tasks to spawn
+ *
+ * @param virtualMachineManager The manager to use for virtual machine
+ *                              connectors
  */
 class ListeningDebugger(
   address: String,
   port: Int,
   executorServiceFunc: () => ExecutorService,
   workers: Int
+)(
+  implicit virtualMachineManager: VirtualMachineManager =
+    Bootstrap.virtualMachineManager()
 ) extends Debugger with LogLike {
   /**
    * Creates a new ListeningDebugger with the specified address and port, using
@@ -34,13 +40,17 @@ class ListeningDebugger(
    *                debugger
    * @param port The port to use for remote JVMs to attach to this debugger
    *
+   * @param virtualMachineManager The manager to use for virtual machine
+   *                              connectors
+   *
    * @return A new ListeningDebugger instance
    */
-  def this(address: String, port: Int) =
-    this(address, port, () => Executors.newSingleThreadExecutor(), 1)
+  def this(address: String, port: Int)(
+    implicit virtualMachineManager: VirtualMachineManager =
+      Bootstrap.virtualMachineManager()
+  ) = this(address, port, () => Executors.newSingleThreadExecutor(), 1)
 
   private val ConnectorClassString = "com.sun.jdi.SocketListen"
-  private val virtualMachineManager = Bootstrap.virtualMachineManager()
 
   // Contains all components for the currently-running debugger
   @volatile private var components: Option[(

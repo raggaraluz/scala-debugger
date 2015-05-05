@@ -9,8 +9,7 @@ import scala.collection.JavaConverters._
 class LaunchingDebuggerSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory
 {
-
-  def createConnectorArgumentMock(
+  private def createConnectorArgumentMock(
     setter: Boolean = false,
     getter: Option[String] = None
   ) = {

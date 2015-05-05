@@ -15,6 +15,9 @@ import scala.collection.JavaConverters._
  *                             process
  * @param jvmOptions The options to provide to the new process' JVM
  * @param suspend If true, suspends the JVM until it connects to the debugger
+ *
+ * @param virtualMachineManager The manager to use for virtual machine
+ *                              connectors
  */
 class LaunchingDebugger(
   private val className: String,
