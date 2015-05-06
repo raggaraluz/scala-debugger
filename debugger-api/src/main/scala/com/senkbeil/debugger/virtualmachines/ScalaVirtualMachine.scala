@@ -64,6 +64,10 @@ class ScalaVirtualMachine(
 
       assert(mainMethodFrames.nonEmpty, "Error locating main method!")
 
+      // NOTE: This is a simple fix to catch MyObject vs MyObject$, but does
+      //       not guarantee anything with scala.DelayedInit via scala.App,
+      //       meaning that applications started using that trait might return
+      //       the wrong class name (scala.App$class)
       val mainMethodFrame = mainMethodFrames.reduce((loc1, loc2) => {
         val loc1DeclaringType = loc1.declaringType().name()
         val loc2DeclaringType = loc2.declaringType().name()
