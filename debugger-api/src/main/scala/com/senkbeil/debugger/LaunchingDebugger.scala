@@ -32,6 +32,13 @@ class LaunchingDebugger(
   @volatile private var virtualMachine: Option[VirtualMachine] = None
 
   /**
+   * Indicates whether or not the debugger is running.
+   *
+   * @return True if it is running, otherwise false
+   */
+  def isRunning: Boolean = virtualMachine.nonEmpty
+
+  /**
    * Starts the debugger, resulting in launching a new process to connect to.
    *
    * @param newVirtualMachineFunc The function to be invoked once the process
@@ -39,7 +46,7 @@ class LaunchingDebugger(
    * @tparam T The return type of the callback function
    */
   def start[T](newVirtualMachineFunc: VirtualMachine => T): Unit = {
-    require(virtualMachine.isEmpty, "Debugger already started!")
+    assert(!isRunning, "Debugger already started!")
     assertJdiLoaded()
 
     // Retrieve the launching connector, or throw an exception if failed
@@ -65,7 +72,7 @@ class LaunchingDebugger(
    * Stops the process launched by the debugger.
    */
   def stop(): Unit = {
-    require(virtualMachine.nonEmpty, "Debugger has not been started!")
+    assert(isRunning, "Debugger has not been started!")
 
     // Kill the process associated with the local virtual machine
     logger.info("Shutting down process: " +

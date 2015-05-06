@@ -77,7 +77,7 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
 
         listeningDebugger.start((_) => {})
 
-        intercept[IllegalArgumentException] {
+        intercept[AssertionError] {
           listeningDebugger.start((_) => {})
         }
       }
@@ -143,9 +143,41 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#isRunning") {
+      it("should return true if already started") {
+        // MOCK ===============================================================
+        val mockListeningConnector = mock[ListeningConnector]
+
+        (mockListeningConnector.name _).expects()
+          .returning("com.sun.jdi.SocketListen")
+
+        (mockVirtualMachineManager.listeningConnectors _).expects()
+          .returning(Seq(mockListeningConnector).asJava)
+
+        (mockListeningConnector.defaultArguments _).expects().returning(Map(
+          "localAddress" -> createConnectorArgumentMock(setter = true),
+          "port" -> createConnectorArgumentMock(setter = true)
+        ).asJava)
+
+        (mockListeningConnector.supportsMultipleConnections _).expects().once()
+        (mockExecutorService.execute _).expects(*)
+          .repeated(testWorkers).times()
+        (mockListeningConnector.startListening _).expects(*).once()
+        // MOCK ===============================================================
+
+        listeningDebugger.start((_) => {})
+
+        listeningDebugger.isRunning should be (true)
+      }
+
+      it("should return false if not started (or started and then stopped)") {
+        listeningDebugger.isRunning should be (false)
+      }
+    }
+
     describe("#stop") {
       it("should throw an exception if not started") {
-        intercept[IllegalArgumentException] {
+        intercept[AssertionError] {
           listeningDebugger.stop()
         }
       }

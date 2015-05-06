@@ -59,12 +59,21 @@ class ScalaVirtualMachine(
     // TODO: Investigate if necessary to suspend entire virtual machine or
     //       just the main thread
     val tryClassName = suspendVirtualMachineAndExecute {
-      val mainMethodFrame = mainThread.frames().asScala
-        .map(_.location()).find(_.method().name() == "main")
+      val mainMethodFrames = mainThread.frames().asScala
+        .map(_.location()).filter(_.method().name() == "main").toSeq
 
-      assert(mainMethodFrame.nonEmpty, "Error locating main method!")
+      assert(mainMethodFrames.nonEmpty, "Error locating main method!")
 
-      mainMethodFrame.get
+      val mainMethodFrame = mainMethodFrames.reduce((loc1, loc2) => {
+        val loc1DeclaringType = loc1.declaringType().name()
+        val loc2DeclaringType = loc2.declaringType().name()
+
+        // Return location that is furthest up the class chain (ignore
+        // Scala's generated classes like MyObject$ class for MyObject object)
+        if (loc1DeclaringType.contains(loc2DeclaringType)) loc2 else loc1
+      })
+
+      mainMethodFrame
     }.map(_.declaringType().name())
 
     // Throw our exception if we get one

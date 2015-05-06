@@ -16,10 +16,15 @@ import EventType._
  *
  * @param _virtualMachine The virtual machine whose events to manage
  * @param loopingTaskRunner The runner used to process events
+ * @param autoStart If true, starts the event processing automatically
+ * @param startTaskRunner If true, will attempt to start the task runner if
+ *                        not already started (upon starting the event manager)
  */
 class EventManager(
   protected val _virtualMachine: VirtualMachine,
-  private val loopingTaskRunner: LoopingTaskRunner
+  private val loopingTaskRunner: LoopingTaskRunner,
+  private val autoStart: Boolean = true,
+  private val startTaskRunner: Boolean = false
 ) extends JDIHelperMethods with LogLike {
   type EventFunction = (Event) => Unit
   private val eventMap =
@@ -28,10 +33,22 @@ class EventManager(
   private var eventTaskId: Option[String] = None
 
   /**
+   * Indicates whether or not the event manager is processing events.
+   *
+   * @return True if it is running, otherwise false
+   */
+  def isRunning: Boolean = eventTaskId.nonEmpty
+
+  /**
    * Begins the processing of events from the virtual machine.
    */
   def start(): Unit = {
-    require(eventTaskId.isEmpty, "Event manager already started!")
+    assert(!isRunning, "Event manager already started!")
+
+    if (startTaskRunner && !loopingTaskRunner.isRunning) {
+      logger.debug("Event manager starting looping task runner!")
+      loopingTaskRunner.start()
+    }
 
     logger.trace("Starting event manager for virtual machine!")
     eventTaskId = Some(loopingTaskRunner.addTask {
@@ -42,6 +59,9 @@ class EventManager(
       while (eventSetIterator.hasNext) {
         val event = eventSetIterator.next()
         val eventType = EventType.eventToEventType(event)
+
+        eventType.foreach(eType =>
+          logger.trace(s"Processing event: ${eType.toString}"))
 
         // Execute all event functions for this event
         eventType.map(eventMap.get).foreach(events =>
@@ -59,7 +79,7 @@ class EventManager(
    * Ends the processing of events from the virtual machine.
    */
   def stop(): Unit = {
-    require(eventTaskId.nonEmpty, "Event manager not started!")
+    assert(isRunning, "Event manager not started!")
 
     logger.trace(s"Stopping event manager ($eventTaskId) for virtual machine!")
     loopingTaskRunner.removeTask(eventTaskId.get)
@@ -112,4 +132,11 @@ class EventManager(
       eventMap.put(eventType, oldEventFunctions.filterNot(_ eq eventFunction))
     }
   }
+
+  // ==========================================================================
+  // = CONSTRUCTOR
+  // ==========================================================================
+
+  // If marked to start automatically, do so
+  if (autoStart) start()
 }

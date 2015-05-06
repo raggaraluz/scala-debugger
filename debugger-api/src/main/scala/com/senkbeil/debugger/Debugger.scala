@@ -46,4 +46,11 @@ trait Debugger {
    * Shuts down the debugger, releasing any connected virtual machines.
    */
   def stop(): Unit
+
+  /**
+   * Indicates whether or not the debugger is running.
+   *
+   * @return True if it is running, otherwise false
+   */
+  def isRunning: Boolean
 }

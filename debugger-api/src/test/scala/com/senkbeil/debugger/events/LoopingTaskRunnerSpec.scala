@@ -24,7 +24,7 @@ class LoopingTaskRunnerSpec extends FunSpec with Matchers
       it("should throw an exception if already started") {
         loopingTaskRunner.start()
 
-        intercept[IllegalArgumentException] {
+        intercept[AssertionError] {
           loopingTaskRunner.start()
         }
       }
@@ -87,9 +87,21 @@ class LoopingTaskRunnerSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#isRunning") {
+      it("should return true if started") {
+        loopingTaskRunner.start()
+
+        loopingTaskRunner.isRunning should be (true)
+      }
+
+      it("should return false if not started (or started and then stopped)") {
+        loopingTaskRunner.isRunning should be (false)
+      }
+    }
+
     describe("#stop") {
       it("should throw an exception if not started") {
-        intercept[IllegalArgumentException] {
+        intercept[AssertionError] {
           loopingTaskRunner.stop()
         }
       }

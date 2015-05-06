@@ -14,6 +14,7 @@ class DebuggerSpec extends FunSpec with Matchers with OneInstancePerTest
     override def assertJdiLoaded(): Unit = super.assertJdiLoaded()
     override def start[T](f: (VirtualMachine) => T): Unit = ???
     override def stop(): Unit = ???
+    override def isRunning: Boolean = ???
   }
 
   describe("Debugger") {

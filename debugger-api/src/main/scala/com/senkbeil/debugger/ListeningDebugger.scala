@@ -69,6 +69,13 @@ class ListeningDebugger(
     Nil).mkString(",")
 
   /**
+   * Indicates whether or not the debugger is running.
+   *
+   * @return True if it is running, otherwise false
+   */
+  def isRunning: Boolean = components.nonEmpty
+
+  /**
    * Starts the debugger, resulting in opening the specified socket to listen
    * for remote JVM connections.
    *
@@ -77,7 +84,7 @@ class ListeningDebugger(
    * @tparam T The return type of the callback function
    */
   def start[T](newVirtualMachineFunc: VirtualMachine => T): Unit = {
-    require(components.isEmpty, "Debugger already started!")
+    assert(!isRunning, "Debugger already started!")
     assertJdiLoaded()
 
     // Retrieve the listening connector, or throw an exception if failed
@@ -119,8 +126,7 @@ class ListeningDebugger(
   }
 
   def stop(): Unit = {
-    require(components.nonEmpty,
-      "Debugger has not been started!")
+    assert(isRunning, "Debugger has not been started!")
 
     val (executorService, connector, arguments) = components.get
 

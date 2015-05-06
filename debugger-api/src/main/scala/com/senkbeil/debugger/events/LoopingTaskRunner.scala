@@ -26,10 +26,17 @@ class LoopingTaskRunner(
   @volatile private var executorService: Option[ExecutorService] = None
 
   /**
+   * Indicates whether or not the task runner is processing tasks.
+   *
+   * @return True if it is running, otherwise false
+   */
+  def isRunning: Boolean = executorService.nonEmpty
+
+  /**
    * Executing begins the process of executing queued up tasks.
    */
   def start(): Unit = {
-    require(executorService.isEmpty, "Runner already started!")
+    assert(!isRunning, "Runner already started!")
 
     // Create our thread pool with X workers to process tasks
     executorService = Some(Executors.newFixedThreadPool(maxWorkers))
@@ -44,7 +51,7 @@ class LoopingTaskRunner(
    * @param removeAllTasks If true, removes all tasks after being stopped
    */
   def stop(removeAllTasks: Boolean = true): Unit = {
-    require(executorService.nonEmpty, "Runner not started!")
+    assert(isRunning, "Runner not started!")
 
     executorService.get.shutdown()
     executorService = None

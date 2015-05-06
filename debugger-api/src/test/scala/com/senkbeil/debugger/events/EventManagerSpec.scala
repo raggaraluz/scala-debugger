@@ -13,22 +13,52 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
 {
   private val mockVirtualMachine = mock[VirtualMachine]
   private val mockLoopingTaskRunner = mock[LoopingTaskRunner]
-  private val eventManager =
-    new EventManager(mockVirtualMachine, mockLoopingTaskRunner)
+  private val eventManager = new EventManager(
+    mockVirtualMachine,
+    mockLoopingTaskRunner,
+    autoStart = false
+  )
 
   describe("EventManager") {
+    describe("constructor") {
+      it("should start processing events if auto start is enabled") {
+        (mockLoopingTaskRunner.addTask _).expects(*).once()
+
+        new EventManager(
+          mockVirtualMachine,
+          mockLoopingTaskRunner,
+          autoStart = true
+        )
+      }
+    }
+
     describe("#start") {
       it("should throw an exception if already started") {
         (mockLoopingTaskRunner.addTask _).expects(*).once()
         eventManager.start()
 
-        intercept[IllegalArgumentException] {
+        intercept[AssertionError] {
           eventManager.start()
         }
       }
 
       it("should add a task to process events") {
         (mockLoopingTaskRunner.addTask _).expects(*).once()
+
+        eventManager.start()
+      }
+
+      it("should start the looping task runner if not already started and flag enabled") {
+        val eventManager = new EventManager(
+          mockVirtualMachine,
+          mockLoopingTaskRunner,
+          autoStart = false,
+          startTaskRunner = true
+        )
+
+        (mockLoopingTaskRunner.isRunning _).expects().returning(false).once()
+        (mockLoopingTaskRunner.addTask _).expects(*).once()
+        (mockLoopingTaskRunner.start _).expects().once()
 
         eventManager.start()
       }
@@ -162,9 +192,23 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#isRunning") {
+      it("should return true if started") {
+        (mockLoopingTaskRunner.addTask _).expects(*).once()
+
+        eventManager.start()
+
+        eventManager.isRunning should be (true)
+      }
+
+      it("should return false if not started (or started and then stopped)") {
+        eventManager.isRunning should be (false)
+      }
+    }
+
     describe("#stop") {
       it("should throw an exception if not started") {
-        intercept[IllegalArgumentException] {
+        intercept[AssertionError] {
           eventManager.stop()
         }
       }

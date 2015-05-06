@@ -13,6 +13,6 @@ object MainUsingMethod {
     args.foreach(println)
 
     // Needed for tests to examine JVM without needing to set breakpoints
-    while (true) { Thread.sleep(1) }
+    while (!Thread.interrupted()) { Thread.sleep(1) }
   }
 }

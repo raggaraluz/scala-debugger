@@ -1,69 +1,71 @@
 package com.senkbeil.debugger.virtualmachines
 
-import com.senkbeil.debugger.LaunchingDebugger
-import com.senkbeil.debugger.events.LoopingTaskRunner
-import org.scalatest.{BeforeAndAfterAll, FunSpec, Matchers}
+import org.scalatest.{ParallelTestExecution, FunSpec, Matchers}
+import test.VirtualMachineFixtures
 
 class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
-  with BeforeAndAfterAll
+  with ParallelTestExecution with VirtualMachineFixtures
 {
-  private val testClass = "com.senkbeil.test.misc.MainUsingApp"
-  private val testArguments = Seq("a", "b", "c")
-  private val launchingDebugger = new LaunchingDebugger(
-    className = testClass,
-    commandLineArguments = testArguments,
-    jvmOptions = Seq("-classpath", System.getProperty("java.class.path")),
-    suspend = false // TODO: Investigate race condition resulting in failing
-                    //       to get a listing of threads (too early) when true
-  )
-  private val loopingTaskRunner = new LoopingTaskRunner()
-  private var scalaVirtualMachine: Option[ScalaVirtualMachine] = None
-
-  override def beforeAll() = {
-    launchingDebugger.start(
-      (vm) => scalaVirtualMachine =
-        Some(new ScalaVirtualMachine(vm, loopingTaskRunner)))
-  }
-
-  override def afterAll() = {
-    launchingDebugger.stop()
-    scalaVirtualMachine = None
-  }
-
   describe("ScalaVirtualMachine") {
     describe("#mainClassName") {
-      it("should return the class name entrypoint of the virtual machine") {
-        val expected = testClass
+      it("should return the class name of a Scala main method entrypoint") {
+        val testClass = "com.senkbeil.test.misc.MainUsingMethod"
 
-        val actual = scalaVirtualMachine.get.mainClassName
+        withVirtualMachine(testClass) { (_, scalaVirtualMachine) =>
+          val expected = testClass
 
-        actual should be (expected)
+          val actual = scalaVirtualMachine.mainClassName
+
+          actual should be(expected)
+        }
+      }
+
+      it("should return the class name of a Scala App entrypoint") {
+        val testClass = "com.senkbeil.test.misc.MainUsingApp"
+
+        withVirtualMachine(testClass) { (_, scalaVirtualMachine) =>
+          val expected = testClass
+
+          val actual = scalaVirtualMachine.mainClassName
+
+          actual should be(expected)
+        }
       }
     }
 
     describe("#commandLineArguments") {
       it("should return the arguments provided to the virtual machine") {
-        val expected = testArguments
+        val testClass = "com.senkbeil.test.misc.MainUsingApp"
+        val testArguments = Seq("a", "b", "c")
 
-        val actual = scalaVirtualMachine.get.commandLineArguments
+        withVirtualMachine(testClass, testArguments) { (_, scalaVirtualMachine) =>
 
-        actual should contain theSameElementsInOrderAs expected
+          val expected = testArguments
+
+          val actual = scalaVirtualMachine.commandLineArguments
+
+          actual should contain theSameElementsInOrderAs expected
+        }
       }
     }
 
     describe("#availableLinesForFile") {
       it("should return the breakpointable line numbers for the file") {
-        val expected = Seq(10, 11)
+        val testClass = "com.senkbeil.test.misc.AvailableLines"
 
-        scalaVirtualMachine.get.classManager.allFileNames
-          .filter(_.contains("senkbeil"))
-          .foreach(println)
+        withVirtualMachine(testClass) { (_, scalaVirtualMachine) =>
+          val expected = Seq(
+            11, 12, 13, 14, 15, 16, 20, 21, 22, 26, 27, 28, 32, 34, 35, 37, 39,
+            40, 41, 42, 45, 46, 47, 50, 52, 53, 57, 58, 59, 60, 63, 65
+          )
 
-        val file =
-          testClass.replace('.', java.io.File.separatorChar) + ".scala"
-        val actual = scalaVirtualMachine.get.availableLinesForFile(file).get
+          val file = testClass
+            .replace('.', java.io.File.separatorChar) + ".scala"
 
-        actual should contain theSameElementsInOrderAs expected
+          val actual = scalaVirtualMachine.availableLinesForFile(file).get
+
+          actual should contain theSameElementsInOrderAs expected
+        }
       }
     }
   }

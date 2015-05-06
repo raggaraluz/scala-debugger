@@ -161,6 +161,52 @@ class ScalaVirtualMachineSpec extends FunSpec with Matchers
 
         actual should be (expected)
       }
+
+      it("should return the name of the base class containing the main method") {
+        val expected = "MyBaseClass"
+
+        // Create a stack frame whose location returns the expected main
+        // method name
+        def setupMockStackFrame(locationDeclaringTypeName: String) = {
+          val _stackFrame = mock[StackFrame]
+          (_stackFrame.location _).expects().returning({
+            val _location = mock[Location]
+
+            // Set the method to be "main"
+            (_location.method _).expects().returning({
+              val _method = mock[Method]
+              (_method.name _).expects().returning("main")
+              _method
+            })
+
+            // Set the returning class name to be the expected
+            (_location.declaringType _).expects().returning({
+              val _referenceType = mock[ReferenceType]
+              (_referenceType.name _).expects()
+                .returning(expected).atLeastOnce()
+              _referenceType
+            }).atLeastOnce()
+            _location
+          })
+          _stackFrame
+        }
+
+        val mockStackFrames = Seq(
+          setupMockStackFrame(expected + "$"),
+          setupMockStackFrame(expected),
+          setupMockStackFrame(expected + "$InnerClass")
+        )
+
+        // Set the main thread to return a stack frame with the main method
+        (mockVirtualMachine.suspend _).expects().once()
+        (mockMainThreadReference.frames: Function0[java.util.List[StackFrame]])
+          .expects().returning(mockStackFrames.asJava)
+        (mockVirtualMachine.resume _).expects().once()
+
+        val actual = scalaVirtualMachine.mainClassName
+
+        actual should be (expected)
+      }
     }
 
     describe("#commandLineArguments") {
