@@ -103,6 +103,8 @@ class ClassManager(
       else DefaultUnknownGroupName
     )
 
+    logger.trace(s"Refreshing ${referenceType.name()} in $fileName!")
+
     // NOTE: Assuming that we do not get an existing reference type!
     val existingClasses = fileToClasses.getOrElse(fileName, Nil)
     fileToClasses.put(fileName, existingClasses :+ referenceType)

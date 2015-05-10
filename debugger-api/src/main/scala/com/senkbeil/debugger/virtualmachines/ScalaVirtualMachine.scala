@@ -7,6 +7,7 @@ import com.senkbeil.debugger.jdi.JDIHelperMethods
 import com.senkbeil.utils.LogLike
 import com.sun.jdi._
 import com.sun.jdi.event.ClassPrepareEvent
+import com.sun.jdi.request.EventRequest
 
 import scala.collection.JavaConverters._
 
@@ -15,11 +16,19 @@ import scala.collection.JavaConverters._
  *
  * @param _virtualMachine The underlying virtual machine
  * @param loopingTaskRunner The runner used to process events
+ * @param uniqueId A unique id assigned to the Scala virtual machine on the
+ *                 client (library) side to help distinguish multiple VMs
  */
 class ScalaVirtualMachine(
   protected val _virtualMachine: VirtualMachine,
-  private val loopingTaskRunner: LoopingTaskRunner
+  private val loopingTaskRunner: LoopingTaskRunner,
+  val uniqueId: String = java.util.UUID.randomUUID().toString
 ) extends JDIHelperMethods with LogLike {
+  /** Builds a string with the identifier of this virtual machine. */
+  private def vmString(message: String) = s"(Scala VM $uniqueId) $message"
+
+  logger.debug(vmString("Initializing Scala virtual machine!"))
+
   // Lazily-load the class manager (and as a result, the other managers) to
   // give enough time to retrieve all of the classes
   lazy val classManager =
@@ -30,13 +39,28 @@ class ScalaVirtualMachine(
     import com.senkbeil.debugger.events.EventType._
     val _eventManager = new EventManager(_virtualMachine, loopingTaskRunner)
 
+    logger.debug(vmString("Adding custom event handlers!"))
+
+    // TODO: Move this (and other request management into a custom class
+    {
+      val erm = _virtualMachine.eventRequestManager()
+      val req = erm.createClassPrepareRequest()
+      req.setSuspendPolicy(EventRequest.SUSPEND_NONE)
+      req.enable()
+    }
+
+    // Mark start event to load all of our system classes
+    _eventManager.addResumingEventHandler(VMStartEventType, _ => {
+      logger.trace(vmString("Refreshing all class references!"))
+      classManager.refreshAllClasses()
+    })
+
     // Mark class prepare events to signal refreshing our classes
-    logger.debug("Adding custom event handlers for Scala virtual machine!")
     _eventManager.addResumingEventHandler(ClassPrepareEventType, e => {
       val classPrepareEvent = e.asInstanceOf[ClassPrepareEvent]
       val referenceType = classPrepareEvent.referenceType()
 
-      logger.trace(s"Received new class: ${referenceType.name()}")
+      logger.trace(vmString(s"Received new class: ${referenceType.name()}"))
       classManager.refreshClass(referenceType)
     })
 
@@ -125,7 +149,7 @@ class ScalaVirtualMachine(
 
         // Ignore any other values (some show up due to Scala)
         case v =>
-          logger.warn("Unknown value during processing arguments: " + v)
+          logger.warn(vmString(s"Unknown value while processing arguments: $v"))
           Nil
       }
     }
