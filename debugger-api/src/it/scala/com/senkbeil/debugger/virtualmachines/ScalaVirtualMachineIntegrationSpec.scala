@@ -1,11 +1,19 @@
 package com.senkbeil.debugger.virtualmachines
 
+import org.scalatest.concurrent.Eventually
+import org.scalatest.time.{Seconds, Span, Milliseconds}
 import org.scalatest.{ParallelTestExecution, FunSpec, Matchers}
-import test.VirtualMachineFixtures
+import test.{TestUtilities, VirtualMachineFixtures}
 
 class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
   with ParallelTestExecution with VirtualMachineFixtures
+  with TestUtilities with Eventually
 {
+  implicit override val patienceConfig = PatienceConfig(
+    timeout = scaled(Span(2, Seconds)),
+    interval = scaled(Span(5, Milliseconds))
+  )
+
   describe("ScalaVirtualMachine") {
     describe("#mainClassName") {
       it("should return the class name of a Scala main method entrypoint") {
@@ -14,9 +22,10 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
         withVirtualMachine(testClass) { (_, scalaVirtualMachine) =>
           val expected = testClass
 
-          val actual = scalaVirtualMachine.mainClassName
-
-          actual should be(expected)
+          eventually {
+            val actual = scalaVirtualMachine.mainClassName
+            actual should be(expected)
+          }
         }
       }
 
@@ -26,9 +35,10 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
         withVirtualMachine(testClass) { (_, scalaVirtualMachine) =>
           val expected = testClass
 
-          val actual = scalaVirtualMachine.mainClassName
-
-          actual should be(expected)
+          eventually {
+            val actual = scalaVirtualMachine.mainClassName
+            actual should be(expected)
+          }
         }
       }
     }
@@ -42,9 +52,10 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
 
           val expected = testArguments
 
-          val actual = scalaVirtualMachine.commandLineArguments
-
-          actual should contain theSameElementsInOrderAs expected
+          eventually {
+            val actual = scalaVirtualMachine.commandLineArguments
+            actual should contain theSameElementsInOrderAs expected
+          }
         }
       }
     }
@@ -59,12 +70,16 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
             40, 41, 42, 45, 46, 47, 50, 52, 53, 57, 58, 59, 60, 63, 65
           )
 
-          val file = testClass
-            .replace('.', java.io.File.separatorChar) + ".scala"
+          val file = scalaClassStringToFileString(testClass)
 
-          val actual = scalaVirtualMachine.availableLinesForFile(file).get
+          eventually {
+            // TODO: Investigate why listening for class prepare event is
+            //       not good enough!
+            scalaVirtualMachine.classManager.refreshAllClasses()
 
-          actual should contain theSameElementsInOrderAs expected
+            val actual = scalaVirtualMachine.availableLinesForFile(file).get
+            actual should contain theSameElementsInOrderAs expected
+          }
         }
       }
     }

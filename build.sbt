@@ -8,11 +8,7 @@ lazy val debuggerApi = project
   .configs(IntegrationTest)
   .settings(Common.settings: _*)
   .settings(Defaults.itSettings: _*)
-  /*.settings(scalariformSettings: _*)
-  .settings(ScalariformKeys.preferences := ScalariformKeys.preferences.value
-    .setPreference(PreserveDanglingCloseParenthesis, true)
-    .setPreference(CompactControlReadability, true)
-  )*/.settings(Seq(
+  .settings(Seq(
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % "1.7.5",
       "org.slf4j" % "slf4j-log4j12" % "1.7.5" % "test,it",
@@ -27,6 +23,8 @@ lazy val debuggerApi = project
     internalDependencyClasspath in Runtime +=
       { Attributed.blank(Build.JavaTools) },
     internalDependencyClasspath in Test +=
+      { Attributed.blank(Build.JavaTools) },
+    internalDependencyClasspath in IntegrationTest +=
       { Attributed.blank(Build.JavaTools) }
   ): _*)
   .dependsOn(debuggerTest % "test->compile;test->test")

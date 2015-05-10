@@ -6,6 +6,7 @@ import com.senkbeil.debugger.events.{EventManager, LoopingTaskRunner}
 import com.senkbeil.debugger.jdi.JDIHelperMethods
 import com.senkbeil.utils.LogLike
 import com.sun.jdi._
+import com.sun.jdi.event.ClassPrepareEvent
 
 import scala.collection.JavaConverters._
 
@@ -25,8 +26,22 @@ class ScalaVirtualMachine(
     new ClassManager(_virtualMachine, loadClasses = true)
   lazy val breakpointManager =
     new BreakpointManager(_virtualMachine, classManager)
-  lazy val eventManager =
-    new EventManager(_virtualMachine, loopingTaskRunner)
+  lazy val eventManager = {
+    import com.senkbeil.debugger.events.EventType._
+    val _eventManager = new EventManager(_virtualMachine, loopingTaskRunner)
+
+    // Mark class prepare events to signal refreshing our classes
+    logger.debug("Adding custom event handlers for Scala virtual machine!")
+    _eventManager.addResumingEventHandler(ClassPrepareEventType, e => {
+      val classPrepareEvent = e.asInstanceOf[ClassPrepareEvent]
+      val referenceType = classPrepareEvent.referenceType()
+
+      logger.trace(s"Received new class: ${referenceType.name()}")
+      classManager.refreshClass(referenceType)
+    })
+
+    _eventManager
+  }
 
   /**
    * Represents the underlying virtual machine represented by this Scala

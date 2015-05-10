@@ -7,7 +7,7 @@ import com.sun.jdi.event.Event
 
 import java.util.concurrent.ConcurrentHashMap
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 import EventType._
 
@@ -19,14 +19,23 @@ import EventType._
  * @param autoStart If true, starts the event processing automatically
  * @param startTaskRunner If true, will attempt to start the task runner if
  *                        not already started (upon starting the event manager)
+ * @param onExceptionResume If true, any event handler that throws an exception
+ *                          will count towards resuming the event set, otherwise
+ *                          it will cause the event set to not resume
  */
 class EventManager(
   protected val _virtualMachine: VirtualMachine,
   private val loopingTaskRunner: LoopingTaskRunner,
   private val autoStart: Boolean = true,
-  private val startTaskRunner: Boolean = false
+  private val startTaskRunner: Boolean = false,
+  private val onExceptionResume: Boolean = true
 ) extends JDIHelperMethods with LogLike {
-  type EventFunction = (Event) => Unit
+  /**
+   * Represents an event callback, receiving the event and returning whether or
+   * not to resume.
+   */
+  type EventFunction = (Event) => Boolean
+
   private val eventMap =
     new ConcurrentHashMap[EventType, Seq[EventFunction]]()
 
@@ -56,6 +65,18 @@ class EventManager(
       val eventSet = eventQueue.remove()
       val eventSetIterator = eventSet.iterator()
 
+      // Indicates whether to resume (true) based on the result of a function
+      @inline def resumeOnResult(result: Try[Boolean]): Boolean = result match {
+        case Success(r) => r
+        case Failure(_) => onExceptionResume
+      }
+
+      // Flag used to indicate whether or not to resume the event set
+      var resume = true
+
+      // NOTE: Event sets are grouped into common events, so there is no need
+      //       to worry about the resume flag being affected by different types
+      //       of events
       while (eventSetIterator.hasNext) {
         val event = eventSetIterator.next()
         val eventType = EventType.eventToEventType(event)
@@ -63,12 +84,20 @@ class EventManager(
         eventType.foreach(eType =>
           logger.trace(s"Processing event: ${eType.toString}"))
 
-        // Execute all event functions for this event
-        eventType.map(eventMap.get).foreach(events =>
-          if (events != null) events.foreach(func => Try(func(event))))
+        // Execute all event functions for this event, collecting their results
+        // as the flag for resuming
+        resume &&= eventType.map(eventMap.get).map(events =>
+          // If contains events, process each and get collective result
+          if (events != null) events
+            .map(func => Try(func(event)))
+            .map(resumeOnResult)
+            .reduce(_ && _)
+          else true // No event to process, so just allow the flag to pass on
+        ).forall(_ == true)
       }
 
-      eventSet.resume()
+      // Only resume if the consensus of the events says to do so
+      if (resume) eventSet.resume()
     })
 
     eventTaskId.foreach(id =>
@@ -87,13 +116,30 @@ class EventManager(
   }
 
   /**
-   * Adds the event function to this manager.
+   * Adds the event function to this manager. This event automatically counts
+   * towards resuming the event set after completion.
    *
    * @param eventType The type of the event to add a function
    * @param eventFunction The function to add
-   * @tparam T The class of the event
    */
-  def addEventHandler[T <: Event](
+  def addResumingEventHandler(
+    eventType: EventType,
+    eventFunction: Event => Unit
+  ): Unit = {
+    // Convert the function to an "always true" event function
+    val fullEventFunction = ((_: Unit) => true).compose(eventFunction)
+
+    addEventHandler(eventType, fullEventFunction)
+  }
+
+  /**
+   * Adds the event function to this manager. The return value of the handler
+   * function contributes towards whether or not to resume the event set.
+   *
+   * @param eventType The type of the event to add a function
+   * @param eventFunction The function to add
+   */
+  def addEventHandler(
     eventType: EventType,
     eventFunction: EventFunction
   ): Unit = eventMap.synchronized {

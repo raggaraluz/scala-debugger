@@ -8,6 +8,7 @@ import scala.collection.JavaConverters._
 import scala.util.Try
 
 import ClassManager._
+import collection.mutable
 
 /**
  * Represents the container for constants used in the class manager.
@@ -33,7 +34,7 @@ class ClassManager(
   loadClasses: Boolean = true
 ) extends JDIHelperMethods with LogLike {
   /** Mapping of file names to associated classes. */
-  private var fileToClasses: Map[String, Seq[ReferenceType]] = Map()
+  private val fileToClasses = mutable.Map[String, Seq[ReferenceType]]()
 
   /**
    * Retrieves the mapping of lines to locations available for a specific file.
@@ -88,16 +89,23 @@ class ClassManager(
    * references to array structures and "UNKNOWN" for references with no
    * source name or known name.
    */
-  def refreshAllClasses(): ClassManager = {
-    fileToClasses = _virtualMachine.allClasses().asScala
-      .groupBy { referenceType =>
-        singleSourcePath(referenceType).getOrElse(
-          if (referenceType.name().endsWith("[]")) DefaultArrayGroupName
-          else DefaultUnknownGroupName
-        )
-      }
+  def refreshAllClasses(): Unit =
+    _virtualMachine.allClasses().asScala.foreach(refreshClass)
 
-    this
+  /**
+   * Refresh a single class given the reference type.
+   *
+   * @param referenceType The reference type used for the refresh
+   */
+  def refreshClass(referenceType: ReferenceType): Unit = {
+    val fileName = singleSourcePath(referenceType).getOrElse(
+      if (referenceType.name().endsWith("[]")) DefaultArrayGroupName
+      else DefaultUnknownGroupName
+    )
+
+    // NOTE: Assuming that we do not get an existing reference type!
+    val existingClasses = fileToClasses.getOrElse(fileName, Nil)
+    fileToClasses.put(fileName, existingClasses :+ referenceType)
   }
 
   /**

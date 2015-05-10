@@ -13,7 +13,8 @@ import com.sun.jdi.VirtualMachine
 trait VirtualMachineFixtures {
   def withVirtualMachine(
     className: String,
-    arguments: Seq[String] = Nil
+    arguments: Seq[String] = Nil,
+    suspend: Boolean = true
   )(
     testCode: (VirtualMachine, ScalaVirtualMachine) => Any
   ) = {
@@ -21,8 +22,7 @@ trait VirtualMachineFixtures {
       className = className,
       commandLineArguments = arguments,
       jvmOptions = Seq("-classpath", System.getProperty("java.class.path")),
-      suspend = true  // TODO: Investigate race condition resulting in failing
-                      //       to get a listing of threads (too early) when true
+      suspend = suspend
     )
     val loopingTaskRunner = new LoopingTaskRunner()
 
@@ -38,7 +38,7 @@ trait VirtualMachineFixtures {
         // Wait for connection event to run the test code (ensures everything
         // is ready)
         var virtualMachineReady = false
-        eventManager.addEventHandler(VMStartEventType, _ => {
+        eventManager.addResumingEventHandler(VMStartEventType, _ => {
           virtualMachineReady = true
         })
 
@@ -47,7 +47,7 @@ trait VirtualMachineFixtures {
 
         // NOTE: Need a slight delay for information to be ready (even after
         //       waiting for the start event)
-        Thread.sleep(100)
+        //Thread.sleep(100)
         testCode(virtualMachine, scalaVirtualMachine)
       } finally {
         loopingTaskRunner.stop()

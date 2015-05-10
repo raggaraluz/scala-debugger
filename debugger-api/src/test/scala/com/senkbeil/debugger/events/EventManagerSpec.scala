@@ -88,6 +88,256 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
           Try(addTaskFunction.get.apply())
         }
 
+        it("should not resume the event set if any handler yields false") {
+          // Use specific type such that EventType.eventToEventType works
+          val eventType = VMStartEventType
+          val mockEvent = mock[VMStartEvent]
+
+          var addTaskFunction: Option[() => Any] = None
+          var isInvoked = false
+
+          eventManager.addEventHandler(eventType, _ => {
+            isInvoked = true
+            false
+          })
+
+          // Capture the task passed to the runner
+          (mockLoopingTaskRunner.addTask _).expects(*).onCall { arg: Any =>
+            addTaskFunction = Some(arg.asInstanceOf[() => Any])
+            "": LoopingTaskRunner#TaskId
+          }
+
+          eventManager.start()
+
+          // Fail the test if we couldn't retrieve the argument
+          if (addTaskFunction.isEmpty) fail("Unable to capture task!")
+
+          // Mock chain of calls in task to return mock event from set
+          (mockVirtualMachine.eventQueue _).expects().returning({
+            val mockEventQueue = mock[EventQueue]
+            (mockEventQueue.remove: () => EventSet).expects().returning({
+              val mockEventSet = mock[EventSet]
+              (mockEventSet.iterator _).expects().returning({
+                val mockIterator = mock[java.util.Iterator[Event]]
+                inSequence {
+                  (mockIterator.hasNext _).expects().returning(true).once()
+                  (mockIterator.hasNext _).expects().returning(false).once()
+                }
+                (mockIterator.next _).expects().returning(mockEvent)
+
+                mockIterator
+              })
+              (mockEventSet.resume _).expects().never()
+              mockEventSet
+            })
+            mockEventQueue
+          })
+
+          // Invoke the task function
+          addTaskFunction.get.apply()
+
+          // Should have invoked handler for event
+          isInvoked should be (true)
+        }
+
+        it("should resume if an exception occurs in a handler and onExceptionResume is true") {
+          val eventManager = new EventManager(
+            mockVirtualMachine,
+            mockLoopingTaskRunner,
+            autoStart = false,
+            onExceptionResume = true
+          )
+
+          // Use specific type such that EventType.eventToEventType works
+          val eventType = VMStartEventType
+          val mockEvent = mock[VMStartEvent]
+
+          var addTaskFunction: Option[() => Any] = None
+
+          eventManager.addEventHandler(eventType, _ => {
+            throw new Throwable
+          })
+
+          // Capture the task passed to the runner
+          (mockLoopingTaskRunner.addTask _).expects(*).onCall { arg: Any =>
+            addTaskFunction = Some(arg.asInstanceOf[() => Any])
+            "": LoopingTaskRunner#TaskId
+          }
+
+          eventManager.start()
+
+          // Fail the test if we couldn't retrieve the argument
+          if (addTaskFunction.isEmpty) fail("Unable to capture task!")
+
+          // Mock chain of calls in task to return mock event from set
+          (mockVirtualMachine.eventQueue _).expects().returning({
+            val mockEventQueue = mock[EventQueue]
+            (mockEventQueue.remove: () => EventSet).expects().returning({
+              val mockEventSet = mock[EventSet]
+              (mockEventSet.iterator _).expects().returning({
+                val mockIterator = mock[java.util.Iterator[Event]]
+                inSequence {
+                  (mockIterator.hasNext _).expects().returning(true).once()
+                  (mockIterator.hasNext _).expects().returning(false).once()
+                }
+                (mockIterator.next _).expects().returning(mockEvent)
+
+                mockIterator
+              })
+              (mockEventSet.resume _).expects().once()
+              mockEventSet
+            })
+            mockEventQueue
+          })
+
+          // Invoke the task function
+          addTaskFunction.get.apply()
+        }
+
+        it("should not resume if an exception occurs in a handler and onExceptionResume is false") {
+          val eventManager = new EventManager(
+            mockVirtualMachine,
+            mockLoopingTaskRunner,
+            autoStart = false,
+            onExceptionResume = false
+          )
+
+          // Use specific type such that EventType.eventToEventType works
+          val eventType = VMStartEventType
+          val mockEvent = mock[VMStartEvent]
+
+          var addTaskFunction: Option[() => Any] = None
+
+          eventManager.addEventHandler(eventType, _ => {
+            throw new Throwable
+          })
+
+          // Capture the task passed to the runner
+          (mockLoopingTaskRunner.addTask _).expects(*).onCall { arg: Any =>
+            addTaskFunction = Some(arg.asInstanceOf[() => Any])
+            "": LoopingTaskRunner#TaskId
+          }
+
+          eventManager.start()
+
+          // Fail the test if we couldn't retrieve the argument
+          if (addTaskFunction.isEmpty) fail("Unable to capture task!")
+
+          // Mock chain of calls in task to return mock event from set
+          (mockVirtualMachine.eventQueue _).expects().returning({
+            val mockEventQueue = mock[EventQueue]
+            (mockEventQueue.remove: () => EventSet).expects().returning({
+              val mockEventSet = mock[EventSet]
+              (mockEventSet.iterator _).expects().returning({
+                val mockIterator = mock[java.util.Iterator[Event]]
+                inSequence {
+                  (mockIterator.hasNext _).expects().returning(true).once()
+                  (mockIterator.hasNext _).expects().returning(false).once()
+                }
+                (mockIterator.next _).expects().returning(mockEvent)
+
+                mockIterator
+              })
+              (mockEventSet.resume _).expects().never()
+              mockEventSet
+            })
+            mockEventQueue
+          })
+
+          // Invoke the task function
+          addTaskFunction.get.apply()
+        }
+
+        it("should resume the event set if there are no handlers") {
+          // Use specific type such that EventType.eventToEventType works
+          val eventType = VMStartEventType
+          val mockEvent = mock[VMStartEvent]
+
+          var addTaskFunction: Option[() => Any] = None
+
+          // Capture the task passed to the runner
+          (mockLoopingTaskRunner.addTask _).expects(*).onCall { arg: Any =>
+            addTaskFunction = Some(arg.asInstanceOf[() => Any])
+            "": LoopingTaskRunner#TaskId
+          }
+
+          eventManager.start()
+
+          // Fail the test if we couldn't retrieve the argument
+          if (addTaskFunction.isEmpty) fail("Unable to capture task!")
+
+          // Mock chain of calls in task to return mock event from set
+          (mockVirtualMachine.eventQueue _).expects().returning({
+            val mockEventQueue = mock[EventQueue]
+            (mockEventQueue.remove: () => EventSet).expects().returning({
+              val mockEventSet = mock[EventSet]
+              (mockEventSet.iterator _).expects().returning({
+                val mockIterator = mock[java.util.Iterator[Event]]
+                inSequence {
+                  (mockIterator.hasNext _).expects().returning(true).once()
+                  (mockIterator.hasNext _).expects().returning(false).once()
+                }
+                (mockIterator.next _).expects().returning(mockEvent)
+
+                mockIterator
+              })
+              (mockEventSet.resume _).expects().once()
+              mockEventSet
+            })
+            mockEventQueue
+          })
+
+          // Invoke the task function
+          addTaskFunction.get.apply()
+        }
+
+        it("should resume the event set if all handlers yield true") {
+          // Use specific type such that EventType.eventToEventType works
+          val eventType = VMStartEventType
+          val mockEvent = mock[VMStartEvent]
+
+          var addTaskFunction: Option[() => Any] = None
+
+          eventManager.addEventHandler(eventType, _ => {
+            true
+          })
+
+          // Capture the task passed to the runner
+          (mockLoopingTaskRunner.addTask _).expects(*).onCall { arg: Any =>
+            addTaskFunction = Some(arg.asInstanceOf[() => Any])
+            "": LoopingTaskRunner#TaskId
+          }
+
+          eventManager.start()
+
+          // Fail the test if we couldn't retrieve the argument
+          if (addTaskFunction.isEmpty) fail("Unable to capture task!")
+
+          // Mock chain of calls in task to return mock event from set
+          (mockVirtualMachine.eventQueue _).expects().returning({
+            val mockEventQueue = mock[EventQueue]
+            (mockEventQueue.remove: () => EventSet).expects().returning({
+              val mockEventSet = mock[EventSet]
+              (mockEventSet.iterator _).expects().returning({
+                val mockIterator = mock[java.util.Iterator[Event]]
+                inSequence {
+                  (mockIterator.hasNext _).expects().returning(true).once()
+                  (mockIterator.hasNext _).expects().returning(false).once()
+                }
+                (mockIterator.next _).expects().returning(mockEvent)
+
+                mockIterator
+              })
+              (mockEventSet.resume _).expects().once()
+              mockEventSet
+            })
+            mockEventQueue
+          })
+
+          // Invoke the task function
+          addTaskFunction.get.apply()
+        }
+
         it("should iterate through each event and execute the associated handlers") {
           // Use specific type such that EventType.eventToEventType works
           val eventType = VMStartEventType
@@ -96,7 +346,7 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
           var addTaskFunction: Option[() => Any] = None
           var isInvoked = false
 
-          eventManager.addEventHandler(eventType, (event) => {
+          eventManager.addResumingEventHandler(eventType, _ => {
             isInvoked = true
           })
 
@@ -147,7 +397,7 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
 
           trait OtherEvent extends Event
 
-          eventManager.addEventHandler(stubEventType, (event) => {
+          eventManager.addResumingEventHandler(stubEventType, _ => {
             isInvoked = true
           })
 
@@ -224,6 +474,21 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#addResumingEventHandler") {
+      it("should compose the provided unit function to return true") {
+        val stubEventType = stub[EventType]
+
+        // Add a unit function as an event handler
+        eventManager.addResumingEventHandler(stubEventType, _ => {})
+
+        // Retrieve the added handler
+        val createdHandler = eventManager.getEventHandlers(stubEventType).head
+
+        // Verify that the handler returns true when invoked
+        createdHandler(stub[Event]) should be (true)
+      }
+    }
+
     describe("#addEventHandler") {
       it("should add to the existing collection of handlers") {
         val totalHandlers = 3
@@ -258,7 +523,7 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
         val stubEventType = stub[EventType]
 
         (1 to totalEventFunctions).foreach(_ =>
-          eventManager.addEventHandler(stubEventType, (_) => {}))
+          eventManager.addResumingEventHandler(stubEventType, _ => {}))
 
         // TODO: This is not working because eventMap.contains(class) is false
         //       even though eventMap.get(class) returns list

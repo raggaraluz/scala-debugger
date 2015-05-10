@@ -144,6 +144,73 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
       }
     }
 
+    describe("#refreshClass") {
+      it("should make the class the first for the file if none exist") {
+        val fileName = "somefile.scala"
+        val stubReferenceType = createReferenceTypeStub(
+          name = "stub",
+          sourcePaths = Seq(fileName),
+          locations = Nil
+        )
+
+        classManager.refreshClass(stubReferenceType)
+
+        val expected = Seq(stubReferenceType)
+        val actual = classManager.underlyingReferencesForFile(fileName).get
+
+        actual should contain theSameElementsAs expected
+      }
+
+      it("should add the class to the existing collection of classes") {
+        val referencesPerFile = 3
+        val fileName = "somefile.scala"
+        val stubReferenceTypes = (1 to referencesPerFile).map(i =>
+          createReferenceTypeStub(
+            name = "stub" + i,
+            sourcePaths = Seq(fileName),
+            locations = Nil
+          )
+        )
+
+        stubReferenceTypes.foreach(classManager.refreshClass)
+
+        val expected = stubReferenceTypes
+        val actual = classManager.underlyingReferencesForFile(fileName).get
+
+        actual should contain theSameElementsAs expected
+      }
+
+      it("should add the class to ARRAY if is an array") {
+        val stubReferenceType = createReferenceTypeStub(
+          name = "somearray[]",
+          sourcePaths = Seq("a", "b"),
+          locations = Nil
+        )
+
+        classManager.refreshClass(stubReferenceType)
+
+        val expected = Seq(stubReferenceType)
+        val actual = classManager.underlyingReferencesForFile("ARRAY").get
+
+        actual should contain theSameElementsAs expected
+      }
+
+      it("should add the class to UNKNOWN if it has no file name and not an array") {
+        val stubReferenceType = createReferenceTypeStub(
+          name = "someunknown",
+          sourcePaths = Seq("a", "b"),
+          locations = Nil
+        )
+
+        classManager.refreshClass(stubReferenceType)
+
+        val expected = Seq(stubReferenceType)
+        val actual = classManager.underlyingReferencesForFile("UNKNOWN").get
+
+        actual should contain theSameElementsAs expected
+      }
+    }
+
     describe("#refreshAllClasses") {
       it("should group classes by file name") {
         val referencesPerFile = 3
