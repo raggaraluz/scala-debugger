@@ -2,7 +2,7 @@ package com.senkbeil.debugger
 
 import scala.language.implicitConversions
 
-import com.sun.jdi.{ReferenceType, ThreadReference, StackFrame, Value}
+import com.sun.jdi._
 
 /**
  * Contains helper implicits to convert to wrapper classes.
@@ -21,4 +21,8 @@ package object wrappers {
   implicit def referenceTypeToWrapper(
     referenceType: ReferenceType
   ): ReferenceTypeWrapper = new ReferenceTypeWrapper(referenceType)
+
+  implicit def virtualMachineToWrapper(
+    virtualMachine: VirtualMachine
+  ): VirtualMachineWrapper = new VirtualMachineWrapper(virtualMachine)
 }

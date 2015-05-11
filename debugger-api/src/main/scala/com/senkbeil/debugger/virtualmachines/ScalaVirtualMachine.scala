@@ -4,6 +4,7 @@ import com.senkbeil.debugger.breakpoints.BreakpointManager
 import com.senkbeil.debugger.classes.ClassManager
 import com.senkbeil.debugger.events.{EventManager, LoopingTaskRunner}
 import com.senkbeil.debugger.jdi.JDIHelperMethods
+import com.senkbeil.debugger.wrappers._
 import com.senkbeil.utils.LogLike
 import com.sun.jdi._
 import com.sun.jdi.event.ClassPrepareEvent
@@ -28,6 +29,10 @@ class ScalaVirtualMachine(
   private def vmString(message: String) = s"(Scala VM $uniqueId) $message"
 
   logger.debug(vmString("Initializing Scala virtual machine!"))
+  _virtualMachine.enableClassPrepareEvents()
+  _virtualMachine.enableThreadStartEvents()
+  _virtualMachine.enableThreadDeathEvents()
+  _virtualMachine.enableExceptionEvents()
 
   // Lazily-load the class manager (and as a result, the other managers) to
   // give enough time to retrieve all of the classes
@@ -40,14 +45,6 @@ class ScalaVirtualMachine(
     val _eventManager = new EventManager(_virtualMachine, loopingTaskRunner)
 
     logger.debug(vmString("Adding custom event handlers!"))
-
-    // TODO: Move this (and other request management into a custom class
-    {
-      val erm = _virtualMachine.eventRequestManager()
-      val req = erm.createClassPrepareRequest()
-      req.setSuspendPolicy(EventRequest.SUSPEND_NONE)
-      req.enable()
-    }
 
     // Mark start event to load all of our system classes
     _eventManager.addResumingEventHandler(VMStartEventType, _ => {
