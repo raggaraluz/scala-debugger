@@ -45,6 +45,7 @@ trait VirtualMachineFixtures extends LogLike {
         Try(java.nio.file.Files.copy(process.getInputStream, path,
           java.nio.file.StandardCopyOption.REPLACE_EXISTING))
 
+        // NOTE: Comment me out to keep around the log file
         logger.debug(s"Deleting JVM Output File: ${path.toString}")
         java.nio.file.Files.delete(path)
       }
@@ -55,6 +56,7 @@ trait VirtualMachineFixtures extends LogLike {
         Try(java.nio.file.Files.copy(process.getErrorStream, path,
           java.nio.file.StandardCopyOption.REPLACE_EXISTING))
 
+        // NOTE: Comment me out to keep around the log file
         logger.debug(s"Deleting JVM Error File: ${path.toString}")
         java.nio.file.Files.delete(path)
       }

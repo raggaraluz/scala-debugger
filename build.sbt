@@ -29,7 +29,7 @@ lazy val debuggerApi = project
     internalDependencyClasspath in IntegrationTest +=
       { Attributed.blank(Build.JavaTools) }
   ): _*)
-  .dependsOn(debuggerTest % "test->compile;test->test")
+  .dependsOn(debuggerTest % "test->compile;it->compile")
 
 //
 // DEBUGGER TEST CODE PROJECT CONFIGURATION
