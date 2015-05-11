@@ -4,6 +4,7 @@ import com.senkbeil.debugger.breakpoints.BreakpointManager
 import com.senkbeil.debugger.classes.ClassManager
 import com.senkbeil.debugger.events.{EventManager, LoopingTaskRunner}
 import com.senkbeil.debugger.jdi.JDIHelperMethods
+import com.senkbeil.debugger.steps.StepManager
 import com.senkbeil.debugger.wrappers._
 import com.senkbeil.utils.LogLike
 import com.sun.jdi._
@@ -46,6 +47,7 @@ class ScalaVirtualMachine(
   // give enough time to retrieve all of the classes
   lazy val classManager =
     new ClassManager(_virtualMachine, loadClasses = true)
+  lazy val stepManager = new StepManager(_virtualMachine)
   lazy val breakpointManager =
     new BreakpointManager(_virtualMachine, classManager)
   lazy val eventManager = {
