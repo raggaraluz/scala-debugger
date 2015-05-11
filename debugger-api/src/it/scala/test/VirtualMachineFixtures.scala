@@ -51,6 +51,7 @@ trait VirtualMachineFixtures extends LogLike {
           !suspend
         })
 
+        // Wait for our specific entrypoint to be loaded
         var mainClassReady = false
         eventManager.addEventHandler(ClassPrepareEventType, e => {
           val classPrepareEvent = e.asInstanceOf[ClassPrepareEvent]
