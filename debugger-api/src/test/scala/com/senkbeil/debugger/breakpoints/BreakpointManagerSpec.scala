@@ -55,6 +55,79 @@ class BreakpointManagerSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#processPendingBreakpoints") {
+      it("should return true if all pending breakpoints are added successfully") {
+        val expected = true
+        val fileName = "some file"
+        val lineNumber = 2
+
+        // = ADD PENDING BREAKPOINT ============================================
+
+        // Mark the retrieval of lines and locations to a map with
+        // a line number that will not be the one picked
+        (mockClassManager.linesAndLocationsForFile _).expects(*).returning(
+          Some(Map((lineNumber + 1) -> Seq(createRandomLocationStub())))
+        ).once()
+
+        // Set a breakpoint on a line that is NOT returned by linesAndLocations,
+        // which results in adding the pending breakpoint
+        breakpointManager.setLineBreakpoint(fileName, lineNumber)
+
+        // = PROCESS PENDING BREAKPOINT ========================================
+
+        // Mark the retrieval of lines and locations to a map with
+        // a line number that will be the one picked
+        (mockClassManager.linesAndLocationsForFile _).expects(*).returning(
+          Some(Map(lineNumber -> Seq(createRandomLocationStub())))
+        ).once()
+
+        // Stub out the call to create a breakpoint request
+        (mockEventRequestManager.createBreakpointRequest _).expects(*)
+          .returning(stub[BreakpointRequest]).once()
+
+        val actual = breakpointManager.processPendingBreakpoints(fileName)
+
+        actual should be (expected)
+      }
+
+      it("should return false if a pending breakpoint was not added") {
+        val expected = false
+        val fileName = "some file"
+        val lineNumber = 2
+
+        // = ADD PENDING BREAKPOINT ============================================
+
+        // Mark the retrieval of lines and locations to a map with
+        // a line number that will not be the one picked
+        (mockClassManager.linesAndLocationsForFile _).expects(*).returning(
+          Some(Map((lineNumber + 1) -> Seq(createRandomLocationStub())))
+        ).once()
+
+        // Set a breakpoint on a line that is NOT returned by linesAndLocations,
+        // which results in adding the pending breakpoint
+        breakpointManager.setLineBreakpoint(fileName, lineNumber)
+
+        // = PROCESS PENDING BREAKPOINT ========================================
+
+        // Mark the retrieval of lines and locations to a map with
+        // a line number that will not be the one picked
+        (mockClassManager.linesAndLocationsForFile _).expects(*).returning(
+          Some(Map((lineNumber + 1) -> Seq(createRandomLocationStub())))
+        ).once()
+
+        val actual = breakpointManager.processPendingBreakpoints(fileName)
+
+        actual should be (expected)
+      }
+
+      it("should return true if there are no pending breakpoints") {
+        val expected = true
+        val actual = breakpointManager.processPendingBreakpoints("some file")
+
+        actual should be (expected)
+      }
+    }
+
     describe("#setLineBreakpoint") {
       it("should return false if the file is not available") {
         val expected = false

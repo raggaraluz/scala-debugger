@@ -8,6 +8,8 @@ import com.senkbeil.utils.LogLike
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.event.ClassPrepareEvent
 
+import scala.concurrent.future
+
 /**
  * Provides fixture methods to provide virtual machines running specified
  * files.
@@ -31,6 +33,31 @@ trait VirtualMachineFixtures extends LogLike {
     val loopingTaskRunner = new LoopingTaskRunner()
 
     launchingDebugger.start { (virtualMachine) =>
+      // Redirect output of JVM to our logs
+      val process = virtualMachine.process()
+
+      import scala.concurrent.ExecutionContext.Implicits.global
+      future {
+        val path = java.nio.file.Files.createTempFile("jvmfixture", ".out.log")
+        logger.debug(s"Creating JVM Output File: ${path.toString}")
+
+        java.nio.file.Files.copy(process.getInputStream, path,
+          java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+
+        logger.debug(s"Deleting JVM Output File: ${path.toString}")
+        java.nio.file.Files.delete(path)
+      }
+      future {
+        val path = java.nio.file.Files.createTempFile("jvmfixture", ".err.log")
+        logger.debug(s"Creating JVM Error File: ${path.toString}")
+
+        java.nio.file.Files.copy(process.getErrorStream, path,
+          java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+
+        logger.debug(s"Deleting JVM Error File: ${path.toString}")
+        java.nio.file.Files.delete(path)
+      }
+
       try {
         val scalaVirtualMachine = new ScalaVirtualMachine(
           virtualMachine,
@@ -51,28 +78,9 @@ trait VirtualMachineFixtures extends LogLike {
           !suspend
         })
 
-        // Wait for our specific entrypoint to be loaded
-        var mainClassReady = false
-        eventManager.addEventHandler(ClassPrepareEventType, e => {
-          val classPrepareEvent = e.asInstanceOf[ClassPrepareEvent]
-          val referenceType = classPrepareEvent.referenceType()
-          val referenceTypeName = referenceType.name()
-          logger.debug(s"Received new class: $referenceTypeName")
-
-          if (referenceTypeName == className) {
-            logger.debug(s"$className is now ready!")
-            mainClassReady = true
-          }
-
-          !suspend
-        })
-
         loopingTaskRunner.start()
-        while (!virtualMachineReady || !mainClassReady) { Thread.sleep(1) }
+        while (!virtualMachineReady) { Thread.sleep(1) }
 
-        // NOTE: Need a slight delay for information to be ready (even after
-        //       waiting for the start event)
-        //Thread.sleep(100)
         testCode(virtualMachine, scalaVirtualMachine)
       } finally {
         loopingTaskRunner.stop()

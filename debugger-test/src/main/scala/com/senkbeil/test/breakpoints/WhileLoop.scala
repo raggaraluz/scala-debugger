@@ -12,5 +12,9 @@ object WhileLoop {
     while (count < 10) {
       count += 1 // Verify that this is reached via breakpoint 10 times
     }
+
+    while (count > 0) {
+      count -= 1 // Verify that this is reached via breakpoint 10 times
+    }
   }
 }

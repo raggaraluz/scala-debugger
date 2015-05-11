@@ -21,10 +21,12 @@ class ScalaVirtualMachineSpec extends FunSpec with Matchers
     extends ClassManager(mockVirtualMachine, loadClasses = false)
   private val mockClassManager = mock[ZeroArgClassManager]
 
+  // Scala virtual machine sets up event requests on construction
   private val scalaVirtualMachine = new ScalaVirtualMachine(
     mockVirtualMachine,
     mockLoopingTaskRunner
   ) {
+    override protected def initializeEvents(): Unit = {}
     override lazy val classManager: ClassManager = mockClassManager
     override protected def findMainThread(): Option[ThreadReference] =
       Some(mockMainThreadReference)
@@ -65,6 +67,7 @@ class ScalaVirtualMachineSpec extends FunSpec with Matchers
           mockVirtualMachine,
           mockLoopingTaskRunner
         ) {
+          override protected def initializeEvents(): Unit = {}
           override lazy val classManager: ClassManager = mockClassManager
           override protected def findMainThread(): Option[ThreadReference] =
             None
@@ -215,6 +218,7 @@ class ScalaVirtualMachineSpec extends FunSpec with Matchers
           mockVirtualMachine,
           mockLoopingTaskRunner
         ) {
+          override protected def initializeEvents(): Unit = {}
           override lazy val classManager: ClassManager = mockClassManager
           override protected def findMainThread(): Option[ThreadReference] =
             None

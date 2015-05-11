@@ -13,5 +13,9 @@ object ForComprehension {
     for (i <- 1 to 10) {
       count = i // Verify that this is reached via breakpoint 10 times
     }
+
+    for (i <- 1 to 10) {
+      count = i + 1 // Verify that this is reached via breakpoint 10 times
+    }
   }
 }

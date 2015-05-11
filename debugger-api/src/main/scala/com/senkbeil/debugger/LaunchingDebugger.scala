@@ -39,6 +39,13 @@ class LaunchingDebugger(
   def isRunning: Boolean = virtualMachine.nonEmpty
 
   /**
+   * Retrieves the process of the launched JVM.
+   *
+   * @return The Java process representing the launched JVM
+   */
+  def process: Option[Process] = virtualMachine.map(_.process())
+
+  /**
    * Starts the debugger, resulting in launching a new process to connect to.
    *
    * @param newVirtualMachineFunc The function to be invoked once the process

@@ -206,5 +206,45 @@ class LaunchingDebuggerSpec extends FunSpec with Matchers
         launchingDebugger.stop()
       }
     }
+
+    describe("#process") {
+      it("should return Some process if the JVM has been launched") {
+        val launchingDebugger = new TestLaunchingDebugger(shouldJdiLoad = true)
+
+        // MOCK ===============================================================
+        val mockLaunchingConnector = mock[LaunchingConnector]
+
+        (mockLaunchingConnector.name _).expects()
+          .returning("com.sun.jdi.CommandLineLaunch")
+
+        (mockVirtualMachineManager.launchingConnectors _).expects()
+          .returning(Seq(mockLaunchingConnector).asJava)
+
+        (mockLaunchingConnector.defaultArguments _).expects().returning(Map(
+          "main" -> createConnectorArgumentMock(setter = true),
+          "options" -> createConnectorArgumentMock(
+            setter = true, getter = Some("")
+          ),
+          "suspend" -> createConnectorArgumentMock(setter = true)
+        ).asJava)
+
+        (mockLaunchingConnector.launch _).expects(*)
+          .returning(mockVirtualMachine).once()
+        // MOCK ===============================================================
+
+        val mockProcess = mock[Process]
+        (mockVirtualMachine.process _).expects().returning(mockProcess).once()
+
+        launchingDebugger.start((_) => {})
+
+        launchingDebugger.process should be (Some(mockProcess))
+      }
+
+      it("should return None if the JVM has not been launched") {
+        val launchingDebugger = new TestLaunchingDebugger(shouldJdiLoad = true)
+
+        launchingDebugger.process should be (None)
+      }
+    }
   }
 }

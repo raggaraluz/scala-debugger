@@ -365,6 +365,43 @@ class ClassManagerSpec extends FunSpec with Matchers with BeforeAndAfter
       }
     }
 
+    describe("#fileNameForReferenceType") {
+      it("should return the file name if the source paths are convergent") {
+        val expected = "some source file"
+        val mockReferenceType = mock[ReferenceType]
+        (mockReferenceType.sourcePaths _).expects(*)
+          .returning(Seq(expected).asJava).once()
+
+        val actual = classManager.fileNameForReferenceType(mockReferenceType)
+
+        actual should be (expected)
+      }
+
+      it("should return ARRAY if the source paths are divergent and is an array") {
+        val expected = "ARRAY"
+        val mockReferenceType = mock[ReferenceType]
+        (mockReferenceType.sourcePaths _).expects(*)
+          .returning(Seq("a", "b").asJava).once()
+        (mockReferenceType.name _).expects().returning("somearray[]").once()
+
+        val actual = classManager.fileNameForReferenceType(mockReferenceType)
+
+        actual should be (expected)
+      }
+
+      it("should return UNKNOWN if the source paths are divergent and is not an array") {
+        val expected = "UNKNOWN"
+        val mockReferenceType = mock[ReferenceType]
+        (mockReferenceType.sourcePaths _).expects(*)
+          .returning(Seq("a", "b").asJava).once()
+        (mockReferenceType.name _).expects().returning("someunknown").once()
+
+        val actual = classManager.fileNameForReferenceType(mockReferenceType)
+
+        actual should be (expected)
+      }
+    }
+
     describe("#allJavaFileNames") {
       it("should return all file names that have .java as the extension") {
         val totalFileNamesPerExtension = 3

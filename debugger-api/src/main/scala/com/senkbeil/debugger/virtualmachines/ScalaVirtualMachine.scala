@@ -8,7 +8,6 @@ import com.senkbeil.debugger.wrappers._
 import com.senkbeil.utils.LogLike
 import com.sun.jdi._
 import com.sun.jdi.event.ClassPrepareEvent
-import com.sun.jdi.request.EventRequest
 
 import scala.collection.JavaConverters._
 
@@ -29,10 +28,19 @@ class ScalaVirtualMachine(
   private def vmString(message: String) = s"(Scala VM $uniqueId) $message"
 
   logger.debug(vmString("Initializing Scala virtual machine!"))
-  _virtualMachine.enableClassPrepareEvents()
-  _virtualMachine.enableThreadStartEvents()
-  _virtualMachine.enableThreadDeathEvents()
-  _virtualMachine.enableExceptionEvents()
+
+  /**
+   * Initializes extra events that this virtual machine should receive.
+   *
+   * @note Override this method to alter the extra events received!
+   */
+  protected def initializeEvents(): Unit = {
+    _virtualMachine.enableClassPrepareEvents()
+    _virtualMachine.enableThreadStartEvents()
+    _virtualMachine.enableThreadDeathEvents()
+    _virtualMachine.enableExceptionEvents()
+  }
+  initializeEvents()
 
   // Lazily-load the class manager (and as a result, the other managers) to
   // give enough time to retrieve all of the classes
@@ -50,15 +58,25 @@ class ScalaVirtualMachine(
     _eventManager.addResumingEventHandler(VMStartEventType, _ => {
       logger.trace(vmString("Refreshing all class references!"))
       classManager.refreshAllClasses()
+
+      logger.trace(vmString("Applying any pending breakpoints for references!"))
+      classManager.allFileNames
+        .foreach(breakpointManager.processPendingBreakpoints)
     })
 
     // Mark class prepare events to signal refreshing our classes
     _eventManager.addResumingEventHandler(ClassPrepareEventType, e => {
       val classPrepareEvent = e.asInstanceOf[ClassPrepareEvent]
       val referenceType = classPrepareEvent.referenceType()
+      val referenceTypeName = referenceType.name()
+      val fileName = classManager.fileNameForReferenceType(referenceType)
 
-      logger.trace(vmString(s"Received new class: ${referenceType.name()}"))
+      logger.trace(vmString(s"Received new class: $referenceTypeName"))
       classManager.refreshClass(referenceType)
+
+      logger.trace(vmString(
+        s"Processing any pending breakpoints for $referenceTypeName!"))
+      breakpointManager.processPendingBreakpoints(fileName)
     })
 
     _eventManager

@@ -98,10 +98,7 @@ class ClassManager(
    * @param referenceType The reference type used for the refresh
    */
   def refreshClass(referenceType: ReferenceType): Unit = {
-    val fileName = singleSourcePath(referenceType).getOrElse(
-      if (referenceType.name().endsWith("[]")) DefaultArrayGroupName
-      else DefaultUnknownGroupName
-    )
+    val fileName = fileNameForReferenceType(referenceType)
 
     logger.trace(s"Refreshing ${referenceType.name()} in $fileName!")
 
@@ -109,6 +106,20 @@ class ClassManager(
     val existingClasses = fileToClasses.getOrElse(fileName, Nil)
     fileToClasses.put(fileName, existingClasses :+ referenceType)
   }
+
+  /**
+   * Retrieves the file name for the associated reference type.
+   *
+   * @param referenceType The reference type whose file name to retrieve
+   *
+   * @return The file name if it exists, otherwise ARRAY if the reference type
+   *         is an array or UNKNOWN if it is not
+   */
+  def fileNameForReferenceType(referenceType: ReferenceType): String =
+    singleSourcePath(referenceType).getOrElse(
+      if (referenceType.name().endsWith("[]")) DefaultArrayGroupName
+      else DefaultUnknownGroupName
+    )
 
   /**
    * Retrieves a list of available (cached) Scala file names.
