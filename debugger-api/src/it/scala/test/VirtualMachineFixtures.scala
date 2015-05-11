@@ -9,6 +9,7 @@ import com.sun.jdi.VirtualMachine
 import com.sun.jdi.event.ClassPrepareEvent
 
 import scala.concurrent.future
+import scala.util.Try
 
 /**
  * Provides fixture methods to provide virtual machines running specified
@@ -41,8 +42,8 @@ trait VirtualMachineFixtures extends LogLike {
         val path = java.nio.file.Files.createTempFile("jvmfixture", ".out.log")
         logger.debug(s"Creating JVM Output File: ${path.toString}")
 
-        java.nio.file.Files.copy(process.getInputStream, path,
-          java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        Try(java.nio.file.Files.copy(process.getInputStream, path,
+          java.nio.file.StandardCopyOption.REPLACE_EXISTING))
 
         logger.debug(s"Deleting JVM Output File: ${path.toString}")
         java.nio.file.Files.delete(path)
@@ -51,8 +52,8 @@ trait VirtualMachineFixtures extends LogLike {
         val path = java.nio.file.Files.createTempFile("jvmfixture", ".err.log")
         logger.debug(s"Creating JVM Error File: ${path.toString}")
 
-        java.nio.file.Files.copy(process.getErrorStream, path,
-          java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        Try(java.nio.file.Files.copy(process.getErrorStream, path,
+          java.nio.file.StandardCopyOption.REPLACE_EXISTING))
 
         logger.debug(s"Deleting JVM Error File: ${path.toString}")
         java.nio.file.Files.delete(path)
