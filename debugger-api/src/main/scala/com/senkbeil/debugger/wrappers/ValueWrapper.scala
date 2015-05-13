@@ -31,13 +31,33 @@ class ValueWrapper(private val _value: Value) {
   val isPrimitive: Boolean = _value.isInstanceOf[PrimitiveValue]
 
   /**
-   * Retrieves the actual value represented by this value.
+   * Retrieves the actual value representing this value.
+   *
+   * @throws Throwable If value is neither a primitive nor an object
+   *
+   * @return The value instance if available
+   */
+  def value(): Any = {
+    if (isPrimitive) primitiveValue()
+    else if (isObject) objectValue()
+    else throw new Throwable(s"Unknown value '${_value.toString}'!")
+  }
+
+  /**
+   * Retrieves the actual value representing this value.
+   *
+   * @return Some(value) if available, otherwise None
+   */
+  def valueAsOption(): Option[Any] = Try(this.value()).toOption
+
+  /**
+   * Retrieves the actual primitive value represented by this value.
    *
    * @throws IllegalArgumentException If the value is not a primitive value
    *
    * @return The primitive value represented by this instance
    */
-  def value(): AnyVal = {
+  def primitiveValue(): AnyVal = {
     require(isPrimitive, "Value is not a primitive!")
 
     _value match {
@@ -55,11 +75,36 @@ class ValueWrapper(private val _value: Value) {
   }
 
   /**
-   * Retrieves the actual value as an option.
+   * Retrieves the actual primitive value as an option.
+   *
+   * @return Some primitive value if available, otherwise None
+   */
+  def primitiveValueAsOption(): Option[AnyVal] =
+    Try(this.primitiveValue()).toOption
+
+  /**
+   * Retrieves a representation of the object.
+   *
+   * @throws IllegalArgumentException If the value is not an object reference
+   *
+   * @return The value representing the object reference (varies by type)
+   */
+  def objectValue(): AnyRef = {
+    require(isObject, "Value is not an object!")
+
+    _value match {
+      case stringReference: StringReference => stringReference.value()
+      case arrayReference: ArrayReference => arrayReference.getValues
+      case _ => _value.toString
+    }
+  }
+
+  /**
+   * Retrieves a representation of the object.
    *
    * @return Some value if available, otherwise None
    */
-  def valueAsOption(): Option[AnyVal] = Try(this.value()).toOption
+  def objectValueAsOption(): Option[AnyRef] = Try(this.objectValue()).toOption
 
   /**
    * Retrieves the immediate visible fields and associated values for this

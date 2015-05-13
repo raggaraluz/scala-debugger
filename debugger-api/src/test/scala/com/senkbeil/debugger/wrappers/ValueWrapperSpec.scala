@@ -5,6 +5,8 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, FunSpec}
 import test.JDIMockHelpers
 
+import scala.collection.JavaConverters._
+
 class ValueWrapperSpec extends FunSpec with Matchers with MockFactory
   with JDIMockHelpers
 {
@@ -46,12 +48,132 @@ class ValueWrapperSpec extends FunSpec with Matchers with MockFactory
     }
 
     describe("#value") {
+      it("should invoke primitiveValue if wrapped value is a primitive") {
+        val expected = 3
+
+        val actual = new ValueWrapper(stub[PrimitiveValue]) {
+          override def primitiveValue(): AnyVal = expected
+        }.value()
+
+        actual should be (expected)
+      }
+
+      it("should invoke objectValue if wrapped value is an object") {
+        val expected = "string value"
+
+        val actual = new ValueWrapper(stub[ObjectReference]) {
+          override def objectValue(): AnyRef = expected
+        }.value()
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if wrapped value is not an object or primitive") {
+        intercept[Throwable] {
+          new ValueWrapper(stub[Value]).value()
+        }
+      }
+    }
+
+    describe("#valueAsOption") {
+      it("should return Some(value) if wrapped value is a primitive") {
+        val expected = Some(3)
+
+        val actual = new ValueWrapper(stub[PrimitiveValue]) {
+          override def primitiveValue(): AnyVal = expected.get
+        }.valueAsOption()
+
+        actual should be (expected)
+      }
+
+      it("should return Some(value) if wrapped value is an object") {
+        val expected = Some("string value")
+
+        val actual = new ValueWrapper(stub[ObjectReference]) {
+          override def objectValue(): AnyRef = expected.get
+        }.valueAsOption()
+
+        actual should be (expected)
+      }
+
+      it("should return None if wrapped value is not an object or primitive") {
+        val expected = None
+        val actual = new ValueWrapper(stub[Value]).valueAsOption()
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#objectValue") {
+      it("should return the actual string if the value is a string reference") {
+        val expected = "some string"
+
+        val mockStringReference = mock[StringReference]
+        (mockStringReference.value _).expects().returning(expected).once()
+
+        val actual = new ValueWrapper(mockStringReference).objectValue()
+
+        actual should be (expected)
+      }
+
+      it("should return an array of values if the value is an array reference") {
+        val expected = List(mock[Value], mock[Value], mock[Value])
+
+        val mockArrayReference = mock[ArrayReference]
+        (mockArrayReference.getValues: Function0[java.util.List[Value]])
+          .expects().returning(expected.asJava).once()
+
+        val actual = new ValueWrapper(mockArrayReference).objectValue()
+          .asInstanceOf[java.util.List[Value]]
+
+        actual should contain theSameElementsAs expected
+      }
+
+      it("should return the #toString() of the value if there is no specific case") {
+        val mockObjectReference = mock[ObjectReference]
+        val expected = mockObjectReference.toString
+
+        val actual = new ValueWrapper(mockObjectReference).objectValue()
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if the value is not an object") {
+        intercept[IllegalArgumentException] {
+          new ValueWrapper(mock[PrimitiveValue]).objectValue()
+        }
+      }
+    }
+
+    describe("#objectValueAsOption") {
+      it("should return Some(value) if wrapped value has an object value") {
+        val expected = Some("string value")
+
+        val value = mock[StringReference]
+        (value.value _).expects().returning(expected.get).once()
+
+        val actual = new ValueWrapper(value).objectValueAsOption()
+          .map(_.asInstanceOf[String])
+
+        actual should be (expected)
+      }
+
+      it("should return None if wrapped value does not have an object value") {
+        val expected = None
+        val actual =
+          new ValueWrapper(stub[PrimitiveValue]).objectValueAsOption()
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#primitiveValue") {
       it("should return a boolean if wrapping a BooleanValue") {
         val expected: Boolean = true
 
         val value = createPrimitiveValueStub(expected)
 
-        val actual = new ValueWrapper(value).value().asInstanceOf[Boolean]
+        val actual = new ValueWrapper(value).primitiveValue().asInstanceOf[Boolean]
 
         actual should be (expected)
       }
@@ -61,7 +183,7 @@ class ValueWrapperSpec extends FunSpec with Matchers with MockFactory
 
         val value = createPrimitiveValueStub(expected)
 
-        val actual = new ValueWrapper(value).value().asInstanceOf[Byte]
+        val actual = new ValueWrapper(value).primitiveValue().asInstanceOf[Byte]
 
         actual should be (expected)
       }
@@ -71,7 +193,7 @@ class ValueWrapperSpec extends FunSpec with Matchers with MockFactory
 
         val value = createPrimitiveValueStub(expected)
 
-        val actual = new ValueWrapper(value).value().asInstanceOf[Char]
+        val actual = new ValueWrapper(value).primitiveValue().asInstanceOf[Char]
 
         actual should be (expected)
       }
@@ -81,7 +203,7 @@ class ValueWrapperSpec extends FunSpec with Matchers with MockFactory
 
         val value = createPrimitiveValueStub(expected)
 
-        val actual = new ValueWrapper(value).value().asInstanceOf[Double]
+        val actual = new ValueWrapper(value).primitiveValue().asInstanceOf[Double]
 
         actual should be (expected)
       }
@@ -91,7 +213,7 @@ class ValueWrapperSpec extends FunSpec with Matchers with MockFactory
 
         val value = createPrimitiveValueStub(expected)
 
-        val actual = new ValueWrapper(value).value().asInstanceOf[Float]
+        val actual = new ValueWrapper(value).primitiveValue().asInstanceOf[Float]
 
         actual should be (expected)
       }
@@ -101,7 +223,7 @@ class ValueWrapperSpec extends FunSpec with Matchers with MockFactory
 
         val value = createPrimitiveValueStub(expected)
 
-        val actual = new ValueWrapper(value).value().asInstanceOf[Int]
+        val actual = new ValueWrapper(value).primitiveValue().asInstanceOf[Int]
 
         actual should be (expected)
       }
@@ -111,7 +233,7 @@ class ValueWrapperSpec extends FunSpec with Matchers with MockFactory
 
         val value = createPrimitiveValueStub(expected)
 
-        val actual = new ValueWrapper(value).value().asInstanceOf[Long]
+        val actual = new ValueWrapper(value).primitiveValue().asInstanceOf[Long]
 
         actual should be (expected)
       }
@@ -121,7 +243,7 @@ class ValueWrapperSpec extends FunSpec with Matchers with MockFactory
 
         val value = createPrimitiveValueStub(expected)
 
-        val actual = new ValueWrapper(value).value().asInstanceOf[Short]
+        val actual = new ValueWrapper(value).primitiveValue().asInstanceOf[Short]
 
         actual should be (expected)
       }
@@ -130,7 +252,7 @@ class ValueWrapperSpec extends FunSpec with Matchers with MockFactory
         intercept[IllegalArgumentException] {
           // TODO: Investigate creating a real value without needing a
           //       VirtualMachine instance
-          new ValueWrapper(stub[ObjectReference]).value()
+          new ValueWrapper(stub[ObjectReference]).primitiveValue()
         }
       }
 
@@ -139,26 +261,27 @@ class ValueWrapperSpec extends FunSpec with Matchers with MockFactory
           // TODO: Investigate creating a real value without needing a
           //       VirtualMachine instance
           // Represents an unknown primitive value that we are not checking
-          new ValueWrapper(stub[PrimitiveValue]).value()
+          new ValueWrapper(stub[PrimitiveValue]).primitiveValue()
         }
       }
     }
 
-    describe("#valueAsOption") {
-      it("should return Some(value) if wrapped value has a value") {
+    describe("#primitiveValueAsOption") {
+      it("should return Some(value) if wrapped value has a primitive value") {
         val expected = Some(true)
 
         val value = createPrimitiveValueStub(expected.get)
 
-        val actual = new ValueWrapper(value).valueAsOption()
+        val actual = new ValueWrapper(value).primitiveValueAsOption()
           .map(_.asInstanceOf[Boolean])
 
         actual should be (expected)
       }
 
-      it("should return None if wrapped value does not have a value") {
+      it("should return None if wrapped value does not have a primitive value") {
         val expected = None
-        val actual = new ValueWrapper(stub[ObjectReference]).valueAsOption()
+        val actual =
+          new ValueWrapper(stub[ObjectReference]).primitiveValueAsOption()
 
         actual should be (expected)
       }
@@ -222,7 +345,7 @@ class ValueWrapperSpec extends FunSpec with Matchers with MockFactory
 
       it("should throw an exception if not an object reference") {
         intercept[Throwable] {
-          new ValueWrapper(stub[PrimitiveValue]).value()
+          new ValueWrapper(stub[PrimitiveValue]).primitiveValue()
         }
       }
     }
