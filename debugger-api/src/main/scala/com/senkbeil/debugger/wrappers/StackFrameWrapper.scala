@@ -20,10 +20,37 @@ class StackFrameWrapper(private val _stackFrame: StackFrame) extends LogLike {
    * @return Some object reference if retrieved, otherwise None
    */
   def thisObjectAsOption: Option[ObjectReference] =
-    Try(_stackFrame.thisObject()) match {
-      case Success(obj) => Some(obj)
-      case Failure(ex) => None
-    }
+    Try(_stackFrame.thisObject()).toOption
+
+  /**
+   * Extracts the value out of the try, or returns null if not available.
+   *
+   * @param value The value (wrapped in a Try) to extract
+   *
+   * @return The value instance if available, otherwise null
+   */
+  private def extractValue(value: Try[Value]): Value = value match {
+    // Successfully retrieved local variable value, so just return it
+    case Success(v) => v
+
+    // Failed to retrieve value of local variable, so log and return null
+    case Failure(ex) =>
+      logger.throwable(ex)
+      null
+  }
+
+  /**
+   * Retrieves the specified local variable and its value for the underlying
+   * stack frame.
+   *
+   * @param name The name of the local variable to retrieve
+   *
+   * @return Some tuple of local variable and value if available, otherwise None
+   */
+  def localVisibleVariable(name: String): Option[(LocalVariable, Value)] =
+    Try(_stackFrame.visibleVariableByName(name)).toOption.map(variable =>
+      variable -> extractValue(Try(_stackFrame.getValue(variable)))
+    )
 
   /**
    * Retrieves local variables and their values for the underlying stack frame.
@@ -34,16 +61,26 @@ class StackFrameWrapper(private val _stackFrame: StackFrame) extends LogLike {
     Try(_stackFrame.visibleVariables()).map(_.asScala).getOrElse(Nil)
       .filterNot(_.isArgument)
       .map(variable =>
-        variable -> (Try(_stackFrame.getValue(variable)) match {
-          // Successfully retrieved local variable value, so just return it
-          case Success(v) => v
-
-          // Failed to retrieve value of local variable, so log and return null
-          case Failure(ex) =>
-            logger.throwable(ex)
-            null
-        })
+        variable -> extractValue(Try(_stackFrame.getValue(variable)))
       ).toMap
+
+  /**
+   * Retrieves the specified local variable and its value for the underlying
+   * stack frame.
+   *
+   * @param name The name of the local variable to retrieve
+   *
+   * @return Some tuple of local variable and value if available, otherwise None
+   */
+  def thisVisibleField(name: String): Option[(Field, Value)] = {
+    val stackThisObject = thisObjectAsOption.map(_.referenceType())
+
+    stackThisObject.flatMap(stackThisObject =>
+      Try(stackThisObject.fieldByName(name)).toOption
+    ).map(field =>
+      (field, Try(stackThisObject.get.getValue(field)).getOrElse(null))
+    )
+  }
 
   /**
    * Retrieves fields and values for the "this" object contained in the
@@ -62,14 +99,7 @@ class StackFrameWrapper(private val _stackFrame: StackFrame) extends LogLike {
     // Attempt to retrieve all visible fields and build a map of field -> value
     Try(stackThisObject.referenceType().visibleFields())
       .map(_.asScala).getOrElse(Nil)
-      .map(field => field -> (Try(stackThisObject.getValue(field)) match {
-        // Successfully retrieved field value, so just return it
-        case Success(v) => v
-
-        // Failed to retrieve value of field, so log and return null
-        case Failure(ex) =>
-          logger.throwable(ex)
-          null
-      })).toMap
+      .map(field => field -> extractValue(Try(stackThisObject.getValue(field))))
+      .toMap
   }
 }

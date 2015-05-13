@@ -37,6 +37,20 @@ class StackFrameWrapperSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#localVisibleVariable") {
+      it("should return None if unable to retrieve the variable") {
+        fail()
+      }
+
+      it("should return null for the value if unable to retrieve it") {
+        fail()
+      }
+
+      it("should return Some tuple with the variable and value if successful") {
+        fail()
+      }
+    }
+
     describe("#localVisibleVariableMap") {
       it("should return an empty map if unable to retrieve variables") {
         val expected = Map[LocalVariable, Value]()
@@ -109,6 +123,24 @@ class StackFrameWrapperSpec extends FunSpec with Matchers with MockFactory
         val actual = new StackFrameWrapper(stackFrame).localVisibleVariableMap()
 
         actual should be (expected)
+      }
+    }
+
+    describe("#thisVisibleField") {
+      it("should return an empty map if 'this' is unavailable") {
+        fail()
+      }
+
+      it("should return None if unable to retrieve the field") {
+        fail()
+      }
+
+      it("should return null for the value if unable to retrieve it") {
+        fail()
+      }
+
+      it("should return Some tuple with the field and value if successful") {
+        fail()
       }
     }
 
