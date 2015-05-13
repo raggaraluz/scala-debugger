@@ -20,10 +20,52 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
   )
 
   describe("StackFrameWrapper") {
-    it("should be able to set breakpoints within while loops") {
+    it("should be able to analyze this object variables") {
       val testClass = "com.senkbeil.test.misc.Variables"
       val testFile = scalaClassStringToFileString(testClass)
-      val lastLine = 26
+      val lastLine = 30
+
+      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        // Add a breakpoint after all of our variables
+        s.breakpointManager.setLineBreakpoint(testFile, lastLine)
+
+        @volatile var variableMap: Option[Map[String, Any]] = None
+        s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
+          val breakpointEvent = e.asInstanceOf[BreakpointEvent]
+
+          import com.senkbeil.debugger.wrappers._
+          val threadReference = breakpointEvent.thread()
+          val currentFrame = threadReference.frame(0)
+
+          // Retrieve the local variables at the end of the program
+          variableMap = Some(currentFrame.thisVisibleFieldMap().map(v =>
+            (v._1.name(), Try(v._2.value()).getOrElse(null))
+          ).map(v => {
+            // Process any arrays before the VM is closed
+            val isArray = v._2 != null &&
+              Try(v._2.asInstanceOf[java.util.List[Value]]).isSuccess
+            (v._1, if (isArray) v._2.toString else v._2)
+          }))
+        })
+
+        logTimeTaken(eventually {
+          assert(variableMap.nonEmpty, "Breakpoint not hit yet!")
+          val vMap = variableMap.get
+
+          vMap("z1") should be (1)
+
+          val z2String = vMap("z2").asInstanceOf[String]
+          z2String should be ("something")
+
+          vMap("z3").asInstanceOf[AnyRef] should be (null)
+        })
+      }
+    }
+
+    it("should be able to analyze local variables") {
+      val testClass = "com.senkbeil.test.misc.Variables"
+      val testFile = scalaClassStringToFileString(testClass)
+      val lastLine = 30
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
         // Add a breakpoint after all of our variables
@@ -48,7 +90,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
           }))
         })
 
-        eventually {
+        logTimeTaken(eventually {
           assert(variableMap.nonEmpty, "Breakpoint not hit yet!")
           val vMap = variableMap.get
 
@@ -74,7 +116,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
           kString should include ("com.senkbeil.test.misc.Variables$One")
           kString should include ("java.lang.Integer")
           kString should include ("java.lang.Boolean")
-        }
+        })
       }
     }
   }

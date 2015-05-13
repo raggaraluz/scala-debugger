@@ -4,11 +4,15 @@ package com.senkbeil.test.misc
  * Provides test of examining variable values.
  *
  * @note This was lifted from ensime-server, which in turn lifted it from
- *       the Scala IDE project!
+ *       the Scala IDE project! Modified to accommodate additional testing.
  *
  * @note Should have a class name of com.senkbeil.test.misc.Variables
  */
 object Variables {
+  val z1 = 1
+  val z2 = "something"
+  val z3 = null
+
   def main(args: Array[String]) {
     val a = true
     val b = 'c'
@@ -31,6 +35,6 @@ object Variables {
   object NullToString { override def toString = null }
 
   /** No-op. */
-  def noop[T](a: T): T = a
+  def noop[T](a: T): Unit = {}
 }
 
