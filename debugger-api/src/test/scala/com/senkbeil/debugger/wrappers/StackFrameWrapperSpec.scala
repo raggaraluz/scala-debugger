@@ -39,15 +39,55 @@ class StackFrameWrapperSpec extends FunSpec with Matchers with MockFactory
 
     describe("#localVisibleVariable") {
       it("should return None if unable to retrieve the variable") {
-        fail()
+        val expected = None
+        val mockStackFrame = mock[StackFrame]
+
+        // Can throw AbsentInformationException, InvalidStackFrameException,
+        // and NativeMethodException
+        (mockStackFrame.visibleVariableByName _).expects(*)
+          .throwing(new Throwable)
+
+        val actual =
+          new StackFrameWrapper(mockStackFrame).localVisibleVariable("")
+
+        actual should be (expected)
       }
 
       it("should return null for the value if unable to retrieve it") {
-        fail()
+        val expected = null
+        val mockStackFrame = mock[StackFrame]
+
+        val mockLocalVariable = mock[LocalVariable]
+        (mockStackFrame.visibleVariableByName _).expects(*)
+          .returning(mockLocalVariable)
+
+        // Can throw IllegalArgumentException and InvalidStackFrameException
+        (mockStackFrame.getValue _).expects(mockLocalVariable)
+          .throwing(new Throwable)
+
+        val actual =
+          new StackFrameWrapper(mockStackFrame).localVisibleVariable("").get._2
+
+        actual should be (expected)
       }
 
       it("should return Some tuple with the variable and value if successful") {
-        fail()
+        val mockLocalVariable = mock[LocalVariable]
+        val mockValue = mock[Value]
+
+        val expected = Some((mockLocalVariable, mockValue))
+
+        val mockStackFrame = mock[StackFrame]
+        (mockStackFrame.visibleVariableByName _).expects(*)
+          .returning(mockLocalVariable)
+
+        (mockStackFrame.getValue _).expects(mockLocalVariable)
+          .returning(mockValue)
+
+        val actual =
+          new StackFrameWrapper(mockStackFrame).localVisibleVariable("")
+
+        actual should be (expected)
       }
     }
 
@@ -127,20 +167,86 @@ class StackFrameWrapperSpec extends FunSpec with Matchers with MockFactory
     }
 
     describe("#thisVisibleField") {
-      it("should return an empty map if 'this' is unavailable") {
-        fail()
+      it("should return None if 'this' is unavailable") {
+        val expected = None
+
+        val mockStackFrame = mock[StackFrame]
+
+        // Can throw InvalidStackFrameException
+        (mockStackFrame.thisObject _).expects().throwing(new Throwable)
+
+        val actual = new StackFrameWrapper(mockStackFrame).thisVisibleField("")
+
+        actual should be (expected)
       }
 
       it("should return None if unable to retrieve the field") {
-        fail()
+        val expected = None
+
+        val mockReferenceType = mock[ReferenceType]
+
+        // Can throw ClassNotPreparedException
+        (mockReferenceType.fieldByName _).expects(*).throwing(new Throwable)
+
+        val mockStackFrame = mock[StackFrame]
+        (mockStackFrame.thisObject _).expects().returning({
+          val mockObjectReference = mock[ObjectReference]
+          (mockObjectReference.referenceType _).expects()
+            .returning(mockReferenceType)
+          mockObjectReference
+        })
+
+        val actual = new StackFrameWrapper(mockStackFrame).thisVisibleField("")
+
+        actual should be (expected)
       }
 
       it("should return null for the value if unable to retrieve it") {
-        fail()
+        val expected = null
+
+        val mockField = mock[Field]
+        val mockReferenceType = mock[ReferenceType]
+        (mockReferenceType.fieldByName _).expects(*).returning(mockField)
+
+        // Can throw IllegalArgumentException
+        (mockReferenceType.getValue _).expects(mockField)
+          .throwing(new Throwable)
+
+        val mockStackFrame = mock[StackFrame]
+        (mockStackFrame.thisObject _).expects().returning({
+          val mockObjectReference = mock[ObjectReference]
+          (mockObjectReference.referenceType _).expects()
+            .returning(mockReferenceType)
+          mockObjectReference
+        })
+
+        val actual =
+          new StackFrameWrapper(mockStackFrame).thisVisibleField("").get._2
+
+        actual should be (expected)
       }
 
       it("should return Some tuple with the field and value if successful") {
-        fail()
+        val mockField = mock[Field]
+        val mockValue = mock[Value]
+
+        val expected = Some((mockField, mockValue))
+
+        val mockReferenceType = mock[ReferenceType]
+        (mockReferenceType.fieldByName _).expects(*).returning(mockField)
+        (mockReferenceType.getValue _).expects(mockField).returning(mockValue)
+
+        val mockStackFrame = mock[StackFrame]
+        (mockStackFrame.thisObject _).expects().returning({
+          val mockObjectReference = mock[ObjectReference]
+          (mockObjectReference.referenceType _).expects()
+            .returning(mockReferenceType)
+          mockObjectReference
+        })
+
+        val actual = new StackFrameWrapper(mockStackFrame).thisVisibleField("")
+
+        actual should be (expected)
       }
     }
 
