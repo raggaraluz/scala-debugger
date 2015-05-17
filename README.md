@@ -20,3 +20,13 @@ Potential Gotchas
   connection. Switching my hostname to _locahost_ allowed the main process
   (and telnet) to connect and use the JVM process.
 
+Other Notes
+-----------
+
+- After observing IntelliJ's Scala plugin and the Scala IDE, it appears that
+  stepping into a frame is not as simple as one would like in Scala. The
+  process appears to use a series of hard-coded class and methods names to
+  filter out when stepping into the next frame. This is performed using a
+  series of step into and out of operations until the next valid location is
+  reached.
+
