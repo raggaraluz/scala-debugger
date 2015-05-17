@@ -6,6 +6,8 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import test.JDIMockHelpers
 
+import scala.collection.JavaConverters._
+
 class StepManagerSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
@@ -17,9 +19,32 @@ class StepManagerSpec extends FunSpec with Matchers
 
   private val stepManager = new StepManager(mockVirtualMachine)
 
+  private def expectDeleteStepRequests() = {
+    val mockStepRequests = Seq(mock[StepRequest]).asJava
+
+    (mockEventRequestManager.stepRequests _).expects()
+      .returning(mockStepRequests).once()
+    (mockEventRequestManager.deleteEventRequests _)
+      .expects(mockStepRequests).once()
+  }
+
   describe("StepManager") {
     describe("#stepOver") {
+      it("should remove any existing step requests") {
+        expectDeleteStepRequests()
+        val mockThreadReference = mock[ThreadReference]
+
+        (mockEventRequestManager.createStepRequest _).expects(
+          mockThreadReference,
+          StepRequest.STEP_LINE,
+          StepRequest.STEP_OVER
+        ).returning(stub[StepRequest]).once()
+
+        stepManager.stepOver(mockThreadReference)
+      }
+
       it("should send a request to step over the current line of execution") {
+        expectDeleteStepRequests()
         val mockThreadReference = mock[ThreadReference]
 
         (mockEventRequestManager.createStepRequest _).expects(
@@ -32,6 +57,7 @@ class StepManagerSpec extends FunSpec with Matchers
       }
 
       it("should add a count filter of 1 to the new step request") {
+        expectDeleteStepRequests()
         val mockStepRequest = mock[StepRequest]
 
         (mockEventRequestManager.createStepRequest _).expects(*, *, *)
@@ -44,6 +70,7 @@ class StepManagerSpec extends FunSpec with Matchers
       }
 
       it("should enable the step request") {
+        expectDeleteStepRequests()
         val mockStepRequest = mock[StepRequest]
 
         (mockEventRequestManager.createStepRequest _).expects(*, *, *)
@@ -57,7 +84,21 @@ class StepManagerSpec extends FunSpec with Matchers
     }
 
     describe("#stepInto") {
+      it("should remove any existing step requests") {
+        expectDeleteStepRequests()
+        val mockThreadReference = mock[ThreadReference]
+
+        (mockEventRequestManager.createStepRequest _).expects(
+          mockThreadReference,
+          StepRequest.STEP_LINE,
+          StepRequest.STEP_INTO
+        ).returning(stub[StepRequest]).once()
+
+        stepManager.stepInto(mockThreadReference)
+      }
+
       it("should send a request to step into the current line of execution") {
+        expectDeleteStepRequests()
         val mockThreadReference = mock[ThreadReference]
 
         (mockEventRequestManager.createStepRequest _).expects(
@@ -70,6 +111,7 @@ class StepManagerSpec extends FunSpec with Matchers
       }
 
       it("should add a count filter of 1 to the new step request") {
+        expectDeleteStepRequests()
         val mockStepRequest = mock[StepRequest]
 
         (mockEventRequestManager.createStepRequest _).expects(*, *, *)
@@ -82,6 +124,7 @@ class StepManagerSpec extends FunSpec with Matchers
       }
 
       it("should enable the step request") {
+        expectDeleteStepRequests()
         val mockStepRequest = mock[StepRequest]
 
         (mockEventRequestManager.createStepRequest _).expects(*, *, *)
@@ -95,7 +138,21 @@ class StepManagerSpec extends FunSpec with Matchers
     }
 
     describe("#stepOut") {
+      it("should remove any existing step requests") {
+        expectDeleteStepRequests()
+        val mockThreadReference = mock[ThreadReference]
+
+        (mockEventRequestManager.createStepRequest _).expects(
+          mockThreadReference,
+          StepRequest.STEP_LINE,
+          StepRequest.STEP_OUT
+        ).returning(stub[StepRequest]).once()
+
+        stepManager.stepOut(mockThreadReference)
+      }
+
       it("should send a request to step out of the current line of execution") {
+        expectDeleteStepRequests()
         val mockThreadReference = mock[ThreadReference]
 
         (mockEventRequestManager.createStepRequest _).expects(
@@ -108,6 +165,7 @@ class StepManagerSpec extends FunSpec with Matchers
       }
 
       it("should add a count filter of 1 to the new step request") {
+        expectDeleteStepRequests()
         val mockStepRequest = mock[StepRequest]
 
         (mockEventRequestManager.createStepRequest _).expects(*, *, *)
@@ -120,6 +178,7 @@ class StepManagerSpec extends FunSpec with Matchers
       }
 
       it("should enable the step request") {
+        expectDeleteStepRequests()
         val mockStepRequest = mock[StepRequest]
 
         (mockEventRequestManager.createStepRequest _).expects(*, *, *)

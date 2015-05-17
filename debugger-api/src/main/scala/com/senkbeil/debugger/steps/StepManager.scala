@@ -31,6 +31,9 @@ class StepManager(protected val _virtualMachine: VirtualMachine) {
     countFilter: Int = 1,
     enable: Boolean = true
   ): StepRequest = {
+    // Remove any existing step requests
+    eventRequestManager.deleteEventRequests(eventRequestManager.stepRequests())
+
     val stepRequest =
       eventRequestManager.createStepRequest(threadReference, size, depth)
 
