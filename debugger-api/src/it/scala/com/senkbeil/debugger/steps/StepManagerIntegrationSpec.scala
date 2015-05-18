@@ -169,7 +169,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
     describe("stepping into") {
       // TODO: This cannot be done (gets stuck in strings and classloaders)
       //       until we add filtering of Boxed types and Classloaders
-      ignore("should skip over each iteration") {
+      ignore("should enter all iterations except for comprehension") {
         val testClass = "com.senkbeil.test.steps.BasicIterations"
 
         // Start on first line of main method
@@ -200,7 +200,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
             stepMethod = s.stepManager.stepInto(_: ThreadReference),
             startingLine = startingLine,
             expectedReachableLines = expectedReachableLines,
-            //failIfNotExact = true,
+            failIfNotExact = true,
             maxDuration = (7, Seconds)
           )
         }
