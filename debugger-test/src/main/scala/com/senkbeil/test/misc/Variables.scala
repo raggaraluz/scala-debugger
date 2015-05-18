@@ -1,5 +1,7 @@
 package com.senkbeil.test.misc
 
+import com.senkbeil.test.helpers.Stubs._
+
 /**
  * Provides test of examining variable values.
  *
@@ -33,8 +35,5 @@ object Variables {
   case class One(s: String) { override def toString = s }
 
   object NullToString { override def toString = null }
-
-  /** No-op. */
-  def noop[T](a: T): Unit = {}
 }
 
