@@ -13,6 +13,9 @@ object Common {
       url("https://www.apache.org/licenses/LICENSE-2.0.html")
     ),
 
+    // Default version when not cross-compiling
+    scalaVersion := "2.10.5",
+
     crossScalaVersions := Seq("2.10.5", "2.11.6"),
 
     scalacOptions ++= Seq(

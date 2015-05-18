@@ -8,6 +8,8 @@ lazy val debuggerApi = project
   .settings(Common.settings: _*)
   .settings(Defaults.itSettings: _*)
   .settings(Seq(
+    name := "debugger-api",
+
     // NOTE: Fork needed to avoid mixing in sbt classloader, which is causing
     //       LinkageError to be thrown for JDI-based classes
     fork in Test := true,
@@ -52,6 +54,9 @@ lazy val root = project
   .in(file("."))
   .settings(Common.settings: _*)
   .settings(
-    name := "ScalaDebugger"
+    name := "ScalaDebugger",
+    // Do not publish the aggregation project
+    publishArtifact := false,
+    publishLocal := {}
   ).aggregate(debuggerApi, debuggerTest)
 
