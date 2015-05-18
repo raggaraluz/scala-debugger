@@ -40,6 +40,11 @@ lazy val debuggerApi = project
 lazy val debuggerTest = project
   .in(file("debugger-test"))
   .settings(Common.settings: _*)
+  .settings(
+    // Do not publish the test project
+    publishArtifact := false,
+    publishLocal := {}
+  )
 
 //
 // MAIN PROJECT CONFIGURATION
