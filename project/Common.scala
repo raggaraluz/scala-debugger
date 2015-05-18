@@ -6,7 +6,13 @@ object Common {
   def settings = Seq(
     version := "1.0.0",
 
-    //scalaVersion := "2.10.4",
+    organization := "com.senkbeil",
+
+    licenses += (
+      "Apache-2.0",
+      url("https://www.apache.org/licenses/LICENSE-2.0.html")
+    ),
+
     crossScalaVersions := Seq("2.10.5", "2.11.6"),
 
     scalacOptions ++= Seq(

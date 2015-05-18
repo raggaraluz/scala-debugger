@@ -1,4 +1,3 @@
-name := "ScalaDebugger"
 
 //
 // DEBUGGER API PROJECT CONFIGURATION
@@ -52,5 +51,7 @@ lazy val debuggerTest = project
 lazy val root = project
   .in(file("."))
   .settings(Common.settings: _*)
-  .aggregate(debuggerApi, debuggerTest)
+  .settings(
+    name := "ScalaDebugger"
+  ).aggregate(debuggerApi, debuggerTest)
 

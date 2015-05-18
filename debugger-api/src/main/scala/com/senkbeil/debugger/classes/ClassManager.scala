@@ -48,13 +48,6 @@ class ClassManager(
   def linesAndLocationsForFile(
     fileName: String
   ): Option[Map[Int, Seq[Location]]] = {
-    /**
-     * Retrieve the available locations for the specified reference type.
-     *
-     * @param referenceType The reference type whose locations to retrieve
-     *
-     * @return The list of available locations
-     */
     def linesForReferenceType(referenceType: ReferenceType): Seq[Location] = {
       Try(referenceType.allLineLocations())
         .map(_.asScala).getOrElse(Nil)

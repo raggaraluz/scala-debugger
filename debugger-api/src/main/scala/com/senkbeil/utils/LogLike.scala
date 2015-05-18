@@ -3,9 +3,8 @@ package com.senkbeil.utils
 import org.slf4j.{ Logger, LoggerFactory }
 
 /**
- * A trait for mixing in logging. This trait
- * exposes a {@link org.slf4j.Logger}
- * through a protected field called logger
+ * A trait for mixing in logging. This trait exposes an SLF4J logger through
+ * a protected field called logger.
  */
 trait LogLike {
   val loggerName = this.getClass.getName
