@@ -25,12 +25,13 @@ class LaunchingDebuggerSpec extends FunSpec with Matchers
   private val testJvmOptions = Seq("d", "e", "f")
   private val testSuspend = false
 
-  private implicit val mockVirtualMachineManager = mock[VirtualMachineManager]
+  private val mockVirtualMachineManager = mock[VirtualMachineManager]
 
   private class TestLaunchingDebugger(
     override val isAvailable: Boolean = true,
     private val shouldJdiLoad: Boolean = true
   ) extends LaunchingDebugger(
+    virtualMachineManager = mockVirtualMachineManager,
     className             = testClassName,
     commandLineArguments  = testCommandLineArguments,
     jvmOptions            = testJvmOptions,

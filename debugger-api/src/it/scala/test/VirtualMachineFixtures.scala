@@ -6,9 +6,8 @@ import com.senkbeil.debugger.events.EventType._
 import com.senkbeil.debugger.virtualmachines.ScalaVirtualMachine
 import com.senkbeil.utils.LogLike
 import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.ClassPrepareEvent
 
-import scala.concurrent.future
+import scala.concurrent.Future
 import scala.util.Try
 
 /**
@@ -24,7 +23,7 @@ trait VirtualMachineFixtures extends LogLike {
   )(
     testCode: (VirtualMachine, ScalaVirtualMachine) => Any
   ) = {
-    val launchingDebugger = new LaunchingDebugger(
+    val launchingDebugger = LaunchingDebugger(
       className = className,
       commandLineArguments = arguments,
       jvmOptions = Seq("-classpath", System.getProperty("java.class.path")),
@@ -38,7 +37,7 @@ trait VirtualMachineFixtures extends LogLike {
       val process = virtualMachine.process()
 
       import scala.concurrent.ExecutionContext.Implicits.global
-      future {
+      Future {
         val path = java.nio.file.Files.createTempFile("jvmfixture", ".out.log")
         logger.debug(s"Creating JVM Output File: ${path.toString}")
 
@@ -49,7 +48,7 @@ trait VirtualMachineFixtures extends LogLike {
         logger.debug(s"Deleting JVM Output File: ${path.toString}")
         java.nio.file.Files.delete(path)
       }
-      future {
+      Future {
         val path = java.nio.file.Files.createTempFile("jvmfixture", ".err.log")
         logger.debug(s"Creating JVM Error File: ${path.toString}")
 

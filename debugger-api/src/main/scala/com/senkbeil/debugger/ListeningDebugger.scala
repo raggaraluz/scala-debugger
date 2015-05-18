@@ -11,6 +11,38 @@ import com.sun.jdi._
 
 import scala.util.Try
 
+object ListeningDebugger {
+  /**
+   * Creates a new instance of the listening debugger. Defaults to using a
+   * single thread executor with one worker.
+   *
+   * @param virtualMachineManager The manager to use for virtual machine
+   *                              connectors
+   * @param address The address to use for remote JVMs to attach to this
+   *                debugger
+   * @param port The port to use for remote JVMs to attach to this debugger
+   * @param executorServiceFunc The function used to create a new executor
+   *                            service to use to spawn worker threads
+   * @param workers The total number of worker tasks to spawn
+   */
+  def apply(
+    address: String,
+    port: Int,
+    executorServiceFunc: () => ExecutorService =
+      () => Executors.newSingleThreadExecutor(),
+    workers: Int = 1
+  )(
+    implicit virtualMachineManager: VirtualMachineManager =
+      Bootstrap.virtualMachineManager()
+  ): ListeningDebugger = new ListeningDebugger(
+    virtualMachineManager,
+    address,
+    port,
+    executorServiceFunc,
+    workers
+  )
+}
+
 /**
  * Represents a debugger that listens for connections from remote JVMs.
  *
@@ -23,33 +55,13 @@ import scala.util.Try
  * @param virtualMachineManager The manager to use for virtual machine
  *                              connectors
  */
-class ListeningDebugger(
-  address: String,
-  port: Int,
-  executorServiceFunc: () => ExecutorService,
-  workers: Int
-)(
-  implicit virtualMachineManager: VirtualMachineManager =
-    Bootstrap.virtualMachineManager()
+class ListeningDebugger private[debugger] (
+  private val virtualMachineManager: VirtualMachineManager,
+  private val address: String,
+  private val port: Int,
+  private val executorServiceFunc: () => ExecutorService,
+  private val workers: Int
 ) extends Debugger with LogLike {
-  /**
-   * Creates a new ListeningDebugger with the specified address and port, using
-   * a single thread executor with one worker.
-   *
-   * @param address The address to use for remote JVMs to attach to this
-   *                debugger
-   * @param port The port to use for remote JVMs to attach to this debugger
-   *
-   * @param virtualMachineManager The manager to use for virtual machine
-   *                              connectors
-   *
-   * @return A new ListeningDebugger instance
-   */
-  def this(address: String, port: Int)(
-    implicit virtualMachineManager: VirtualMachineManager =
-      Bootstrap.virtualMachineManager()
-  ) = this(address, port, () => Executors.newSingleThreadExecutor(), 1)
-
   private val ConnectorClassString = "com.sun.jdi.SocketListen"
 
   // Contains all components for the currently-running debugger

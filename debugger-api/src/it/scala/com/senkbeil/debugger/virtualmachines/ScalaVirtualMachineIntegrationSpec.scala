@@ -66,6 +66,9 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
       val testClass = "com.senkbeil.test.misc.AvailableLines"
 
       withVirtualMachine(testClass, suspend = false) { (_, scalaVirtualMachine) =>
+        // NOTE: This fails with Scala 2.11 as there is no line 11 but there
+        //       is a line 72 (is this influenced by how Scala translates to
+        //       Java?)
         val expected = Seq(
           11, 12, 13, 14, 15, 16, 20, 21, 22, 26, 27, 28, 32, 34, 35, 37, 39,
           40, 41, 42, 45, 46, 47, 50, 52, 53, 57, 58, 59, 60, 63, 65

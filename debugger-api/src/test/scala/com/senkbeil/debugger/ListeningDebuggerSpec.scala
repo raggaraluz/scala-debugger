@@ -34,6 +34,7 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
     override val isAvailable: Boolean = true,
     private val shouldJdiLoad: Boolean = true
   ) extends ListeningDebugger(
+    virtualMachineManager = mockVirtualMachineManager,
     address = testAddress,
     port = testPort,
     executorServiceFunc = () => mockExecutorService,

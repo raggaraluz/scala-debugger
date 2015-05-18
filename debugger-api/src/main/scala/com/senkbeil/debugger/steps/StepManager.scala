@@ -18,6 +18,7 @@ class StepManager(protected val _virtualMachine: VirtualMachine) {
    * @param threadReference The thread with which to perform the step
    * @param size The size of the step request (LINE/MIN)
    * @param depth The depth of the step request (INTO/OVER/OUT)
+   * @param suspendPolicy The suspend policy to use with the step request
    * @param countFilter If greater than zero, adds a count filter to the
    *                    step request
    * @param enable If true, enables the created step request
@@ -28,6 +29,7 @@ class StepManager(protected val _virtualMachine: VirtualMachine) {
     threadReference: ThreadReference,
     size: Int,
     depth: Int,
+    suspendPolicy: Int = EventRequest.SUSPEND_EVENT_THREAD,
     countFilter: Int = 1,
     enable: Boolean = true
   ): StepRequest = {
@@ -37,6 +39,7 @@ class StepManager(protected val _virtualMachine: VirtualMachine) {
     val stepRequest =
       eventRequestManager.createStepRequest(threadReference, size, depth)
 
+    stepRequest.setSuspendPolicy(suspendPolicy)
     if (countFilter > 0) stepRequest.addCountFilter(countFilter)
     if (enable) stepRequest.enable()
 

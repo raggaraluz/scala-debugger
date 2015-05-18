@@ -6,27 +6,53 @@ import com.sun.jdi.connect.LaunchingConnector
 
 import scala.collection.JavaConverters._
 
+object LaunchingDebugger {
+  /**
+   * Creates a new instance of the launching debugger.
+   *
+   * @param className The name of the class to use as the entrypoint for the
+   *                  new process
+   * @param commandLineArguments The command line arguments to provide to the
+   *                             new process
+   * @param jvmOptions The options to provide to the new process' JVM
+   * @param suspend If true, suspends the JVM until it connects to the debugger
+   * @param virtualMachineManager The manager to use for virtual machine
+   *                              connectors
+   */
+  def apply(
+    className: String,
+    commandLineArguments: Seq[String] = Nil,
+    jvmOptions: Seq[String] = Nil,
+    suspend: Boolean = true
+  )(implicit virtualMachineManager: VirtualMachineManager =
+    Bootstrap.virtualMachineManager()
+  ) = new LaunchingDebugger(
+    virtualMachineManager,
+    className,
+    commandLineArguments,
+    jvmOptions,
+    suspend
+  )
+}
+
 /**
  * Represents a debugger that starts a new process on the same machine.
  *
+ * @param virtualMachineManager The manager to use for virtual machine
+ *                              connectors
  * @param className The name of the class to use as the entrypoint for the new
  *                  process
  * @param commandLineArguments The command line arguments to provide to the new
  *                             process
  * @param jvmOptions The options to provide to the new process' JVM
  * @param suspend If true, suspends the JVM until it connects to the debugger
- *
- * @param virtualMachineManager The manager to use for virtual machine
- *                              connectors
  */
-class LaunchingDebugger(
+class LaunchingDebugger private[debugger] (
+  private val virtualMachineManager: VirtualMachineManager,
   private val className: String,
   private val commandLineArguments: Seq[String] = Nil,
   private val jvmOptions: Seq[String] = Nil,
   private val suspend: Boolean = true
-)(
-  implicit virtualMachineManager: VirtualMachineManager =
-    Bootstrap.virtualMachineManager()
 ) extends Debugger with LogLike {
   private val ConnectorClassString = "com.sun.jdi.CommandLineLaunch"
   @volatile private var virtualMachine: Option[VirtualMachine] = None

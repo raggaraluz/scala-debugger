@@ -1,7 +1,7 @@
 package com.senkbeil.debugger.steps
 
 import com.sun.jdi.{ThreadReference, VirtualMachine}
-import com.sun.jdi.request.{StepRequest, EventRequestManager}
+import com.sun.jdi.request.{EventRequest, StepRequest, EventRequestManager}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import test.JDIMockHelpers
@@ -56,6 +56,21 @@ class StepManagerSpec extends FunSpec with Matchers
         stepManager.stepOver(mockThreadReference)
       }
 
+      it("should set the suspend policy to the thread only") {
+        expectDeleteStepRequests()
+        val mockStepRequest = mock[StepRequest]
+
+        (mockEventRequestManager.createStepRequest _).expects(*, *, *)
+          .returning(mockStepRequest).once()
+
+        (mockStepRequest.setSuspendPolicy _)
+          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
+        (mockStepRequest.addCountFilter _).expects(*).once()
+        (mockStepRequest.enable _).expects().once()
+
+        stepManager.stepOver(stub[ThreadReference])
+      }
+
       it("should add a count filter of 1 to the new step request") {
         expectDeleteStepRequests()
         val mockStepRequest = mock[StepRequest]
@@ -63,6 +78,7 @@ class StepManagerSpec extends FunSpec with Matchers
         (mockEventRequestManager.createStepRequest _).expects(*, *, *)
           .returning(mockStepRequest).once()
 
+        (mockStepRequest.setSuspendPolicy _).expects(*).once()
         (mockStepRequest.addCountFilter _).expects(1).once()
         (mockStepRequest.enable _).expects().once()
 
@@ -76,6 +92,7 @@ class StepManagerSpec extends FunSpec with Matchers
         (mockEventRequestManager.createStepRequest _).expects(*, *, *)
           .returning(mockStepRequest).once()
 
+        (mockStepRequest.setSuspendPolicy _).expects(*).once()
         (mockStepRequest.addCountFilter _).expects(*).once()
         (mockStepRequest.enable _).expects().once()
 
@@ -110,6 +127,21 @@ class StepManagerSpec extends FunSpec with Matchers
         stepManager.stepInto(mockThreadReference)
       }
 
+      it("should set the suspend policy to the thread only") {
+        expectDeleteStepRequests()
+        val mockStepRequest = mock[StepRequest]
+
+        (mockEventRequestManager.createStepRequest _).expects(*, *, *)
+          .returning(mockStepRequest).once()
+
+        (mockStepRequest.setSuspendPolicy _)
+          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
+        (mockStepRequest.addCountFilter _).expects(*).once()
+        (mockStepRequest.enable _).expects().once()
+
+        stepManager.stepInto(stub[ThreadReference])
+      }
+
       it("should add a count filter of 1 to the new step request") {
         expectDeleteStepRequests()
         val mockStepRequest = mock[StepRequest]
@@ -117,6 +149,7 @@ class StepManagerSpec extends FunSpec with Matchers
         (mockEventRequestManager.createStepRequest _).expects(*, *, *)
           .returning(mockStepRequest).once()
 
+        (mockStepRequest.setSuspendPolicy _).expects(*).once()
         (mockStepRequest.addCountFilter _).expects(1).once()
         (mockStepRequest.enable _).expects().once()
 
@@ -130,6 +163,7 @@ class StepManagerSpec extends FunSpec with Matchers
         (mockEventRequestManager.createStepRequest _).expects(*, *, *)
           .returning(mockStepRequest).once()
 
+        (mockStepRequest.setSuspendPolicy _).expects(*).once()
         (mockStepRequest.addCountFilter _).expects(*).once()
         (mockStepRequest.enable _).expects().once()
 
@@ -164,6 +198,21 @@ class StepManagerSpec extends FunSpec with Matchers
         stepManager.stepOut(mockThreadReference)
       }
 
+      it("should set the suspend policy to the thread only") {
+        expectDeleteStepRequests()
+        val mockStepRequest = mock[StepRequest]
+
+        (mockEventRequestManager.createStepRequest _).expects(*, *, *)
+          .returning(mockStepRequest).once()
+
+        (mockStepRequest.setSuspendPolicy _)
+          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
+        (mockStepRequest.addCountFilter _).expects(*).once()
+        (mockStepRequest.enable _).expects().once()
+
+        stepManager.stepOut(stub[ThreadReference])
+      }
+
       it("should add a count filter of 1 to the new step request") {
         expectDeleteStepRequests()
         val mockStepRequest = mock[StepRequest]
@@ -171,6 +220,7 @@ class StepManagerSpec extends FunSpec with Matchers
         (mockEventRequestManager.createStepRequest _).expects(*, *, *)
           .returning(mockStepRequest).once()
 
+        (mockStepRequest.setSuspendPolicy _).expects(*).once()
         (mockStepRequest.addCountFilter _).expects(1).once()
         (mockStepRequest.enable _).expects().once()
 
@@ -184,6 +234,7 @@ class StepManagerSpec extends FunSpec with Matchers
         (mockEventRequestManager.createStepRequest _).expects(*, *, *)
           .returning(mockStepRequest).once()
 
+        (mockStepRequest.setSuspendPolicy _).expects(*).once()
         (mockStepRequest.addCountFilter _).expects(*).once()
         (mockStepRequest.enable _).expects().once()
 

@@ -9,7 +9,7 @@ import com.senkbeil.debugger.virtualmachines.ScalaVirtualMachine
 import scala.collection.JavaConverters._
 
 object Main extends App {
-  val debugger = new ListeningDebugger("127.0.0.1", 9877)
+  val debugger = ListeningDebugger("127.0.0.1", 9877)
   val testMainFile = "com/senkbeil/test/Main.scala"
   val virtualMachineQueue = new ConcurrentLinkedQueue[ScalaVirtualMachine]()
   val loopingTaskRunner = new LoopingTaskRunner()
