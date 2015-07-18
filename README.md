@@ -4,8 +4,7 @@ Scala Debugger
 [![Build Status](https://travis-ci.org/rcsenkbeil/scala-debugger.svg?branch=master)](https://travis-ci.org/rcsenkbeil/scala-debugger)
 [![Join the chat at https://gitter.im/rcsenkbeil/scala-debugger](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/rcsenkbeil/scala-debugger?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-A simple, naive standalone debugger for Scala. Goal is to connect to Apache
-Spark executors to examine the code as it is executed.
+A simple debugger library for Scala.
 
 Potential Gotchas
 -----------------
