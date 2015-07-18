@@ -14,7 +14,7 @@ env:
 script:
     # Run our test for a specific Scala version and specific test suite
     - sbt ++$TRAVIS_SCALA_VERSION $EXTRA_SBT_OPT "$TEST_SUITE"
-
+after_script:
     # Avoid unnecessary cache updates
     - find $HOME/.sbt -name "*.lock" | xargs rm
     - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
