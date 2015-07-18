@@ -1,6 +1,6 @@
-package com.senkbeil.debugger.wrappers
+package org.senkbeil.debugger.wrappers
 
-import com.senkbeil.utils.LogLike
+import org.senkbeil.utils.LogLike
 import com.sun.jdi.{Value, Field, ReferenceType}
 import scala.collection.JavaConverters._
 

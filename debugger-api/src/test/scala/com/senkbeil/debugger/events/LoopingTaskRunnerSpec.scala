@@ -1,4 +1,4 @@
-package com.senkbeil.debugger.events
+package org.senkbeil.debugger.events
 
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 

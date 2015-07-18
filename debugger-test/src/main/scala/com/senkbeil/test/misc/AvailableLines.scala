@@ -1,9 +1,9 @@
-package com.senkbeil.test.misc
+package org.senkbeil.test.misc
 
 /**
  * Provides test of various situations where lines might be breakpointable.
  *
- * @note Should have a class name of com.senkbeil.test.AvailableLines
+ * @note Should have a class name of org.senkbeil.test.AvailableLines
  * @note Should have breakpoint lines on
  *       11, 12, 13, 14, 15, 16, 20, 21, 22, 26, 27, 28, 32, 34, 35, 37, 39,
  *       40, 41, 42, 45, 46, 47, 50, 52, 53, 57, 58, 59, 60, 63, 65

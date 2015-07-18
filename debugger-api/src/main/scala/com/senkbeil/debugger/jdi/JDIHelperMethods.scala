@@ -1,6 +1,6 @@
-package com.senkbeil.debugger.jdi
+package org.senkbeil.debugger.jdi
 
-import com.senkbeil.utils.LogLike
+import org.senkbeil.utils.LogLike
 import com.sun.jdi.{ReferenceType, ThreadReference, VirtualMachine}
 
 import scala.collection.JavaConverters._

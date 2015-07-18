@@ -1,8 +1,8 @@
-package com.senkbeil.debugger.wrappers
+package org.senkbeil.debugger.wrappers
 
 import java.util.concurrent.ConcurrentHashMap
 
-import com.senkbeil.utils.LogLike
+import org.senkbeil.utils.LogLike
 import com.sun.jdi.request.EventRequest
 import com.sun.jdi.VirtualMachine
 

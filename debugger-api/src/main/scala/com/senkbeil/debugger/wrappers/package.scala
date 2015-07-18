@@ -1,4 +1,4 @@
-package com.senkbeil.debugger
+package org.senkbeil.debugger
 
 import scala.language.implicitConversions
 

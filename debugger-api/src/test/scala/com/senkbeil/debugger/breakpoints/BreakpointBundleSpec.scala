@@ -1,4 +1,4 @@
-package com.senkbeil.debugger.breakpoints
+package org.senkbeil.debugger.breakpoints
 
 import com.sun.jdi.request.BreakpointRequest
 import com.sun.jdi.{ObjectReference, ThreadReference, VirtualMachine}

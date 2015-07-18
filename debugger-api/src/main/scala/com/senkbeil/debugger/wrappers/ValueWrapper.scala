@@ -1,4 +1,4 @@
-package com.senkbeil.debugger.wrappers
+package org.senkbeil.debugger.wrappers
 
 import com.sun.jdi._
 

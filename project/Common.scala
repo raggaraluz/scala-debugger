@@ -6,7 +6,7 @@ object Common {
   def settings = Seq(
     version := "1.0.0",
 
-    organization := "com.senkbeil",
+    organization := "org.senkbeil",
 
     licenses += (
       "Apache-2.0",

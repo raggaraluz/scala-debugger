@@ -1,16 +1,16 @@
-package com.senkbeil
+package org.senkbeil
 
 import java.io.File
 import java.util.concurrent.ConcurrentLinkedQueue
 
-import com.senkbeil.debugger.ListeningDebugger
-import com.senkbeil.debugger.events.LoopingTaskRunner
-import com.senkbeil.debugger.virtualmachines.ScalaVirtualMachine
+import org.senkbeil.debugger.ListeningDebugger
+import org.senkbeil.debugger.events.LoopingTaskRunner
+import org.senkbeil.debugger.virtualmachines.ScalaVirtualMachine
 import scala.collection.JavaConverters._
 
 object Main extends App {
   val debugger = ListeningDebugger("127.0.0.1", 9877)
-  val testMainFile = "com/senkbeil/test/Main.scala"
+  val testMainFile = "org/senkbeil/test/Main.scala"
   val virtualMachineQueue = new ConcurrentLinkedQueue[ScalaVirtualMachine]()
   val loopingTaskRunner = new LoopingTaskRunner()
 

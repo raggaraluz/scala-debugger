@@ -1,8 +1,8 @@
-package com.senkbeil.debugger
+package org.senkbeil.debugger
 
 import java.util.concurrent.{Executors, ExecutorService}
 
-import com.senkbeil.utils.LogLike
+import org.senkbeil.utils.LogLike
 import com.sun.jdi.connect.{Connector, ListeningConnector}
 
 import collection.JavaConverters._

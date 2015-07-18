@@ -1,4 +1,4 @@
-package com.senkbeil.debugger
+package org.senkbeil.debugger
 
 import com.sun.jdi.{VirtualMachine, VirtualMachineManager}
 import com.sun.jdi.connect.{Connector, LaunchingConnector}

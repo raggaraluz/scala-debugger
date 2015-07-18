@@ -1,7 +1,7 @@
-package com.senkbeil.debugger.virtualmachines
+package org.senkbeil.debugger.virtualmachines
 
-import com.senkbeil.debugger.classes.ClassManager
-import com.senkbeil.debugger.events.LoopingTaskRunner
+import org.senkbeil.debugger.classes.ClassManager
+import org.senkbeil.debugger.events.LoopingTaskRunner
 import com.sun.jdi._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}

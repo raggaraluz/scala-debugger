@@ -1,7 +1,7 @@
-package com.senkbeil.debugger.events
+package org.senkbeil.debugger.events
 
-import com.senkbeil.debugger.jdi.JDIHelperMethods
-import com.senkbeil.utils.LogLike
+import org.senkbeil.debugger.jdi.JDIHelperMethods
+import org.senkbeil.utils.LogLike
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.event.Event
 

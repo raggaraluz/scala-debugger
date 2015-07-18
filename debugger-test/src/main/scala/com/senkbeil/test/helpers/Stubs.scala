@@ -1,4 +1,4 @@
-package com.senkbeil.test.helpers
+package org.senkbeil.test.helpers
 
 /**
  * Provides stub methods that do not do anything but provide a breakpointable

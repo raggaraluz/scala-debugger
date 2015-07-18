@@ -1,6 +1,6 @@
-package com.senkbeil.debugger.wrappers
+package org.senkbeil.debugger.wrappers
 
-import com.senkbeil.debugger.events.EventType.BreakpointEventType
+import org.senkbeil.debugger.events.EventType.BreakpointEventType
 import com.sun.jdi.Value
 import com.sun.jdi.event.BreakpointEvent
 import org.scalatest.concurrent.Eventually
@@ -21,7 +21,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
 
   describe("StackFrameWrapper") {
     it("should be able to analyze this object variables") {
-      val testClass = "com.senkbeil.test.misc.Variables"
+      val testClass = "org.senkbeil.test.misc.Variables"
       val testFile = scalaClassStringToFileString(testClass)
       val lastLine = 30
 
@@ -33,7 +33,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
         s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
 
-          import com.senkbeil.debugger.wrappers._
+          import org.senkbeil.debugger.wrappers._
           val threadReference = breakpointEvent.thread()
           val currentFrame = threadReference.frame(0)
 
@@ -63,7 +63,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
     }
 
     it("should be able to analyze local variables") {
-      val testClass = "com.senkbeil.test.misc.Variables"
+      val testClass = "org.senkbeil.test.misc.Variables"
       val testFile = scalaClassStringToFileString(testClass)
       val lastLine = 30
 
@@ -75,7 +75,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
         s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
 
-          import com.senkbeil.debugger.wrappers._
+          import org.senkbeil.debugger.wrappers._
           val threadReference = breakpointEvent.thread()
           val currentFrame = threadReference.frame(0)
 
@@ -113,7 +113,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
 
           // Scala-based list of objects
           val kString = vMap("k").asInstanceOf[String]
-          kString should include ("com.senkbeil.test.misc.Variables$One")
+          kString should include ("org.senkbeil.test.misc.Variables$One")
           kString should include ("java.lang.Integer")
           kString should include ("java.lang.Boolean")
         })

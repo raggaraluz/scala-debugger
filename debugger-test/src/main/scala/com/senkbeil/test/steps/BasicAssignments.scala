@@ -1,12 +1,12 @@
-package com.senkbeil.test.steps
+package org.senkbeil.test.steps
 
-import com.senkbeil.test.helpers.Stubs._
+import org.senkbeil.test.helpers.Stubs._
 
 /**
  * Provides test of performing basic step in/out/over in Scala situations
  * involving assignment.
  *
- * @note Should have a class name of com.senkbeil.test.steps.BasicAssignments
+ * @note Should have a class name of org.senkbeil.test.steps.BasicAssignments
  */
 object BasicAssignments {
   def main(args: Array[String]) = {

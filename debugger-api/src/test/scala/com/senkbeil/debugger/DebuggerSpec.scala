@@ -1,6 +1,6 @@
-package com.senkbeil.debugger
+package org.senkbeil.debugger
 
-import com.senkbeil.debugger.jdi.JDILoader
+import org.senkbeil.debugger.jdi.JDILoader
 import com.sun.jdi.VirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}

@@ -1,4 +1,4 @@
-package com.senkbeil.debugger.events
+package org.senkbeil.debugger.events
 
 import com.sun.jdi.event._
 import org.scalamock.scalatest.MockFactory

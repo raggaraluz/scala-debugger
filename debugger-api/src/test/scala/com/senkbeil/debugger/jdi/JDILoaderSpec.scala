@@ -1,4 +1,4 @@
-package com.senkbeil.debugger.jdi
+package org.senkbeil.debugger.jdi
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}

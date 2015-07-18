@@ -1,12 +1,12 @@
-package com.senkbeil.test.steps
+package org.senkbeil.test.steps
 
-import com.senkbeil.test.helpers.Stubs._
+import org.senkbeil.test.helpers.Stubs._
 
 /**
   * Provides test of performing basic step in/out/over in Scala situations
   * involving invoking functions.
   *
-  * @note Should have a class name of com.senkbeil.test.steps.FunctionCalls
+  * @note Should have a class name of org.senkbeil.test.steps.FunctionCalls
   */
 object FunctionCalls {
   val objectFunction1 = (x: Int, y: Int) => x + y

@@ -1,4 +1,4 @@
-package com.senkbeil.debugger.classes
+package org.senkbeil.debugger.classes
 
 import com.sun.jdi.{Location, ReferenceType, VirtualMachine}
 import org.scalamock.scalatest.MockFactory

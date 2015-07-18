@@ -1,10 +1,10 @@
-package com.senkbeil.test.breakpoints
+package org.senkbeil.test.breakpoints
 
 /**
  * Provides test of iterating through a while loop.
  *
  * @note Should have a class name of
- *       com.senkbeil.test.breakpoints.ForComprehension
+ *       org.senkbeil.test.breakpoints.ForComprehension
  */
 object ForComprehension {
   def main(args: Array[String]) = {

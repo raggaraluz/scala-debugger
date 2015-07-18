@@ -1,4 +1,4 @@
-package com.senkbeil.debugger.breakpoints
+package org.senkbeil.debugger.breakpoints
 
 import java.util.concurrent.atomic.{AtomicInteger, AtomicBoolean}
 
@@ -7,7 +7,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Seconds, Milliseconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import test.{TestUtilities, VirtualMachineFixtures}
-import com.senkbeil.debugger.events.EventType._
+import org.senkbeil.debugger.events.EventType._
 
 class BreakpointManagerIntegrationSpec extends FunSpec with Matchers
   with ParallelTestExecution with VirtualMachineFixtures
@@ -20,7 +20,7 @@ class BreakpointManagerIntegrationSpec extends FunSpec with Matchers
 
   describe("BreakpointManager") {
     it("should be able to set breakpoints within while loops") {
-      val testClass = "com.senkbeil.test.breakpoints.WhileLoop"
+      val testClass = "org.senkbeil.test.breakpoints.WhileLoop"
       val testFile = scalaClassStringToFileString(testClass)
 
       val firstBreakpointLine = 13
@@ -57,7 +57,7 @@ class BreakpointManagerIntegrationSpec extends FunSpec with Matchers
     }
 
     it("should be able to set breakpoints within for comprehensions") {
-      val testClass = "com.senkbeil.test.breakpoints.ForComprehension"
+      val testClass = "org.senkbeil.test.breakpoints.ForComprehension"
       val testFile = scalaClassStringToFileString(testClass)
 
       val firstBreakpointLine = 14
@@ -94,7 +94,7 @@ class BreakpointManagerIntegrationSpec extends FunSpec with Matchers
     }
 
     it("should be able to set breakpoints in a DelayInit object") {
-      val testClass = "com.senkbeil.test.breakpoints.DelayedInit"
+      val testClass = "org.senkbeil.test.breakpoints.DelayedInit"
       val testFile = scalaClassStringToFileString(testClass)
 
       val firstBreakpointLine = 10

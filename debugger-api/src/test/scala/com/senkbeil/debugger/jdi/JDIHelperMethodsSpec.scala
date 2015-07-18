@@ -1,4 +1,4 @@
-package com.senkbeil.debugger.jdi
+package org.senkbeil.debugger.jdi
 
 import com.sun.jdi.{AbsentInformationException, ThreadReference, ReferenceType, VirtualMachine}
 import org.scalamock.scalatest.MockFactory

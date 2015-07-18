@@ -1,10 +1,10 @@
-package com.senkbeil.debugger.breakpoints
+package org.senkbeil.debugger.breakpoints
 
 import java.util.concurrent.ConcurrentHashMap
 
-import com.senkbeil.debugger.classes.ClassManager
-import com.senkbeil.debugger.jdi.JDIHelperMethods
-import com.senkbeil.utils.LogLike
+import org.senkbeil.debugger.classes.ClassManager
+import org.senkbeil.debugger.jdi.JDIHelperMethods
+import org.senkbeil.utils.LogLike
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.request.EventRequest
 

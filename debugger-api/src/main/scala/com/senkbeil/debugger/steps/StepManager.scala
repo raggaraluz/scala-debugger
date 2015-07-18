@@ -1,4 +1,4 @@
-package com.senkbeil.debugger.steps
+package org.senkbeil.debugger.steps
 
 import com.sun.jdi.{ThreadReference, VirtualMachine}
 import com.sun.jdi.request.{EventRequest, StepRequest}

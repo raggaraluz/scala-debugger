@@ -1,9 +1,9 @@
-package com.senkbeil.debugger.jdi
+package org.senkbeil.debugger.jdi
 
 import java.io.File
 import java.net.{URL, URLClassLoader}
 
-import com.senkbeil.utils.LogLike
+import org.senkbeil.utils.LogLike
 
 import scala.util.Try
 

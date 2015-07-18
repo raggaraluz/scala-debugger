@@ -1,6 +1,6 @@
 package test
 
-import com.senkbeil.utils.LogLike
+import org.senkbeil.utils.LogLike
 
 /**
  * Contains helper methods for testing.
@@ -9,7 +9,7 @@ trait TestUtilities { this: LogLike =>
   /**
    * Converts a class string to a file string.
    *
-   * @example com.senkbeil.MyClass becomes com/senkbeil/MyClass.scala
+   * @example org.senkbeil.MyClass becomes org/senkbeil/MyClass.scala
    *
    * @param classString The class string to convert
    *

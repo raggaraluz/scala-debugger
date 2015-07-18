@@ -1,6 +1,6 @@
-package com.senkbeil.debugger.breakpoints
+package org.senkbeil.debugger.breakpoints
 
-import com.senkbeil.debugger.classes.ClassManager
+import org.senkbeil.debugger.classes.ClassManager
 import com.sun.jdi.{Location, VirtualMachine}
 import com.sun.jdi.request.{EventRequest, BreakpointRequest, EventRequestManager}
 import org.scalamock.scalatest.MockFactory

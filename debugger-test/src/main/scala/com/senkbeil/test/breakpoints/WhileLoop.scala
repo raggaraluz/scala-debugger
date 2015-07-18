@@ -1,9 +1,9 @@
-package com.senkbeil.test.breakpoints
+package org.senkbeil.test.breakpoints
 
 /**
  * Provides test of iterating through a while loop.
  *
- * @note Should have a class name of com.senkbeil.test.breakpoints.WhileLoop
+ * @note Should have a class name of org.senkbeil.test.breakpoints.WhileLoop
  */
 object WhileLoop {
   def main(args: Array[String]) = {

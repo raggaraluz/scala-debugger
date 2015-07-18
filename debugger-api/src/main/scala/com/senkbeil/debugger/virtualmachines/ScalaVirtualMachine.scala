@@ -1,12 +1,12 @@
-package com.senkbeil.debugger.virtualmachines
+package org.senkbeil.debugger.virtualmachines
 
-import com.senkbeil.debugger.breakpoints.BreakpointManager
-import com.senkbeil.debugger.classes.ClassManager
-import com.senkbeil.debugger.events.{EventManager, LoopingTaskRunner}
-import com.senkbeil.debugger.jdi.JDIHelperMethods
-import com.senkbeil.debugger.steps.StepManager
-import com.senkbeil.debugger.wrappers._
-import com.senkbeil.utils.LogLike
+import org.senkbeil.debugger.breakpoints.BreakpointManager
+import org.senkbeil.debugger.classes.ClassManager
+import org.senkbeil.debugger.events.{EventManager, LoopingTaskRunner}
+import org.senkbeil.debugger.jdi.JDIHelperMethods
+import org.senkbeil.debugger.steps.StepManager
+import org.senkbeil.debugger.wrappers._
+import org.senkbeil.utils.LogLike
 import com.sun.jdi._
 import com.sun.jdi.event.ClassPrepareEvent
 
@@ -51,7 +51,7 @@ class ScalaVirtualMachine(
   lazy val breakpointManager =
     new BreakpointManager(_virtualMachine, classManager)
   lazy val eventManager = {
-    import com.senkbeil.debugger.events.EventType._
+    import org.senkbeil.debugger.events.EventType._
     val _eventManager = new EventManager(_virtualMachine, loopingTaskRunner)
 
     logger.debug(vmString("Adding custom event handlers!"))
