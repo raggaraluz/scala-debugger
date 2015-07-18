@@ -2,13 +2,13 @@
 //
 // DEBUGGER API PROJECT CONFIGURATION
 //
-lazy val debuggerApi = project
-  .in(file("debugger-api"))
+lazy val scalaDebuggerApi = project
+  .in(file("scala-debugger-api"))
   .configs(IntegrationTest)
   .settings(Common.settings: _*)
   .settings(Defaults.itSettings: _*)
   .settings(Seq(
-    name := "debugger-api",
+    name := "scala-debugger-api",
 
     // NOTE: Fork needed to avoid mixing in sbt classloader, which is causing
     //       LinkageError to be thrown for JDI-based classes
@@ -38,8 +38,8 @@ lazy val debuggerApi = project
 //
 // DEBUGGER TEST CODE PROJECT CONFIGURATION
 //
-lazy val debuggerTest = project
-  .in(file("debugger-test"))
+lazy val scalaDebuggerTest = project
+  .in(file("scala-debugger-test"))
   .settings(Common.settings: _*)
   .settings(
     // Do not publish the test project
