@@ -33,7 +33,7 @@ lazy val scalaDebuggerApi = project
     internalDependencyClasspath in IntegrationTest +=
       { Attributed.blank(Build.JavaTools) }
   ): _*)
-  .dependsOn(debuggerTest % "test->compile;it->compile")
+  .dependsOn(scalaDebuggerTest % "test->compile;it->compile")
 
 //
 // DEBUGGER TEST CODE PROJECT CONFIGURATION
@@ -58,5 +58,5 @@ lazy val root = project
     // Do not publish the aggregation project
     publishArtifact := false,
     publishLocal := {}
-  ).aggregate(debuggerApi, debuggerTest)
+  ).aggregate(scalaDebuggerApi, scalaDebuggerTest)
 

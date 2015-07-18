@@ -77,6 +77,7 @@ class VirtualMachineWrapper(private val _virtualMachine: VirtualMachine)
    *
    * @throws AssertionError If already enabled
    */
+  @throws[AssertionError]
   def enableClassPrepareEvents(
     suspendPolicy: Int = EventRequest.SUSPEND_ALL
   ): Unit = {
@@ -95,6 +96,7 @@ class VirtualMachineWrapper(private val _virtualMachine: VirtualMachine)
    *
    * @throws AssertionError If not enabled
    */
+  @throws[AssertionError]
   def disableClassPrepareEvents(): Unit = {
     assert(classPrepareRequestId.nonEmpty, "Class prepare events not enabled!")
 
@@ -108,6 +110,7 @@ class VirtualMachineWrapper(private val _virtualMachine: VirtualMachine)
    *
    * @throws AssertionError If already enabled
    */
+  @throws[AssertionError]
   def enableThreadStartEvents(
     suspendPolicy: Int = EventRequest.SUSPEND_NONE
   ): Unit = {
@@ -125,6 +128,7 @@ class VirtualMachineWrapper(private val _virtualMachine: VirtualMachine)
    *
    * @throws AssertionError If not enabled
    */
+  @throws[AssertionError]
   def disableThreadStartEvents(): Unit = {
     assert(threadStartRequestId.nonEmpty, "Thread start events not enabled!")
 
@@ -138,6 +142,7 @@ class VirtualMachineWrapper(private val _virtualMachine: VirtualMachine)
    *
    * @throws AssertionError If already enabled
    */
+  @throws[AssertionError]
   def enableThreadDeathEvents(
     suspendPolicy: Int = EventRequest.SUSPEND_NONE
   ): Unit = {
@@ -155,6 +160,7 @@ class VirtualMachineWrapper(private val _virtualMachine: VirtualMachine)
    *
    * @throws AssertionError If not enabled
    */
+  @throws[AssertionError]
   def disableThreadDeathEvents(): Unit = {
     assert(threadDeathRequestId.nonEmpty, "Thread death events not enabled!")
 
@@ -168,6 +174,7 @@ class VirtualMachineWrapper(private val _virtualMachine: VirtualMachine)
    *
    * @throws AssertionError If already enabled
    */
+  @throws[AssertionError]
   def enableExceptionEvents(
     suspendPolicy: Int = EventRequest.SUSPEND_ALL
   ): Unit = {
@@ -187,6 +194,7 @@ class VirtualMachineWrapper(private val _virtualMachine: VirtualMachine)
    *
    * @throws AssertionError If not enabled
    */
+  @throws[AssertionError]
   def disableExceptionEvents(): Unit = {
     assert(exceptionRequestId.nonEmpty, "Exception events not enabled!")
 

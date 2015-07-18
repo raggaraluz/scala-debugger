@@ -36,6 +36,9 @@ object Common {
 
     testOptions in Test += Tests.Argument("-oDF"),
 
+    // Properly handle Scaladoc mappings
+    autoAPIMappings := true,
+
     // Prevent publishing test artifacts
     publishArtifact in Test := false,
 
