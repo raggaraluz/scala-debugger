@@ -54,7 +54,7 @@ lazy val root = project
   .in(file("."))
   .settings(Common.settings: _*)
   .settings(
-    name := "ScalaDebugger",
+    name := "scala-debugger",
     // Do not publish the aggregation project
     publishArtifact := false,
     publishLocal := {}
