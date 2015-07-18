@@ -1,6 +1,8 @@
 Scala Debugger
 ==============
 
+[![Build Status](https://travis-ci.org/rcsenkbeil/scala-debugger.svg?branch=master)](https://travis-ci.org/rcsenkbeil/scala-debugger)
+
 A simple, naive standalone debugger for Scala. Goal is to connect to Apache
 Spark executors to examine the code as it is executed.
 
