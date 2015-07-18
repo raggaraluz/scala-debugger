@@ -1,6 +1,8 @@
 Scala Debugger
 ==============
 
+[![Join the chat at https://gitter.im/rcsenkbeil/scala-debugger](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/rcsenkbeil/scala-debugger?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A simple, naive standalone debugger for Scala. Goal is to connect to Apache
 Spark executors to examine the code as it is executed.
 
