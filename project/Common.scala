@@ -13,6 +13,8 @@ object Common {
       url("https://www.apache.org/licenses/LICENSE-2.0.html")
     ),
 
+    homepage := Some(url("http://www.senkbeil.org/")),
+
     // Default version when not cross-compiling
     scalaVersion := "2.10.5",
 
@@ -32,6 +34,34 @@ object Common {
       "-Xlint:-options", "-Xlint:-path", "-Xlint:-processing"
     ),
 
-    testOptions in Test += Tests.Argument("-oDF")
+    testOptions in Test += Tests.Argument("-oDF"),
+
+    // Prevent publishing test artifacts
+    publishArtifact in Test := false,
+
+    publishMavenStyle := true,
+
+    pomExtra := (
+      <scm>
+        <url>git@github.com:rcsenkbeil/scala-debugger.git</url>
+        <connection>scm:git:git@github.com:rcsenkbeil/scala-debugger.git</connection>
+      </scm>
+      <developers>
+        <developer>
+          <id>senkwich</id>
+          <name>Chip Senkbeil</name>
+          <url>http://www.senkbeil.org</url>
+        </developer>
+      </developers>
+    ),
+
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (isSnapshot.value)
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+    }
   )
 }
+
