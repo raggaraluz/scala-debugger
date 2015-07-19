@@ -33,6 +33,10 @@ object Common {
       "-source", "1.6", "-target", "1.6", "-Xlint:all", "-Werror",
       "-Xlint:-options", "-Xlint:-path", "-Xlint:-processing"
     ),
+  
+    scalacOptions in (Compile, doc) ++= Seq(
+      "-no-link-warnings" // Suppress problems with Scaladoc @throws links
+    ),
 
     testOptions in Test += Tests.Argument("-oDF"),
 
@@ -44,7 +48,7 @@ object Common {
 
     publishMavenStyle := true,
 
-    pomExtra := (
+    pomExtra :=
       <scm>
         <url>git@github.com:rcsenkbeil/scala-debugger.git</url>
         <connection>scm:git:git@github.com:rcsenkbeil/scala-debugger.git</connection>
@@ -55,8 +59,7 @@ object Common {
           <name>Chip Senkbeil</name>
           <url>http://www.senkbeil.org</url>
         </developer>
-      </developers>
-    ),
+      </developers>,
 
     publishTo := {
       val nexus = "https://oss.sonatype.org/"

@@ -21,7 +21,7 @@ trait Debugger {
    *
    * @throws AssertionError If failed to load the JDI
    */
-  @throws[AssertionError]
+  @throws(classOf[AssertionError])
   protected def assertJdiLoaded(): Unit =
     assert(jdiLoader.tryLoadJdi(),
       """

@@ -78,7 +78,7 @@ class BreakpointBundle(
    *
    * @return The property value
    */
-  @throws[AssertionError]
+  @throws(classOf[AssertionError])
   def getProperty(o: scala.Any): AnyRef = {
     val properties = breakpointRequests.map(_.getProperty(o))
     val globalProperty = properties.head
@@ -96,7 +96,7 @@ class BreakpointBundle(
    *
    * @return True if enabled, otherwise false
    */
-  @throws[AssertionError]
+  @throws(classOf[AssertionError])
   def isEnabled: Boolean = {
     val isEnabledStatuses = breakpointRequests.map(_.isEnabled)
     val globalIsEnabled = isEnabledStatuses.head
@@ -115,7 +115,7 @@ class BreakpointBundle(
    *
    * @throws AssertionError If the breakpoints are out of sync
    */
-  @throws[AssertionError]
+  @throws(classOf[AssertionError])
   def putProperty(o: scala.Any, o1: scala.Any): Unit =
     breakpointRequests.foreach(_.putProperty(o, o1))
 
@@ -142,7 +142,7 @@ class BreakpointBundle(
    *
    * @return The suspend policy for the collection of breakpoints
    */
-  @throws[AssertionError]
+  @throws(classOf[AssertionError])
   def suspendPolicy: Int = {
     val suspendPolicies = breakpointRequests.map(_.suspendPolicy())
     val globalSuspendPolicy = suspendPolicies.head
@@ -160,7 +160,7 @@ class BreakpointBundle(
    *
    * @return The virtual machine containing the collection of breakpoints
    */
-  @throws[AssertionError]
+  @throws(classOf[AssertionError])
   def virtualMachine: VirtualMachine = {
     val virtualMachines = breakpointRequests.map(_.virtualMachine())
     val globalVirtualMachine = virtualMachines.head

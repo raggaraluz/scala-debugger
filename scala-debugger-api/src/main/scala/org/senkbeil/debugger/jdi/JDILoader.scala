@@ -218,7 +218,7 @@ class JDILoader(
    *
    * @return The class loaded by the class loader
    */
-  @throws[ClassNotFoundException]
+  @throws(classOf[ClassNotFoundException])
   protected def classForName(
     name: String,
     initialize: Boolean = true,

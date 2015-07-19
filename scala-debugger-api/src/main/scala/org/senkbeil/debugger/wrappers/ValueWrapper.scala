@@ -37,7 +37,7 @@ class ValueWrapper(private val _value: Value) {
    *
    * @return The value instance if available
    */
-  @throws[Throwable]
+  @throws(classOf[Throwable])
   def value(): Any = {
     if (isPrimitive) primitiveValue()
     else if (isObject) objectValue()
@@ -58,7 +58,7 @@ class ValueWrapper(private val _value: Value) {
    *
    * @return The primitive value represented by this instance
    */
-  @throws[IllegalArgumentException]
+  @throws(classOf[IllegalArgumentException])
   def primitiveValue(): AnyVal = {
     require(isPrimitive, "Value is not a primitive!")
 
@@ -91,7 +91,7 @@ class ValueWrapper(private val _value: Value) {
    *
    * @return The value representing the object reference (varies by type)
    */
-  @throws[IllegalArgumentException]
+  @throws(classOf[IllegalArgumentException])
   def objectValue(): AnyRef = {
     require(isObject, "Value is not an object!")
 
@@ -117,7 +117,7 @@ class ValueWrapper(private val _value: Value) {
    *
    * @return The map of field -> value pairings
    */
-  @throws[IllegalArgumentException]
+  @throws(classOf[IllegalArgumentException])
   def fieldsAndValues(): Map[Field, Value] = {
     require(isObject, "Value is not an object!")
 
