@@ -6,8 +6,15 @@ Scala Debugger
 
 A simple debugger library for Scala.
 
-Potential Gotchas
------------------
+Installing with SBT
+-------------------
+
+Hosted on Maven Central and can be installed via the following:
+
+    libraryDependencies += "org.senkbeil" %% "scala-debugger-api" % "1.0.0"
+
+Potential Development Gotchas
+-----------------------------
 
 - When moving from Mac OS X's IntelliJ to the IntelliJ of Linux Mint, the
   tools.jar of OpenJDK/Oracle JDK was not picked up. I needed to manually open
@@ -22,8 +29,8 @@ Potential Gotchas
   connection. Switching my hostname to _locahost_ allowed the main process
   (and telnet) to connect and use the JVM process.
 
-Other Notes
------------
+Other Development Notes
+-----------------------
 
 - After observing IntelliJ's Scala plugin and the Scala IDE, it appears that
   stepping into a frame is not as simple as one would like in Scala. The
