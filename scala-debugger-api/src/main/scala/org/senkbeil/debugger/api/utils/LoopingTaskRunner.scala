@@ -1,7 +1,8 @@
-package org.senkbeil.debugger.api.events
+package org.senkbeil.debugger.api.utils
 
 import java.util
-import java.util.concurrent.{ExecutorService, Executors, ConcurrentHashMap, LinkedBlockingQueue}
+import java.util.concurrent.{ConcurrentHashMap, ExecutorService, Executors, LinkedBlockingQueue}
+
 import scala.util.Try
 
 /**

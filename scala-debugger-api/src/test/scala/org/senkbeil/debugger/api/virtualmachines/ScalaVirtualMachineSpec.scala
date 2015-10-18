@@ -1,10 +1,10 @@
 package org.senkbeil.debugger.api.virtualmachines
 
 import org.senkbeil.debugger.api.classes.ClassManager
-import org.senkbeil.debugger.api.events.LoopingTaskRunner
 import com.sun.jdi._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 import test.JDIMockHelpers
 
 import scala.collection.JavaConverters._

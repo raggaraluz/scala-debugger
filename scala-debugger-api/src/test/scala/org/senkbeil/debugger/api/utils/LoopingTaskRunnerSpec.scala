@@ -1,11 +1,11 @@
-package org.senkbeil.debugger.api.events
+package org.senkbeil.debugger.api.utils
 
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.Eventually
-import org.scalatest.time.{Milliseconds, Millis, Seconds, Span}
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.time.{Milliseconds, Span}
+import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 
 class LoopingTaskRunnerSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with Eventually

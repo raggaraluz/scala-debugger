@@ -2,12 +2,12 @@ package org.senkbeil.debugger.api.virtualmachines
 
 import org.senkbeil.debugger.api.breakpoints.BreakpointManager
 import org.senkbeil.debugger.api.classes.ClassManager
-import org.senkbeil.debugger.api.events.{EventManager, EventType, LoopingTaskRunner}
+import org.senkbeil.debugger.api.events.{EventManager, EventType}
 import org.senkbeil.debugger.api.exceptions.ExceptionManager
 import org.senkbeil.debugger.api.jdi.JDIHelperMethods
 import org.senkbeil.debugger.api.methods.{MethodExitManager, MethodEntryManager}
 import org.senkbeil.debugger.api.steps.StepManager
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, LogLike}
 import org.senkbeil.debugger.api.wrappers.Implicits
 import Implicits._
 import com.sun.jdi._

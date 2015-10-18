@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.events
 import org.senkbeil.debugger.api.jdi.JDIHelperMethods
 import org.senkbeil.debugger.api.jdi.events.{JDIEventArgument, JDIEventArgumentProcessor}
 import org.senkbeil.debugger.api.jdi.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, LogLike}
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.event.{EventSet, Event}
 

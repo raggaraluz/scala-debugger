@@ -1,8 +1,8 @@
 package test
 
 import org.senkbeil.debugger.api.LaunchingDebugger
-import org.senkbeil.debugger.api.events.{LoopingTaskRunner, EventType}
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.events.EventType
+import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, LogLike}
 import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
 import EventType._
 import com.sun.jdi.VirtualMachine
