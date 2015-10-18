@@ -1,5 +1,6 @@
 package org.senkbeil.debugger.api.events
 
+import java.util
 import java.util.concurrent.{ExecutorService, Executors, ConcurrentHashMap, LinkedBlockingQueue}
 import scala.util.Try
 
@@ -14,6 +15,35 @@ class LoopingTaskRunner(
   private val maxWorkers: Int = Runtime.getRuntime.availableProcessors()
 ) {
   type TaskId = String
+
+  /**
+   * Represents a task that will execute the next task on the provided queue
+   * and add it back to the end of the queue when finished.
+   *
+   * @param taskQueue The queue containing the ids of the tasks to run
+   * @param taskMap The mapping of task ids to associated runnable tasks
+   */
+  private class LoopingTask(
+    private val taskQueue: util.concurrent.BlockingQueue[TaskId],
+    private val taskMap: util.Map[TaskId, Runnable]
+  ) extends Runnable {
+    override def run(): Unit = {
+      // Determine the next task to execute (waits if no task available)
+      val taskId = taskQueue.take()
+
+      // Retrieve and execute the next task
+      val tryTask = Try(taskMap.get(taskId))
+      tryTask.foreach(task => Try(task.run()))
+
+      // Task finished, so add back to end of our queue
+      // NOTE: Only do so if the map knows about our task (allows removal)
+      if (tryTask.isSuccess) taskQueue.put(taskId)
+
+      // Start next task once this is free (suppress exceptions in the
+      // situation that this runner has been stopped)
+      Try(runNextTask())
+    }
+  }
 
   /** Contains the ids of tasks to be executed (in order). */
   private val taskQueue = new LinkedBlockingQueue[TaskId]()
@@ -97,22 +127,10 @@ class LoopingTaskRunner(
    * Executes next available task.
    */
   protected def runNextTask(): Unit =
-    executorService.foreach(_.execute(new Runnable {
-      override def run(): Unit = {
-        // Determine the next task to execute (waits if no task available)
-        val taskId = taskQueue.take()
+    executorService.foreach(_.execute(newLoopingTask()))
 
-        // Retrieve and execute the next task
-        val tryTask = Try(taskMap.get(taskId))
-        tryTask.foreach(task => Try(task.run()))
-
-        // Task finished, so add back to end of our queue
-        // NOTE: Only do so if the map knows about our task (allows removal)
-        if (tryTask.isSuccess) taskQueue.put(taskId)
-
-        // Start next task once this is free (suppress exceptions in the
-        // situation that this runner has been stopped)
-        Try(runNextTask())
-      }
-    }))
+  /**
+   * Creates a new looping task to be executed.
+   */
+  protected def newLoopingTask(): Runnable = new LoopingTask(taskQueue, taskMap)
 }
