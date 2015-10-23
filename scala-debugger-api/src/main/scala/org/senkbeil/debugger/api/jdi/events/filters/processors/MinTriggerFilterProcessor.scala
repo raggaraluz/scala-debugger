@@ -3,8 +3,7 @@ package org.senkbeil.debugger.api.jdi.events.filters.processors
 import java.util.concurrent.atomic.AtomicInteger
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.jdi.events.JDIEventArgument
-import org.senkbeil.debugger.api.jdi.events.filters.{JDIEventFilterProcessor, MinTriggerFilter}
+import org.senkbeil.debugger.api.jdi.events.filters.{JDIEventFilter, JDIEventFilterProcessor, MinTriggerFilter}
 
 /**
  * Represents a processor for the min trigger filter.
@@ -37,5 +36,5 @@ class MinTriggerFilterProcessor(
    */
   override def reset(): Unit = internalCount.set(0)
 
-  override val argument: JDIEventArgument = minTriggerFilter
+  override val argument: JDIEventFilter = minTriggerFilter
 }

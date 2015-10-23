@@ -1,8 +1,7 @@
 package org.senkbeil.debugger.api.jdi.requests.properties.processors
 
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.jdi.requests.{JDIRequestArgument, JDIRequestProcessor}
-import org.senkbeil.debugger.api.jdi.requests.properties.EnabledProperty
+import org.senkbeil.debugger.api.jdi.requests.properties.{JDIRequestPropertyProcessor, JDIRequestProperty, EnabledProperty}
 
 /**
  * Represents a processor for the enabled status of a request.
@@ -11,7 +10,7 @@ import org.senkbeil.debugger.api.jdi.requests.properties.EnabledProperty
  */
 class EnabledPropertyProcessor(
   val enabledProperty: EnabledProperty
-) extends JDIRequestProcessor {
+) extends JDIRequestPropertyProcessor {
   private val value = enabledProperty.value
 
   /**
@@ -27,5 +26,5 @@ class EnabledPropertyProcessor(
     eventRequest
   }
 
-  override val argument: JDIRequestArgument = enabledProperty
+  override val argument: JDIRequestProperty = enabledProperty
 }

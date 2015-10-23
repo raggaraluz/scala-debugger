@@ -1,8 +1,7 @@
 package org.senkbeil.debugger.api.jdi.requests.filters.processors
 
 import com.sun.jdi.request.EventRequest
-import org.senkbeil.debugger.api.jdi.requests.{JDIRequestArgument, JDIRequestProcessor}
-import org.senkbeil.debugger.api.jdi.requests.filters.CountFilter
+import org.senkbeil.debugger.api.jdi.requests.filters.{JDIRequestFilter, JDIRequestFilterProcessor, CountFilter}
 
 /**
  * Represents a processor for the count filter.
@@ -11,7 +10,7 @@ import org.senkbeil.debugger.api.jdi.requests.filters.CountFilter
  */
 class CountFilterProcessor(
   val countFilter: CountFilter
-) extends JDIRequestProcessor {
+) extends JDIRequestFilterProcessor {
   private val count = countFilter.count
 
   /**
@@ -27,5 +26,5 @@ class CountFilterProcessor(
     eventRequest
   }
 
-  override val argument: JDIRequestArgument = countFilter
+  override val argument: JDIRequestFilter = countFilter
 }

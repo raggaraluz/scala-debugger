@@ -21,4 +21,11 @@ trait JDIEventFilterProcessor extends JDIEventProcessor {
    * Resets the internal state of the processor.
    */
   def reset(): Unit
+
+  /**
+   * Represents the filter contained by this processor.
+   *
+   * @return The specific filter instance
+   */
+  override val argument: JDIEventFilter
 }

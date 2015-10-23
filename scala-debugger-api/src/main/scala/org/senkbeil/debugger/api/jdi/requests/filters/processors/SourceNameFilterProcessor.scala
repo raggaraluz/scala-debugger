@@ -1,8 +1,7 @@
 package org.senkbeil.debugger.api.jdi.requests.filters.processors
 
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.jdi.requests.{JDIRequestProcessor, JDIRequestArgument}
-import org.senkbeil.debugger.api.jdi.requests.filters.SourceNameFilter
+import org.senkbeil.debugger.api.jdi.requests.filters.{JDIRequestFilter, JDIRequestFilterProcessor, SourceNameFilter}
 
 /**
  * Represents a processor for the source name filter.
@@ -11,7 +10,7 @@ import org.senkbeil.debugger.api.jdi.requests.filters.SourceNameFilter
  */
 class SourceNameFilterProcessor(
   val sourceNameFilter: SourceNameFilter
-) extends JDIRequestProcessor {
+) extends JDIRequestFilterProcessor {
   private val sourceNamePattern = sourceNameFilter.sourceNamePattern
 
   /**
@@ -31,5 +30,5 @@ class SourceNameFilterProcessor(
     eventRequest
   }
 
-  override val argument: JDIRequestArgument = sourceNameFilter
+  override val argument: JDIRequestFilter = sourceNameFilter
 }

@@ -23,6 +23,6 @@ case class InstanceFilter(
    *
    * @return The new JDI request processor instance
    */
-  override def toProcessor: JDIRequestProcessor =
+  override def toProcessor: JDIRequestFilterProcessor =
     new InstanceFilterProcessor(this)
 }

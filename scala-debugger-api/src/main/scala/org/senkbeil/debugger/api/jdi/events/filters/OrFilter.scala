@@ -1,6 +1,5 @@
 package org.senkbeil.debugger.api.jdi.events.filters
 
-import org.senkbeil.debugger.api.jdi.events.JDIEventProcessor
 import org.senkbeil.debugger.api.jdi.events.filters.processors.OrFilterProcessor
 
 /**
@@ -15,8 +14,8 @@ case class OrFilter(filters: JDIEventFilter*) extends JDIEventFilter {
   /**
    * Creates a new JDI event processor based on this filter.
    *
-   * @return The new JDI event processor instance
+   * @return The new JDI event filter processor instance
    */
-  override def toProcessor: JDIEventProcessor =
+  override def toProcessor: JDIEventFilterProcessor =
     new OrFilterProcessor(this)
 }

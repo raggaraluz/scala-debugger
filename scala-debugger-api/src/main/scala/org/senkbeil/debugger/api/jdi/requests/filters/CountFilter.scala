@@ -20,6 +20,6 @@ case class CountFilter(count: Int) extends JDIRequestFilter {
    *
    * @return The new JDI request processor instance
    */
-  override def toProcessor: JDIRequestProcessor =
+  override def toProcessor: JDIRequestFilterProcessor =
     new CountFilterProcessor(this)
 }

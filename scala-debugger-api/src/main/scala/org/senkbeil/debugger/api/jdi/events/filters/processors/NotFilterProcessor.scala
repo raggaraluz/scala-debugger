@@ -1,8 +1,7 @@
 package org.senkbeil.debugger.api.jdi.events.filters.processors
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.jdi.events.JDIEventArgument
-import org.senkbeil.debugger.api.jdi.events.filters.{NotFilter, JDIEventFilterProcessor, OrFilter}
+import org.senkbeil.debugger.api.jdi.events.filters.{JDIEventFilter, NotFilter, JDIEventFilterProcessor, OrFilter}
 
 /**
  * Represents a processor for the 'not' filter.
@@ -22,7 +21,7 @@ class NotFilterProcessor(
    * @return True if the event passes through the filter, otherwise false
    */
   override def process(event: Event): Boolean = {
-    !filter.toProcessor.asInstanceOf[JDIEventFilterProcessor].process(event)
+    !filter.toProcessor.process(event)
   }
 
   /**
@@ -30,5 +29,5 @@ class NotFilterProcessor(
    */
   override def reset(): Unit = {}
 
-  override val argument: JDIEventArgument = notFilter
+  override val argument: JDIEventFilter = notFilter
 }

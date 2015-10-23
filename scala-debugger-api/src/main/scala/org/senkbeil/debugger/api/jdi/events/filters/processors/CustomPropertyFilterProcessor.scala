@@ -1,8 +1,7 @@
 package org.senkbeil.debugger.api.jdi.events.filters.processors
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.jdi.events.JDIEventArgument
-import org.senkbeil.debugger.api.jdi.events.filters.{JDIEventFilterProcessor, CustomPropertyFilter}
+import org.senkbeil.debugger.api.jdi.events.filters.{JDIEventFilter, JDIEventFilterProcessor, CustomPropertyFilter}
 
 /**
  * Represents a processor for the custom property filter.
@@ -31,5 +30,5 @@ class CustomPropertyFilterProcessor(
    */
   override def reset(): Unit = {}
 
-  override val argument: JDIEventArgument = customPropertyFilter
+  override val argument: JDIEventFilter = customPropertyFilter
 }

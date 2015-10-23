@@ -1,8 +1,7 @@
 package org.senkbeil.debugger.api.jdi.events.filters.processors
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.jdi.events.JDIEventArgument
-import org.senkbeil.debugger.api.jdi.events.filters.{AndFilter, JDIEventFilterProcessor}
+import org.senkbeil.debugger.api.jdi.events.filters.{JDIEventFilter, AndFilter, JDIEventFilterProcessor}
 
 /**
  * Represents a processor for the 'and' filter.
@@ -22,8 +21,7 @@ class AndFilterProcessor(
    * @return True if the event passes through the filter, otherwise false
    */
   override def process(event: Event): Boolean = {
-    filters.map(_.toProcessor).map(_.asInstanceOf[JDIEventFilterProcessor])
-      .map(_.process(event)).forall(_ == true)
+    filters.map(_.toProcessor).map(_.process(event)).forall(_ == true)
   }
 
   /**
@@ -31,5 +29,5 @@ class AndFilterProcessor(
    */
   override def reset(): Unit = {}
 
-  override val argument: JDIEventArgument = andFilter
+  override val argument: JDIEventFilter = andFilter
 }

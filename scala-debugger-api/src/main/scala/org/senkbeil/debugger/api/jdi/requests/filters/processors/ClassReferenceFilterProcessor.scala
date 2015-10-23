@@ -2,8 +2,7 @@ package org.senkbeil.debugger.api.jdi.requests.filters.processors
 
 import com.sun.jdi.ReferenceType
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.jdi.requests.{JDIRequestArgument, JDIRequestProcessor}
-import org.senkbeil.debugger.api.jdi.requests.filters.ClassReferenceFilter
+import org.senkbeil.debugger.api.jdi.requests.filters.{JDIRequestFilterProcessor, JDIRequestFilter, ClassReferenceFilter}
 
 /**
  * Represents a processor for the class reference filter.
@@ -12,7 +11,7 @@ import org.senkbeil.debugger.api.jdi.requests.filters.ClassReferenceFilter
  */
 class ClassReferenceFilterProcessor(
   val classReferenceFilter: ClassReferenceFilter
-) extends JDIRequestProcessor {
+) extends JDIRequestFilterProcessor {
   private val referenceType = classReferenceFilter.referenceType
 
   /**
@@ -43,5 +42,5 @@ class ClassReferenceFilterProcessor(
     eventRequest
   }
 
-  override val argument: JDIRequestArgument = classReferenceFilter
+  override val argument: JDIRequestFilter = classReferenceFilter
 }

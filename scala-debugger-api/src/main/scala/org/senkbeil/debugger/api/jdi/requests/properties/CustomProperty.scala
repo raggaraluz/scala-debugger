@@ -17,6 +17,6 @@ case class CustomProperty(key: AnyRef, value: AnyRef)
    *
    * @return The new JDI request processor instance
    */
-  override def toProcessor: JDIRequestProcessor =
+  override def toProcessor: JDIRequestPropertyProcessor =
     new CustomPropertyProcessor(this)
 }

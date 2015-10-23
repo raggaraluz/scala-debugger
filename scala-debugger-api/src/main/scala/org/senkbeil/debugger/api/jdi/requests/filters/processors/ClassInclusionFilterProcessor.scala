@@ -1,8 +1,7 @@
 package org.senkbeil.debugger.api.jdi.requests.filters.processors
 
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.jdi.requests.{JDIRequestArgument, JDIRequestProcessor}
-import org.senkbeil.debugger.api.jdi.requests.filters.ClassInclusionFilter
+import org.senkbeil.debugger.api.jdi.requests.filters.{JDIRequestFilterProcessor, JDIRequestFilter, ClassInclusionFilter}
 
 /**
  * Represents a processor for the class exclusion filter.
@@ -11,7 +10,7 @@ import org.senkbeil.debugger.api.jdi.requests.filters.ClassInclusionFilter
  */
 class ClassInclusionFilterProcessor(
   val classInclusionFilter: ClassInclusionFilter
-) extends JDIRequestProcessor {
+) extends JDIRequestFilterProcessor {
   private val classPattern = classInclusionFilter.classPattern
 
   /**
@@ -42,5 +41,5 @@ class ClassInclusionFilterProcessor(
     eventRequest
   }
 
-  override val argument: JDIRequestArgument = classInclusionFilter
+  override val argument: JDIRequestFilter = classInclusionFilter
 }

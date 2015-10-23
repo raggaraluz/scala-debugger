@@ -24,6 +24,6 @@ case class ClassExclusionFilter(classPattern: String) extends JDIRequestFilter {
    *
    * @return The new JDI request processor instance
    */
-  override def toProcessor: JDIRequestProcessor =
+  override def toProcessor: JDIRequestFilterProcessor =
     new ClassExclusionFilterProcessor(this)
 }

@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.jdi.requests.filters.processors
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.request._
 import org.senkbeil.debugger.api.jdi.requests.{JDIRequestProcessor, JDIRequestArgument}
-import org.senkbeil.debugger.api.jdi.requests.filters.ThreadFilter
+import org.senkbeil.debugger.api.jdi.requests.filters.{JDIRequestFilter, JDIRequestFilterProcessor, ThreadFilter}
 
 /**
  * Represents a processor for the thread filter.
@@ -12,7 +12,7 @@ import org.senkbeil.debugger.api.jdi.requests.filters.ThreadFilter
  */
 class ThreadFilterProcessor(
   val threadFilter: ThreadFilter
-) extends JDIRequestProcessor {
+) extends JDIRequestFilterProcessor {
   private val threadReference = threadFilter.threadReference
 
   /**
@@ -43,5 +43,5 @@ class ThreadFilterProcessor(
     eventRequest
   }
 
-  override val argument: JDIRequestArgument = threadFilter
+  override val argument: JDIRequestFilter = threadFilter
 }

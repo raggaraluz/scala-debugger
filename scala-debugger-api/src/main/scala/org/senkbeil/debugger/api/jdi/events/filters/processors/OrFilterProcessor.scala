@@ -1,8 +1,7 @@
 package org.senkbeil.debugger.api.jdi.events.filters.processors
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.jdi.events.JDIEventArgument
-import org.senkbeil.debugger.api.jdi.events.filters.{OrFilter, AndFilter, JDIEventFilterProcessor}
+import org.senkbeil.debugger.api.jdi.events.filters.{JDIEventFilter, OrFilter, JDIEventFilterProcessor}
 
 /**
  * Represents a processor for the 'or' filter.
@@ -22,9 +21,7 @@ class OrFilterProcessor(
    * @return True if the event passes through the filter, otherwise false
    */
   override def process(event: Event): Boolean = {
-    val results = filters.map(_.toProcessor)
-      .map(_.asInstanceOf[JDIEventFilterProcessor])
-      .map(_.process(event))
+    val results = filters.map(_.toProcessor).map(_.process(event))
 
     if (results.nonEmpty) results.find(_ == true).nonEmpty
     else true
@@ -35,5 +32,5 @@ class OrFilterProcessor(
    */
   override def reset(): Unit = {}
 
-  override val argument: JDIEventArgument = orFilter
+  override val argument: JDIEventFilter = orFilter
 }

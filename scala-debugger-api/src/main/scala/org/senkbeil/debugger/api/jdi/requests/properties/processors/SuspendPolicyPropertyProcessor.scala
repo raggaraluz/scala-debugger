@@ -1,8 +1,7 @@
 package org.senkbeil.debugger.api.jdi.requests.properties.processors
 
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.jdi.requests.{JDIRequestArgument, JDIRequestProcessor}
-import org.senkbeil.debugger.api.jdi.requests.properties.SuspendPolicyProperty
+import org.senkbeil.debugger.api.jdi.requests.properties.{JDIRequestPropertyProcessor, JDIRequestProperty, SuspendPolicyProperty}
 
 /**
  * Represents a processor for the suspend policy of a request.
@@ -11,7 +10,7 @@ import org.senkbeil.debugger.api.jdi.requests.properties.SuspendPolicyProperty
  */
 class SuspendPolicyPropertyProcessor(
   val suspendPolicy: SuspendPolicyProperty
-) extends JDIRequestProcessor {
+) extends JDIRequestPropertyProcessor {
   private val policy = suspendPolicy.policy
 
   /**
@@ -27,5 +26,5 @@ class SuspendPolicyPropertyProcessor(
     eventRequest
   }
 
-  override val argument: JDIRequestArgument = suspendPolicy
+  override val argument: JDIRequestProperty = suspendPolicy
 }

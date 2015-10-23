@@ -15,4 +15,11 @@ trait JDIEventDataProcessor extends JDIEventProcessor {
    * @return The collection of results from processing the event
    */
   override def process(event: Event): Seq[JDIEventDataResult]
+
+  /**
+   * Represents the data request contained by this processor.
+   *
+   * @return The specific filter instance
+   */
+  override val argument: JDIEventDataRequest
 }

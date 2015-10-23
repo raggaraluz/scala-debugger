@@ -14,5 +14,6 @@ case class EnabledProperty(value: Boolean) extends JDIRequestProperty {
    *
    * @return The new JDI request processor instance
    */
-  override def toProcessor: JDIRequestProcessor = new EnabledPropertyProcessor(this)
+  override def toProcessor: JDIRequestPropertyProcessor =
+    new EnabledPropertyProcessor(this)
 }

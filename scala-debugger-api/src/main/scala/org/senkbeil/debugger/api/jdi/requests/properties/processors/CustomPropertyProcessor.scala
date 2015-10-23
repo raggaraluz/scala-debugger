@@ -1,8 +1,7 @@
 package org.senkbeil.debugger.api.jdi.requests.properties.processors
 
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.jdi.requests.{JDIRequestProcessor, JDIRequestArgument}
-import org.senkbeil.debugger.api.jdi.requests.properties.CustomProperty
+import org.senkbeil.debugger.api.jdi.requests.properties.{JDIRequestPropertyProcessor, JDIRequestProperty, CustomProperty}
 
 /**
  * Represents a processor for the custom property of a request.
@@ -11,7 +10,7 @@ import org.senkbeil.debugger.api.jdi.requests.properties.CustomProperty
  */
 class CustomPropertyProcessor(
   val customProperty: CustomProperty
-) extends JDIRequestProcessor {
+) extends JDIRequestPropertyProcessor {
   private val key = customProperty.key
   private val value = customProperty.value
 
@@ -28,5 +27,5 @@ class CustomPropertyProcessor(
     eventRequest
   }
 
-  override val argument: JDIRequestArgument = customProperty
+  override val argument: JDIRequestProperty = customProperty
 }

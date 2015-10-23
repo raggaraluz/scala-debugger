@@ -1,6 +1,5 @@
 package org.senkbeil.debugger.api.jdi.events.filters
 
-import org.senkbeil.debugger.api.jdi.events.JDIEventProcessor
 import org.senkbeil.debugger.api.jdi.events.filters.processors.MinTriggerFilterProcessor
 
 /**
@@ -17,7 +16,8 @@ case class MinTriggerFilter(count: Int) extends JDIEventFilter {
   /**
    * Creates a new JDI event processor based on this filter.
    *
-   * @return The new JDI event processor instance
+   * @return The new JDI event filter processor instance
    */
-  override def toProcessor: JDIEventProcessor = new MinTriggerFilterProcessor(this)
+  override def toProcessor: JDIEventFilterProcessor =
+    new MinTriggerFilterProcessor(this)
 }
