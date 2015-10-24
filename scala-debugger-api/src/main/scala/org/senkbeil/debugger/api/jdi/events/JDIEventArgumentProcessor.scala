@@ -1,8 +1,10 @@
 package org.senkbeil.debugger.api.jdi.events
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.jdi.events.data.{JDIEventDataResult, JDIEventDataProcessor}
+import org.senkbeil.debugger.api.jdi.events.data.{JDIEventDataUnknownError, JDIEventDataResult, JDIEventDataProcessor}
 import org.senkbeil.debugger.api.jdi.events.filters.JDIEventFilterProcessor
+
+import scala.util.Try
 
 /**
  * Represents a processor for arguments for JDI Events. Evaluates the filters
@@ -81,10 +83,13 @@ class JDIEventArgumentProcessor(private val arguments: JDIEventArgument*) {
    *
    * @param event The event to process
    *
-   * @return The data results from the data processors
+   * @return The data results and errors from the data processors
    */
   def processData(event: Event): Seq[JDIEventDataResult] = {
-    dataProcessors.flatMap(_.process(event))
+    val results = dataProcessors.map(p => Try(p.process(event)))
+
+    results.flatMap(_.toOption).flatten ++
+      results.flatMap(_.failed.toOption).map(JDIEventDataUnknownError.apply)
   }
 
   /**
