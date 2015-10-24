@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.jdi.events
 import com.sun.jdi.event.Event
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
-import org.senkbeil.debugger.api.jdi.events.data.{JDIEventDataProcessor, JDIEventDataRequest, JDIEventDataResult}
+import org.senkbeil.debugger.api.jdi.events.data.{JDIEventDataUnknownError, JDIEventDataProcessor, JDIEventDataRequest, JDIEventDataResult}
 import org.senkbeil.debugger.api.jdi.events.filters.{JDIEventFilterProcessor, JDIEventFilter}
 
 class JDIEventArgumentProcessorSpec extends FunSpec with Matchers
@@ -133,6 +133,27 @@ class JDIEventArgumentProcessorSpec extends FunSpec with Matchers
           data2ArgumentAndProcessor._1,
           filterArgumentAndProcessor._1
         )
+
+        val actual = jdiEventArgumentProcessor.processData(mockEvent)
+
+        actual should contain theSameElementsInOrderAs (expected)
+      }
+
+      it("should wrap exceptions from processing and include in results") {
+        val expected = Seq(JDIEventDataUnknownError(new Throwable))
+        val mockEvent = mock[Event]
+
+        val badDataRequest = mock[JDIEventDataRequest]
+        val badDataProcessor = mock[JDIEventDataProcessor]
+
+        // The bad request's processor should throw the expected exception
+        (badDataRequest.toProcessor _).expects()
+          .returning(badDataProcessor).once()
+        (badDataProcessor.process _).expects(*)
+          .throwing(expected.head.throwable).once()
+
+        val jdiEventArgumentProcessor =
+          new JDIEventArgumentProcessor(badDataRequest)
 
         val actual = jdiEventArgumentProcessor.processData(mockEvent)
 
