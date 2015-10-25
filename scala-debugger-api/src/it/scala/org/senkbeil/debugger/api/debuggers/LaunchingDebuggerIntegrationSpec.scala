@@ -5,11 +5,11 @@ import java.util.concurrent.atomic.AtomicBoolean
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers}
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 import test.TestUtilities
 
 class LaunchingDebuggerIntegrationSpec  extends FunSpec with Matchers
-  with Eventually with TestUtilities with LogLike
+  with Eventually with TestUtilities with Logging
 {
   implicit override val patienceConfig = PatienceConfig(
     timeout = scaled(Span(5, Seconds)),

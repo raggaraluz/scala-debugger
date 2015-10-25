@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.lowlevel.events
 
 import com.sun.jdi.event.{Event, EventSet}
 import EventType.EventType
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 
 /**
  * Represents a processor for an event set, evaluating any associated
@@ -18,7 +18,7 @@ class EventSetProcessor(
   private val eventSet: EventSet,
   private val eventFunctionRetrieval: EventType => Seq[EventManager#EventHandler],
   private val onExceptionResume: Boolean
-) extends LogLike {
+) extends Logging {
   /** Represents the iterator over the provided set of events. */
   private val eventSetIterator = eventSet.iterator()
 

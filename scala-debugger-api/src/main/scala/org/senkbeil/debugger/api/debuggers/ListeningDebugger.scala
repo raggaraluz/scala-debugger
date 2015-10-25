@@ -4,7 +4,7 @@ import java.util.concurrent.{ExecutorService, Executors}
 
 import com.sun.jdi._
 import com.sun.jdi.connect.{Connector, ListeningConnector}
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -59,7 +59,7 @@ class ListeningDebugger private[debugger] (
   private val port: Int,
   private val executorServiceFunc: () => ExecutorService,
   private val workers: Int
-) extends Debugger with LogLike {
+) extends Debugger with Logging {
   private val ConnectorClassString = "com.sun.jdi.SocketListen"
 
   // Contains all components for the currently-running debugger

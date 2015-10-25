@@ -6,8 +6,8 @@ import org.slf4j.{ Logger, LoggerFactory }
  * A trait for mixing in logging. This trait exposes an SLF4J logger through
  * a protected field called logger.
  */
-trait LogLike {
-  val loggerName = this.getClass.getName
+trait Logging {
+  private val loggerName = this.getClass.getName
   protected val logger = LoggerFactory.getLogger(loggerName)
 
   implicit class LoggerExtras(private val logger: Logger) {

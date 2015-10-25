@@ -8,7 +8,7 @@ import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.filters.ClassInclusionFilter
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{SuspendPolicyProperty, EnabledProperty}
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 
 import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
 import scala.collection.JavaConverters._
@@ -23,7 +23,7 @@ import scala.util.{Failure, Success, Try}
  */
 class MethodEntryManager(
   protected val _virtualMachine: VirtualMachine
-) extends JDIHelperMethods with LogLike {
+) extends JDIHelperMethods with Logging {
   private val eventRequestManager = _virtualMachine.eventRequestManager()
 
   type MethodEntryKey = (String, String)

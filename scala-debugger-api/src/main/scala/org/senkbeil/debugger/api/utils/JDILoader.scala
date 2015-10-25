@@ -14,7 +14,7 @@ import scala.util.Try
  */
 class JDILoader(
     private val _classLoader: ClassLoader = classOf[JDILoader].getClassLoader
-) extends LogLike {
+) extends Logging {
   /** The directory containing JDK libraries relative to the root of the JDK */
   private val BaseLibDir = "lib"
 

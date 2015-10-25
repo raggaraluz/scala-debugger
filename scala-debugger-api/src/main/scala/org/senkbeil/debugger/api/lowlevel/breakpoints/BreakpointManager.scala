@@ -7,7 +7,7 @@ import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
 import org.senkbeil.debugger.api.lowlevel.requests.{JDIRequestArgument, Implicits}
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 import com.sun.jdi.{Location, VirtualMachine}
 
 import scala.collection.mutable
@@ -25,7 +25,7 @@ import scala.util.{Try, Failure, Success}
 class BreakpointManager(
   protected val _virtualMachine: VirtualMachine,
   private val _classManager: ClassManager
-) extends JDIHelperMethods with LogLike {
+) extends JDIHelperMethods with Logging {
   import Implicits._
   private val eventRequestManager = _virtualMachine.eventRequestManager()
 

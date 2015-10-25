@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.debuggers
 
 import com.sun.jdi._
 import com.sun.jdi.connect.LaunchingConnector
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 
 import scala.collection.JavaConverters._
 
@@ -53,7 +53,7 @@ class LaunchingDebugger private[debugger] (
   private val commandLineArguments: Seq[String] = Nil,
   private val jvmOptions: Seq[String] = Nil,
   private val suspend: Boolean = true
-) extends Debugger with LogLike {
+) extends Debugger with Logging {
   private val ConnectorClassString = "com.sun.jdi.CommandLineLaunch"
   @volatile private var virtualMachine: Option[VirtualMachine] = None
 

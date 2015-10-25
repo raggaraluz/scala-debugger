@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.lowlevel.events
 
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
-import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, LogLike}
+import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.event.{EventSet, Event}
 
@@ -29,7 +29,7 @@ class EventManager(
   private val autoStart: Boolean = true,
   private val startTaskRunner: Boolean = false,
   private val onExceptionResume: Boolean = true
-) extends JDIHelperMethods with LogLike {
+) extends JDIHelperMethods with Logging {
   /**
    * Represents an event callback, receiving the event and returning whether or
    * not to resume.

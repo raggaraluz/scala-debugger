@@ -1,6 +1,6 @@
 package org.senkbeil.debugger.api.lowlevel.wrappers
 
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 import com.sun.jdi.{Value, Field, ReferenceType}
 import scala.collection.JavaConverters._
 
@@ -12,7 +12,7 @@ import scala.util.Try
  * @param _referenceType The reference type to wrap
  */
 class ReferenceTypeWrapper(private val _referenceType: ReferenceType)
-  extends LogLike
+  extends Logging
 {
   require(_referenceType != null, "Reference type cannot be null!")
 

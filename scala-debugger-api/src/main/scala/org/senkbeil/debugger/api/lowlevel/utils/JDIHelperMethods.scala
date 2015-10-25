@@ -1,12 +1,12 @@
 package org.senkbeil.debugger.api.lowlevel.utils
 
 import com.sun.jdi._
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 
 import scala.collection.JavaConverters._
 import scala.util.Try
 
-trait JDIHelperMethods extends LogLike {
+trait JDIHelperMethods extends Logging {
   protected val _virtualMachine: VirtualMachine
 
   /**

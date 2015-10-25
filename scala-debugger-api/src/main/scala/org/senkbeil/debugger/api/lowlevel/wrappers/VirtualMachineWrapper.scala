@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.lowlevel.wrappers
 
 import java.util.concurrent.ConcurrentHashMap
 
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 import com.sun.jdi.request.EventRequest
 import com.sun.jdi.VirtualMachine
 
@@ -14,7 +14,7 @@ import scala.collection.JavaConverters._
  * @param _virtualMachine The virtual machine to wrap
  */
 class VirtualMachineWrapper(private val _virtualMachine: VirtualMachine)
-  extends LogLike
+  extends Logging
 {
   require(_virtualMachine != null, "Virtual machine cannot be null!")
 

@@ -7,7 +7,7 @@ import com.sun.jdi.request.ExceptionRequest
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{SuspendPolicyProperty, EnabledProperty}
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 import scala.collection.JavaConverters._
 import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
 
@@ -21,7 +21,7 @@ import scala.util.{Failure, Success, Try}
  */
 class ExceptionManager(
   protected val _virtualMachine: VirtualMachine
-) extends JDIHelperMethods with LogLike {
+) extends JDIHelperMethods with Logging {
   private val eventRequestManager = _virtualMachine.eventRequestManager()
 
   type ExceptionKey = String

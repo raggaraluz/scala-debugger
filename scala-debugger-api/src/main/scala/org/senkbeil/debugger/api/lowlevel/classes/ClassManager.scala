@@ -1,7 +1,7 @@
 package org.senkbeil.debugger.api.lowlevel.classes
 
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 import com.sun.jdi.{Location, ReferenceType, VirtualMachine}
 
 import scala.collection.JavaConverters._
@@ -32,7 +32,7 @@ object ClassManager {
 class ClassManager(
   protected val _virtualMachine: VirtualMachine,
   loadClasses: Boolean = true
-) extends JDIHelperMethods with LogLike {
+) extends JDIHelperMethods with Logging {
   /** Mapping of file names to associated classes. */
   private val fileToClasses = mutable.Map[String, Seq[ReferenceType]]()
 

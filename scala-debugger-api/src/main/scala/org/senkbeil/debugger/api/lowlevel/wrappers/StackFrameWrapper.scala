@@ -1,6 +1,6 @@
 package org.senkbeil.debugger.api.lowlevel.wrappers
 
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 import com.sun.jdi._
 
 import scala.collection.JavaConverters._
@@ -11,7 +11,7 @@ import scala.util.{ Failure, Success, Try }
  *
  * @param _stackFrame The stack frame to wrap
  */
-class StackFrameWrapper(private val _stackFrame: StackFrame) extends LogLike {
+class StackFrameWrapper(private val _stackFrame: StackFrame) extends Logging {
   require(_stackFrame != null, "Stack frame cannot be null!")
 
   /**

@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.debuggers
 
 import com.sun.jdi._
 import com.sun.jdi.connect.AttachingConnector
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 
 import scala.collection.JavaConverters._
 
@@ -44,7 +44,7 @@ class AttachingDebugger private[debugger] (
   private val port: Int,
   private val hostname: String = "",
   private val timeout: Long = 0
-) extends Debugger with LogLike {
+) extends Debugger with Logging {
   private val ConnectorClassString = "com.sun.jdi.SocketAttach"
   @volatile private var virtualMachine: Option[VirtualMachine] = None
 

@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.virtualmachines
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
-import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, LogLike}
+import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
 import org.senkbeil.debugger.api.lowlevel.wrappers.Implicits
 import Implicits._
 import com.sun.jdi._
@@ -19,7 +19,7 @@ import com.sun.jdi.event.ClassPrepareEvent
 class ScalaVirtualMachine(
   protected val _virtualMachine: VirtualMachine,
   val uniqueId: String = java.util.UUID.randomUUID().toString
-) extends JDIHelperMethods with LogLike {
+) extends JDIHelperMethods with Logging {
 
   /** Builds a string with the identifier of this virtual machine. */
   private def vmString(message: String) = s"(Scala VM $uniqueId) $message"

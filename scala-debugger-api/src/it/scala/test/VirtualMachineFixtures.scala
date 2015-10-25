@@ -3,7 +3,7 @@ package test
 import org.senkbeil.debugger.api.debuggers.LaunchingDebugger
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.lowlevel.events.EventType
-import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, LogLike}
+import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
 import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
 import EventType._
 import com.sun.jdi.VirtualMachine
@@ -15,7 +15,7 @@ import scala.util.Try
  * Provides fixture methods to provide virtual machines running specified
  * files.
  */
-trait VirtualMachineFixtures extends TestUtilities with LogLike {
+trait VirtualMachineFixtures extends TestUtilities with Logging {
   def withVirtualMachine(
     className: String,
     arguments: Seq[String] = Nil,

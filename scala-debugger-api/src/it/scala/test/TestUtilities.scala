@@ -3,12 +3,12 @@ package test
 import java.io.File
 import java.net.URLClassLoader
 
-import org.senkbeil.debugger.api.utils.LogLike
+import org.senkbeil.debugger.api.utils.Logging
 
 /**
  * Contains helper methods for testing.
  */
-trait TestUtilities { this: LogLike =>
+trait TestUtilities { this: Logging =>
   /**
    * Converts a class string to a file string.
    *
