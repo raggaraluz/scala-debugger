@@ -126,7 +126,6 @@ class ExceptionManager(
     extraArguments: JDIRequestArgument*
   ): Boolean = {
     val exceptionReferenceTypes = _virtualMachine.classesByName(exceptionName)
-    logger.info(s"Found classes for $exceptionName: ${exceptionReferenceTypes.asScala.mkString(",")}")
 
     // If no classes match the requested exception type, exit early
     if (exceptionReferenceTypes.isEmpty) return false
