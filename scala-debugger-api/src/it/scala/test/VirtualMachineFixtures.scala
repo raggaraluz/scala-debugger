@@ -1,7 +1,7 @@
 package test
 
-import org.senkbeil.debugger.api.LaunchingDebugger
-import org.senkbeil.debugger.api.events.EventType
+import org.senkbeil.debugger.api.debuggers.LaunchingDebugger
+import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, LogLike}
 import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
 import EventType._

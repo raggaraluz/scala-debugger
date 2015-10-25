@@ -1,6 +1,6 @@
 package org.senkbeil.debugger.api.virtualmachines
 
-import org.senkbeil.debugger.api.classes.ClassManager
+import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import com.sun.jdi._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
