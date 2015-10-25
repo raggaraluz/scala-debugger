@@ -36,7 +36,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsFromTo(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.stepManager.stepOut(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.stepOut(_: ThreadReference),
             startingLine = startingLine,
             expectedLine = expectedLine
           )
@@ -56,7 +56,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsFromTo(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.stepManager.stepOut(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.stepOut(_: ThreadReference),
             startingLine = startingLine,
             expectedLine = expectedLine
           )
@@ -98,7 +98,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.stepManager.stepOver(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.stepOver(_: ThreadReference),
             startingLine = startingLine,
             expectedReachableLines = expectedReachableLines,
             failIfNotExact = true,
@@ -119,7 +119,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.stepManager.stepOver(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.stepOver(_: ThreadReference),
             startingLine = startingLine,
             expectedReachableLines = expectedReachableLines
           )
@@ -139,7 +139,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsFromTo(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.stepManager.stepOver(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.stepOver(_: ThreadReference),
             startingLine = startingLine,
             expectedLine = expectedLine
           )
@@ -158,7 +158,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.stepManager.stepOver(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.stepOver(_: ThreadReference),
             startingLine = startingLine,
             expectedReachableLines = expectedReachableLines
           )
@@ -197,7 +197,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.stepManager.stepInto(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.stepInto(_: ThreadReference),
             startingLine = startingLine,
             expectedReachableLines = expectedReachableLines,
             failIfNotExact = true,
@@ -219,7 +219,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.stepManager.stepInto(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.stepInto(_: ThreadReference),
             startingLine = startingLine,
             expectedReachableLines = expectedReachableLines
           )
@@ -236,7 +236,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsFromTo(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.stepManager.stepInto(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.stepInto(_: ThreadReference),
             startingLine = startingLine,
             expectedLine = expectedLine
           )
@@ -263,15 +263,16 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
     startingLine: Int,
     expectedLine: Int
   ) = {
-    val s = scalaVirtualMachine
+    import scalaVirtualMachine.lowlevel._
+
     val testFile = scalaClassStringToFileString(testClass)
     // Flag that indicates we reached the expected line
     val success = new AtomicBoolean(false)
 
-    s.breakpointManager.setLineBreakpoint(testFile, startingLine)
+    breakpointManager.setLineBreakpoint(testFile, startingLine)
 
     // On receiving a breakpoint, send a step request
-    s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
+    eventManager.addResumingEventHandler(BreakpointEventType, e => {
       val breakpointEvent = e.asInstanceOf[BreakpointEvent]
       val className = breakpointEvent.location().declaringType().name()
       val lineNumber = breakpointEvent.location.lineNumber()
@@ -282,7 +283,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
 
     // On receiving a step request, verify that we are in the right
     // location
-    s.eventManager.addResumingEventHandler(StepEventType, e => {
+    eventManager.addResumingEventHandler(StepEventType, e => {
       val stepEvent = e.asInstanceOf[StepEvent]
       val className = stepEvent.location().declaringType().name()
       val lineNumber = stepEvent.location().lineNumber()
@@ -320,7 +321,8 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
     failIfNotExact: Boolean = false,
     maxDuration: (Int, Units) = (5, Seconds)
   ) = {
-    val s = scalaVirtualMachine
+    import scalaVirtualMachine.lowlevel._
+
     val testFile = scalaClassStringToFileString(testClass)
     val expectedLines = collection.mutable.Stack(expectedReachableLines: _*)
 
@@ -329,10 +331,10 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
     @volatile var failEarlyMessage = "???"
 
     // Add a breakpoint to get us in the right location for steps
-    s.breakpointManager.setLineBreakpoint(testFile, startingLine)
+    breakpointManager.setLineBreakpoint(testFile, startingLine)
 
     // On receiving a breakpoint, send a step request
-    s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
+    eventManager.addResumingEventHandler(BreakpointEventType, e => {
       val breakpointEvent = e.asInstanceOf[BreakpointEvent]
       val className = breakpointEvent.location().declaringType().name()
       val lineNumber = breakpointEvent.location.lineNumber()
@@ -343,7 +345,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
 
     // On receiving a step request, verify that we are in the right
     // location
-    s.eventManager.addResumingEventHandler(StepEventType, e => {
+    eventManager.addResumingEventHandler(StepEventType, e => {
       val stepEvent = e.asInstanceOf[StepEvent]
       val className = stepEvent.location().declaringType().name()
       val lineNumber = stepEvent.location().lineNumber()

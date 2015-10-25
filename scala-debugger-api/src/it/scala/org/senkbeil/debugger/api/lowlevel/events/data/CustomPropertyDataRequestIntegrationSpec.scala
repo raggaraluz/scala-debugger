@@ -47,20 +47,22 @@ class CustomPropertyDataRequestIntegrationSpec extends FunSpec with Matchers
       @volatile var actual = collection.mutable.Seq[JDIEventDataResult]()
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        import s.lowlevel._
+
         // Queue up our breakpoints
         breakpointLines.foreach(
-          s.breakpointManager.setLineBreakpoint(testFile, _: Int)
+          breakpointManager.setLineBreakpoint(testFile, _: Int)
         )
 
         // Set specific breakpoints with custom property
-        propertyBreakpoints.foreach(i => s.breakpointManager.setLineBreakpoint(
+        propertyBreakpoints.foreach(i => breakpointManager.setLineBreakpoint(
           fileName = testFile,
           lineNumber = i,
           property
         ))
 
         // Queue up a generic breakpoint event handler that retrieves data
-        s.eventManager.addResumingEventHandler(BreakpointEventType, (e, d) => {
+        eventManager.addResumingEventHandler(BreakpointEventType, (e, d) => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
           val location = breakpointEvent.location()
           val fileName = location.sourcePath()

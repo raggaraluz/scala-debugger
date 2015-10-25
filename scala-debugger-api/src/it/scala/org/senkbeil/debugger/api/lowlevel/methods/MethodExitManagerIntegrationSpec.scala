@@ -34,18 +34,20 @@ class MethodExitManagerIntegrationSpec extends FunSpec with Matchers
       val leftMethodAfterLastLine = new AtomicBoolean(false)
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        import s.lowlevel._
+
         // Set up the method exit event
-        s.methodExitManager.setMethodExit(
+        methodExitManager.setMethodExit(
           expectedClassName,
           expectedMethodName
         )
 
         // Last line in test method
-        s.breakpointManager.setLineBreakpoint(testFile, 28)
+        breakpointManager.setLineBreakpoint(testFile, 28)
 
         // Listen for breakpoint on first line of method, checking if this
         // breakpoint is hit before or after the method exit event
-        s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
           val location = breakpointEvent.location()
           val fileName = location.sourcePath()
@@ -58,7 +60,7 @@ class MethodExitManagerIntegrationSpec extends FunSpec with Matchers
         })
 
         // Listen for method exit events for the specific method
-        s.eventManager.addResumingEventHandler(MethodExitEventType, e => {
+        eventManager.addResumingEventHandler(MethodExitEventType, e => {
           val methodExitEvent = e.asInstanceOf[MethodExitEvent]
           val method = methodExitEvent.method()
           val className = method.declaringType().name()

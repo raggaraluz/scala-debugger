@@ -1,6 +1,7 @@
 package test
 
 import org.senkbeil.debugger.api.debuggers.LaunchingDebugger
+import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, LogLike}
 import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
@@ -61,12 +62,12 @@ trait VirtualMachineFixtures extends TestUtilities with LogLike {
       }
 
       try {
-        val scalaVirtualMachine = new ScalaVirtualMachine(
-          virtualMachine,
-          loopingTaskRunner
-        )
+        val scalaVirtualMachine = new ScalaVirtualMachine(virtualMachine) {
+          override protected def newManagerContainer(unused: LoopingTaskRunner) =
+            super.newManagerContainer(loopingTaskRunner)
+        }
 
-        val eventManager = scalaVirtualMachine.eventManager
+        val eventManager = scalaVirtualMachine.lowlevel.eventManager
 
         // Wait for connection event to run the test code (ensures everything
         // is ready)

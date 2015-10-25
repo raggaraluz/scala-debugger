@@ -1,6 +1,6 @@
 package org.senkbeil.debugger.api.lowlevel.utils
 
-import com.sun.jdi.{ReferenceType, ThreadReference, VirtualMachine}
+import com.sun.jdi._
 import org.senkbeil.debugger.api.utils.LogLike
 
 import scala.collection.JavaConverters._
@@ -108,5 +108,93 @@ trait JDIHelperMethods extends LogLike {
     })
 
     sourcePath.toOption
+  }
+
+  /**
+   * Retrieves the fully-qualified class name that invoked the main method of
+   * this virtual machine.
+   *
+   * @return The name as a string
+   */
+  protected def retrieveMainClassName(): String = {
+    val mainThread = findMainThread().get
+
+    val tryClassName = suspendThreadAndExecute(mainThread) {
+      val mainMethodFrames = mainThread.frames().asScala
+        .map(_.location()).filter(_.method().name() == "main").toSeq
+
+      assert(mainMethodFrames.nonEmpty, "Error locating main method!")
+
+      // NOTE: This is a simple fix to catch MyObject vs MyObject$, but does
+      //       not guarantee anything with scala.DelayedInit via scala.App,
+      //       meaning that applications started using that trait might return
+      //       the wrong class name (scala.App$class)
+      val mainMethodFrame = mainMethodFrames.reduce((loc1, loc2) => {
+        val loc1DeclaringType = loc1.declaringType().name()
+        val loc2DeclaringType = loc2.declaringType().name()
+
+        // Return location that is furthest up the class chain (ignore
+        // Scala's generated classes like MyObject$ class for MyObject object)
+        if (loc1DeclaringType.contains(loc2DeclaringType)) loc2 else loc1
+      })
+
+      mainMethodFrame
+    }.map(_.declaringType().name())
+
+    // Throw our exception if we get one
+    tryClassName.failed.foreach(ex => throw ex)
+
+    // Return the resulting class name
+    tryClassName.get
+  }
+
+  /**
+   * Retrieves the command line arguments used to start this virtual machine.
+   *
+   * @return The sequence of arguments as strings
+   */
+  protected def retrieveCommandLineArguments(): Seq[String] = {
+    def processArguments(values: Seq[Value]): Seq[String] = {
+      values.flatMap {
+        // Should represent the whole array of string arguments, drill down
+        case arrayReference: ArrayReference =>
+          processArguments(arrayReference.getValues.asScala)
+
+        // Base structure (string) should be returned as an argument
+        case stringReference: StringReference =>
+          Seq(stringReference.value())
+
+        // NOTE: A reference to the underlying class tends to show up as an
+        // additional value after the virtual machine is initialized, so we
+        // want to ignore it without flooding our logging output
+        case objectReference: ObjectReference => Nil
+
+        // Ignore any other values (some show up due to Scala)
+        case v =>
+          logger.warn(s"Unknown value while processing arguments: $v")
+          Nil
+      }
+    }
+
+    // Get the main thread of execution
+    val mainThread = findMainThread().get
+
+    // Retrieve command line arguments for connected JVM
+    val tryArguments = suspendThreadAndExecute(mainThread) {
+      val arguments = mainThread.frames().asScala
+        .find(_.location().method().name() == "main")
+        .map(_.getArgumentValues.asScala.toSeq)
+        .map(processArguments)
+
+      assert(arguments.nonEmpty, "Error locating main method!")
+
+      arguments.get
+    }
+
+    // Throw our exception if we get one
+    tryArguments.failed.foreach(ex => throw ex)
+
+    // Return the resulting arguments
+    tryArguments.get
   }
 }

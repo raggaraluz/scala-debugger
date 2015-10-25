@@ -31,11 +31,13 @@ class BreakpointManagerIntegrationSpec extends FunSpec with Matchers
       val secondBreakpointCount = new AtomicInteger(0)
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
-        // Queue up our breakpoints
-        s.breakpointManager.setLineBreakpoint(testFile, firstBreakpointLine)
-        s.breakpointManager.setLineBreakpoint(testFile, secondBreakpointLine)
+        import s.lowlevel._
 
-        s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        // Queue up our breakpoints
+        breakpointManager.setLineBreakpoint(testFile, firstBreakpointLine)
+        breakpointManager.setLineBreakpoint(testFile, secondBreakpointLine)
+
+        eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
           val location = breakpointEvent.location()
           val fileName = location.sourcePath()
@@ -68,11 +70,13 @@ class BreakpointManagerIntegrationSpec extends FunSpec with Matchers
       val secondBreakpointCount = new AtomicInteger(0)
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
-        // Queue up our breakpoints
-        s.breakpointManager.setLineBreakpoint(testFile, firstBreakpointLine)
-        s.breakpointManager.setLineBreakpoint(testFile, secondBreakpointLine)
+        import s.lowlevel._
 
-        s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        // Queue up our breakpoints
+        breakpointManager.setLineBreakpoint(testFile, firstBreakpointLine)
+        breakpointManager.setLineBreakpoint(testFile, secondBreakpointLine)
+
+        eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
           val location = breakpointEvent.location()
           val fileName = location.sourcePath()
@@ -105,11 +109,13 @@ class BreakpointManagerIntegrationSpec extends FunSpec with Matchers
       val secondBreakpoint = new AtomicBoolean(false)
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
-        // Queue up our breakpoints
-        s.breakpointManager.setLineBreakpoint(testFile, firstBreakpointLine)
-        s.breakpointManager.setLineBreakpoint(testFile, secondBreakpointLine)
+        import s.lowlevel._
 
-        s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        // Queue up our breakpoints
+        breakpointManager.setLineBreakpoint(testFile, firstBreakpointLine)
+        breakpointManager.setLineBreakpoint(testFile, secondBreakpointLine)
+
+        eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
           val location = breakpointEvent.location()
           val fileName = location.sourcePath()

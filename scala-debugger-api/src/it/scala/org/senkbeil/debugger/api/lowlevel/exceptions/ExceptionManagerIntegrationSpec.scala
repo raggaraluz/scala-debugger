@@ -29,12 +29,14 @@ class ExceptionManagerIntegrationSpec extends FunSpec with Matchers
         "org.senkbeil.debugger.test.exceptions.CustomException"
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        import s.lowlevel._
+
         // Use a breakpoint prior to our exceptions to prepare without passing
         // the exceptions
-        s.breakpointManager.setLineBreakpoint(testFile, 10)
+        breakpointManager.setLineBreakpoint(testFile, 10)
 
         // When breakpoint triggered, assume the exception class has been loaded
-        s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
           val location = breakpointEvent.location()
           val fileName = location.sourcePath()
@@ -44,13 +46,13 @@ class ExceptionManagerIntegrationSpec extends FunSpec with Matchers
 
           // Mark the exception we want to watch (now that the class
           // is available)
-          s.exceptionManager.setException(
+          exceptionManager.setException(
             exceptionName = expectedExceptionName,
             notifyCaught = true,
             notifyUncaught = false
           )
 
-          s.eventManager.addResumingEventHandler(ExceptionEventType, e => {
+          eventManager.addResumingEventHandler(ExceptionEventType, e => {
             val exceptionEvent = e.asInstanceOf[ExceptionEvent]
             val exceptionName = exceptionEvent.exception().referenceType().name()
 
@@ -76,12 +78,14 @@ class ExceptionManagerIntegrationSpec extends FunSpec with Matchers
         "org.senkbeil.debugger.test.exceptions.CustomException"
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        import s.lowlevel._
+
         // Use a breakpoint prior to our exceptions to prepare without passing
         // the exceptions
-        s.breakpointManager.setLineBreakpoint(testFile, 10)
+        breakpointManager.setLineBreakpoint(testFile, 10)
 
         // When breakpoint triggered, assume the exception class has been loaded
-        s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
           val location = breakpointEvent.location()
           val fileName = location.sourcePath()
@@ -91,13 +95,13 @@ class ExceptionManagerIntegrationSpec extends FunSpec with Matchers
 
           // Mark the exception we want to watch (now that the class
           // is available)
-          s.exceptionManager.setException(
+          exceptionManager.setException(
             exceptionName = expectedExceptionName,
             notifyCaught = true,
             notifyUncaught = false
           )
 
-          s.eventManager.addResumingEventHandler(ExceptionEventType, e => {
+          eventManager.addResumingEventHandler(ExceptionEventType, e => {
             val exceptionEvent = e.asInstanceOf[ExceptionEvent]
             val exceptionName = exceptionEvent.exception().referenceType().name()
 
@@ -123,12 +127,14 @@ class ExceptionManagerIntegrationSpec extends FunSpec with Matchers
         "org.senkbeil.debugger.test.exceptions.CustomException"
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        import s.lowlevel._
+
         // Use a breakpoint prior to our exceptions to prepare without passing
         // the exceptions
-        s.breakpointManager.setLineBreakpoint(testFile, 10)
+        breakpointManager.setLineBreakpoint(testFile, 10)
 
         // When breakpoint triggered, assume the exception class has been loaded
-        s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
           val location = breakpointEvent.location()
           val fileName = location.sourcePath()
@@ -138,13 +144,13 @@ class ExceptionManagerIntegrationSpec extends FunSpec with Matchers
 
           // Mark the exception we want to watch (now that the class
           // is available)
-          s.exceptionManager.setException(
+          exceptionManager.setException(
             exceptionName = expectedExceptionName,
             notifyCaught = false,
             notifyUncaught = true
           )
 
-          s.eventManager.addResumingEventHandler(ExceptionEventType, e => {
+          eventManager.addResumingEventHandler(ExceptionEventType, e => {
             val exceptionEvent = e.asInstanceOf[ExceptionEvent]
             val exceptionName = exceptionEvent.exception().referenceType().name()
 

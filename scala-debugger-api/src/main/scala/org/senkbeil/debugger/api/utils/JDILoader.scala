@@ -5,6 +5,13 @@ import java.net.{URL, URLClassLoader}
 
 import scala.util.Try
 
+/**
+ * Represents the loader for the JDI (Java Debugger Interface) library shipped
+ * with the Oracle JDK and Open JDK. Attempts to load the library from a
+ * classloader or searches for the library in common locations.
+ *
+ * @param _classLoader The classloader to use in an attempt to load the JDI
+ */
 class JDILoader(
     private val _classLoader: ClassLoader = classOf[JDILoader].getClassLoader
 ) extends LogLike {

@@ -27,11 +27,13 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
       val lastLine = 30
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        import s.lowlevel._
+
         // Add a breakpoint after all of our variables
-        s.breakpointManager.setLineBreakpoint(testFile, lastLine)
+        breakpointManager.setLineBreakpoint(testFile, lastLine)
 
         @volatile var variableMap: Option[Map[String, Any]] = None
-        s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
 
           import Implicits._
@@ -69,11 +71,13 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
       val lastLine = 30
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        import s.lowlevel._
+
         // Add a breakpoint after all of our variables
-        s.breakpointManager.setLineBreakpoint(testFile, lastLine)
+        breakpointManager.setLineBreakpoint(testFile, lastLine)
 
         @volatile var variableMap: Option[Map[String, Any]] = None
-        s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
 
           import Implicits._

@@ -41,20 +41,22 @@ class CustomPropertyFilterIntegrationSpec extends FunSpec with Matchers
       @volatile var actual = collection.mutable.Seq[Int]()
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        import s.lowlevel._
+
         // Queue up our breakpoints
         breakpointLines.foreach(
-          s.breakpointManager.setLineBreakpoint(testFile, _: Int)
+          breakpointManager.setLineBreakpoint(testFile, _: Int)
         )
 
         // Set specific breakpoint with custom property
-        s.breakpointManager.setLineBreakpoint(
+        breakpointManager.setLineBreakpoint(
           fileName = testFile,
           lineNumber = propertyBreakpoint,
           property
         )
 
         // Queue up a generic breakpoint event handler that filters events
-        s.eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
           val location = breakpointEvent.location()
           val fileName = location.sourcePath()
