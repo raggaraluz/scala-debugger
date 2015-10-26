@@ -8,7 +8,7 @@ import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
-import org.senkbeil.debugger.api.lowlevel.events.filters.MethodNameFilter
+import org.senkbeil.debugger.api.events.filters.MethodNameFilter
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class MethodEntryManagerIntegrationSpec extends FunSpec with Matchers

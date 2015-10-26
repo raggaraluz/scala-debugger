@@ -2,7 +2,8 @@ package org.senkbeil.debugger.api.lowlevel.requests
 
 import com.sun.jdi._
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.lowlevel.requests.properties.EnabledProperty
+import org.senkbeil.debugger.api.requests.{JDIRequestArgumentProcessor, JDIRequestArgument}
+import org.senkbeil.debugger.api.requests.properties.EnabledProperty
 
 /**
  * Represents a wrapper around the event request manager, providing helper

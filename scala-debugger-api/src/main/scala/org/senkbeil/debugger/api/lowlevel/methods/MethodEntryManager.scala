@@ -4,9 +4,9 @@ import java.util.concurrent.ConcurrentHashMap
 
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.request.MethodEntryRequest
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.filters.ClassInclusionFilter
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{SuspendPolicyProperty, EnabledProperty}
+import org.senkbeil.debugger.api.requests.JDIRequestArgument
+import org.senkbeil.debugger.api.requests.filters.ClassInclusionFilter
+import org.senkbeil.debugger.api.requests.properties.{SuspendPolicyProperty, EnabledProperty}
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
 import org.senkbeil.debugger.api.utils.Logging
 
