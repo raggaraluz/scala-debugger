@@ -10,7 +10,7 @@ import scala.collection.GenTraversableOnce
  * @tparam B The outgoing data type
  * @param operation The operation to apply to incoming data
  */
-class Pipeline[A, B](val operation: Operation[A, B]) {
+class Pipeline[A, B] private[pipelines] (val operation: Operation[A, B]) {
   /** Any child pipelines whose input is the output of this pipeline. */
   @volatile private var _children: Seq[Pipeline[B, _]] = Nil
 
@@ -37,6 +37,21 @@ class Pipeline[A, B](val operation: Operation[A, B]) {
   }
 
   /**
+   * Creates a new pipeline using the given operation. This is used to generate
+   * pipelines within the pipeline itself and can be overridden to generate
+   * a different kind of pipeline. It is recommended to override this method
+   * when subclassing pipeline.
+   *
+   * @param operation The operation to provide to the new pipeline
+   * @tparam C The input type of the new pipeline
+   * @tparam D The output type of the new pipeline
+   *
+   * @return The new pipeline
+   */
+  protected def newPipeline[C, D](operation: Operation[C, D]): Pipeline[C, D] =
+    new Pipeline[C, D](operation)
+
+  /**
    * Processes the provided data through this specific pipeline instance and
    * all subsequent children of this pipeline instance. No parent pipeline
    * instance will be used during the processing of the data.
@@ -53,6 +68,8 @@ class Pipeline[A, B](val operation: Operation[A, B]) {
   /**
    * Transforms the output of this pipeline using the provided operation.
    *
+   * @note Inherits the close function of the pipeline.
+   *
    * @param operation The operation to use to transform the output of this
    *                  pipeline instance
    * @tparam C The resulting type of the output from the operation
@@ -60,12 +77,14 @@ class Pipeline[A, B](val operation: Operation[A, B]) {
    * @return The resulting pipeline instance from applying the operation
    */
   def transform[C](operation: Operation[B, C]): Pipeline[B, C] = {
-    val childPipeline = new Pipeline(operation)
+    val childPipeline = newPipeline(operation)
     addChildPipeline(childPipeline)
   }
 
   /**
    * Maps the output of this pipeline instance to new values.
+   *
+   * @note Inherits the close function of the pipeline.
    *
    * @param f The function to use for mapping data to new values
    * @tparam C The resulting type of the new values
@@ -128,19 +147,50 @@ class Pipeline[A, B](val operation: Operation[A, B]) {
    * Unions this pipeline with another pipeline that has the same input such
    * that input from either pipeline is used for both.
    *
-   * @param other The other pipeline to union together
-   * @tparam C The output of the other pipeline
+   * @param other The other pipeline whose input to union together
    *
    * @return The unioned pipeline
    */
-  def union[C](other: Pipeline[A, C]): Pipeline[A, A] = {
-    val parentPipeline = new Pipeline(new NoOperation[A])
+  def unionInput(other: Pipeline[A, _]): Pipeline[A, A] = {
+    val parentPipeline = newPipeline(new NoOperation[A])
 
     parentPipeline.addChildPipeline(this)
     parentPipeline.addChildPipeline(other)
 
     parentPipeline
   }
+
+  /**
+   * Unions this pipeline with another pipeline that has the same output such
+   * that output from either pipeline flows through the union.
+   *
+   * @param other The other pipeline to whose output to union together
+   *
+   * @return The unioned pipeline
+   */
+  def unionOutput(other: Pipeline[_, B]): Pipeline[B, B] = {
+    val childPipeline = newPipeline(new NoOperation[B])
+
+    this.addChildPipeline(childPipeline)
+    other.addChildPipeline(childPipeline)
+
+    childPipeline
+  }
+
+  /**
+   * Applies a no-op on the current pipeline.
+   *
+   * @return The pipeline after a no-op has been applied
+   */
+  def noop(): Pipeline[B, B] = transform(new NoOperation[B])
+
+  /**
+   * Closes the pipeline. Does nothing on a standard pipeline.
+   *
+   * @param now If true, should perform the closing action immediately rather
+   *            than on the next data fed through the pipeline
+   */
+  def close(now: Boolean): Unit = {}
 }
 
 /**
@@ -155,7 +205,6 @@ object Pipeline {
    *
    * @return The new pipeline
    */
-  def newPipeline[A](klass: Class[A]): Pipeline[A, A] = {
+  def newPipeline[A](klass: Class[A]): Pipeline[A, A] =
     new Pipeline(new NoOperation[A])
-  }
 }

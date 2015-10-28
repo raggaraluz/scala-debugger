@@ -125,6 +125,77 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#addEventStream") {
+      it("should send events whenever the underlying event handler is invoked") {
+        val stubEventType = stub[EventType]
+        val eventDataStream = eventManager.addEventStream(stubEventType)
+
+        val eventHandlerId =
+          eventManager.getHandlerIdsForEventType(stubEventType).head
+        val eventHandler = eventManager.getEventHandler(eventHandlerId).get
+
+        val mockEvent = mock[Event]
+
+        val mockForeachFunction = mockFunction[Event, Unit]
+        eventDataStream.foreach(mockForeachFunction)
+
+        mockForeachFunction.expects(mockEvent).once()
+
+        eventHandler(mockEvent, Nil)
+      }
+
+      it("should remove the handler feeding the stream when the stream is closed") {
+        val stubEventType = stub[EventType]
+        val eventDataStream = eventManager.addEventStream(stubEventType)
+
+        // One event handler added for the above stream
+        eventManager.getHandlerIdsForEventType(stubEventType) should
+          not be (empty)
+
+        eventDataStream.close(now = true)
+
+        // Event handler removed by the close operation
+        eventManager.getHandlerIdsForEventType(stubEventType) should be (empty)
+      }
+    }
+
+    describe("#addEventDataStream") {
+      it("should send events and data whenever the underlying event handler is invoked") {
+        val stubEventType = stub[EventType]
+        val eventDataStream = eventManager.addEventDataStream(stubEventType)
+
+        val eventHandlerId =
+          eventManager.getHandlerIdsForEventType(stubEventType).head
+        val eventHandler = eventManager.getEventHandler(eventHandlerId).get
+
+        val mockEvent = mock[Event]
+
+        val mockForeachFunction =
+          mockFunction[(Event, Seq[JDIEventDataResult]), Unit]
+        eventDataStream.foreach(mockForeachFunction)
+
+        // NOTE: Data is produced by an argument processor, which is annoying
+        //       to test in this situation and not relevant to this test
+        mockForeachFunction.expects((mockEvent, Nil)).once()
+
+        eventHandler(mockEvent, Nil)
+      }
+
+      it("should remove the handler feeding the stream when the stream is closed") {
+        val stubEventType = stub[EventType]
+        val eventDataStream = eventManager.addEventDataStream(stubEventType)
+
+        // One event handler added for the above stream
+        eventManager.getHandlerIdsForEventType(stubEventType) should
+          not be (empty)
+
+        eventDataStream.close(now = true)
+
+        // Event handler removed by the close operation
+        eventManager.getHandlerIdsForEventType(stubEventType) should be (empty)
+      }
+    }
+
     describe("#addResumingEventHandler") {
       it("should compose the provided unit function to return true") {
         // Using a stub to avoid hacks for EventType.toString()
