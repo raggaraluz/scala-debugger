@@ -4,8 +4,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 import com.sun.jdi.{ReferenceType, VirtualMachine}
 import com.sun.jdi.request.ExceptionRequest
-import org.senkbeil.debugger.api.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.requests.properties.{SuspendPolicyProperty, EnabledProperty}
+import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.senkbeil.debugger.api.lowlevel.requests.properties.{SuspendPolicyProperty, EnabledProperty}
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
 import org.senkbeil.debugger.api.utils.Logging
 import scala.collection.JavaConverters._

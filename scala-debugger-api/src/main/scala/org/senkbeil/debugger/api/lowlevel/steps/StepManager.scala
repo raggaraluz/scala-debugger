@@ -2,9 +2,9 @@ package org.senkbeil.debugger.api.lowlevel.steps
 
 import com.sun.jdi.{ThreadReference, VirtualMachine}
 import com.sun.jdi.request.{EventRequest, StepRequest}
-import org.senkbeil.debugger.api.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.requests.filters.CountFilter
-import org.senkbeil.debugger.api.requests.properties.{SuspendPolicyProperty, EnabledProperty}
+import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.senkbeil.debugger.api.lowlevel.requests.filters.CountFilter
+import org.senkbeil.debugger.api.lowlevel.requests.properties.{SuspendPolicyProperty, EnabledProperty}
 import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
 
 /**

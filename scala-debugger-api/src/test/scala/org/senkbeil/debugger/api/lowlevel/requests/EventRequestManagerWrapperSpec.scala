@@ -4,7 +4,7 @@ import com.sun.jdi.{ThreadReference, ReferenceType, Location, Field}
 import com.sun.jdi.request._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
-import org.senkbeil.debugger.api.requests.properties.{EnabledProperty, CustomProperty, SuspendPolicyProperty}
+import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, CustomProperty, SuspendPolicyProperty}
 
 class EventRequestManagerWrapperSpec extends FunSpec with Matchers
   with MockFactory with OneInstancePerTest with org.scalamock.matchers.Matchers

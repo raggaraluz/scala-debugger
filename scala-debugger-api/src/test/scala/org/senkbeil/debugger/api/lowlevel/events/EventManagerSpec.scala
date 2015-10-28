@@ -6,9 +6,8 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
 
 import EventType._
-import org.senkbeil.debugger.api.events.JDIEventArgument
-import org.senkbeil.debugger.api.events.data.{JDIEventDataProcessor, JDIEventDataRequest, JDIEventDataResult}
-import org.senkbeil.debugger.api.events.filters.{JDIEventFilterProcessor, JDIEventFilter}
+import org.senkbeil.debugger.api.lowlevel.events.data.{JDIEventDataProcessor, JDIEventDataRequest, JDIEventDataResult}
+import org.senkbeil.debugger.api.lowlevel.events.filters.{JDIEventFilterProcessor, JDIEventFilter}
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 
 class EventManagerSpec extends FunSpec with Matchers with MockFactory

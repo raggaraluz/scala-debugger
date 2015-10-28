@@ -1,7 +1,6 @@
 package org.senkbeil.debugger.api.lowlevel.events
 
-import org.senkbeil.debugger.api.events.{JDIEventArgumentProcessor, JDIEventArgument}
-import org.senkbeil.debugger.api.events.data.JDIEventDataResult
+import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
 import org.senkbeil.debugger.api.pipelines.{CloseablePipeline, Pipeline}
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
