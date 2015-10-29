@@ -1,6 +1,5 @@
 package org.senkbeil.debugger.api.lowlevel.requests.properties
 
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestProcessor
 import org.senkbeil.debugger.api.lowlevel.requests.properties.processors.EnabledPropertyProcessor
 
 /**
