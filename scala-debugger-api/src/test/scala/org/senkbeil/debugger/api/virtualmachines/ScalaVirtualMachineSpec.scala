@@ -6,6 +6,8 @@ import com.sun.jdi._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
+import org.senkbeil.debugger.api.profiles.ProfileManager
+import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 import test.JDIMockHelpers
 
@@ -15,6 +17,8 @@ class ScalaVirtualMachineSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val mockVirtualMachine = mock[VirtualMachine]
+  private val mockProfileManager = mock[ProfileManager]
+  (mockProfileManager.register _).expects(PureDebugProfile.Name, *).once()
 
   // NOTE: Needed until https://github.com/paulbutcher/ScalaMock/issues/56
   private class ZeroArgClassManager
@@ -41,7 +45,8 @@ class ScalaVirtualMachineSpec extends FunSpec with Matchers
   )
 
   private class TestScalaVirtualMachine extends ScalaVirtualMachine(
-    mockVirtualMachine
+    mockVirtualMachine,
+    mockProfileManager
   ) {
     override protected def newManagerContainer(
       loopingTaskRunner: LoopingTaskRunner

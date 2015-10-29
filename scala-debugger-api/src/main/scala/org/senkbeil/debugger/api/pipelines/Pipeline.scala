@@ -58,11 +58,13 @@ class Pipeline[A, B] private[pipelines] (val operation: Operation[A, B]) {
    *
    * @param data The data to process
    *
-   * @return The transformed collection of data
+   * @return The transformed collection of data at this specific pipeline
+   *         instance
    */
-  def process(data: A*): Unit = {
+  def process(data: A*): Seq[B] = {
     val results = operation.process(data)
     children.foreach(_.process(results: _*))
+    results
   }
 
   /**

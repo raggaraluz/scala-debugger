@@ -4,7 +4,8 @@ import java.io.Closeable
 
 /**
  * Represents a pipeline of instructions used to perform a series of operations
- * over an arbitrary collection of data.
+ * over an arbitrary collection of data. This pipeline is closeable, meaning
+ * that the close operation performs an action.
  *
  * @tparam A The incoming data type
  * @tparam B The outgoing data type

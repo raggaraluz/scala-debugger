@@ -78,5 +78,76 @@ class EventTypeSpec extends FunSpec with Matchers with MockFactory {
         EventType.eventToEventType(mock[Event]) should be (None)
       }
     }
+
+    describe("#eventClassToEventType") {
+      it("should convert a VMStartEvent class to Some(VMStartEventType)") {
+        EventType.eventClassToEventType(classOf[VMStartEvent]) should
+          be (Some(VMStartEventType))
+      }
+
+      it("should convert a VMDeathEvent class to Some(VMDeathEventType)") {
+        EventType.eventClassToEventType(classOf[VMDeathEvent]) should
+          be (Some(VMDeathEventType))
+      }
+
+      it("should convert a ThreadStartEvent class to Some(ThreadStartEventType)") {
+        EventType.eventClassToEventType(classOf[ThreadStartEvent]) should
+          be (Some(ThreadStartEventType))
+      }
+
+      it("should convert a ThreadDeathEvent class to Some(ThreadDeathEventType)") {
+        EventType.eventClassToEventType(classOf[ThreadDeathEvent]) should
+          be (Some(ThreadDeathEventType))
+      }
+
+      it("should convert a ClassPrepareEvent class to Some(ClassPrepareEventType)") {
+        EventType.eventClassToEventType(classOf[ClassPrepareEvent]) should
+          be (Some(ClassPrepareEventType))
+      }
+
+      it("should convert a ClassUnloadEvent class to Some(ClassUnloadEventType)") {
+        EventType.eventClassToEventType(classOf[ClassUnloadEvent]) should
+          be (Some(ClassUnloadEventType))
+      }
+
+      it("should convert an AccessWatchpointEvent class to Some(AccessWatchpointEventType)") {
+        EventType.eventClassToEventType(classOf[AccessWatchpointEvent]) should
+          be (Some(AccessWatchpointEventType))
+      }
+
+      it("should convert a ModificationWatchpointEvent class to Some(ModificationWatchpointEventType)") {
+        EventType.eventClassToEventType(classOf[ModificationWatchpointEvent]) should
+          be (Some(ModificationWatchpointEventType))
+      }
+
+      it("should convert an ExceptionEvent class to Some(ExceptionEventType)") {
+        EventType.eventClassToEventType(classOf[ExceptionEvent]) should
+          be (Some(ExceptionEventType))
+      }
+
+      it("should convert a MethodEntryEvent class to Some(MethodEntryEventType)") {
+        EventType.eventClassToEventType(classOf[MethodEntryEvent]) should
+          be (Some(MethodEntryEventType))
+      }
+
+      it("should convert a MethodExitEvent class to Some(MethodExitEventType)") {
+        EventType.eventClassToEventType(classOf[MethodExitEvent]) should
+          be (Some(MethodExitEventType))
+      }
+
+      it("should convert a BreakpointEvent class to Some(BreakpointEventType)") {
+        EventType.eventClassToEventType(classOf[BreakpointEvent]) should
+          be (Some(BreakpointEventType))
+      }
+
+      it("should convert a StepEvent class to Some(StepEventType)") {
+        EventType.eventClassToEventType(classOf[StepEvent]) should
+          be (Some(StepEventType))
+      }
+
+      it("should return None if an unknown event type") {
+        EventType.eventClassToEventType(classOf[Event]) should be (None)
+      }
+    }
   }
 }

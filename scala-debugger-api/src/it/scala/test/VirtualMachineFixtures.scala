@@ -3,6 +3,7 @@ package test
 import org.senkbeil.debugger.api.debuggers.LaunchingDebugger
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.lowlevel.events.EventType
+import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
 import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
 import EventType._
@@ -62,7 +63,11 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
       }
 
       try {
-        val scalaVirtualMachine = new ScalaVirtualMachine(virtualMachine) {
+        val profileManager = new ProfileManager
+        val scalaVirtualMachine = new ScalaVirtualMachine(
+          virtualMachine,
+          profileManager
+        ) {
           override protected def newManagerContainer(unused: LoopingTaskRunner) =
             super.newManagerContainer(loopingTaskRunner)
         }
