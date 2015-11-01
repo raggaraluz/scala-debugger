@@ -37,6 +37,19 @@ class PipelineSpec extends FunSpec with Matchers with OneInstancePerTest
 
         pipeline.process(data: _*)
       }
+
+      it("should return the transformed data at this point in the pipeline") {
+        val expected = Seq(1, 2, 3)
+
+        val mockOperation = mock[Operation[Int, Int]]
+        val pipeline = new Pipeline(mockOperation)
+        val data = expected.map(_ - 1)
+
+        (mockOperation.process _).expects(data).returning(expected).once()
+
+        val actual = pipeline.process(data: _*)
+        actual should be (expected)
+      }
     }
 
     describe("#transform") {

@@ -1,7 +1,7 @@
 package org.senkbeil.debugger.api.lowlevel.events.filters.processors
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.lowlevel.events.filters.{JDIEventFilter, JDIEventFilterProcessor, CustomPropertyFilter}
+import org.senkbeil.debugger.api.lowlevel.events.filters.{CustomPropertyFilterLike, JDIEventFilter, JDIEventFilterProcessor, CustomPropertyFilter}
 
 /**
  * Represents a processor for the custom property filter.
@@ -9,7 +9,7 @@ import org.senkbeil.debugger.api.lowlevel.events.filters.{JDIEventFilter, JDIEve
  * @param customPropertyFilter The custom property filter to use when processing
  */
 class CustomPropertyFilterProcessor(
-  val customPropertyFilter: CustomPropertyFilter
+  val customPropertyFilter: JDIEventFilter with CustomPropertyFilterLike
 ) extends JDIEventFilterProcessor {
   private val key = customPropertyFilter.key
   private val value = customPropertyFilter.value

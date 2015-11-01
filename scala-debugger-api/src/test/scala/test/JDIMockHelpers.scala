@@ -1,7 +1,13 @@
 package test
 
 import com.sun.jdi._
+import com.sun.jdi.event.Event
 import org.scalamock.scalatest.MockFactory
+import org.senkbeil.debugger.api.lowlevel.events.JDIEventArgument
+import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
+import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.senkbeil.debugger.api.lowlevel.utils.{JDIArgumentGroup, JDIRequestResponseBuilder}
+import org.senkbeil.debugger.api.pipelines.Pipeline
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import scala.util.Random
@@ -208,5 +214,32 @@ trait JDIMockHelpers { self: MockFactory =>
       (stubLocation.lineNumber: Function0[Int]).when().throws(new Throwable)
 
     stubLocation
+  }
+
+  /**
+   * Expects the request response builder to be invoked and triggers the
+   * request creator function passed as its argument.
+   *
+   * @param mockRequestResponseBuilder The mocked request response builder
+   * @param returnValue The value returned from invoking the builder
+   */
+  def expectCallAndInvokeRequestFunc[A <: Event : ClassTag](
+    mockRequestResponseBuilder: JDIRequestResponseBuilder,
+    returnValue: Pipeline[(A, Seq[JDIEventDataResult]), (A, Seq[JDIEventDataResult])]
+  ): Unit = {
+    // NOTE: Forced to use ugly onCall with product due to the fact that
+    //       ScalaMock cannot handle varargs (casting failure when using
+    //       the trick with a single argument as a vararg filler)
+    (mockRequestResponseBuilder.buildRequestResponse[A](
+      _: Seq[JDIRequestArgument] => Unit,
+      _: JDIRequestArgument
+    )(
+      _: ClassTag[A]
+    )).expects(*, *, *).onCall(t => {
+      val args = t.productElement(1).asInstanceOf[Seq[JDIEventArgument]]
+      val JDIArgumentGroup(rArgs, _, _) = JDIArgumentGroup(args: _*)
+      t.productElement(0).asInstanceOf[Seq[JDIRequestArgument] => Unit](rArgs)
+      returnValue
+    }).once()
   }
 }

@@ -1,7 +1,7 @@
 package org.senkbeil.debugger.api.lowlevel.requests.properties.processors
 
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{JDIRequestPropertyProcessor, JDIRequestProperty, CustomProperty}
+import org.senkbeil.debugger.api.lowlevel.requests.properties.{CustomPropertyLike, JDIRequestPropertyProcessor, JDIRequestProperty, CustomProperty}
 
 /**
  * Represents a processor for the custom property of a request.
@@ -9,7 +9,7 @@ import org.senkbeil.debugger.api.lowlevel.requests.properties.{JDIRequestPropert
  * @param customProperty The custom property to use when processing
  */
 class CustomPropertyProcessor(
-  val customProperty: CustomProperty
+  val customProperty: JDIRequestProperty with CustomPropertyLike
 ) extends JDIRequestPropertyProcessor {
   private val key = customProperty.key
   private val value = customProperty.value

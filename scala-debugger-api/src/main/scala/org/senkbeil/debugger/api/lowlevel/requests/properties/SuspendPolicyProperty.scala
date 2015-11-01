@@ -1,7 +1,6 @@
 package org.senkbeil.debugger.api.lowlevel.requests.properties
 
 import com.sun.jdi.request.EventRequest
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestProcessor
 import org.senkbeil.debugger.api.lowlevel.requests.properties.processors.SuspendPolicyPropertyProcessor
 
 /**

@@ -16,7 +16,7 @@ import org.senkbeil.debugger.api.lowlevel.events.filters.processors.CustomProper
 case class CustomPropertyFilter(
   key: AnyRef,
   value: AnyRef
-) extends JDIEventFilter {
+) extends JDIEventFilter with CustomPropertyFilterLike {
   /**
    * Creates a new JDI event processor based on this filter.
    *

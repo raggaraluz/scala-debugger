@@ -3,6 +3,8 @@ package org.senkbeil.debugger.api.virtualmachines
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
+import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
+import org.senkbeil.debugger.api.profiles.{ProfileManager, SwappableDebugProfile}
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
 import org.senkbeil.debugger.api.lowlevel.wrappers.Implicits
 import Implicits._
@@ -18,8 +20,9 @@ import com.sun.jdi.event.ClassPrepareEvent
  */
 class ScalaVirtualMachine(
   protected val _virtualMachine: VirtualMachine,
+  protected val profileManager: ProfileManager,
   val uniqueId: String = java.util.UUID.randomUUID().toString
-) extends JDIHelperMethods with Logging {
+) extends JDIHelperMethods with SwappableDebugProfile with Logging {
 
   /** Builds a string with the identifier of this virtual machine. */
   private def vmString(message: String) = s"(Scala VM $uniqueId) $message"
@@ -56,6 +59,12 @@ class ScalaVirtualMachine(
 
   /** Represents the collection of low-level APIs for the virtual machine. */
   lazy val lowlevel = newManagerContainer()
+
+  // Register our standard profiles
+  profileManager.register(PureDebugProfile.Name, new PureDebugProfile(lowlevel))
+
+  // Mark our default profile
+  this.use(PureDebugProfile.Name)
 
   /* Add custom event handlers */ {
     import EventType._
