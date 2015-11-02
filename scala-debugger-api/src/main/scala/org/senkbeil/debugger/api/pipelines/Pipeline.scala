@@ -1,6 +1,7 @@
 package org.senkbeil.debugger.api.pipelines
 
 import scala.collection.GenTraversableOnce
+import scala.util.Try
 
 /**
  * Represents a pipeline of instructions used to perform a series of operations
@@ -13,6 +14,16 @@ import scala.collection.GenTraversableOnce
 class Pipeline[A, B] private[pipelines] (val operation: Operation[A, B]) {
   /** Any child pipelines whose input is the output of this pipeline. */
   @volatile private var _children: Seq[Pipeline[B, _]] = Nil
+
+  /** Failure route at this stage in the pipeline. */
+  private lazy val _failure = newPipeline(new NoOperation[Throwable])
+
+  /**
+   * Retrieves the failure route of the current pipeline stage.
+   *
+   * @return The pipeline to process the throwable from the failure
+   */
+  def failed: Pipeline[Throwable, Throwable] = _failure
 
   /**
    * Retrieves the collection of children pipelines for the current pipeline.
@@ -58,12 +69,18 @@ class Pipeline[A, B] private[pipelines] (val operation: Operation[A, B]) {
    *
    * @param data The data to process
    *
-   * @return The transformed collection of data at this specific pipeline
-   *         instance
+   * @return If successful, the transformed collection of data at this
+   *         specific pipeline instance, otherwise the thrown exception
    */
-  def process(data: A*): Seq[B] = {
-    val results = operation.process(data)
-    children.foreach(_.process(results: _*))
+  def process(data: A*): Try[Seq[B]] = {
+    val results = Try(operation.process(data))
+
+    // If successful, continue down children paths
+    results.foreach(r => children.foreach(_.process(r: _*)))
+
+    // If failed, continue down failure path
+    results.failed.foreach(throwable => failed.process(throwable))
+
     results
   }
 

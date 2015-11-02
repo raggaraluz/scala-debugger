@@ -5,6 +5,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 
 import scala.collection.GenTraversableOnce
 import scala.reflect.ClassTag
+import scala.util.{Failure, Success}
 
 class PipelineSpec extends FunSpec with Matchers with OneInstancePerTest
   with MockFactory
@@ -39,13 +40,34 @@ class PipelineSpec extends FunSpec with Matchers with OneInstancePerTest
       }
 
       it("should return the transformed data at this point in the pipeline") {
-        val expected = Seq(1, 2, 3)
+        val expected = Success(Seq(1, 2, 3))
 
         val mockOperation = mock[Operation[Int, Int]]
         val pipeline = new Pipeline(mockOperation)
-        val data = expected.map(_ - 1)
+        val data = expected.get.map(_ - 1)
 
-        (mockOperation.process _).expects(data).returning(expected).once()
+        (mockOperation.process _).expects(data).returning(expected.get).once()
+
+        val actual = pipeline.process(data: _*)
+        actual should be (expected)
+      }
+
+      it("should recursively call the failed pipeline if the process fails") {
+        val throwable = new Throwable
+        val expected = Failure(throwable)
+
+        val mockFailedOperation = mock[Operation[Throwable, Throwable]]
+        val failedPipeline = new Pipeline(mockFailedOperation)
+
+        val mockOperation = mock[Operation[Int, Int]]
+        val pipeline = new Pipeline(mockOperation) {
+          override def failed: Pipeline[Throwable, Throwable] = failedPipeline
+        }
+
+        val data = Seq(1, 2, 3)
+
+        (mockOperation.process _).expects(data).throwing(throwable).once()
+        (mockFailedOperation.process _).expects(Seq(throwable)).once()
 
         val actual = pipeline.process(data: _*)
         actual should be (expected)
