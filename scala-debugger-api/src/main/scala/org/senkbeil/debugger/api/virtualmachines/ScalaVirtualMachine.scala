@@ -4,7 +4,8 @@ import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.profiles.{ProfileManager, SwappableDebugProfile}
+import org.senkbeil.debugger.api.profiles.ProfileManager
+import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
 import org.senkbeil.debugger.api.lowlevel.wrappers.Implicits
 import Implicits._
