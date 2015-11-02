@@ -72,7 +72,7 @@ class ScalaVirtualMachine(
     logger.debug(vmString("Adding custom event handlers!"))
 
     // Mark start event to load all of our system classes
-    lowlevel.eventManager.addResumingEventHandler(VMStartEventType, _ => {
+    this.withProfile(PureDebugProfile.Name).onVMStart().foreach(_ => {
       logger.trace(vmString("Refreshing all class references!"))
       lowlevel.classManager.refreshAllClasses()
 

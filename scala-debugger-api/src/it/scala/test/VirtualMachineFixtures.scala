@@ -21,7 +21,8 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
     className: String,
     arguments: Seq[String] = Nil,
     suspend: Boolean = true,
-    timeout: Long = 1000
+    timeout: Long = 1000,
+    preStart: (ScalaVirtualMachine) => Any = (_) => {}
   )(
     testCode: (VirtualMachine, ScalaVirtualMachine) => Any
   ) = {
@@ -73,6 +74,9 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
         }
 
         val eventManager = scalaVirtualMachine.lowlevel.eventManager
+
+        // Invoke our pre-start function
+        preStart(scalaVirtualMachine)
 
         // Wait for connection event to run the test code (ensures everything
         // is ready)

@@ -714,5 +714,65 @@ class SwappableDebugProfileSpec extends FunSpec with Matchers
         }
       }
     }
+
+    describe("#onVMDisconnectWithData") {
+      it("should invoke the method on the underlying profile") {
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        // NOTE: Forced to use onCall with product due to issues with ScalaMock
+        //       casting and inability to work with varargs directly
+        (mockDebugProfile.onVMDisconnectWithData _).expects(*)
+          .onCall((t: Product) => {
+            val args = t.productElement(0).asInstanceOf[Seq[JDIArgument]]
+            args should be(arguments)
+            null
+          })
+
+        swappableDebugProfile.onVMDisconnectWithData(arguments: _*)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.onVMDisconnectWithData(arguments: _*)
+        }
+      }
+    }
+
+    describe("#onVMStartWithData") {
+      it("should invoke the method on the underlying profile") {
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        // NOTE: Forced to use onCall with product due to issues with ScalaMock
+        //       casting and inability to work with varargs directly
+        (mockDebugProfile.onVMStartWithData _).expects(*)
+          .onCall((t: Product) => {
+            val args = t.productElement(0).asInstanceOf[Seq[JDIArgument]]
+            args should be(arguments)
+            null
+          })
+
+        swappableDebugProfile.onVMStartWithData(arguments: _*)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.onVMStartWithData(arguments: _*)
+        }
+      }
+    }
   }
 }

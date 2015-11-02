@@ -10,7 +10,7 @@ import org.senkbeil.debugger.api.profiles.pure.methods.{PureMethodExitProfile, P
 import org.senkbeil.debugger.api.profiles.pure.monitors.{PureMonitorWaitProfile, PureMonitorWaitedProfile, PureMonitorContendedEnterProfile, PureMonitorContendedEnteredProfile}
 import org.senkbeil.debugger.api.profiles.pure.steps.PureStepProfile
 import org.senkbeil.debugger.api.profiles.pure.threads.{PureThreadStartProfile, PureThreadDeathProfile}
-import org.senkbeil.debugger.api.profiles.pure.vm.PureVMDeathProfile
+import org.senkbeil.debugger.api.profiles.pure.vm.{PureVMDisconnectProfile, PureVMStartProfile, PureVMDeathProfile}
 import org.senkbeil.debugger.api.profiles.pure.watchpoints.{PureAccessWatchpointProfile, PureModificationWatchpointProfile}
 import org.senkbeil.debugger.api.profiles.traits.DebugProfile
 
@@ -46,7 +46,9 @@ class PureDebugProfile(private val managerContainer: ManagerContainer)
   with PureStepProfile
   with PureThreadDeathProfile
   with PureThreadStartProfile
+  with PureVMStartProfile
   with PureVMDeathProfile
+  with PureVMDisconnectProfile
 {
   //protected lazy val accessWatchpointManager =
   //  managerContainer.accessWatchpointManager
