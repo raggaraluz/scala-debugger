@@ -22,7 +22,7 @@ class PureVMDisconnectProfileSpec extends FunSpec with Matchers
   )
   private val mockEventManager = mock[ZeroArgEventManager]
 
-  val pureVMDisconnectProfile = new Object with PureVMDisconnectProfile {
+  private val pureVMDisconnectProfile = new Object with PureVMDisconnectProfile {
     override protected val eventManager: EventManager = mockEventManager
   }
 

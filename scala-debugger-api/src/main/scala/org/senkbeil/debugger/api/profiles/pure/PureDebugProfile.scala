@@ -1,11 +1,13 @@
 package org.senkbeil.debugger.api.profiles.pure
 
+import com.sun.jdi.VirtualMachine
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.lowlevel.utils.JDIRequestResponseBuilder
 import org.senkbeil.debugger.api.profiles.pure.breakpoints.PureBreakpointProfile
 import org.senkbeil.debugger.api.profiles.pure.classes.{PureClassUnloadProfile, PureClassPrepareProfile}
 import org.senkbeil.debugger.api.profiles.pure.events.PureEventProfile
 import org.senkbeil.debugger.api.profiles.pure.exceptions.PureExceptionProfile
+import org.senkbeil.debugger.api.profiles.pure.info.PureMiscInfoProfile
 import org.senkbeil.debugger.api.profiles.pure.methods.{PureMethodExitProfile, PureMethodEntryProfile}
 import org.senkbeil.debugger.api.profiles.pure.monitors.{PureMonitorWaitProfile, PureMonitorWaitedProfile, PureMonitorContendedEnterProfile, PureMonitorContendedEnteredProfile}
 import org.senkbeil.debugger.api.profiles.pure.steps.PureStepProfile
@@ -25,10 +27,15 @@ object PureDebugProfile {
  * Represents a debug profile that adds no extra logic on top of the standard
  * JDI.
  *
+ * @param _virtualMachine The underlying virtual machine to use for various
+ *                        retrieval methods
  * @param managerContainer The container of low-level managers to use as the
  *                         underlying implementation
  */
-class PureDebugProfile(private val managerContainer: ManagerContainer)
+class PureDebugProfile(
+  protected val _virtualMachine: VirtualMachine,
+  private val managerContainer: ManagerContainer
+)
   extends DebugProfile
   with PureAccessWatchpointProfile
   with PureBreakpointProfile
@@ -38,6 +45,7 @@ class PureDebugProfile(private val managerContainer: ManagerContainer)
   with PureExceptionProfile
   with PureMethodEntryProfile
   with PureMethodExitProfile
+  with PureMiscInfoProfile
   with PureModificationWatchpointProfile
   with PureMonitorContendedEnteredProfile
   with PureMonitorContendedEnterProfile
@@ -54,6 +62,8 @@ class PureDebugProfile(private val managerContainer: ManagerContainer)
   //  managerContainer.accessWatchpointManager
 
   protected lazy val breakpointManager = managerContainer.breakpointManager
+
+  protected lazy val classManager = managerContainer.classManager
 
   //protected lazy val classPrepareManager =
   // managerContainer.classPrepareManager

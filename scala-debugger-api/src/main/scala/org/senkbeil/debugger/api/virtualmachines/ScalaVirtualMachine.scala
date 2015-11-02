@@ -61,7 +61,10 @@ class ScalaVirtualMachine(
   lazy val lowlevel = newManagerContainer()
 
   // Register our standard profiles
-  profileManager.register(PureDebugProfile.Name, new PureDebugProfile(lowlevel))
+  profileManager.register(
+    PureDebugProfile.Name,
+    new PureDebugProfile(_virtualMachine, lowlevel)
+  )
 
   // Mark our default profile
   this.use(PureDebugProfile.Name)
@@ -105,23 +108,5 @@ class ScalaVirtualMachine(
    * @return The JDI VirtualMachine instance
    */
   val underlyingVirtualMachine: VirtualMachine = _virtualMachine
-
-  /**
-   * Retrieves the list of available lines for a specific file.
-   *
-   * @param fileName The name of the file whose lines to retrieve
-   *
-   * @return Some list of breakpointable lines if the file exists, otherwise
-   *         None
-   */
-  def availableLinesForFile(fileName: String): Option[Seq[Int]] =
-    lowlevel.classManager.linesAndLocationsForFile(fileName)
-      .map(_.keys.toSeq.sorted)
-
-  /** Represents the name of the class used as the entrypoint for this vm. */
-  lazy val mainClassName: String = retrieveMainClassName()
-
-  /** Represents the command line arguments used to start this VM. */
-  lazy val commandLineArguments: Seq[String] = retrieveCommandLineArguments()
 }
 

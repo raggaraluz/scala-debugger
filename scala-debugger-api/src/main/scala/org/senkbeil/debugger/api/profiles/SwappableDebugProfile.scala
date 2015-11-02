@@ -253,4 +253,16 @@ trait SwappableDebugProfile extends DebugProfile {
   ): IdentityPipeline[VMDisconnectEventAndData] = {
     withCurrentProfile.onVMDisconnectWithData(extraArguments: _*)
   }
+
+  override def availableLinesForFile(fileName: String): Option[Seq[Int]] = {
+    withCurrentProfile.availableLinesForFile(fileName)
+  }
+
+  override def commandLineArguments: Seq[String] = {
+    withCurrentProfile.commandLineArguments
+  }
+
+  override def mainClassName: String = {
+    withCurrentProfile.mainClassName
+  }
 }
