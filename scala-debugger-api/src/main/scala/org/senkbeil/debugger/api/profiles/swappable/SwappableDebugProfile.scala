@@ -15,6 +15,13 @@ import org.senkbeil.debugger.api.profiles.swappable.watchpoints.{SwappableAccess
 import org.senkbeil.debugger.api.profiles.traits.DebugProfile
 
 /**
+ * Contains information about the pure debug profile.
+ */
+object SwappableDebugProfile {
+  val Name: String = "swappable"
+}
+
+/**
  * Represents a debug profile that allows swapping the actual profile
  * implementation underneath.
  */
