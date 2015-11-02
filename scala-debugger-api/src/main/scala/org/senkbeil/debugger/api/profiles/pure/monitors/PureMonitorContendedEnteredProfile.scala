@@ -2,6 +2,7 @@ package org.senkbeil.debugger.api.profiles.pure.monitors
 
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.monitors.MonitorContendedEnteredProfile
 
 /**
@@ -19,5 +20,5 @@ trait PureMonitorContendedEnteredProfile extends MonitorContendedEnteredProfile 
    */
   override def onMonitorContendedEnteredWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[MonitorContendedEnteredEventAndData, MonitorContendedEnteredEventAndData] = ???
+  ): IdentityPipeline[MonitorContendedEnteredEventAndData] = ???
 }

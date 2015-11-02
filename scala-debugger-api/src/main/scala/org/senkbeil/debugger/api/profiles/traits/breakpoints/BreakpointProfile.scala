@@ -4,6 +4,7 @@ import com.sun.jdi.event.BreakpointEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 /**
  * Represents the interface that needs to be implemented to provide
@@ -28,7 +29,7 @@ trait BreakpointProfile {
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*
-  ): Pipeline[BreakpointEvent, BreakpointEvent] = {
+  ): IdentityPipeline[BreakpointEvent] = {
     onBreakpointWithData(
       fileName,
       lineNumber,
@@ -52,5 +53,5 @@ trait BreakpointProfile {
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*
-  ): Pipeline[BreakpointEventAndData, BreakpointEventAndData]
+  ): IdentityPipeline[BreakpointEventAndData]
 }

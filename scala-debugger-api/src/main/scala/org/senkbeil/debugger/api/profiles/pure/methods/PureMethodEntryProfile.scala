@@ -2,6 +2,7 @@ package org.senkbeil.debugger.api.profiles.pure.methods
 
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.methods.MethodEntryProfile
 
 /**
@@ -25,5 +26,5 @@ trait PureMethodEntryProfile extends MethodEntryProfile {
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[MethodEntryEventAndData, MethodEntryEventAndData] = ???
+  ): IdentityPipeline[MethodEntryEventAndData] = ???
 }

@@ -6,6 +6,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 class ExceptionProfileSpec extends FunSpec with Matchers with OneInstancePerTest
   with MockFactory
@@ -29,7 +30,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with OneInstancePerTest
             notifyCaught: Boolean,
             notifyUncaught: Boolean,
             extraArguments: JDIArgument*
-          ): Pipeline[ExceptionEventAndData, ExceptionEventAndData] = {
+          ): IdentityPipeline[ExceptionEventAndData] = {
             pipelineWithData
           }
 
@@ -37,7 +38,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with OneInstancePerTest
             notifyCaught: Boolean,
             notifyUncaught: Boolean,
             extraArguments: JDIArgument*
-          ): Pipeline[ExceptionEventAndData, ExceptionEventAndData] = ???
+          ): IdentityPipeline[ExceptionEventAndData] = ???
         }
 
         var actual: ExceptionEvent = null
@@ -70,13 +71,13 @@ class ExceptionProfileSpec extends FunSpec with Matchers with OneInstancePerTest
             notifyCaught: Boolean,
             notifyUncaught: Boolean,
             extraArguments: JDIArgument*
-          ): Pipeline[ExceptionEventAndData, ExceptionEventAndData] = ???
+          ): IdentityPipeline[ExceptionEventAndData] = ???
 
           override def onAllExceptionsWithData(
             notifyCaught: Boolean,
             notifyUncaught: Boolean,
             extraArguments: JDIArgument*
-          ): Pipeline[ExceptionEventAndData, ExceptionEventAndData] = {
+          ): IdentityPipeline[ExceptionEventAndData] = {
             pipelineWithData
           }
         }

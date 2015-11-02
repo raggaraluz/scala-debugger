@@ -4,6 +4,7 @@ import com.sun.jdi.event.ExceptionEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 /**
  * Represents the interface that needs to be implemented to provide
@@ -30,7 +31,7 @@ trait ExceptionProfile {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
-  ): Pipeline[ExceptionEvent, ExceptionEvent] = {
+  ): IdentityPipeline[ExceptionEvent] = {
     onExceptionWithData(
       exceptionName,
       notifyCaught,
@@ -57,7 +58,7 @@ trait ExceptionProfile {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
-  ): Pipeline[ExceptionEventAndData, ExceptionEventAndData]
+  ): IdentityPipeline[ExceptionEventAndData]
 
   /**
    * Constructs a stream of exception events for all exceptions.
@@ -74,7 +75,7 @@ trait ExceptionProfile {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
-  ): Pipeline[ExceptionEvent, ExceptionEvent] = {
+  ): IdentityPipeline[ExceptionEvent] = {
     onAllExceptionsWithData(
       notifyCaught,
       notifyUncaught,
@@ -98,5 +99,5 @@ trait ExceptionProfile {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
-  ): Pipeline[ExceptionEventAndData, ExceptionEventAndData]
+  ): IdentityPipeline[ExceptionEventAndData]
 }

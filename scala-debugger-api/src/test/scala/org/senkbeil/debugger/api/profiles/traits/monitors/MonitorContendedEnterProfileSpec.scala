@@ -6,6 +6,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 class MonitorContendedEnterProfileSpec extends FunSpec with Matchers with OneInstancePerTest
   with MockFactory
@@ -26,7 +27,7 @@ class MonitorContendedEnterProfileSpec extends FunSpec with Matchers with OneIns
         val monitorContendedEnterProfile = new Object with MonitorContendedEnterProfile {
           override def onMonitorContendedEnterWithData(
             extraArguments: JDIArgument*
-          ): Pipeline[MonitorContendedEnterEventAndData, MonitorContendedEnterEventAndData] = {
+          ): IdentityPipeline[MonitorContendedEnterEventAndData] = {
             pipelineWithData
           }
         }

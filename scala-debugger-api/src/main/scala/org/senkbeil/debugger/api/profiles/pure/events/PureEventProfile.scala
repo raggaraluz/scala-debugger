@@ -3,6 +3,7 @@ package org.senkbeil.debugger.api.profiles.pure.events
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.events.EventProfile
 
 /**
@@ -22,5 +23,5 @@ trait PureEventProfile extends EventProfile {
   override def onEventWithData(
     eventType: EventType,
     extraArguments: JDIArgument*
-  ): Pipeline[EventAndData, EventAndData] = ???
+  ): IdentityPipeline[EventAndData] = ???
 }

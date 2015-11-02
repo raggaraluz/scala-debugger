@@ -7,6 +7,7 @@ import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 class EventProfileSpec extends FunSpec with Matchers with OneInstancePerTest
   with MockFactory
@@ -28,7 +29,7 @@ class EventProfileSpec extends FunSpec with Matchers with OneInstancePerTest
           override def onEventWithData(
             eventType: EventType,
             extraArguments: JDIArgument*
-          ): Pipeline[EventAndData, EventAndData] = {
+          ): IdentityPipeline[EventAndData] = {
             pipelineWithData
           }
         }

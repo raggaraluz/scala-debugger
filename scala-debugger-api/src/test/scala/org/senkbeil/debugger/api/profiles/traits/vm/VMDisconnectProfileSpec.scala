@@ -6,6 +6,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 class VMDisconnectProfileSpec extends FunSpec with Matchers with OneInstancePerTest
   with MockFactory
@@ -26,7 +27,7 @@ class VMDisconnectProfileSpec extends FunSpec with Matchers with OneInstancePerT
         val vmDisconnectProfile = new Object with VMDisconnectProfile {
           override def onVMDisconnectWithData(
             extraArguments: JDIArgument*
-          ): Pipeline[VMDisconnectEventAndData, VMDisconnectEventAndData] = {
+          ): IdentityPipeline[VMDisconnectEventAndData] = {
             pipelineWithData
           }
         }

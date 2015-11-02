@@ -2,6 +2,7 @@ package org.senkbeil.debugger.api.lowlevel.events
 
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.pipelines.{CloseablePipeline, Pipeline}
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
 import com.sun.jdi.VirtualMachine
@@ -128,7 +129,7 @@ class EventManager(
   def addEventStream(
     eventType: EventType,
     eventArguments: JDIEventArgument*
-  ): Pipeline[Event, Event] = {
+  ): IdentityPipeline[Event] = {
     addEventDataStream(eventType, eventArguments: _*).map(_._1).noop()
   }
 
@@ -146,7 +147,7 @@ class EventManager(
   def addEventDataStream(
     eventType: EventType,
     eventArguments: JDIEventArgument*
-  ): Pipeline[EventAndData, EventAndData] = {
+  ): IdentityPipeline[EventAndData] = {
     val eventHandlerId = newEventHandlerId()
 
     val eventPipeline = CloseablePipeline.newPipeline(

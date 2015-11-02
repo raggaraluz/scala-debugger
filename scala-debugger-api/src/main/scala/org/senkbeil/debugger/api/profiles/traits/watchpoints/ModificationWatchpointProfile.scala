@@ -4,6 +4,7 @@ import com.sun.jdi.event.ModificationWatchpointEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 /**
  * Represents the interface that needs to be implemented to provide
@@ -28,7 +29,7 @@ trait ModificationWatchpointProfile {
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[ModificationWatchpointEvent, ModificationWatchpointEvent] = {
+  ): IdentityPipeline[ModificationWatchpointEvent] = {
     onModificationFieldWatchpointWithData(
       className: String,
       fieldName: String,
@@ -51,7 +52,7 @@ trait ModificationWatchpointProfile {
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[ModificationWatchpointEventAndData, ModificationWatchpointEventAndData]
+  ): IdentityPipeline[ModificationWatchpointEventAndData]
 
   /**
    * Constructs a stream of modification watchpoint events for the
@@ -65,7 +66,7 @@ trait ModificationWatchpointProfile {
   def onModificationInstanceWatchpoint(
     instanceVarName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[ModificationWatchpointEvent, ModificationWatchpointEvent] = {
+  ): IdentityPipeline[ModificationWatchpointEvent] = {
     onModificationInstanceWatchpointWithData(
       instanceVarName,
       extraArguments: _*
@@ -85,5 +86,5 @@ trait ModificationWatchpointProfile {
   def onModificationInstanceWatchpointWithData(
     instanceVarName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[ModificationWatchpointEventAndData, ModificationWatchpointEventAndData]
+  ): IdentityPipeline[ModificationWatchpointEventAndData]
 }

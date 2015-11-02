@@ -4,6 +4,7 @@ import com.sun.jdi.event.MethodExitEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 /**
  * Represents the interface that needs to be implemented to provide
@@ -28,7 +29,7 @@ trait MethodExitProfile {
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[MethodExitEvent, MethodExitEvent] = {
+  ): IdentityPipeline[MethodExitEvent] = {
     onMethodExitWithData(
       className: String,
       methodName: String,
@@ -52,5 +53,5 @@ trait MethodExitProfile {
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[MethodExitEventAndData, MethodExitEventAndData]
+  ): IdentityPipeline[MethodExitEventAndData]
 }

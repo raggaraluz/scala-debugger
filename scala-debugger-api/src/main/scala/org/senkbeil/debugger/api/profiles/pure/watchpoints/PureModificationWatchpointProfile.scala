@@ -2,6 +2,7 @@ package org.senkbeil.debugger.api.profiles.pure.watchpoints
 
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.watchpoints.ModificationWatchpointProfile
 
 /**
@@ -24,7 +25,7 @@ trait PureModificationWatchpointProfile extends ModificationWatchpointProfile {
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[ModificationWatchpointEventAndData, ModificationWatchpointEventAndData] = ???
+  ): IdentityPipeline[ModificationWatchpointEventAndData] = ???
 
   /**
    * Constructs a stream of modification watchpoint events for the instance
@@ -39,5 +40,5 @@ trait PureModificationWatchpointProfile extends ModificationWatchpointProfile {
   override def onModificationInstanceWatchpointWithData(
     instanceVarName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[ModificationWatchpointEventAndData, ModificationWatchpointEventAndData] = ???
+  ): IdentityPipeline[ModificationWatchpointEventAndData] = ???
 }

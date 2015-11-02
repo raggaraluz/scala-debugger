@@ -6,6 +6,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 class VMStartProfileSpec extends FunSpec with Matchers with OneInstancePerTest
   with MockFactory
@@ -26,7 +27,7 @@ class VMStartProfileSpec extends FunSpec with Matchers with OneInstancePerTest
         val vmStartProfile = new Object with VMStartProfile {
           override def onVMStartWithData(
             extraArguments: JDIArgument*
-          ): Pipeline[VMStartEventAndData, VMStartEventAndData] = {
+          ): IdentityPipeline[VMStartEventAndData] = {
             pipelineWithData
           }
         }

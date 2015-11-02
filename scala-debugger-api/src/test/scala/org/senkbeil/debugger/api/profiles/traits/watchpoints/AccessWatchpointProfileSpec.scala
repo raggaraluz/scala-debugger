@@ -6,6 +6,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 class AccessWatchpointProfileSpec extends FunSpec with Matchers with OneInstancePerTest
   with MockFactory
@@ -28,14 +29,14 @@ class AccessWatchpointProfileSpec extends FunSpec with Matchers with OneInstance
             className: String,
             fieldName: String,
             extraArguments: JDIArgument*
-          ): Pipeline[AccessWatchpointEventAndData, AccessWatchpointEventAndData] = {
+          ): IdentityPipeline[AccessWatchpointEventAndData] = {
             pipelineWithData
           }
 
           override def onAccessInstanceWatchpointWithData(
             instanceVarName: String,
             extraArguments: JDIArgument*
-          ): Pipeline[AccessWatchpointEventAndData, AccessWatchpointEventAndData] = ???
+          ): IdentityPipeline[AccessWatchpointEventAndData] = ???
         }
 
         var actual: AccessWatchpointEvent = null
@@ -66,12 +67,12 @@ class AccessWatchpointProfileSpec extends FunSpec with Matchers with OneInstance
             className: String,
             fieldName: String,
             extraArguments: JDIArgument*
-          ): Pipeline[AccessWatchpointEventAndData, AccessWatchpointEventAndData] = ???
+          ): IdentityPipeline[AccessWatchpointEventAndData] = ???
 
           override def onAccessInstanceWatchpointWithData(
             instanceVarName: String,
             extraArguments: JDIArgument*
-          ): Pipeline[AccessWatchpointEventAndData, AccessWatchpointEventAndData] = {
+          ): IdentityPipeline[AccessWatchpointEventAndData] = {
             pipelineWithData
           }
         }

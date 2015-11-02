@@ -4,6 +4,7 @@ import com.sun.jdi.event.MonitorWaitEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 /**
  * Represents the interface that needs to be implemented to provide
@@ -23,7 +24,7 @@ trait MonitorWaitProfile {
    */
   def onMonitorWait(
     extraArguments: JDIArgument*
-  ): Pipeline[MonitorWaitEvent, MonitorWaitEvent] = {
+  ): IdentityPipeline[MonitorWaitEvent] = {
     onMonitorWaitWithData(extraArguments: _*).map(_._1).noop()
   }
 
@@ -37,5 +38,5 @@ trait MonitorWaitProfile {
    */
   def onMonitorWaitWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[MonitorWaitEventAndData, MonitorWaitEventAndData]
+  ): IdentityPipeline[MonitorWaitEventAndData]
 }

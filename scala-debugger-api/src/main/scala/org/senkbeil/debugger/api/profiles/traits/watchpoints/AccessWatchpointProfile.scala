@@ -4,6 +4,7 @@ import com.sun.jdi.event.AccessWatchpointEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 /**
  * Represents the interface that needs to be implemented to provide
@@ -28,7 +29,7 @@ trait AccessWatchpointProfile {
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[AccessWatchpointEvent, AccessWatchpointEvent] = {
+  ): IdentityPipeline[AccessWatchpointEvent] = {
     onAccessFieldWatchpointWithData(
       className,
       fieldName,
@@ -51,7 +52,7 @@ trait AccessWatchpointProfile {
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[AccessWatchpointEventAndData, AccessWatchpointEventAndData]
+  ): IdentityPipeline[AccessWatchpointEventAndData]
 
   /**
    * Constructs a stream of access watchpoint events for the instance variable.
@@ -64,7 +65,7 @@ trait AccessWatchpointProfile {
   def onAccessInstanceWatchpoint(
     instanceVarName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[AccessWatchpointEvent, AccessWatchpointEvent] = {
+  ): IdentityPipeline[AccessWatchpointEvent] = {
     onAccessInstanceWatchpointWithData(
       instanceVarName,
       extraArguments: _*
@@ -83,5 +84,5 @@ trait AccessWatchpointProfile {
   def onAccessInstanceWatchpointWithData(
     instanceVarName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[AccessWatchpointEventAndData, AccessWatchpointEventAndData]
+  ): IdentityPipeline[AccessWatchpointEventAndData]
 }

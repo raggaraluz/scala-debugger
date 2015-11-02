@@ -199,6 +199,9 @@ class Pipeline[A, B] private[pipelines] (val operation: Operation[A, B]) {
  * Contains helper utilities for pipeline creation.
  */
 object Pipeline {
+  /** Represents a pipeline whose input and output types are the same. */
+  type IdentityPipeline[A] = Pipeline[A, A]
+
   /**
    * Creates an empty pipeline expecting data of the specified type.
    *
@@ -207,6 +210,6 @@ object Pipeline {
    *
    * @return The new pipeline
    */
-  def newPipeline[A](klass: Class[A]): Pipeline[A, A] =
+  def newPipeline[A](klass: Class[A]): IdentityPipeline[A] =
     new Pipeline(new NoOperation[A])
 }

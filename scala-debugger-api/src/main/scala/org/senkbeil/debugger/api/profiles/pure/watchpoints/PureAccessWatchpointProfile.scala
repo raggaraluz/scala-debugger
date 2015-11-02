@@ -2,6 +2,7 @@ package org.senkbeil.debugger.api.profiles.pure.watchpoints
 
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.watchpoints.AccessWatchpointProfile
 
 /**
@@ -24,7 +25,7 @@ trait PureAccessWatchpointProfile extends AccessWatchpointProfile {
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[AccessWatchpointEventAndData, AccessWatchpointEventAndData] = ???
+  ): IdentityPipeline[AccessWatchpointEventAndData] = ???
 
   /**
    * Constructs a stream of access watchpoint events for the instance variable.
@@ -38,5 +39,5 @@ trait PureAccessWatchpointProfile extends AccessWatchpointProfile {
   override def onAccessInstanceWatchpointWithData(
     instanceVarName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[AccessWatchpointEventAndData, AccessWatchpointEventAndData] = ???
+  ): IdentityPipeline[AccessWatchpointEventAndData] = ???
 }

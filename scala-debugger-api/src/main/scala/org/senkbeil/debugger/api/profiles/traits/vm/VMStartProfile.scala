@@ -4,6 +4,7 @@ import com.sun.jdi.event.VMStartEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 /**
  * Represents the interface that needs to be implemented to provide
@@ -22,7 +23,7 @@ trait VMStartProfile {
    */
   def onVMStart(
     extraArguments: JDIArgument*
-  ): Pipeline[VMStartEvent, VMStartEvent] = {
+  ): IdentityPipeline[VMStartEvent] = {
     onVMStartWithData(extraArguments: _*).map(_._1).noop()
   }
 
@@ -36,6 +37,6 @@ trait VMStartProfile {
    */
   def onVMStartWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[VMStartEventAndData, VMStartEventAndData]
+  ): IdentityPipeline[VMStartEventAndData]
 }
 

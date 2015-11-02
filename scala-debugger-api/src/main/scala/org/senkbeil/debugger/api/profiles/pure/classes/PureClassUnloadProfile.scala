@@ -2,6 +2,7 @@ package org.senkbeil.debugger.api.profiles.pure.classes
 
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.classes.ClassUnloadProfile
 
 /**
@@ -19,5 +20,5 @@ trait PureClassUnloadProfile extends ClassUnloadProfile {
    */
   override def onClassUnloadWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[ClassUnloadEventAndData, ClassUnloadEventAndData] = ???
+  ): IdentityPipeline[ClassUnloadEventAndData] = ???
 }

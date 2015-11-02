@@ -6,6 +6,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 class VMDeathProfileSpec extends FunSpec with Matchers with OneInstancePerTest
   with MockFactory
@@ -26,7 +27,7 @@ class VMDeathProfileSpec extends FunSpec with Matchers with OneInstancePerTest
         val vmDeathProfile = new Object with VMDeathProfile {
           override def onVMDeathWithData(
             extraArguments: JDIArgument*
-          ): Pipeline[VMDeathEventAndData, VMDeathEventAndData] = {
+          ): IdentityPipeline[VMDeathEventAndData] = {
             pipelineWithData
           }
         }

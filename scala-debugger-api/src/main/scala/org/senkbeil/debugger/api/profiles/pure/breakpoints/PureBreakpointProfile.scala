@@ -6,6 +6,7 @@ import org.senkbeil.debugger.api.lowlevel.breakpoints.BreakpointManager
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.utils.JDIRequestResponseBuilder
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.breakpoints.BreakpointProfile
 
 /**
@@ -32,7 +33,7 @@ trait PureBreakpointProfile extends BreakpointProfile {
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*
-  ): Pipeline[BreakpointEventAndData, BreakpointEventAndData] = {
+  ): IdentityPipeline[BreakpointEventAndData] = {
     /** Creates a new request using arguments. */
     def newRequest(args: Seq[JDIRequestArgument]) = {
       // TODO: Provide error handling if determine breakpoint not pending?

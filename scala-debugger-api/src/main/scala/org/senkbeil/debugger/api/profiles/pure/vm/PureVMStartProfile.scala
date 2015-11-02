@@ -5,6 +5,7 @@ import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.vm.VMStartProfile
 import org.senkbeil.debugger.api.lowlevel.events.EventType.VMStartEventType
 
@@ -25,7 +26,7 @@ trait PureVMStartProfile extends VMStartProfile {
    */
   override def onVMStartWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[VMStartEventAndData, VMStartEventAndData] = {
+  ): IdentityPipeline[VMStartEventAndData] = {
     val JDIArgumentGroup(_, eArgs, _) = JDIArgumentGroup(extraArguments: _*)
 
     eventManager

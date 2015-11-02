@@ -5,6 +5,7 @@ import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.vm.VMDisconnectProfile
 import org.senkbeil.debugger.api.lowlevel.events.EventType.VMDisconnectEventType
 
@@ -25,7 +26,7 @@ trait PureVMDisconnectProfile extends VMDisconnectProfile {
    */
   override def onVMDisconnectWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[VMDisconnectEventAndData, VMDisconnectEventAndData] = {
+  ): IdentityPipeline[VMDisconnectEventAndData] = {
     val JDIArgumentGroup(_, eArgs, _) = JDIArgumentGroup(extraArguments: _*)
 
     eventManager

@@ -2,6 +2,7 @@ package org.senkbeil.debugger.api.profiles.pure.monitors
 
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.monitors.MonitorWaitProfile
 
 /**
@@ -19,5 +20,5 @@ trait PureMonitorWaitProfile extends MonitorWaitProfile {
    */
   override def onMonitorWaitWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[MonitorWaitEventAndData, MonitorWaitEventAndData] = ???
+  ): IdentityPipeline[MonitorWaitEventAndData] = ???
 }

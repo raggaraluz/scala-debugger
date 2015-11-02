@@ -4,6 +4,7 @@ import com.sun.jdi.event.MonitorContendedEnterEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 /**
  * Represents the interface that needs to be implemented to provide
@@ -23,7 +24,7 @@ trait MonitorContendedEnterProfile {
    */
   def onMonitorContendedEnter(
     extraArguments: JDIArgument*
-  ): Pipeline[MonitorContendedEnterEvent, MonitorContendedEnterEvent] = {
+  ): IdentityPipeline[MonitorContendedEnterEvent] = {
     onMonitorContendedEnterWithData(extraArguments: _*).map(_._1).noop()
   }
 
@@ -37,5 +38,5 @@ trait MonitorContendedEnterProfile {
    */
   def onMonitorContendedEnterWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[MonitorContendedEnterEventAndData, MonitorContendedEnterEventAndData]
+  ): IdentityPipeline[MonitorContendedEnterEventAndData]
 }

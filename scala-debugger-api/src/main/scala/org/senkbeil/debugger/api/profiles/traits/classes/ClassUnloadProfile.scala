@@ -4,6 +4,7 @@ import com.sun.jdi.event.ClassUnloadEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 /**
  * Represents the interface that needs to be implemented to provide
@@ -22,7 +23,7 @@ trait ClassUnloadProfile {
    */
   def onClassUnload(
     extraArguments: JDIArgument*
-  ): Pipeline[ClassUnloadEvent, ClassUnloadEvent] = {
+  ): IdentityPipeline[ClassUnloadEvent] = {
     onClassUnloadWithData(extraArguments: _*).map(_._1).noop()
   }
 
@@ -36,5 +37,5 @@ trait ClassUnloadProfile {
    */
   def onClassUnloadWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[ClassUnloadEventAndData, ClassUnloadEventAndData]
+  ): IdentityPipeline[ClassUnloadEventAndData]
 }

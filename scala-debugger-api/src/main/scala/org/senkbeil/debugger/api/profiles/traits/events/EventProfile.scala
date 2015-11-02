@@ -5,6 +5,7 @@ import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 /**
  * Represents the interface that needs to be implemented to provide
@@ -25,7 +26,7 @@ trait EventProfile {
   def onEvent(
     eventType: EventType,
     extraArguments: JDIArgument*
-  ): Pipeline[Event, Event] = {
+  ): IdentityPipeline[Event] = {
     onEventWithData(eventType, extraArguments: _*).map(_._1).noop()
   }
 
@@ -41,5 +42,5 @@ trait EventProfile {
   def onEventWithData(
     eventType: EventType,
     extraArguments: JDIArgument*
-  ): Pipeline[EventAndData, EventAndData]
+  ): IdentityPipeline[EventAndData]
 }

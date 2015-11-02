@@ -2,6 +2,7 @@ package org.senkbeil.debugger.api.profiles.pure.exceptions
 
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.exceptions.ExceptionProfile
 
 /**
@@ -25,7 +26,7 @@ trait PureExceptionProfile extends ExceptionProfile {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
-  ): Pipeline[ExceptionEventAndData, ExceptionEventAndData] = ???
+  ): IdentityPipeline[ExceptionEventAndData] = ???
 
   /**
    * Constructs a stream of exception events for the specified exception.
@@ -45,5 +46,5 @@ trait PureExceptionProfile extends ExceptionProfile {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
-  ): Pipeline[ExceptionEventAndData, ExceptionEventAndData] = ???
+  ): IdentityPipeline[ExceptionEventAndData] = ???
 }

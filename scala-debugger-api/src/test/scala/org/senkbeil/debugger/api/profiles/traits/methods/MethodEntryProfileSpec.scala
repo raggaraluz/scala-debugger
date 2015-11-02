@@ -6,6 +6,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 class MethodEntryProfileSpec extends FunSpec with Matchers with OneInstancePerTest
   with MockFactory
@@ -28,7 +29,7 @@ class MethodEntryProfileSpec extends FunSpec with Matchers with OneInstancePerTe
             className: String,
             methodName: String,
             extraArguments: JDIArgument*
-          ): Pipeline[MethodEntryEventAndData, MethodEntryEventAndData] = {
+          ): IdentityPipeline[MethodEntryEventAndData] = {
             pipelineWithData
           }
         }

@@ -2,6 +2,7 @@ package org.senkbeil.debugger.api.profiles.pure.threads
 
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.threads.ThreadDeathProfile
 
 /**
@@ -19,5 +20,5 @@ trait PureThreadDeathProfile extends ThreadDeathProfile {
    */
   override def onThreadDeathWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[ThreadDeathEventAndData, ThreadDeathEventAndData] = ???
+  ): IdentityPipeline[ThreadDeathEventAndData] = ???
 }

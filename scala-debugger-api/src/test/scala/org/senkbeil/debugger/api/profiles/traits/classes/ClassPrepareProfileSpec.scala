@@ -6,6 +6,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 class ClassPrepareProfileSpec extends FunSpec with Matchers with OneInstancePerTest
   with MockFactory
@@ -26,7 +27,7 @@ class ClassPrepareProfileSpec extends FunSpec with Matchers with OneInstancePerT
         val classPrepareProfile = new Object with ClassPrepareProfile {
           override def onClassPrepareWithData(
             extraArguments: JDIArgument*
-          ): Pipeline[ClassPrepareEventAndData, ClassPrepareEventAndData] = {
+          ): IdentityPipeline[ClassPrepareEventAndData] = {
             pipelineWithData
           }
         }

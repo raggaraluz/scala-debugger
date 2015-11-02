@@ -6,6 +6,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 class ThreadStartProfileSpec extends FunSpec with Matchers with OneInstancePerTest
   with MockFactory
@@ -26,7 +27,7 @@ class ThreadStartProfileSpec extends FunSpec with Matchers with OneInstancePerTe
         val threadStartProfile = new Object with ThreadStartProfile {
           override def onThreadStartWithData(
             extraArguments: JDIArgument*
-          ): Pipeline[ThreadStartEventAndData, ThreadStartEventAndData] = {
+          ): IdentityPipeline[ThreadStartEventAndData] = {
             pipelineWithData
           }
         }

@@ -2,6 +2,7 @@ package org.senkbeil.debugger.api.profiles.pure.vm
 
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.vm.VMDeathProfile
 
 /**
@@ -19,5 +20,5 @@ trait PureVMDeathProfile extends VMDeathProfile {
    */
   override def onVMDeathWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[VMDeathEventAndData, VMDeathEventAndData] = ???
+  ): IdentityPipeline[VMDeathEventAndData] = ???
 }

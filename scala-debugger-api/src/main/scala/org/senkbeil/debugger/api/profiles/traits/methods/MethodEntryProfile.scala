@@ -4,6 +4,7 @@ import com.sun.jdi.event.MethodEntryEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 /**
  * Represents the interface that needs to be implemented to provide
@@ -28,7 +29,7 @@ trait MethodEntryProfile {
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[MethodEntryEvent, MethodEntryEvent] = {
+  ): IdentityPipeline[MethodEntryEvent] = {
     onMethodEntryWithData(
       className: String,
       methodName: String,
@@ -52,5 +53,5 @@ trait MethodEntryProfile {
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[MethodEntryEventAndData, MethodEntryEventAndData]
+  ): IdentityPipeline[MethodEntryEventAndData]
 }

@@ -6,6 +6,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 class BreakpointProfileSpec extends FunSpec with Matchers with OneInstancePerTest
   with MockFactory
@@ -28,7 +29,7 @@ class BreakpointProfileSpec extends FunSpec with Matchers with OneInstancePerTes
             fileName: String,
             lineNumber: Int,
             extraArguments: JDIArgument*
-          ): Pipeline[BreakpointEventAndData, BreakpointEventAndData] = {
+          ): IdentityPipeline[BreakpointEventAndData] = {
             pipelineWithData
           }
         }

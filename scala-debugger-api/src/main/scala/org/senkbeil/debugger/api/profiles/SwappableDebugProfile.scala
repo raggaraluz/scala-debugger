@@ -5,6 +5,7 @@ import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.DebugProfile
 
 import scala.concurrent.Future
@@ -56,7 +57,7 @@ trait SwappableDebugProfile extends DebugProfile {
 
   override def onThreadStartWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[ThreadStartEventAndData, ThreadStartEventAndData] = {
+  ): IdentityPipeline[ThreadStartEventAndData] = {
     withCurrentProfile.onThreadStartWithData(extraArguments: _*)
   }
 
@@ -80,34 +81,34 @@ trait SwappableDebugProfile extends DebugProfile {
 
   override def onClassUnloadWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[ClassUnloadEventAndData, ClassUnloadEventAndData] = {
+  ): IdentityPipeline[ClassUnloadEventAndData] = {
     withCurrentProfile.onClassUnloadWithData(extraArguments: _*)
   }
 
   override def onMonitorContendedEnteredWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[MonitorContendedEnteredEventAndData, MonitorContendedEnteredEventAndData] = {
+  ): IdentityPipeline[MonitorContendedEnteredEventAndData] = {
     withCurrentProfile
       .onMonitorContendedEnteredWithData(extraArguments: _*)
   }
 
   override def onMonitorContendedEnterWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[MonitorContendedEnterEventAndData, MonitorContendedEnterEventAndData] = {
+  ): IdentityPipeline[MonitorContendedEnterEventAndData] = {
     withCurrentProfile
       .onMonitorContendedEnterWithData(extraArguments: _*)
   }
 
   override def onClassPrepareWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[ClassPrepareEventAndData, ClassPrepareEventAndData] = {
+  ): IdentityPipeline[ClassPrepareEventAndData] = {
     withCurrentProfile.onClassPrepareWithData(extraArguments: _*)
   }
 
   override def onEventWithData(
     eventType: EventType,
     extraArguments: JDIArgument*
-  ): Pipeline[EventAndData, EventAndData] = {
+  ): IdentityPipeline[EventAndData] = {
     withCurrentProfile.onEventWithData(eventType, extraArguments: _*)
   }
 
@@ -115,7 +116,7 @@ trait SwappableDebugProfile extends DebugProfile {
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[MethodExitEventAndData, MethodExitEventAndData] = {
+  ): IdentityPipeline[MethodExitEventAndData] = {
     withCurrentProfile.onMethodExitWithData(
       className,
       methodName,
@@ -125,13 +126,13 @@ trait SwappableDebugProfile extends DebugProfile {
 
   override def onThreadDeathWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[ThreadDeathEventAndData, ThreadDeathEventAndData] = {
+  ): IdentityPipeline[ThreadDeathEventAndData] = {
     withCurrentProfile.onThreadDeathWithData(extraArguments: _*)
   }
 
   override def onVMDeathWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[VMDeathEventAndData, VMDeathEventAndData] = {
+  ): IdentityPipeline[VMDeathEventAndData] = {
     withCurrentProfile.onVMDeathWithData(extraArguments: _*)
   }
 
@@ -139,7 +140,7 @@ trait SwappableDebugProfile extends DebugProfile {
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[MethodEntryEventAndData, MethodEntryEventAndData] = {
+  ): IdentityPipeline[MethodEntryEventAndData] = {
     withCurrentProfile.onMethodEntryWithData(
       className,
       methodName,
@@ -152,7 +153,7 @@ trait SwappableDebugProfile extends DebugProfile {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
-  ): Pipeline[ExceptionEventAndData, ExceptionEventAndData] = {
+  ): IdentityPipeline[ExceptionEventAndData] = {
     withCurrentProfile.onExceptionWithData(
       exceptionName,
       notifyCaught,
@@ -165,7 +166,7 @@ trait SwappableDebugProfile extends DebugProfile {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
-  ): Pipeline[ExceptionEventAndData, ExceptionEventAndData] = {
+  ): IdentityPipeline[ExceptionEventAndData] = {
     withCurrentProfile.onAllExceptionsWithData(
       notifyCaught,
       notifyUncaught,
@@ -175,13 +176,13 @@ trait SwappableDebugProfile extends DebugProfile {
 
   override def onMonitorWaitedWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[MonitorWaitedEventAndData, MonitorWaitedEventAndData] = {
+  ): IdentityPipeline[MonitorWaitedEventAndData] = {
     withCurrentProfile.onMonitorWaitedWithData(extraArguments: _*)
   }
 
   override def onMonitorWaitWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[MonitorWaitEventAndData, MonitorWaitEventAndData] = {
+  ): IdentityPipeline[MonitorWaitEventAndData] = {
     withCurrentProfile.onMonitorWaitWithData(extraArguments: _*)
   }
 
@@ -189,7 +190,7 @@ trait SwappableDebugProfile extends DebugProfile {
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*
-  ): Pipeline[BreakpointEventAndData, BreakpointEventAndData] = {
+  ): IdentityPipeline[BreakpointEventAndData] = {
     withCurrentProfile.onBreakpointWithData(
       fileName,
       lineNumber,
@@ -201,7 +202,7 @@ trait SwappableDebugProfile extends DebugProfile {
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[AccessWatchpointEventAndData, AccessWatchpointEventAndData] = {
+  ): IdentityPipeline[AccessWatchpointEventAndData] = {
     withCurrentProfile.onAccessFieldWatchpointWithData(
       className,
       fieldName,
@@ -212,7 +213,7 @@ trait SwappableDebugProfile extends DebugProfile {
   override def onAccessInstanceWatchpointWithData(
     instanceVarName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[AccessWatchpointEventAndData, AccessWatchpointEventAndData] = {
+  ): IdentityPipeline[AccessWatchpointEventAndData] = {
     withCurrentProfile.onAccessInstanceWatchpointWithData(
       instanceVarName,
       extraArguments: _*
@@ -223,7 +224,7 @@ trait SwappableDebugProfile extends DebugProfile {
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[ModificationWatchpointEventAndData, ModificationWatchpointEventAndData] = {
+  ): IdentityPipeline[ModificationWatchpointEventAndData] = {
     withCurrentProfile.onModificationFieldWatchpointWithData(
       className,
       fieldName,
@@ -234,7 +235,7 @@ trait SwappableDebugProfile extends DebugProfile {
   override def onModificationInstanceWatchpointWithData(
     instanceVarName: String,
     extraArguments: JDIArgument*
-  ): Pipeline[ModificationWatchpointEventAndData, ModificationWatchpointEventAndData] = {
+  ): IdentityPipeline[ModificationWatchpointEventAndData] = {
     withCurrentProfile.onModificationInstanceWatchpointWithData(
       instanceVarName,
       extraArguments: _*
@@ -243,13 +244,13 @@ trait SwappableDebugProfile extends DebugProfile {
 
   override def onVMStartWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[VMStartEventAndData, VMStartEventAndData] = {
+  ): IdentityPipeline[VMStartEventAndData] = {
     withCurrentProfile.onVMStartWithData(extraArguments: _*)
   }
 
   override def onVMDisconnectWithData(
     extraArguments: JDIArgument*
-  ): Pipeline[VMDisconnectEventAndData, VMDisconnectEventAndData] = {
+  ): IdentityPipeline[VMDisconnectEventAndData] = {
     withCurrentProfile.onVMDisconnectWithData(extraArguments: _*)
   }
 }
