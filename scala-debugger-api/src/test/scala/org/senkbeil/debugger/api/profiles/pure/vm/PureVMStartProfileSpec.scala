@@ -22,7 +22,7 @@ class PureVMStartProfileSpec extends FunSpec with Matchers
   )
   private val mockEventManager = mock[ZeroArgEventManager]
 
-  val pureVMStartProfile = new Object with PureVMStartProfile {
+  private val pureVMStartProfile = new Object with PureVMStartProfile {
     override protected val eventManager: EventManager = mockEventManager
   }
 

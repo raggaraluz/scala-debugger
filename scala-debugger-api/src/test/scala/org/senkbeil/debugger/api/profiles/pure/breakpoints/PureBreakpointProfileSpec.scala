@@ -67,7 +67,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
   }
   private val mockRequestResponseBuilder = mock[ZeroArgRequestResponseBuilder]
 
-  val pureBreakpointProfile = new Object with PureBreakpointProfile {
+  private val pureBreakpointProfile = new Object with PureBreakpointProfile {
     override protected val breakpointManager = testBreakpointManager
     override protected val requestResponseBuilder = mockRequestResponseBuilder
   }
