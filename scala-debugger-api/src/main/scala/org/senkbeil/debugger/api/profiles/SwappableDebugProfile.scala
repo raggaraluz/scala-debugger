@@ -1,7 +1,9 @@
 package org.senkbeil.debugger.api.profiles
 
+import com.sun.jdi.event.{VMStartEvent, VMDisconnectEvent}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
+import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.profiles.traits.DebugProfile
 
@@ -237,5 +239,17 @@ trait SwappableDebugProfile extends DebugProfile {
       instanceVarName,
       extraArguments: _*
     )
+  }
+
+  override def onVMStartWithData(
+    extraArguments: JDIArgument*
+  ): Pipeline[VMStartEventAndData, VMStartEventAndData] = {
+    withCurrentProfile.onVMStartWithData(extraArguments: _*)
+  }
+
+  override def onVMDisconnectWithData(
+    extraArguments: JDIArgument*
+  ): Pipeline[VMDisconnectEventAndData, VMDisconnectEventAndData] = {
+    withCurrentProfile.onVMDisconnectWithData(extraArguments: _*)
   }
 }

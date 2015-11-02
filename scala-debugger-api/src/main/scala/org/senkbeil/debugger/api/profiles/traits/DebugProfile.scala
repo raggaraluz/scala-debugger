@@ -8,7 +8,7 @@ import org.senkbeil.debugger.api.profiles.traits.methods.{MethodEntryProfile, Me
 import org.senkbeil.debugger.api.profiles.traits.monitors.{MonitorContendedEnterProfile, MonitorContendedEnteredProfile, MonitorWaitProfile, MonitorWaitedProfile}
 import org.senkbeil.debugger.api.profiles.traits.steps.StepProfile
 import org.senkbeil.debugger.api.profiles.traits.threads.{ThreadDeathProfile, ThreadStartProfile}
-import org.senkbeil.debugger.api.profiles.traits.vm.VMDeathProfile
+import org.senkbeil.debugger.api.profiles.traits.vm.{VMDisconnectProfile, VMStartProfile, VMDeathProfile}
 import org.senkbeil.debugger.api.profiles.traits.watchpoints.{AccessWatchpointProfile, ModificationWatchpointProfile}
 
 /**
@@ -32,4 +32,6 @@ trait DebugProfile
   with StepProfile
   with ThreadDeathProfile
   with ThreadStartProfile
+  with VMStartProfile
   with VMDeathProfile
+  with VMDisconnectProfile

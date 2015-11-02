@@ -20,7 +20,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
     interval = scaled(Span(5, Milliseconds))
   )
 
-  describe("BreakpointManager") {
+  describe("PureBreakpointProfile") {
     it("should be able to set breakpoints within while loops") {
       val testClass = "org.senkbeil.debugger.test.breakpoints.WhileLoop"
       val testFile = scalaClassStringToFileString(testClass)

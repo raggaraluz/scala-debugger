@@ -3,6 +3,7 @@ package test
 import com.sun.jdi._
 import com.sun.jdi.event.Event
 import org.scalamock.scalatest.MockFactory
+import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.JDIEventArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
@@ -232,11 +233,11 @@ trait JDIMockHelpers { self: MockFactory =>
     //       the trick with a single argument as a vararg filler)
     (mockRequestResponseBuilder.buildRequestResponse[A](
       _: Seq[JDIRequestArgument] => Unit,
-      _: JDIRequestArgument
+      _: JDIArgument
     )(
       _: ClassTag[A]
     )).expects(*, *, *).onCall(t => {
-      val args = t.productElement(1).asInstanceOf[Seq[JDIEventArgument]]
+      val args = t.productElement(1).asInstanceOf[Seq[JDIArgument]]
       val JDIArgumentGroup(rArgs, _, _) = JDIArgumentGroup(args: _*)
       t.productElement(0).asInstanceOf[Seq[JDIRequestArgument] => Unit](rArgs)
       returnValue
