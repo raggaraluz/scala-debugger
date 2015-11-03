@@ -7,10 +7,13 @@ jdk:
     - oraclejdk7
     - openjdk7
 env:
+    global:
+        - SCALATEST_SPAN_SCALE_FACTOR=10
+        - EXTRA_SBT_OPT=-J-XX:ReservedCodeCacheSize=256M
     # Split build between unit and integration tests
     matrix:
-        - TEST_SUITE=test EXTRA_SBT_OPT=-J-XX:ReservedCodeCacheSize=256M
-        - TEST_SUITE=it:test EXTRA_SBT_OPT=-J-XX:ReservedCodeCacheSize=256M
+        - TEST_SUITE=test
+        - TEST_SUITE=it:test
 script:
     # Run our test for a specific Scala version and specific test suite
     - sbt ++$TRAVIS_SCALA_VERSION $EXTRA_SBT_OPT "$TEST_SUITE"

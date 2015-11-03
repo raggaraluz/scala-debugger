@@ -1,8 +1,14 @@
 import sbt._
 import Keys._
 
+import scala.util.Try
+
 
 object Common {
+  lazy val scalaTestSpanScaleFactor = settingKey[Double](
+    "Sets scaling factor of running tests that are wrapped in scale(...)"
+  )
+
   def settings = Seq(
     version := "1.1.0-SNAPSHOT",
 
@@ -38,7 +44,21 @@ object Common {
       "-no-link-warnings" // Suppress problems with Scaladoc @throws links
     ),
 
+    scalaTestSpanScaleFactor := {
+      Try(System.getenv("SCALATEST_SPAN_SCALE_FACTOR").toDouble).getOrElse(1.0)
+    },
+
     testOptions in Test += Tests.Argument("-oDF"),
+
+    testOptions in IntegrationTest += Tests.Argument("-oDF"),
+
+    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest,
+      "-F", scalaTestSpanScaleFactor.value.toString
+    ),
+
+    testOptions in IntegrationTest += Tests.Argument(TestFrameworks.ScalaTest,
+      "-F", scalaTestSpanScaleFactor.value.toString
+    ),
 
     // Properly handle Scaladoc mappings
     autoAPIMappings := true,
