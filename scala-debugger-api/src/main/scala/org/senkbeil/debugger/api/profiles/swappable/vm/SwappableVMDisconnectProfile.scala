@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.vm.VMDisconnectProfile
 
+import scala.util.Try
+
 /**
  * Represents a swappable profile for vm disconnect events that redirects the
  * invocation to another profile.
@@ -14,7 +16,7 @@ trait SwappableVMDisconnectProfile extends VMDisconnectProfile {
 
   override def onVMDisconnectWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[VMDisconnectEventAndData] = {
+  ): Try[IdentityPipeline[VMDisconnectEventAndData]] = {
     withCurrentProfile.onVMDisconnectWithData(extraArguments: _*)
   }
 }

@@ -9,9 +9,36 @@ import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
-class EventProfileSpec extends FunSpec with Matchers with OneInstancePerTest
-  with MockFactory
+import scala.util.{Failure, Success, Try}
+
+class EventProfileSpec extends FunSpec with Matchers
+  with OneInstancePerTest with MockFactory
 {
+  private val TestThrowable = new Throwable
+
+  // Pipeline that is parent to the one that just streams the event
+  private val TestPipelineWithData = Pipeline.newPipeline(
+    classOf[EventProfile#EventAndData]
+  )
+
+  private val successEventProfile = new Object with EventProfile {
+    override def onEventWithData(
+      eventType: EventType,
+      extraArguments: JDIArgument*
+    ): Try[IdentityPipeline[EventAndData]] = {
+      Success(TestPipelineWithData)
+    }
+  }
+
+  private val failEventProfile = new Object with EventProfile {
+    override def onEventWithData(
+      eventType: EventType,
+      extraArguments: JDIArgument*
+    ): Try[IdentityPipeline[EventAndData]] = {
+      Failure(TestThrowable)
+    }
+  }
+
   describe("EventProfile") {
     describe("#onEvent") {
       it("should return a pipeline with the event data results filtered out") {
@@ -20,30 +47,79 @@ class EventProfileSpec extends FunSpec with Matchers with OneInstancePerTest
         // Data to be run through pipeline
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
-        // Pipeline that is parent to the one that just streams the event
-        val pipelineWithData = Pipeline.newPipeline(
-          classOf[EventProfile#EventAndData]
-        )
-
-        val eventProfile = new Object with EventProfile {
-          override def onEventWithData(
-            eventType: EventType,
-            extraArguments: JDIArgument*
-          ): IdentityPipeline[EventAndData] = {
-            pipelineWithData
-          }
-        }
-
         var actual: Event = null
-        eventProfile.onEvent(mock[EventType]).foreach(actual = _)
+        successEventProfile.onEvent(mock[EventType]).get.foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
         // mapping on top of the pipeline containing the data
-        pipelineWithData.process(data)
+        TestPipelineWithData.process(data)
+
+        actual should be (expected)
+      }
+
+      it("should capture any exception as a failure") {
+        val expected = TestThrowable
+
+        // Data to be run through pipeline
+        val data = (mock[Event], Seq(mock[JDIEventDataResult]))
+
+        var actual: Throwable = null
+        failEventProfile.onEvent(mock[EventType]).failed.foreach(actual = _)
 
         actual should be (expected)
       }
     }
+
+    describe("#onUnsafeEvent") {
+      it("should return a pipeline of events if successful") {
+        val expected = mock[Event]
+
+        // Data to be run through pipeline
+        val data = (expected, Seq(mock[JDIEventDataResult]))
+
+        var actual: Event = null
+        successEventProfile.onUnsafeEvent(mock[EventType]).foreach(actual = _)
+
+        // Funnel the data through the parent pipeline that contains data to
+        // demonstrate that the pipeline with just the event is merely a
+        // mapping on top of the pipeline containing the data
+        TestPipelineWithData.process(data)
+
+        actual should be (expected)
+      }
+
+      it("should throw the exception if unsuccessful") {
+        intercept[Throwable] {
+          failEventProfile.onUnsafeEvent(mock[EventType])
+        }
+      }
+    }
+
+    describe("#onUnsafeEventWithData") {
+      it("should return a pipeline of events and data if successful") {
+        // Data to be run through pipeline
+        val expected = (mock[Event], Seq(mock[JDIEventDataResult]))
+
+        var actual: (Event, Seq[JDIEventDataResult]) = null
+        successEventProfile
+          .onUnsafeEventWithData(mock[EventType])
+          .foreach(actual = _)
+
+        // Funnel the data through the parent pipeline that contains data to
+        // demonstrate that the pipeline with just the event is merely a
+        // mapping on top of the pipeline containing the data
+        TestPipelineWithData.process(expected)
+
+        actual should be (expected)
+      }
+
+      it("should throw the exception if unsuccessful") {
+        intercept[Throwable] {
+          failEventProfile.onUnsafeEventWithData(mock[EventType])
+        }
+      }
+    }
   }
 }
+

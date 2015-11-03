@@ -6,6 +6,8 @@ import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
+import scala.util.Try
+
 /**
  * Represents the interface that needs to be implemented to provide
  * class unload functionality for a specific debug profile.
@@ -23,8 +25,35 @@ trait ClassUnloadProfile {
    */
   def onClassUnload(
     extraArguments: JDIArgument*
+  ): Try[IdentityPipeline[ClassUnloadEvent]] = {
+    onClassUnloadWithData(extraArguments: _*).map(_.map(_._1).noop())
+  }
+
+  /**
+   * Constructs a stream of class unload events.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of class unload events
+   */
+  def onUnsafeClassUnload(
+    extraArguments: JDIArgument*
   ): IdentityPipeline[ClassUnloadEvent] = {
-    onClassUnloadWithData(extraArguments: _*).map(_._1).noop()
+    onClassUnload(extraArguments: _*).get
+  }
+
+  /**
+   * Constructs a stream of class unload events.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of class unload events and any retrieved data based on
+   *         requests from extra arguments
+   */
+  def onUnsafeClassUnloadWithData(
+    extraArguments: JDIArgument*
+  ): IdentityPipeline[ClassUnloadEventAndData] = {
+    onClassUnloadWithData(extraArguments: _*).get
   }
 
   /**
@@ -37,5 +66,5 @@ trait ClassUnloadProfile {
    */
   def onClassUnloadWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ClassUnloadEventAndData]
+  ): Try[IdentityPipeline[ClassUnloadEventAndData]]
 }

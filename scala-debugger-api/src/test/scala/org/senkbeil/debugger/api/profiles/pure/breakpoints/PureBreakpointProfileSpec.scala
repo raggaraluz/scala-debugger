@@ -14,6 +14,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 import test.JDIMockHelpers
 
+import scala.util.Success
+
 class PureBreakpointProfileSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
@@ -75,9 +77,9 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
   describe("PureBreakpointProfile") {
     describe("#onBreakpointWithData") {
       it("should set a low-level breakpoint and stream its events") {
-        val expected = Pipeline.newPipeline(
+        val expected = Success(Pipeline.newPipeline(
           classOf[(BreakpointEvent, Seq[JDIEventDataResult])]
-        )
+        ))
         val fileName = "some file"
         val lineNumber = 999
         val arguments = Seq(mock[JDIRequestArgument])

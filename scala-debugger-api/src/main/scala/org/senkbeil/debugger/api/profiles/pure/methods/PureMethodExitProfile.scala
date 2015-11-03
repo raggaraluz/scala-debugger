@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.methods.MethodExitProfile
 
+import scala.util.Try
+
 /**
  * Represents a pure profile for method exit that adds no extra logic on top
  * of the standard JDI.
@@ -26,5 +28,5 @@ trait PureMethodExitProfile extends MethodExitProfile {
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[MethodExitEventAndData] = ???
+  ): Try[IdentityPipeline[MethodExitEventAndData]] = ???
 }

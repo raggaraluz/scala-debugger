@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.classes.ClassUnloadProfile
 
+import scala.util.Try
+
 /**
  * Represents a pure profile for class unloading that adds no extra logic on
  * top of the standard JDI.
@@ -20,5 +22,5 @@ trait PureClassUnloadProfile extends ClassUnloadProfile {
    */
   override def onClassUnloadWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ClassUnloadEventAndData] = ???
+  ): Try[IdentityPipeline[ClassUnloadEventAndData]] = ???
 }

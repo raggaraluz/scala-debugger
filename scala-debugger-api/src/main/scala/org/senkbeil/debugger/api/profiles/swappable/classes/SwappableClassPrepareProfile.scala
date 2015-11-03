@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.classes.ClassPrepareProfile
 
+import scala.util.Try
+
 /**
  * Represents a swappable profile for class prepare events that redirects the
  * invocation to another profile.
@@ -14,7 +16,7 @@ trait SwappableClassPrepareProfile extends ClassPrepareProfile {
 
   override def onClassPrepareWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ClassPrepareEventAndData] = {
+  ): Try[IdentityPipeline[ClassPrepareEventAndData]] = {
     withCurrentProfile.onClassPrepareWithData(extraArguments: _*)
   }
 }

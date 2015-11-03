@@ -6,6 +6,8 @@ import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
+import scala.util.Try
+
 /**
  * Represents the interface that needs to be implemented to provide
  * vm start functionality for a specific debug profile.
@@ -23,8 +25,8 @@ trait VMStartProfile {
    */
   def onVMStart(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[VMStartEvent] = {
-    onVMStartWithData(extraArguments: _*).map(_._1).noop()
+  ): Try[IdentityPipeline[VMStartEvent]] = {
+    onVMStartWithData(extraArguments: _*).map(_.map(_._1).noop())
   }
 
   /**
@@ -37,6 +39,33 @@ trait VMStartProfile {
    */
   def onVMStartWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[VMStartEventAndData]
+  ): Try[IdentityPipeline[VMStartEventAndData]]
+
+  /**
+   * Constructs a stream of vm start events.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of vm start events
+   */
+  def onUnsafeVMStart(
+    extraArguments: JDIArgument*
+  ): IdentityPipeline[VMStartEvent] = {
+    onVMStart(extraArguments: _*).get
+  }
+
+  /**
+   * Constructs a stream of vm start events.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of vm start events and any retrieved data based on
+   *         requests from extra arguments
+   */
+  def onUnsafeVMStartWithData(
+    extraArguments: JDIArgument*
+  ): IdentityPipeline[VMStartEventAndData] = {
+    onVMStartWithData(extraArguments: _*).get
+  }
 }
 

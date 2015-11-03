@@ -9,6 +9,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.vm.VMDisconnectProfile
 import org.senkbeil.debugger.api.lowlevel.events.EventType.VMDisconnectEventType
 
+import scala.util.Try
+
 /**
  * Represents a pure profile for vm disconnect events that adds no
  * extra logic on top of the standard JDI.
@@ -26,7 +28,7 @@ trait PureVMDisconnectProfile extends VMDisconnectProfile {
    */
   override def onVMDisconnectWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[VMDisconnectEventAndData] = {
+  ): Try[IdentityPipeline[VMDisconnectEventAndData]] = Try {
     val JDIArgumentGroup(_, eArgs, _) = JDIArgumentGroup(extraArguments: _*)
 
     eventManager

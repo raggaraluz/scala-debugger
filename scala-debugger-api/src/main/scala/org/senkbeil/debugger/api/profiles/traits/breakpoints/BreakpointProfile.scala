@@ -6,6 +6,8 @@ import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
+import scala.util.Try
+
 /**
  * Represents the interface that needs to be implemented to provide
  * breakpoint functionality for a specific debug profile.
@@ -29,12 +31,59 @@ trait BreakpointProfile {
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[BreakpointEvent] = {
+  ): Try[IdentityPipeline[BreakpointEvent]] = {
     onBreakpointWithData(
       fileName,
       lineNumber,
       extraArguments: _*
-    ).map(_._1).noop()
+    ).map(_.map(_._1).noop())
+  }
+
+  /**
+   * Constructs a stream of breakpoint events for the specified file and line
+   * number.
+   *
+   * @param fileName The name of the file where the breakpoint will be set
+   * @param lineNumber The line number within the file where the breakpoint
+   *                   will be set
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of breakpoint events
+   */
+  def onUnsafeBreakpoint(
+    fileName: String,
+    lineNumber: Int,
+    extraArguments: JDIArgument*
+  ): IdentityPipeline[BreakpointEvent] = {
+    onBreakpoint(
+      fileName,
+      lineNumber,
+      extraArguments: _*
+    ).get
+  }
+
+  /**
+   * Constructs a stream of breakpoint events for the specified file and line
+   * number.
+   *
+   * @param fileName The name of the file where the breakpoint will be set
+   * @param lineNumber The line number within the file where the breakpoint
+   *                   will be set
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of breakpoint events and any retrieved data based on
+   *         requests from extra arguments
+   */
+  def onUnsafeBreakpointWithData(
+    fileName: String,
+    lineNumber: Int,
+    extraArguments: JDIArgument*
+  ): IdentityPipeline[BreakpointEventAndData] = {
+    onBreakpointWithData(
+      fileName,
+      lineNumber,
+      extraArguments: _*
+    ).get
   }
 
   /**
@@ -53,5 +102,5 @@ trait BreakpointProfile {
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[BreakpointEventAndData]
+  ): Try[IdentityPipeline[BreakpointEventAndData]]
 }

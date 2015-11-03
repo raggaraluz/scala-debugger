@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.breakpoints.BreakpointProfile
 
+import scala.util.Try
+
 /**
  * Represents a swappable profile for breakpoints that redirects the invocation
  * to another profile.
@@ -16,7 +18,7 @@ trait SwappableBreakpointProfile extends BreakpointProfile {
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[BreakpointEventAndData] = {
+  ): Try[IdentityPipeline[BreakpointEventAndData]] = {
     withCurrentProfile.onBreakpointWithData(
       fileName,
       lineNumber,

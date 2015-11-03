@@ -9,6 +9,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.breakpoints.BreakpointProfile
 
+import scala.util.Try
+
 /**
  * Represents a pure profile for breakpoints that adds no extra logic on top
  * of the standard JDI.
@@ -33,7 +35,7 @@ trait PureBreakpointProfile extends BreakpointProfile {
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[BreakpointEventAndData] = {
+  ): Try[IdentityPipeline[BreakpointEventAndData]] = {
     /** Creates a new request using arguments. */
     def newRequest(args: Seq[JDIRequestArgument]) = {
       // TODO: Provide error handling if determine breakpoint not pending?

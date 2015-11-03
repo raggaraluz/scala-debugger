@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.threads.ThreadStartProfile
 
+import scala.util.Try
+
 /**
  * Represents a pure profile for thread start events that adds no
  * extra logic on top of the standard JDI.
@@ -20,5 +22,5 @@ trait PureThreadStartProfile extends ThreadStartProfile {
    */
   override def onThreadStartWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ThreadStartEventAndData] = ???
+  ): Try[IdentityPipeline[ThreadStartEventAndData]] = ???
 }

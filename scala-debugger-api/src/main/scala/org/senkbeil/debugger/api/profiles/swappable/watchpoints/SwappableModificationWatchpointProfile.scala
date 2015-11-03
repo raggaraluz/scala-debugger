@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.watchpoints.ModificationWatchpointProfile
 
+import scala.util.Try
+
 /**
  * Represents a swappable profile for modification watchpoint events that
  * redirects the invocation to another profile.
@@ -16,7 +18,7 @@ trait SwappableModificationWatchpointProfile extends ModificationWatchpointProfi
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ModificationWatchpointEventAndData] = {
+  ): Try[IdentityPipeline[ModificationWatchpointEventAndData]] = {
     withCurrentProfile.onModificationFieldWatchpointWithData(
       className,
       fieldName,
@@ -27,7 +29,7 @@ trait SwappableModificationWatchpointProfile extends ModificationWatchpointProfi
   override def onModificationInstanceWatchpointWithData(
     instanceVarName: String,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ModificationWatchpointEventAndData] = {
+  ): Try[IdentityPipeline[ModificationWatchpointEventAndData]] = {
     withCurrentProfile.onModificationInstanceWatchpointWithData(
       instanceVarName,
       extraArguments: _*

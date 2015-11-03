@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.monitors.MonitorContendedEnterProfile
 
+import scala.util.Try
+
 /**
  * Represents a swappable profile for monitor contended enter events that
  * redirects the invocation to another profile.
@@ -14,7 +16,7 @@ trait SwappableMonitorContendedEnterProfile extends MonitorContendedEnterProfile
 
   override def onMonitorContendedEnterWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[MonitorContendedEnterEventAndData] = {
+  ): Try[IdentityPipeline[MonitorContendedEnterEventAndData]] = {
     withCurrentProfile.onMonitorContendedEnterWithData(extraArguments: _*)
   }
 }

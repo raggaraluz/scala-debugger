@@ -1,16 +1,17 @@
 package org.senkbeil.debugger.api.lowlevel.utils
 
-import com.sun.jdi.event.{Event, BreakpointEvent}
+import com.sun.jdi.event.Event
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.lowlevel.events.filters.{UniqueIdPropertyFilter, CustomPropertyFilter}
-import org.senkbeil.debugger.api.lowlevel.events.{EventType, EventManager, JDIEventArgument}
+import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
+import org.senkbeil.debugger.api.lowlevel.events.{EventManager, EventType}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{UniqueIdProperty, CustomProperty}
+import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 import scala.reflect.ClassTag
+import scala.util.Try
 
 /**
  * Represents a builder for JDI request --> response model where each build
@@ -37,7 +38,7 @@ class JDIRequestResponseBuilder(private val eventManager: EventManager) {
     extraArguments: JDIArgument*
   )(
     implicit classTag: ClassTag[A]
-  ): Pipeline[(A, Seq[JDIEventDataResult]), (A, Seq[JDIEventDataResult])] = {
+  ): Try[IdentityPipeline[(A, Seq[JDIEventDataResult])]] = Try {
     val requestId = newRequestId()
 
     // TODO: Determine why a casting is needed here
@@ -60,7 +61,6 @@ class JDIRequestResponseBuilder(private val eventManager: EventManager) {
       idProperty +: extraArguments :+ idFilter: _*
     )
 
-    // TODO: Provide error handling?
     requestBuilderFunc(rArgs)
 
     transformStream[A](eventManager.addEventDataStream(eventType, eArgs: _*))

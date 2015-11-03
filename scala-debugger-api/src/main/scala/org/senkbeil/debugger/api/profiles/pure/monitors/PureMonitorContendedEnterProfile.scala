@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.monitors.MonitorContendedEnterProfile
 
+import scala.util.Try
+
 /**
  * Represents a pure profile for monitor contended enter events that adds no
  * extra logic on top of the standard JDI.
@@ -20,5 +22,5 @@ trait PureMonitorContendedEnterProfile extends MonitorContendedEnterProfile {
    */
   override def onMonitorContendedEnterWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[MonitorContendedEnterEventAndData] = ???
+  ): Try[IdentityPipeline[MonitorContendedEnterEventAndData]] = ???
 }

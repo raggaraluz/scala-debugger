@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.exceptions.ExceptionProfile
 
+import scala.util.Try
+
 /**
  * Represents a pure profile for exceptions that adds no extra logic on
  * top of the standard JDI.
@@ -26,7 +28,7 @@ trait PureExceptionProfile extends ExceptionProfile {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ExceptionEventAndData] = ???
+  ): Try[IdentityPipeline[ExceptionEventAndData]] = ???
 
   /**
    * Constructs a stream of exception events for the specified exception.
@@ -46,5 +48,5 @@ trait PureExceptionProfile extends ExceptionProfile {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ExceptionEventAndData] = ???
+  ): Try[IdentityPipeline[ExceptionEventAndData]] = ???
 }

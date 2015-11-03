@@ -42,9 +42,9 @@ class PureVMStartProfileSpec extends FunSpec with Matchers
         var actual: (VMStartEvent, Seq[JDIEventDataResult]) = null
         val pipeline =
           pureVMStartProfile.onVMStartWithData(arguments: _*)
-        pipeline.foreach(actual = _)
+        pipeline.get.foreach(actual = _)
 
-        pipeline.process(expected)
+        pipeline.get.process(expected)
 
         actual should be (expected)
       }

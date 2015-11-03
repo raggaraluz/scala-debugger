@@ -6,6 +6,8 @@ import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
+import scala.util.Try
+
 /**
  * Represents the interface that needs to be implemented to provide
  * monitor contended entered functionality for a specific debug profile.
@@ -24,8 +26,9 @@ trait MonitorContendedEnteredProfile {
    */
   def onMonitorContendedEntered(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[MonitorContendedEnteredEvent] = {
-    onMonitorContendedEnteredWithData(extraArguments: _*).map(_._1).noop()
+  ): Try[IdentityPipeline[MonitorContendedEnteredEvent]] = {
+    onMonitorContendedEnteredWithData(extraArguments: _*)
+      .map(_.map(_._1).noop())
   }
 
   /**
@@ -38,5 +41,32 @@ trait MonitorContendedEnteredProfile {
    */
   def onMonitorContendedEnteredWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[MonitorContendedEnteredEventAndData]
+  ): Try[IdentityPipeline[MonitorContendedEnteredEventAndData]]
+
+  /**
+   * Constructs a stream of monitor contended entered events.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of monitor contended entered events
+   */
+  def onUnsafeMonitorContendedEntered(
+    extraArguments: JDIArgument*
+  ): IdentityPipeline[MonitorContendedEnteredEvent] = {
+    onMonitorContendedEntered(extraArguments: _*).get
+  }
+
+  /**
+   * Constructs a stream of monitor contended entered events.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of monitor contended entered events and any retrieved
+   *         data based on requests from extra arguments
+   */
+  def onUnsafeMonitorContendedEnteredWithData(
+    extraArguments: JDIArgument*
+  ): IdentityPipeline[MonitorContendedEnteredEventAndData] = {
+    onMonitorContendedEnteredWithData(extraArguments: _*).get
+  }
 }
