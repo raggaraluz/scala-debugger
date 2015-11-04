@@ -1,7 +1,9 @@
 package org.senkbeil.debugger.api.profiles.pure.events
 
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
+import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
+import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.events.EventProfile
@@ -13,6 +15,8 @@ import scala.util.Try
  * top of the standard JDI.
  */
 trait PureEventProfile extends EventProfile {
+  protected val eventManager: EventManager
+
   /**
    * Constructs a stream of events for the specified event type.
    *
@@ -25,5 +29,8 @@ trait PureEventProfile extends EventProfile {
   override def onEventWithData(
     eventType: EventType,
     extraArguments: JDIArgument*
-  ): Try[IdentityPipeline[EventAndData]] = ???
+  ): Try[IdentityPipeline[EventAndData]] = Try {
+    val JDIArgumentGroup(_, eArgs, _) = JDIArgumentGroup(extraArguments: _*)
+    eventManager.addEventDataStream(eventType, eArgs: _*)
+  }
 }
