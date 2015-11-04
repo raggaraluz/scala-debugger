@@ -56,7 +56,7 @@ class MethodEntryManager(
     className: String,
     methodName: String,
     extraArguments: JDIRequestArgument*
-  ): Boolean = {
+  ): Try[Boolean] = {
     val request = Try(eventRequestManager.createMethodEntryRequest(
       Seq(
         ClassInclusionFilter(classPattern = className),
@@ -65,13 +65,12 @@ class MethodEntryManager(
       ) ++ extraArguments: _*
     ))
 
-    request match {
-      case Success(r) =>
-        methodEntryRequests.put((className, methodName), r)
-        true
-      case Failure(_) =>
-        false
+    if (request.isSuccess) {
+      methodEntryRequests.put((className, methodName), request.get)
     }
+
+    // If no exception was thrown, assume that we succeeded
+    request.map(_ => true)
   }
 
   /**

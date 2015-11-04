@@ -87,7 +87,7 @@ class BreakpointManager(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIRequestArgument*
-  ): Boolean = setLineBreakpoint(
+  ): Try[Boolean] = setLineBreakpoint(
     fileName = fileName,
     lineNumber = lineNumber,
     setPendingIfFail = true,
@@ -112,25 +112,28 @@ class BreakpointManager(
     lineNumber: Int,
     setPendingIfFail: Boolean,
     extraArguments: JDIRequestArgument*
-  ): Boolean = {
+  ): Try[Boolean] = {
     val arguments = Seq(
       SuspendPolicyProperty.EventThread,
       EnabledProperty(value = true)
     ) ++ extraArguments
     val result = setLineBreakpointImpl(fileName, lineNumber, arguments)
 
-    // Add the attempt to our list for processing later
-    if (!result && setPendingIfFail) pendingLineBreakpoints.synchronized {
-      val oldPendingBreakpoints =
-        pendingLineBreakpoints.getOrElse(fileName, Nil)
-      val newPendingBreakpoint = BreakpointInfo(
-        fileName        = fileName,
-        lineNumber      = lineNumber,
-        extraArguments  = extraArguments
-      )
+    // Add the attempt to our list for processing later if no exception was
+    // thrown but we were not able to find the location
+    if (result.isSuccess && !result.get && setPendingIfFail) {
+      pendingLineBreakpoints.synchronized {
+        val oldPendingBreakpoints =
+          pendingLineBreakpoints.getOrElse(fileName, Nil)
+        val newPendingBreakpoint = BreakpointInfo(
+          fileName        = fileName,
+          lineNumber      = lineNumber,
+          extraArguments  = extraArguments
+        )
 
-      pendingLineBreakpoints.put(
-        fileName, oldPendingBreakpoints :+ newPendingBreakpoint)
+        pendingLineBreakpoints.put(
+          fileName, oldPendingBreakpoints :+ newPendingBreakpoint)
+      }
     }
 
     result
@@ -149,7 +152,7 @@ class BreakpointManager(
     fileName: String,
     lineNumber: Int,
     arguments: Seq[JDIRequestArgument]
-  ): Boolean = {
+  ): Try[Boolean] = {
     // Retrieve the available locations for the specified line
     val locations = _classManager
       .linesAndLocationsForFile(fileName)
@@ -157,7 +160,7 @@ class BreakpointManager(
       .getOrElse(Nil)
 
     // Exit early if no locations are available
-    if (locations.isEmpty) return false
+    if (locations.isEmpty) return Success(false)
 
     // Create and enable breakpoints for all underlying locations
     val result = Try {
@@ -173,6 +176,9 @@ class BreakpointManager(
 
       // Add the inner breakpoints to our list of line breakpoints
       lineBreakpoints += key -> innerBreakpoints
+
+      // Indicate success
+      true
     }
 
     result match {
@@ -180,7 +186,7 @@ class BreakpointManager(
       case Failure(ex) => logger.throwable(ex)
     }
 
-    result.isSuccess
+    result
   }
 
   /**

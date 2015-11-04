@@ -55,7 +55,7 @@ class MethodExitManager(
     className: String,
     methodName: String,
     extraArguments: JDIRequestArgument*
-  ): Boolean = {
+  ): Try[Boolean] = {
     val request = Try(eventRequestManager.createMethodExitRequest(
       Seq(
         ClassInclusionFilter(classPattern = className),
@@ -64,13 +64,12 @@ class MethodExitManager(
       ) ++ extraArguments: _*
     ))
 
-    request match {
-      case Success(r) =>
-        methodExitRequests.put((className, methodName), r)
-        true
-      case Failure(_) =>
-        false
+    if (request.isSuccess) {
+      methodExitRequests.put((className, methodName), request.get)
     }
+
+    // If no exception was thrown, assume that we succeeded
+    request.map(_ => true)
   }
 
   /**

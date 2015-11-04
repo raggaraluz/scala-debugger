@@ -6,6 +6,8 @@ import com.sun.jdi.request.{EventRequest, MethodEntryRequest, EventRequestManage
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
 
+import scala.util.{Failure, Success}
+
 class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
   with OneInstancePerTest with org.scalamock.matchers.Matchers
 {
@@ -38,6 +40,7 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
 
     describe("#setMethodEntry") {
       it("should create the method entry request with a class inclusion filter for the class name") {
+        val expected = Success(true)
         val testClassName = "some class name"
         val testMethodName = "some method name"
 
@@ -53,7 +56,20 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
           .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
         (mockMethodEntryRequest.setEnabled _).expects(true).once()
 
-        methodEntryManager.setMethodEntry(testClassName, testMethodName) should be (true)
+        val actual = methodEntryManager.setMethodEntry(testClassName, testMethodName)
+        actual should be (expected)
+      }
+
+      it("should return the exception if unable to create the request") {
+        val expected = Failure(new Throwable)
+        val testClassName = "some class name"
+        val testMethodName = "some method name"
+
+        (mockEventRequestManager.createMethodEntryRequest _).expects()
+          .throwing(expected.failed.get).once()
+
+        val actual = methodEntryManager.setMethodEntry(testClassName, testMethodName)
+        actual should be (expected)
       }
     }
 
