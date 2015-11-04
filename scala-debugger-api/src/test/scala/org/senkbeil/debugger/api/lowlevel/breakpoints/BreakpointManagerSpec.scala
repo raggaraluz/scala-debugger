@@ -7,6 +7,8 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import test.JDIMockHelpers
 
+import scala.util.Failure
+
 class BreakpointManagerSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
@@ -136,7 +138,7 @@ class BreakpointManagerSpec extends FunSpec with Matchers
         (mockClassManager.linesAndLocationsForFile _).expects(*)
           .returning(None)
 
-        val actual = breakpointManager.setLineBreakpoint("", 0)
+        val actual = breakpointManager.setLineBreakpoint("", 0).get
 
         actual should be (expected)
       }
@@ -150,7 +152,7 @@ class BreakpointManagerSpec extends FunSpec with Matchers
           .returning(Some(Map(1 -> (Nil: Seq[Location]))))
 
         // Set a breakpoint on a line that is NOT returned by linesAndLocations
-        val actual = breakpointManager.setLineBreakpoint("", 0)
+        val actual = breakpointManager.setLineBreakpoint("", 0).get
 
         actual should be (expected)
       }
@@ -168,7 +170,7 @@ class BreakpointManagerSpec extends FunSpec with Matchers
           .returning(stub[BreakpointRequest])
 
         // Set a breakpoint on a line that is returned by linesAndLocations
-        val actual = breakpointManager.setLineBreakpoint("", 1)
+        val actual = breakpointManager.setLineBreakpoint("", 1).get
 
         actual should be (expected)
       }
@@ -194,8 +196,8 @@ class BreakpointManagerSpec extends FunSpec with Matchers
         breakpointManager.setLineBreakpoint("", 1)
       }
 
-      it("should return false if unable to create one of the underlying breakpoint requests") {
-        val expected = false
+      it("should return the failure if unable to create one of the underlying breakpoint requests") {
+        val expected = Failure(new Throwable)
         val locationsPerLine = 3
 
         // Mark the retrieval of lines and locations to a map with
@@ -216,7 +218,7 @@ class BreakpointManagerSpec extends FunSpec with Matchers
         // Stub out the call to create last breakpoint request to
         // throw an exception
         (mockEventRequestManager.createBreakpointRequest _).expects(*)
-          .throwing(new Throwable)
+          .throwing(expected.failed.get).once()
 
         // Set a breakpoint on a line that is returned by linesAndLocations
         val actual = breakpointManager.setLineBreakpoint("", 1)

@@ -54,7 +54,7 @@ class ExceptionManager(
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIRequestArgument*
-  ): Boolean = {
+  ): Try[Boolean] = {
     val arguments = Seq(
       EnabledProperty(value = true),
       SuspendPolicyProperty.EventThread
@@ -64,13 +64,12 @@ class ExceptionManager(
       null, notifyCaught, notifyUncaught, arguments: _*
     ))
 
-    request match {
-      case Success(r) =>
-        catchallExceptionRequest = Some(r)
-        true
-      case Failure(_) =>
-        false
+    if (request.isSuccess) {
+      catchallExceptionRequest = Some(request.get)
     }
+
+    // If no exception was thrown, assume that we succeeded
+    request.map(_ => true)
   }
 
   /**
@@ -124,11 +123,11 @@ class ExceptionManager(
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIRequestArgument*
-  ): Boolean = {
+  ): Try[Boolean] = {
     val exceptionReferenceTypes = _virtualMachine.classesByName(exceptionName)
 
     // If no classes match the requested exception type, exit early
-    if (exceptionReferenceTypes.isEmpty) return false
+    if (exceptionReferenceTypes.isEmpty) return Success(false)
 
     val arguments = Seq(
       EnabledProperty(value = true),
@@ -142,13 +141,12 @@ class ExceptionManager(
       )
     ))
 
-    requests match {
-      case Success(r) =>
-        exceptionRequests.put(exceptionName, r)
-        true
-      case Failure(_) =>
-        false
+    if (requests.isSuccess) {
+      exceptionRequests.put(exceptionName, requests.get)
     }
+
+    // If no exception was thrown, assume that we succeeded
+    requests.map(_ => true)
   }
 
   /**

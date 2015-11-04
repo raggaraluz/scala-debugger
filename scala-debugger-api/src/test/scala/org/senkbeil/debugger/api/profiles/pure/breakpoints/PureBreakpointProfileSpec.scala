@@ -14,7 +14,7 @@ import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 import test.JDIMockHelpers
 
-import scala.util.Success
+import scala.util.{Try, Success}
 
 class PureBreakpointProfileSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
@@ -37,7 +37,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
   //       ScalaMock, so have to override the method we want to test and
   //       inject a mock function instead
   private val mockSetLineBreakpointFunc =
-    mockFunction[String, Int, Seq[JDIRequestArgument], Boolean]
+    mockFunction[String, Int, Seq[JDIRequestArgument], Try[Boolean]]
   private val testBreakpointManager = new BreakpointManager(
     stub[VirtualMachine],
     stub[ZeroArgClassManager]
@@ -46,7 +46,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
       fileName: String,
       lineNumber: Int,
       extraArguments: JDIRequestArgument*
-      ): Boolean = mockSetLineBreakpointFunc(
+    ): Try[Boolean] = mockSetLineBreakpointFunc(
       fileName,
       lineNumber,
       extraArguments
@@ -94,7 +94,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             fileName,
             lineNumber,
             arguments
-          ).returning(true).once()
+          ).returning(Success(true)).once()
         }
 
         val actual = pureBreakpointProfile.onBreakpointWithData(

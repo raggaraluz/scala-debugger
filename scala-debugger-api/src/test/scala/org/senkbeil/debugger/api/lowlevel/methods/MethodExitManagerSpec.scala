@@ -5,6 +5,8 @@ import com.sun.jdi.request.{EventRequest, EventRequestManager, MethodExitRequest
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 
+import scala.util.{Failure, Success}
+
 class MethodExitManagerSpec extends FunSpec with Matchers with MockFactory
   with OneInstancePerTest with org.scalamock.matchers.Matchers
 {
@@ -37,6 +39,7 @@ class MethodExitManagerSpec extends FunSpec with Matchers with MockFactory
 
     describe("#setMethodExit") {
       it("should create the method exit request with a class inclusion filter for the class name") {
+        val expected = Success(true)
         val testClassName = "some class name"
         val testMethodName = "some method name"
 
@@ -52,7 +55,20 @@ class MethodExitManagerSpec extends FunSpec with Matchers with MockFactory
           .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
         (mockMethodExitRequest.setEnabled _).expects(true).once()
 
-        methodExitManager.setMethodExit(testClassName, testMethodName) should be (true)
+        val actual = methodExitManager.setMethodExit(testClassName, testMethodName)
+        actual should be (expected)
+      }
+
+      it("should return the exception if unable to create the request") {
+        val expected = Failure(new Throwable)
+        val testClassName = "some class name"
+        val testMethodName = "some method name"
+
+        (mockEventRequestManager.createMethodExitRequest _).expects()
+          .throwing(expected.failed.get).once()
+
+        val actual = methodExitManager.setMethodExit(testClassName, testMethodName)
+        actual should be (expected)
       }
     }
 
