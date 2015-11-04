@@ -9,6 +9,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.vm.VMStartProfile
 import org.senkbeil.debugger.api.lowlevel.events.EventType.VMStartEventType
 
+import scala.util.Try
+
 /**
  * Represents a pure profile for vm start events that adds no
  * extra logic on top of the standard JDI.
@@ -26,7 +28,7 @@ trait PureVMStartProfile extends VMStartProfile {
    */
   override def onVMStartWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[VMStartEventAndData] = {
+  ): Try[IdentityPipeline[VMStartEventAndData]] = Try {
     val JDIArgumentGroup(_, eArgs, _) = JDIArgumentGroup(extraArguments: _*)
 
     eventManager

@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.watchpoints.ModificationWatchpointProfile
 
+import scala.util.Try
+
 /**
  * Represents a pure profile for modification watchpoints that adds no
  * extra logic on top of the standard JDI.
@@ -25,7 +27,7 @@ trait PureModificationWatchpointProfile extends ModificationWatchpointProfile {
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ModificationWatchpointEventAndData] = ???
+  ): Try[IdentityPipeline[ModificationWatchpointEventAndData]] = ???
 
   /**
    * Constructs a stream of modification watchpoint events for the instance
@@ -40,5 +42,5 @@ trait PureModificationWatchpointProfile extends ModificationWatchpointProfile {
   override def onModificationInstanceWatchpointWithData(
     instanceVarName: String,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ModificationWatchpointEventAndData] = ???
+  ): Try[IdentityPipeline[ModificationWatchpointEventAndData]] = ???
 }

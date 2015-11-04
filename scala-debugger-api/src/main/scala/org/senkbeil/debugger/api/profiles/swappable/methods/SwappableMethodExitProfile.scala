@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.methods.MethodExitProfile
 
+import scala.util.Try
+
 /**
  * Represents a swappable profile for method exit events that redirects the
  * invocation to another profile.
@@ -16,7 +18,7 @@ trait SwappableMethodExitProfile extends MethodExitProfile {
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[MethodExitEventAndData] = {
+  ): Try[IdentityPipeline[MethodExitEventAndData]] = {
     withCurrentProfile.onMethodExitWithData(
       className,
       methodName,

@@ -6,6 +6,8 @@ import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
+import scala.util.Try
+
 /**
  * Represents the interface that needs to be implemented to provide
  * thread start functionality for a specific debug profile.
@@ -23,8 +25,8 @@ trait ThreadStartProfile {
    */
   def onThreadStart(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ThreadStartEvent] = {
-    onThreadStartWithData(extraArguments: _*).map(_._1).noop()
+  ): Try[IdentityPipeline[ThreadStartEvent]] = {
+    onThreadStartWithData(extraArguments: _*).map(_.map(_._1).noop())
   }
 
   /**
@@ -37,5 +39,32 @@ trait ThreadStartProfile {
    */
   def onThreadStartWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ThreadStartEventAndData]
+  ): Try[IdentityPipeline[ThreadStartEventAndData]]
+
+  /**
+   * Constructs a stream of thread start events.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of thread start events
+   */
+  def onUnsafeThreadStart(
+    extraArguments: JDIArgument*
+  ): IdentityPipeline[ThreadStartEvent] = {
+    onThreadStart(extraArguments: _*).get
+  }
+
+  /**
+   * Constructs a stream of thread start events.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of thread start events and any retrieved data based on
+   *         requests from extra arguments
+   */
+  def onUnsafeThreadStartWithData(
+    extraArguments: JDIArgument*
+  ): IdentityPipeline[ThreadStartEventAndData] = {
+    onThreadStartWithData(extraArguments: _*).get
+  }
 }

@@ -26,7 +26,7 @@ class PureVMDisconnectProfileIntegrationSpec extends FunSpec with Matchers
       // Start our VM and listen for the disconnect event
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
         s.withProfile(PureDebugProfile.Name)
-          .onVMDisconnect()
+          .onUnsafeVMDisconnect()
           .foreach(_ => detectedDisconnect.set(true))
 
         // Kill the JVM process so we get a disconnect event

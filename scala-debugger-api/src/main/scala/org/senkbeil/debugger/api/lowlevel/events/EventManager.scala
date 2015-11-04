@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 import EventType._
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 /**
  * Represents a manager for events coming in from a virtual machine.

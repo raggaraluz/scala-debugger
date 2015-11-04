@@ -8,9 +8,34 @@ import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
-class MonitorContendedEnterProfileSpec extends FunSpec with Matchers with OneInstancePerTest
-  with MockFactory
+import scala.util.{Failure, Success, Try}
+
+class MonitorContendedEnterProfileSpec extends FunSpec with Matchers
+  with OneInstancePerTest with MockFactory
 {
+  private val TestThrowable = new Throwable
+
+  // Pipeline that is parent to the one that just streams the event
+  private val TestPipelineWithData = Pipeline.newPipeline(
+    classOf[MonitorContendedEnterProfile#MonitorContendedEnterEventAndData]
+  )
+
+  private val successMonitorContendedEnterProfile = new Object with MonitorContendedEnterProfile {
+    override def onMonitorContendedEnterWithData(
+      extraArguments: JDIArgument*
+    ): Try[IdentityPipeline[MonitorContendedEnterEventAndData]] = {
+      Success(TestPipelineWithData)
+    }
+  }
+
+  private val failMonitorContendedEnterProfile = new Object with MonitorContendedEnterProfile {
+    override def onMonitorContendedEnterWithData(
+      extraArguments: JDIArgument*
+    ): Try[IdentityPipeline[MonitorContendedEnterEventAndData]] = {
+      Failure(TestThrowable)
+    }
+  }
+
   describe("MonitorContendedEnterProfile") {
     describe("#onMonitorContendedEnter") {
       it("should return a pipeline with the event data results filtered out") {
@@ -19,31 +44,85 @@ class MonitorContendedEnterProfileSpec extends FunSpec with Matchers with OneIns
         // Data to be run through pipeline
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
-        // Pipeline that is parent to the one that just streams the event
-        val pipelineWithData = Pipeline.newPipeline(
-          classOf[MonitorContendedEnterProfile#MonitorContendedEnterEventAndData]
-        )
-
-        val monitorContendedEnterProfile = new Object with MonitorContendedEnterProfile {
-          override def onMonitorContendedEnterWithData(
-            extraArguments: JDIArgument*
-          ): IdentityPipeline[MonitorContendedEnterEventAndData] = {
-            pipelineWithData
-          }
-        }
-
         var actual: MonitorContendedEnterEvent = null
-        monitorContendedEnterProfile
+        successMonitorContendedEnterProfile
           .onMonitorContendedEnter()
+          .get
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
         // mapping on top of the pipeline containing the data
-        pipelineWithData.process(data)
+        TestPipelineWithData.process(data)
+
+        actual should be (expected)
+      }
+
+      it("should capture any exception as a failure") {
+        val expected = TestThrowable
+
+        var actual: Throwable = null
+        failMonitorContendedEnterProfile
+          .onMonitorContendedEnter()
+          .failed
+          .foreach(actual = _)
 
         actual should be (expected)
       }
     }
+
+    describe("#onUnsafeMonitorContendedEnter") {
+      it("should return a pipeline of events if successful") {
+        val expected = mock[MonitorContendedEnterEvent]
+
+        // Data to be run through pipeline
+        val data = (expected, Seq(mock[JDIEventDataResult]))
+
+        var actual: MonitorContendedEnterEvent = null
+        successMonitorContendedEnterProfile
+          .onUnsafeMonitorContendedEnter()
+          .foreach(actual = _)
+
+        // Funnel the data through the parent pipeline that contains data to
+        // demonstrate that the pipeline with just the event is merely a
+        // mapping on top of the pipeline containing the data
+        TestPipelineWithData.process(data)
+
+        actual should be (expected)
+      }
+
+      it("should throw the exception if unsuccessful") {
+        intercept[Throwable] {
+          failMonitorContendedEnterProfile.onUnsafeMonitorContendedEnter()
+        }
+      }
+    }
+
+    describe("#onUnsafeMonitorContendedEnterWithData") {
+      it("should return a pipeline of events and data if successful") {
+        // Data to be run through pipeline
+        val expected = (mock[MonitorContendedEnterEvent], Seq(mock[JDIEventDataResult]))
+
+        var actual: (MonitorContendedEnterEvent, Seq[JDIEventDataResult]) = null
+        successMonitorContendedEnterProfile
+          .onUnsafeMonitorContendedEnterWithData()
+          .foreach(actual = _)
+
+        // Funnel the data through the parent pipeline that contains data to
+        // demonstrate that the pipeline with just the event is merely a
+        // mapping on top of the pipeline containing the data
+        TestPipelineWithData.process(expected)
+
+        actual should be (expected)
+      }
+
+      it("should throw the exception if unsuccessful") {
+        intercept[Throwable] {
+          failMonitorContendedEnterProfile
+            .onUnsafeMonitorContendedEnterWithData()
+        }
+      }
+    }
   }
 }
+

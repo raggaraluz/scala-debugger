@@ -83,16 +83,19 @@ class JDIRequestResponseBuilderSpec extends FunSpec with Matchers
         )
       }
 
-      it("should throw an exception if an invalid event type is provided") {
-        intercept[AssertionError] {
-          jdiRequestResponseBuilder.buildRequestResponse[Event](_ => {})
-        }
+      it("should report a failure if an invalid event type is provided") {
+        jdiRequestResponseBuilder.buildRequestResponse[Event](_ => {})
+          .failed.get shouldBe an [AssertionError]
       }
 
-      it("should throw an exception if no event type is provided") {
-        intercept[AssertionError] {
-          jdiRequestResponseBuilder.buildRequestResponse(_ => {})
-        }
+      it("should report a failure if no event type is provided") {
+        jdiRequestResponseBuilder.buildRequestResponse(_ => {})
+          .failed.get shouldBe an [AssertionError]
+      }
+
+      it("should report a failure if the request function fails") {
+        jdiRequestResponseBuilder.buildRequestResponse(_ => throw new Throwable)
+          .failed.get shouldBe a [Throwable]
       }
 
       it("should map the stream of events to the type parameter provided") {
@@ -104,7 +107,7 @@ class JDIRequestResponseBuilderSpec extends FunSpec with Matchers
         val (inputClass, outputClass) = getErasure(
           jdiRequestResponseBuilder.buildRequestResponse[BreakpointEvent](
             (_) => {}
-          )
+          ).get
         )
 
         inputClass should be (classOf[(BreakpointEvent, Seq[JDIEventDataResult])])

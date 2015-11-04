@@ -34,6 +34,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
         s.withProfile(PureDebugProfile.Name)
           .onBreakpoint(testFile, firstBreakpointLine)
+          .get
           .map(_.location())
           .map(l => (l.sourcePath(), l.lineNumber()))
           .filter(_._1 == testFile)
@@ -42,6 +43,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
 
         s.withProfile(PureDebugProfile.Name)
           .onBreakpoint(testFile, secondBreakpointLine)
+          .get
           .map(_.location())
           .map(l => (l.sourcePath(), l.lineNumber()))
           .filter(_._1 == testFile)
@@ -68,6 +70,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
         s.withProfile(PureDebugProfile.Name)
           .onBreakpoint(testFile, firstBreakpointLine)
+          .get
           .map(_.location())
           .map(l => (l.sourcePath(), l.lineNumber()))
           .filter(_._1 == testFile)
@@ -76,6 +79,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
 
         s.withProfile(PureDebugProfile.Name)
           .onBreakpoint(testFile, secondBreakpointLine)
+          .get
           .map(_.location())
           .map(l => (l.sourcePath(), l.lineNumber()))
           .filter(_._1 == testFile)
@@ -101,7 +105,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
         s.withProfile(PureDebugProfile.Name)
-          .onBreakpoint(testFile, firstBreakpointLine)
+          .onUnsafeBreakpoint(testFile, firstBreakpointLine)
           .map(_.location())
           .map(l => (l.sourcePath(), l.lineNumber()))
           .filter(_._1 == testFile)
@@ -109,7 +113,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
           .foreach(_ => firstBreakpoint.set(true))
 
         s.withProfile(PureDebugProfile.Name)
-          .onBreakpoint(testFile, secondBreakpointLine)
+          .onUnsafeBreakpoint(testFile, secondBreakpointLine)
           .map(_.location())
           .map(l => (l.sourcePath(), l.lineNumber()))
           .filter(_._1 == testFile)

@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.threads.ThreadStartProfile
 
+import scala.util.Try
+
 /**
  * Represents a swappable profile for thread start events that redirects the
  * invocation to another profile.
@@ -14,7 +16,7 @@ trait SwappableThreadStartProfile extends ThreadStartProfile {
 
   override def onThreadStartWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ThreadStartEventAndData] = {
+  ): Try[IdentityPipeline[ThreadStartEventAndData]] = {
     withCurrentProfile.onThreadStartWithData(extraArguments: _*)
   }
 }

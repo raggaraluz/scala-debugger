@@ -11,7 +11,7 @@ import org.senkbeil.debugger.api.lowlevel.utils.{JDIArgumentGroup, JDIRequestRes
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
-import scala.util.Random
+import scala.util.{Try, Random}
 
 /**
  * Contains helper methods to facilitate smaller test code for JDI.
@@ -226,7 +226,7 @@ trait JDIMockHelpers { self: MockFactory =>
    */
   def expectCallAndInvokeRequestFunc[A <: Event : ClassTag](
     mockRequestResponseBuilder: JDIRequestResponseBuilder,
-    returnValue: Pipeline[(A, Seq[JDIEventDataResult]), (A, Seq[JDIEventDataResult])]
+    returnValue: Try[Pipeline[(A, Seq[JDIEventDataResult]), (A, Seq[JDIEventDataResult])]]
   ): Unit = {
     // NOTE: Forced to use ugly onCall with product due to the fact that
     //       ScalaMock cannot handle varargs (casting failure when using

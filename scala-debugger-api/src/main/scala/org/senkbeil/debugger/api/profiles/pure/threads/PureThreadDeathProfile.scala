@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.threads.ThreadDeathProfile
 
+import scala.util.Try
+
 /**
  * Represents a pure profile for thread death events that adds no
  * extra logic on top of the standard JDI.
@@ -20,5 +22,5 @@ trait PureThreadDeathProfile extends ThreadDeathProfile {
    */
   override def onThreadDeathWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ThreadDeathEventAndData] = ???
+  ): Try[IdentityPipeline[ThreadDeathEventAndData]] = ???
 }

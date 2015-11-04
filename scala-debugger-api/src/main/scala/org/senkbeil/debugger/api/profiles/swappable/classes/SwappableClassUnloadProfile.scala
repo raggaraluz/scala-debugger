@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.classes.ClassUnloadProfile
 
+import scala.util.Try
+
 /**
  * Represents a swappable profile for class unload events that redirects the
  * invocation to another profile.
@@ -14,7 +16,7 @@ trait SwappableClassUnloadProfile extends ClassUnloadProfile {
 
   override def onClassUnloadWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ClassUnloadEventAndData] = {
+  ): Try[IdentityPipeline[ClassUnloadEventAndData]] = {
     withCurrentProfile.onClassUnloadWithData(extraArguments: _*)
   }
 }

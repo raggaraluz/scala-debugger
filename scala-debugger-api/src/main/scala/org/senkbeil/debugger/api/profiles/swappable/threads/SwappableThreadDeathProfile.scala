@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.threads.ThreadDeathProfile
 
+import scala.util.Try
+
 /**
  * Represents a swappable profile for thread death events that redirects the
  * invocation to another profile.
@@ -14,7 +16,7 @@ trait SwappableThreadDeathProfile extends ThreadDeathProfile {
 
   override def onThreadDeathWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ThreadDeathEventAndData] = {
+  ): Try[IdentityPipeline[ThreadDeathEventAndData]] = {
     withCurrentProfile.onThreadDeathWithData(extraArguments: _*)
   }
 }

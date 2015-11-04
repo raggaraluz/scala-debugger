@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.vm.VMDeathProfile
 
+import scala.util.Try
+
 /**
  * Represents a pure profile for vm death events that adds no
  * extra logic on top of the standard JDI.
@@ -20,5 +22,5 @@ trait PureVMDeathProfile extends VMDeathProfile {
    */
   override def onVMDeathWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[VMDeathEventAndData] = ???
+  ): Try[IdentityPipeline[VMDeathEventAndData]] = ???
 }

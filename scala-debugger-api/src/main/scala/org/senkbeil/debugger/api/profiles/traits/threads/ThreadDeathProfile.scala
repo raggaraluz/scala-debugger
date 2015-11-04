@@ -6,6 +6,8 @@ import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
+import scala.util.Try
+
 /**
  * Represents the interface that needs to be implemented to provide
  * thread death functionality for a specific debug profile.
@@ -23,8 +25,8 @@ trait ThreadDeathProfile {
    */
   def onThreadDeath(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ThreadDeathEvent] = {
-    onThreadDeathWithData(extraArguments: _*).map(_._1).noop()
+  ): Try[IdentityPipeline[ThreadDeathEvent]] = {
+    onThreadDeathWithData(extraArguments: _*).map(_.map(_._1).noop())
   }
 
   /**
@@ -37,5 +39,32 @@ trait ThreadDeathProfile {
    */
   def onThreadDeathWithData(
     extraArguments: JDIArgument*
-  ): IdentityPipeline[ThreadDeathEventAndData]
+  ): Try[IdentityPipeline[ThreadDeathEventAndData]]
+
+  /**
+   * Constructs a stream of thread death events.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of thread death events
+   */
+  def onUnsafeThreadDeath(
+    extraArguments: JDIArgument*
+  ): IdentityPipeline[ThreadDeathEvent] = {
+    onThreadDeath(extraArguments: _*).get
+  }
+
+  /**
+   * Constructs a stream of thread death events.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of thread death events and any retrieved data based on
+   *         requests from extra arguments
+   */
+  def onUnsafeThreadDeathWithData(
+    extraArguments: JDIArgument*
+  ): IdentityPipeline[ThreadDeathEventAndData] = {
+    onThreadDeathWithData(extraArguments: _*).get
+  }
 }

@@ -42,9 +42,9 @@ class PureVMDisconnectProfileSpec extends FunSpec with Matchers
         var actual: (VMDisconnectEvent, Seq[JDIEventDataResult]) = null
         val pipeline =
           pureVMDisconnectProfile.onVMDisconnectWithData(arguments: _*)
-        pipeline.foreach(actual = _)
+        pipeline.get.foreach(actual = _)
 
-        pipeline.process(expected)
+        pipeline.get.process(expected)
 
         actual should be (expected)
       }

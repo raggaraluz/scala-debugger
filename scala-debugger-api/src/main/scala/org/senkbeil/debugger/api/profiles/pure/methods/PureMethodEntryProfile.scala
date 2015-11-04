@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.methods.MethodEntryProfile
 
+import scala.util.Try
+
 /**
  * Represents a pure profile for method entry that adds no extra logic on top
  * of the standard JDI.
@@ -26,5 +28,5 @@ trait PureMethodEntryProfile extends MethodEntryProfile {
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[MethodEntryEventAndData] = ???
+  ): Try[IdentityPipeline[MethodEntryEventAndData]] = ???
 }

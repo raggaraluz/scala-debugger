@@ -5,6 +5,8 @@ import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.watchpoints.AccessWatchpointProfile
 
+import scala.util.Try
+
 /**
  * Represents a pure profile for access watchpoints that adds no
  * extra logic on top of the standard JDI.
@@ -25,7 +27,7 @@ trait PureAccessWatchpointProfile extends AccessWatchpointProfile {
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[AccessWatchpointEventAndData] = ???
+  ): Try[IdentityPipeline[AccessWatchpointEventAndData]] = ???
 
   /**
    * Constructs a stream of access watchpoint events for the instance variable.
@@ -39,5 +41,5 @@ trait PureAccessWatchpointProfile extends AccessWatchpointProfile {
   override def onAccessInstanceWatchpointWithData(
     instanceVarName: String,
     extraArguments: JDIArgument*
-  ): IdentityPipeline[AccessWatchpointEventAndData] = ???
+  ): Try[IdentityPipeline[AccessWatchpointEventAndData]] = ???
 }

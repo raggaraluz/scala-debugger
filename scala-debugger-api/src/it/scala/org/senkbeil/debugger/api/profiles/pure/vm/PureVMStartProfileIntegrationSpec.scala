@@ -27,7 +27,7 @@ class PureVMStartProfileIntegrationSpec extends FunSpec with Matchers
       def preStart(scalaVirtualMachine: ScalaVirtualMachine) = {
         scalaVirtualMachine
           .withProfile(PureDebugProfile.Name)
-          .onVMStart()
+          .onUnsafeVMStart()
           .foreach(_ => detectedStart.set(true))
       }
 
