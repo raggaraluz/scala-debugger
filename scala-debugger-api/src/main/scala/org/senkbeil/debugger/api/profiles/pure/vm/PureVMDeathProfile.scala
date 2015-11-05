@@ -1,7 +1,10 @@
 package org.senkbeil.debugger.api.profiles.pure.vm
 
+import com.sun.jdi.event.VMDeathEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.senkbeil.debugger.api.lowlevel.utils.JDIRequestResponseBuilder
+import org.senkbeil.debugger.api.lowlevel.vm.VMDeathManager
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.vm.VMDeathProfile
 
@@ -12,6 +15,9 @@ import scala.util.Try
  * extra logic on top of the standard JDI.
  */
 trait PureVMDeathProfile extends VMDeathProfile {
+  protected val vmDeathManager: VMDeathManager
+  protected val requestResponseBuilder: JDIRequestResponseBuilder
+
   /**
    * Constructs a stream of vm death events.
    *
@@ -22,5 +28,16 @@ trait PureVMDeathProfile extends VMDeathProfile {
    */
   override def onVMDeathWithData(
     extraArguments: JDIArgument*
-  ): Try[IdentityPipeline[VMDeathEventAndData]] = ???
+  ): Try[IdentityPipeline[VMDeathEventAndData]] = {
+    /** Creates a new request using arguments. */
+    def newRequest(args: Seq[JDIRequestArgument]): Unit = {
+      // Ignore the id and propagate up any errors
+      vmDeathManager.setVMDeath(args: _*).get
+    }
+
+    requestResponseBuilder.buildRequestResponse[VMDeathEvent](
+      newRequest,
+      extraArguments: _*
+    )
+  }
 }
