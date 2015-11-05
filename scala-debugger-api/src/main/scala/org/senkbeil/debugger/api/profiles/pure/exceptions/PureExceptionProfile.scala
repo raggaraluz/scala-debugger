@@ -1,7 +1,10 @@
 package org.senkbeil.debugger.api.profiles.pure.exceptions
 
+import com.sun.jdi.event.ExceptionEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.lowlevel.exceptions.ExceptionManager
+import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.senkbeil.debugger.api.lowlevel.utils.JDIRequestResponseBuilder
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.exceptions.ExceptionProfile
 
@@ -12,6 +15,9 @@ import scala.util.Try
  * top of the standard JDI.
  */
 trait PureExceptionProfile extends ExceptionProfile {
+  protected val exceptionManager: ExceptionManager
+  protected val requestResponseBuilder: JDIRequestResponseBuilder
+
   /**
    * Constructs a stream of exception events for all exceptions.
    *
@@ -28,7 +34,22 @@ trait PureExceptionProfile extends ExceptionProfile {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
-  ): Try[IdentityPipeline[ExceptionEventAndData]] = ???
+  ): Try[IdentityPipeline[ExceptionEventAndData]] = {
+    /** Creates a new request using arguments. */
+    def newRequest(args: Seq[JDIRequestArgument]): Unit = {
+      // Ignore true/false, but propagate up any errors
+      exceptionManager.setCatchallException(
+        notifyCaught,
+        notifyUncaught,
+        args: _*
+      )
+    }
+
+    requestResponseBuilder.buildRequestResponse[ExceptionEvent](
+      newRequest,
+      extraArguments: _*
+    )
+  }
 
   /**
    * Constructs a stream of exception events for the specified exception.
@@ -48,5 +69,21 @@ trait PureExceptionProfile extends ExceptionProfile {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
-  ): Try[IdentityPipeline[ExceptionEventAndData]] = ???
+  ): Try[IdentityPipeline[ExceptionEventAndData]] = {
+    /** Creates a new request using arguments. */
+    def newRequest(args: Seq[JDIRequestArgument]): Unit = {
+      // Ignore true/false, but propagate up any errors
+      exceptionManager.setException(
+        exceptionName,
+        notifyCaught,
+        notifyUncaught,
+        args: _*
+      )
+    }
+
+    requestResponseBuilder.buildRequestResponse[ExceptionEvent](
+      newRequest,
+      extraArguments: _*
+    )
+  }
 }

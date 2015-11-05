@@ -38,7 +38,8 @@ trait PureBreakpointProfile extends BreakpointProfile {
   ): Try[IdentityPipeline[BreakpointEventAndData]] = {
     /** Creates a new request using arguments. */
     def newRequest(args: Seq[JDIRequestArgument]): Unit = {
-      // TODO: Provide error handling if determine breakpoint not pending?
+      // Ignore true/false since we will be retrying any failed breakpoints,
+      // but propagate up any errors
       breakpointManager.setLineBreakpoint(
         fileName,
         lineNumber,
