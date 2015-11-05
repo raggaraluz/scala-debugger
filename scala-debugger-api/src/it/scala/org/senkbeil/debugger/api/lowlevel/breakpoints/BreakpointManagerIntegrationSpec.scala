@@ -34,8 +34,8 @@ class BreakpointManagerIntegrationSpec extends FunSpec with Matchers
         import s.lowlevel._
 
         // Queue up our breakpoints
-        breakpointManager.setLineBreakpoint(testFile, firstBreakpointLine)
-        breakpointManager.setLineBreakpoint(testFile, secondBreakpointLine)
+        breakpointManager.createLineBreakpointRequest(testFile, firstBreakpointLine)
+        breakpointManager.createLineBreakpointRequest(testFile, secondBreakpointLine)
 
         eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
@@ -73,8 +73,8 @@ class BreakpointManagerIntegrationSpec extends FunSpec with Matchers
         import s.lowlevel._
 
         // Queue up our breakpoints
-        breakpointManager.setLineBreakpoint(testFile, firstBreakpointLine)
-        breakpointManager.setLineBreakpoint(testFile, secondBreakpointLine)
+        breakpointManager.createLineBreakpointRequest(testFile, firstBreakpointLine)
+        breakpointManager.createLineBreakpointRequest(testFile, secondBreakpointLine)
 
         eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]
@@ -112,8 +112,8 @@ class BreakpointManagerIntegrationSpec extends FunSpec with Matchers
         import s.lowlevel._
 
         // Queue up our breakpoints
-        breakpointManager.setLineBreakpoint(testFile, firstBreakpointLine)
-        breakpointManager.setLineBreakpoint(testFile, secondBreakpointLine)
+        breakpointManager.createLineBreakpointRequest(testFile, firstBreakpointLine)
+        breakpointManager.createLineBreakpointRequest(testFile, secondBreakpointLine)
 
         eventManager.addResumingEventHandler(BreakpointEventType, e => {
           val breakpointEvent = e.asInstanceOf[BreakpointEvent]

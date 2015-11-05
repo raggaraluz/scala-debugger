@@ -1,6 +1,5 @@
 package org.senkbeil.debugger.api.lowlevel.events
 
-import com.sun.jdi.VirtualMachine
 import com.sun.jdi.event.{Event, EventSet, EventQueue}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
@@ -14,7 +13,6 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
   with OneInstancePerTest with org.scalamock.matchers.Matchers
 {
   private val mockEventQueue = mock[EventQueue]
-  private val mockVirtualMachine = mock[VirtualMachine]
   private val mockLoopingTaskRunner = mock[LoopingTaskRunner]
 
   // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
@@ -26,7 +24,7 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
   private val mockEventSetProcessor = mock[TestEventSetProcessor]
 
   private class TestEventManager extends EventManager(
-    mockVirtualMachine,
+    mockEventQueue,
     mockLoopingTaskRunner,
     autoStart = false
   ) {
@@ -52,7 +50,7 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
         (mockLoopingTaskRunner.addTask _).expects(*).once()
 
         new EventManager(
-          mockVirtualMachine,
+          mockEventQueue,
           mockLoopingTaskRunner,
           autoStart = true
         )
@@ -78,7 +76,7 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
 
       it("should start the looping task runner if not already started and flag enabled") {
         val eventManager = new EventManager(
-          mockVirtualMachine,
+          mockEventQueue,
           mockLoopingTaskRunner,
           autoStart = false,
           startTaskRunner = true
@@ -346,15 +344,11 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
   describe("#eventHandlerTask") {
     it("should execute steps to process event handlers for an event") {
       inSequence {
-        info("First, retrieves the event queue")
-        (mockVirtualMachine.eventQueue _).expects()
-          .returning(mockEventQueue).once()
-
-        info("Second, removes the next event from the queue")
+        info("First, removes the next event from the queue")
         (mockEventQueue.remove: Function0[EventSet]).expects()
           .returning(stub[EventSet]).once()
 
-        info("Third, constructs a new event set processor and processes the event")
+        info("Second, constructs a new event set processor and processes the event")
         (mockEventSetProcessor.process _).expects().once()
       }
 

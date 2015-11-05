@@ -1,7 +1,7 @@
 package org.senkbeil.debugger.api.lowlevel.steps
 
 import com.sun.jdi.{ThreadReference, VirtualMachine}
-import com.sun.jdi.request.{EventRequest, StepRequest}
+import com.sun.jdi.request.{EventRequestManager, EventRequest, StepRequest}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.filters.CountFilter
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{SuspendPolicyProperty, EnabledProperty}
@@ -10,11 +10,9 @@ import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
 /**
  * Represents the manager for step requests.
  *
- * @param _virtualMachine The virtual machine whose step requests to
- *                        manage
+ * @param eventRequestManager The manager used to create breakpoint requests
  */
-class StepManager(protected val _virtualMachine: VirtualMachine) {
-  private val eventRequestManager = _virtualMachine.eventRequestManager()
+class StepManager(private val eventRequestManager: EventRequestManager) {
 
   /**
    * Creates a new step request.

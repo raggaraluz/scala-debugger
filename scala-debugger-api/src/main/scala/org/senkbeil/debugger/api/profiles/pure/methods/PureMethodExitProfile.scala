@@ -40,7 +40,7 @@ trait PureMethodExitProfile extends MethodExitProfile {
     /** Creates a new request using arguments. */
     def newRequest(args: Seq[JDIRequestArgument]): Unit = {
       // Ignore true/false, but propagate up any errors
-      methodExitManager.setMethodExit(
+      methodExitManager.createMethodExitRequest(
         className,
         methodName,
         args: _*

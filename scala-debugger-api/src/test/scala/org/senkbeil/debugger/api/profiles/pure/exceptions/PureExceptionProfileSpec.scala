@@ -1,7 +1,8 @@
 package org.senkbeil.debugger.api.profiles.pure.exceptions
 
 import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.ExceptionEvent
+import com.sun.jdi.event.{EventQueue, ExceptionEvent}
+import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.exceptions.ExceptionManager
@@ -29,9 +30,9 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
   private val mockSetExceptionFunc =
     mockFunction[String, Boolean, Boolean, Seq[JDIRequestArgument], Try[Boolean]]
   private val testExceptionManager = new ExceptionManager(
-    stub[VirtualMachine]
+    stub[VirtualMachine], stub[EventRequestManager]
   ) {
-    override def setCatchallException(
+    override def createCatchallExceptionRequest(
       notifyCaught: Boolean,
       notifyUncaught: Boolean,
       extraArguments: JDIRequestArgument*
@@ -43,7 +44,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
       )
     }
 
-    override def setException(
+    override def createExceptionRequest(
       exceptionName: String,
       notifyCaught: Boolean,
       notifyUncaught: Boolean,
@@ -60,7 +61,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
 
   // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
   private class ZeroArgEventManager extends EventManager(
-    stub[VirtualMachine],
+    stub[EventQueue],
     stub[LoopingTaskRunner],
     autoStart = false
   )

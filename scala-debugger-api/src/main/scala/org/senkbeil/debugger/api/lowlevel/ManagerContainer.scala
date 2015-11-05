@@ -52,24 +52,26 @@ object ManagerContainer {
     virtualMachine: VirtualMachine,
     loopingTaskRunner: LoopingTaskRunner
   ): ManagerContainer = {
+    lazy val eventRequestManager = virtualMachine.eventRequestManager()
+    lazy val eventQueue = virtualMachine.eventQueue()
     lazy val breakpointManager =
-      new BreakpointManager(virtualMachine, classManager)
+      new BreakpointManager(eventRequestManager, classManager)
     lazy val classManager =
       new ClassManager(virtualMachine, loadClasses = true)
     lazy val eventManager =
-      new EventManager(virtualMachine, loopingTaskRunner)
+      new EventManager(eventQueue, loopingTaskRunner)
     lazy val exceptionManager =
-      new ExceptionManager(virtualMachine)
+      new ExceptionManager(virtualMachine, eventRequestManager)
     lazy val methodEntryManager =
-      new MethodEntryManager(virtualMachine)
+      new MethodEntryManager(eventRequestManager)
     lazy val methodExitManager =
-      new MethodExitManager(virtualMachine)
+      new MethodExitManager(eventRequestManager)
     lazy val requestManager =
       virtualMachine.eventRequestManager()
     lazy val stepManager =
-      new StepManager(virtualMachine)
+      new StepManager(eventRequestManager)
     lazy val vmDeathManager =
-      new VMDeathManager(virtualMachine)
+      new VMDeathManager(eventRequestManager)
 
     ManagerContainer(
       breakpointManager   = breakpointManager,

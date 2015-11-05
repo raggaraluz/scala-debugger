@@ -38,13 +38,13 @@ class MethodEntryManagerIntegrationSpec extends FunSpec with Matchers
         import s.lowlevel._
 
         // Set up the method entry event
-        methodEntryManager.setMethodEntry(
+        methodEntryManager.createMethodEntryRequest(
           expectedClassName,
           expectedMethodName
         )
 
         // First line in test method
-        breakpointManager.setLineBreakpoint(testFile, 26)
+        breakpointManager.createLineBreakpointRequest(testFile, 26)
 
         // Listen for breakpoint on first line of method, checking if this
         // breakpoint is hit before or after the method entry event

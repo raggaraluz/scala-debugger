@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.lowlevel.methods
 import java.util.concurrent.ConcurrentHashMap
 
 import com.sun.jdi.VirtualMachine
-import com.sun.jdi.request.MethodEntryRequest
+import com.sun.jdi.request.{EventRequestManager, MethodEntryRequest}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.filters.ClassInclusionFilter
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{SuspendPolicyProperty, EnabledProperty}
@@ -18,13 +18,11 @@ import scala.util.{Failure, Success, Try}
 /**
  * Represents the manager for method entry requests.
  *
- * @param _virtualMachine The virtual machine whose method entry requests to
- *                        manage
+ * @param eventRequestManager The manager used to create method entry requests
  */
 class MethodEntryManager(
-  protected val _virtualMachine: VirtualMachine
-) extends JDIHelperMethods with Logging {
-  private val eventRequestManager = _virtualMachine.eventRequestManager()
+  private val eventRequestManager: EventRequestManager
+) extends Logging {
 
   type MethodEntryKey = (String, String)
   private val methodEntryRequests =
@@ -36,7 +34,7 @@ class MethodEntryManager(
    * @return The collection of method entry requests in the form of
    *         (class name, method name)
    */
-  def methodEntryList: Seq[MethodEntryKey] =
+  def methodEntryRequestList: Seq[MethodEntryKey] =
     methodEntryRequests.keySet().asScala.toSeq
 
   /**
@@ -52,7 +50,7 @@ class MethodEntryManager(
    *
    * @return True if successful in creating the request, otherwise false
    */
-  def setMethodEntry(
+  def createMethodEntryRequest(
     className: String,
     methodName: String,
     extraArguments: JDIRequestArgument*
@@ -83,7 +81,7 @@ class MethodEntryManager(
    *
    * @return True if a method entry request exists, otherwise false
    */
-  def hasMethodEntry(className: String, methodName: String): Boolean = {
+  def hasMethodEntryRequest(className: String, methodName: String): Boolean = {
     methodEntryRequests.containsKey((className, methodName))
   }
 
@@ -96,7 +94,7 @@ class MethodEntryManager(
    *
    * @return Some method entry request if it exists, otherwise None
    */
-  def getMethodEntry(
+  def getMethodEntryRequest(
     className: String,
     methodName: String
   ): Option[MethodEntryRequest] = {
@@ -113,7 +111,10 @@ class MethodEntryManager(
    * @return True if the method entry request was removed (if it existed),
    *         otherwise false
    */
-  def removeMethodEntry(className: String, methodName: String): Boolean = {
+  def removeMethodEntryRequest(
+    className: String,
+    methodName: String
+  ): Boolean = {
     val request = Option(methodEntryRequests.remove((className, methodName)))
 
     request.foreach(eventRequestManager.deleteEventRequest)

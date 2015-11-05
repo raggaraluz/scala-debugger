@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.lowlevel.methods
 import java.util.concurrent.ConcurrentHashMap
 
 import com.sun.jdi.VirtualMachine
-import com.sun.jdi.request.MethodExitRequest
+import com.sun.jdi.request.{EventRequestManager, MethodExitRequest}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.filters.ClassInclusionFilter
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
@@ -17,14 +17,11 @@ import scala.util.{Failure, Success, Try}
 /**
  * Represents the manager for method exit requests.
  *
- * @param _virtualMachine The virtual machine whose method exit requests to
- *                        manage
+ * @param eventRequestManager The manager used to create method exit requests
  */
 class MethodExitManager(
-  protected val _virtualMachine: VirtualMachine
-) extends JDIHelperMethods with Logging {
-  private val eventRequestManager = _virtualMachine.eventRequestManager()
-
+  private val eventRequestManager: EventRequestManager
+) extends Logging {
   type MethodExitKey = (String, String)
   private val methodExitRequests =
     new ConcurrentHashMap[MethodExitKey, MethodExitRequest]()
@@ -35,7 +32,7 @@ class MethodExitManager(
    * @return The collection of method exit requests in the form of
    *         (class name, method name)
    */
-  def methodExitList: Seq[MethodExitKey] =
+  def methodExitRequestList: Seq[MethodExitKey] =
     methodExitRequests.keySet().asScala.toSeq
 
   /**
@@ -51,7 +48,7 @@ class MethodExitManager(
    *
    * @return True if successful in creating the request, otherwise false
    */
-  def setMethodExit(
+  def createMethodExitRequest(
     className: String,
     methodName: String,
     extraArguments: JDIRequestArgument*
@@ -82,7 +79,7 @@ class MethodExitManager(
    *
    * @return True if a method exit request exists, otherwise false
    */
-  def hasMethodExit(className: String, methodName: String): Boolean = {
+  def hasMethodExitRequest(className: String, methodName: String): Boolean = {
     methodExitRequests.containsKey((className, methodName))
   }
 
@@ -95,7 +92,7 @@ class MethodExitManager(
    *
    * @return Some method exit request if it exists, otherwise None
    */
-  def getMethodExit(
+  def getMethodExitRequest(
     className: String,
     methodName: String
   ): Option[MethodExitRequest] = {
@@ -112,7 +109,10 @@ class MethodExitManager(
    * @return True if the method exit request was removed (if it existed),
    *         otherwise false
    */
-  def removeMethodExit(className: String, methodName: String): Boolean = {
+  def removeMethodExitRequest(
+    className: String,
+    methodName: String
+  ): Boolean = {
     val request = Option(methodExitRequests.remove((className, methodName)))
 
     request.foreach(eventRequestManager.deleteEventRequest)

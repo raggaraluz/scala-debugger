@@ -13,11 +13,7 @@ class StepManagerSpec extends FunSpec with Matchers
 {
   private val mockEventRequestManager = mock[EventRequestManager]
 
-  private val mockVirtualMachine = mock[VirtualMachine]
-  (mockVirtualMachine.eventRequestManager _).expects()
-    .returning(mockEventRequestManager).once()
-
-  private val stepManager = new StepManager(mockVirtualMachine)
+  private val stepManager = new StepManager(mockEventRequestManager)
 
   private def expectDeleteStepRequests() = {
     val mockStepRequests = Seq(mock[StepRequest]).asJava

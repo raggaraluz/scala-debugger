@@ -30,7 +30,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
         import s.lowlevel._
 
         // Add a breakpoint after all of our variables
-        breakpointManager.setLineBreakpoint(testFile, lastLine)
+        breakpointManager.createLineBreakpointRequest(testFile, lastLine)
 
         @volatile var variableMap: Option[Map[String, Any]] = None
         eventManager.addResumingEventHandler(BreakpointEventType, e => {
@@ -74,7 +74,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
         import s.lowlevel._
 
         // Add a breakpoint after all of our variables
-        breakpointManager.setLineBreakpoint(testFile, lastLine)
+        breakpointManager.createLineBreakpointRequest(testFile, lastLine)
 
         @volatile var variableMap: Option[Map[String, Any]] = None
         eventManager.addResumingEventHandler(BreakpointEventType, e => {

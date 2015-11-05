@@ -1,7 +1,8 @@
 package org.senkbeil.debugger.api.profiles.pure.breakpoints
 
 import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.BreakpointEvent
+import com.sun.jdi.event.{EventQueue, BreakpointEvent}
+import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.breakpoints.BreakpointManager
@@ -29,7 +30,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
 
   // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
   private class ZeroArgBreakpointManager extends BreakpointManager(
-    stub[VirtualMachine],
+    stub[EventRequestManager],
     stubClassManager
   )
 
@@ -39,10 +40,10 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
   private val mockSetLineBreakpointFunc =
     mockFunction[String, Int, Seq[JDIRequestArgument], Try[Boolean]]
   private val testBreakpointManager = new BreakpointManager(
-    stub[VirtualMachine],
+    stub[EventRequestManager],
     stub[ZeroArgClassManager]
   ) {
-    override def setLineBreakpoint(
+    override def createLineBreakpointRequest(
       fileName: String,
       lineNumber: Int,
       extraArguments: JDIRequestArgument*
@@ -55,7 +56,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
 
   // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
   private class ZeroArgEventManager extends EventManager(
-    stub[VirtualMachine],
+    stub[EventQueue],
     stub[LoopingTaskRunner],
     autoStart = false
   )

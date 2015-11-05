@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.lowlevel.vm
 import java.util.concurrent.ConcurrentHashMap
 
 import com.sun.jdi.VirtualMachine
-import com.sun.jdi.request.VMDeathRequest
+import com.sun.jdi.request.{EventRequestManager, VMDeathRequest}
 import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.filters.ClassInclusionFilter
@@ -17,14 +17,11 @@ import scala.util.Try
 /**
  * Represents the manager for vm death requests.
  *
- * @param _virtualMachine The virtual machine whose vm death requests to
- *                        manage
+ * @param eventRequestManager The manager used to create vm death requests
  */
 class VMDeathManager(
-  protected val _virtualMachine: VirtualMachine
+  private val eventRequestManager: EventRequestManager
 ) extends Logging {
-  private val eventRequestManager = _virtualMachine.eventRequestManager()
-
   type VMDeathKey = String
   private val vmDeathRequests =
     new ConcurrentHashMap[VMDeathKey, VMDeathRequest]()
@@ -35,7 +32,7 @@ class VMDeathManager(
    * @return The collection of vm death requests in the form of
    *         (class name, method name)
    */
-  def vmDeathList: Seq[VMDeathKey] =
+  def vmDeathRequestList: Seq[VMDeathKey] =
     vmDeathRequests.keySet().asScala.toSeq
 
   /**
@@ -45,7 +42,7 @@ class VMDeathManager(
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def setVMDeath(
+  def createVMDeathRequest(
     extraArguments: JDIRequestArgument*
   ): Try[VMDeathKey] = {
     val request = Try(eventRequestManager.createVMDeathRequest(
@@ -71,7 +68,7 @@ class VMDeathManager(
    *
    * @return True if a vm death request with the id exists, otherwise false
    */
-  def hasVMDeath(id: VMDeathKey): Boolean = {
+  def hasVMDeathRequest(id: VMDeathKey): Boolean = {
     vmDeathRequests.containsKey(id)
   }
 
@@ -82,7 +79,7 @@ class VMDeathManager(
    *
    * @return Some vm death request if it exists, otherwise None
    */
-  def getVMDeath(id: VMDeathKey): Option[VMDeathRequest] = {
+  def getVMDeathRequest(id: VMDeathKey): Option[VMDeathRequest] = {
     Option(vmDeathRequests.get(id))
   }
 
@@ -94,7 +91,7 @@ class VMDeathManager(
    * @return True if the vm death request was removed (if it existed),
    *         otherwise false
    */
-  def removeVMDeath(id: VMDeathKey): Boolean = {
+  def removeVMDeathRequest(id: VMDeathKey): Boolean = {
     val request = Option(vmDeathRequests.remove(id))
 
     request.foreach(eventRequestManager.deleteEventRequest)

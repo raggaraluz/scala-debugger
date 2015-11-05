@@ -1,7 +1,5 @@
 package org.senkbeil.debugger.api.lowlevel.methods
 
-import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.Event
 import com.sun.jdi.request.{EventRequest, MethodEntryRequest, EventRequestManager}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
@@ -13,14 +11,10 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
 {
   private val mockEventRequestManager = mock[EventRequestManager]
 
-  private val mockVirtualMachine = mock[VirtualMachine]
-  (mockVirtualMachine.eventRequestManager _).expects()
-    .returning(mockEventRequestManager).once()
-
-  private val methodEntryManager = new MethodEntryManager(mockVirtualMachine)
+  private val methodEntryManager = new MethodEntryManager(mockEventRequestManager)
 
   describe("MethodEntryManager") {
-    describe("#methodEntryList") {
+    describe("#methodEntryRequestList") {
       it("should contain all method entry requests in the form of (class, method) stored in the manager") {
         val methodEntryRequests = Seq(
           ("class1", "method1"),
@@ -30,15 +24,15 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
         methodEntryRequests.foreach { case (className, methodName) =>
           (mockEventRequestManager.createMethodEntryRequest _).expects()
             .returning(stub[MethodEntryRequest]).once()
-          methodEntryManager.setMethodEntry(className, methodName)
+          methodEntryManager.createMethodEntryRequest(className, methodName)
         }
 
-        methodEntryManager.methodEntryList should
+        methodEntryManager.methodEntryRequestList should
           contain theSameElementsAs (methodEntryRequests)
       }
     }
 
-    describe("#setMethodEntry") {
+    describe("#createMethodEntryRequest") {
       it("should create the method entry request with a class inclusion filter for the class name") {
         val expected = Success(true)
         val testClassName = "some class name"
@@ -56,7 +50,7 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
           .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
         (mockMethodEntryRequest.setEnabled _).expects(true).once()
 
-        val actual = methodEntryManager.setMethodEntry(testClassName, testMethodName)
+        val actual = methodEntryManager.createMethodEntryRequest(testClassName, testMethodName)
         actual should be (expected)
       }
 
@@ -68,12 +62,12 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
         (mockEventRequestManager.createMethodEntryRequest _).expects()
           .throwing(expected.failed.get).once()
 
-        val actual = methodEntryManager.setMethodEntry(testClassName, testMethodName)
+        val actual = methodEntryManager.createMethodEntryRequest(testClassName, testMethodName)
         actual should be (expected)
       }
     }
 
-    describe("#hasMethodEntry") {
+    describe("#hasMethodEntryRequest") {
       it("should return true if it exists") {
         val expected = true
 
@@ -83,9 +77,9 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
         (mockEventRequestManager.createMethodEntryRequest _).expects()
           .returning(stub[MethodEntryRequest]).once()
 
-        methodEntryManager.setMethodEntry(testClassName, testMethodName)
+        methodEntryManager.createMethodEntryRequest(testClassName, testMethodName)
 
-        val actual = methodEntryManager.hasMethodEntry(testClassName, testMethodName)
+        val actual = methodEntryManager.hasMethodEntryRequest(testClassName, testMethodName)
         actual should be (expected)
       }
 
@@ -95,12 +89,12 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
         val testClassName = "some class name"
         val testMethodName = "some method name"
 
-        val actual = methodEntryManager.hasMethodEntry(testClassName, testMethodName)
+        val actual = methodEntryManager.hasMethodEntryRequest(testClassName, testMethodName)
         actual should be (expected)
       }
     }
 
-    describe("#getMethodEntry") {
+    describe("#getMethodEntryRequest") {
       it("should return Some(MethodEntryRequest) if found") {
         val expected = stub[MethodEntryRequest]
 
@@ -110,10 +104,10 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
         (mockEventRequestManager.createMethodEntryRequest _).expects()
           .returning(expected).once()
 
-        methodEntryManager.setMethodEntry(testClassName, testMethodName)
+        methodEntryManager.createMethodEntryRequest(testClassName, testMethodName)
 
         val actual =
-          methodEntryManager.getMethodEntry(testClassName, testMethodName)
+          methodEntryManager.getMethodEntryRequest(testClassName, testMethodName)
         actual should be (Some(expected))
       }
 
@@ -124,12 +118,12 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
         val testMethodName = "some method name"
 
         val actual =
-          methodEntryManager.getMethodEntry(testClassName, testMethodName)
+          methodEntryManager.getMethodEntryRequest(testClassName, testMethodName)
         actual should be (expected)
       }
     }
 
-    describe("#removeMethodEntry") {
+    describe("#removeMethodEntryRequest") {
       it("should return true if the method entry request was removed") {
         val expected = true
         val stubRequest = stub[MethodEntryRequest]
@@ -140,13 +134,13 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
         (mockEventRequestManager.createMethodEntryRequest _).expects()
           .returning(stubRequest).once()
 
-        methodEntryManager.setMethodEntry(testClassName, testMethodName)
+        methodEntryManager.createMethodEntryRequest(testClassName, testMethodName)
 
         (mockEventRequestManager.deleteEventRequest _)
           .expects(stubRequest).once()
 
         val actual =
-          methodEntryManager.removeMethodEntry(testClassName, testMethodName)
+          methodEntryManager.removeMethodEntryRequest(testClassName, testMethodName)
         actual should be (expected)
       }
 
@@ -157,7 +151,7 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
         val testMethodName = "some method name"
 
         val actual =
-          methodEntryManager.removeMethodEntry(testClassName, testMethodName)
+          methodEntryManager.removeMethodEntryRequest(testClassName, testMethodName)
         actual should be (expected)
       }
     }
