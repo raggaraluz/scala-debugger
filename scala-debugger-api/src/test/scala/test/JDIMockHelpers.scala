@@ -9,6 +9,7 @@ import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.utils.{JDIArgumentGroup, JDIRequestResponseBuilder}
 import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import scala.util.{Try, Random}
@@ -227,7 +228,12 @@ trait JDIMockHelpers { self: MockFactory =>
   def expectCallAndInvokeRequestFunc[A <: Event : ClassTag](
     mockRequestResponseBuilder: JDIRequestResponseBuilder,
     returnValue: Try[Pipeline[(A, Seq[JDIEventDataResult]), (A, Seq[JDIEventDataResult])]]
-  ): Unit = {
+  ): IdentityPipeline[(Seq[JDIRequestArgument] => Unit, Seq[JDIArgument])] = {
+    // Used to funnel onCall events from mock below
+    val pipeline = Pipeline.newPipeline(
+      classOf[(Seq[JDIRequestArgument] => Unit, Seq[JDIArgument])]
+    )
+
     // NOTE: Forced to use ugly onCall with product due to the fact that
     //       ScalaMock cannot handle varargs (casting failure when using
     //       the trick with a single argument as a vararg filler)
@@ -239,8 +245,14 @@ trait JDIMockHelpers { self: MockFactory =>
     )).expects(*, *, *).onCall(t => {
       val args = t.productElement(1).asInstanceOf[Seq[JDIArgument]]
       val JDIArgumentGroup(rArgs, _, _) = JDIArgumentGroup(args: _*)
-      t.productElement(0).asInstanceOf[Seq[JDIRequestArgument] => Unit](rArgs)
+      val func = t.productElement(0).asInstanceOf[Seq[JDIRequestArgument] => Unit]
+      func(rArgs)
+
+      pipeline.process((func, args))
+
       returnValue
     }).once()
+
+    pipeline
   }
 }
