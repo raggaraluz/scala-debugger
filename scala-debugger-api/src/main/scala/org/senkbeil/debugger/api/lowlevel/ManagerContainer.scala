@@ -8,6 +8,7 @@ import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.exceptions.ExceptionManager
 import org.senkbeil.debugger.api.lowlevel.methods.{MethodExitManager, MethodEntryManager}
 import org.senkbeil.debugger.api.lowlevel.steps.StepManager
+import org.senkbeil.debugger.api.lowlevel.vm.VMDeathManager
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 
 /**
@@ -21,7 +22,8 @@ case class ManagerContainer(
   methodEntryManager: MethodEntryManager,
   methodExitManager: MethodExitManager,
   requestManager: EventRequestManager,
-  stepManager: StepManager
+  stepManager: StepManager,
+  vmDeathManager: VMDeathManager
 )
 
 object ManagerContainer {
@@ -66,6 +68,8 @@ object ManagerContainer {
       virtualMachine.eventRequestManager()
     lazy val stepManager =
       new StepManager(virtualMachine)
+    lazy val vmDeathManager =
+      new VMDeathManager(virtualMachine)
 
     ManagerContainer(
       breakpointManager   = breakpointManager,
@@ -75,7 +79,8 @@ object ManagerContainer {
       methodEntryManager  = methodEntryManager,
       methodExitManager   = methodExitManager,
       requestManager      = requestManager,
-      stepManager         = stepManager
+      stepManager         = stepManager,
+      vmDeathManager      = vmDeathManager
     )
   }
 }
