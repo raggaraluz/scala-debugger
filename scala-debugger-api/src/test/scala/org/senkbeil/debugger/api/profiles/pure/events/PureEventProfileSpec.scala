@@ -1,15 +1,11 @@
 package org.senkbeil.debugger.api.profiles.pure.events
 
-import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.Event
+import com.sun.jdi.event.EventQueue
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager}
-import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.utils.JDIRequestResponseBuilder
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
@@ -29,7 +25,7 @@ class PureEventProfileSpec extends FunSpec with Matchers
     IdentityPipeline[PureEventProfile#EventAndData]
   ]
   private val testEventManager = new EventManager(
-    stub[VirtualMachine],
+    stub[EventQueue],
     stub[LoopingTaskRunner]
   ) {
     override def addEventDataStream(

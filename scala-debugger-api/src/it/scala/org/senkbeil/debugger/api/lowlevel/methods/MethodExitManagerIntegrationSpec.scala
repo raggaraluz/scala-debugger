@@ -37,13 +37,13 @@ class MethodExitManagerIntegrationSpec extends FunSpec with Matchers
         import s.lowlevel._
 
         // Set up the method exit event
-        methodExitManager.setMethodExit(
+        methodExitManager.createMethodExitRequest(
           expectedClassName,
           expectedMethodName
         )
 
         // Last line in test method
-        breakpointManager.setLineBreakpoint(testFile, 28)
+        breakpointManager.createLineBreakpointRequest(testFile, 28)
 
         // Listen for breakpoint on first line of method, checking if this
         // breakpoint is hit before or after the method exit event

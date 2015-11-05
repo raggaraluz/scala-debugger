@@ -1,7 +1,6 @@
 package org.senkbeil.debugger.api.profiles.pure.vm
 
-import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.{Event, VMStartEvent}
+import com.sun.jdi.event.{EventQueue, Event, VMStartEvent}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.EventType.VMStartEventType
@@ -16,7 +15,7 @@ class PureVMStartProfileSpec extends FunSpec with Matchers
 {
   // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
   private class ZeroArgEventManager extends EventManager(
-    stub[VirtualMachine],
+    stub[EventQueue],
     stub[LoopingTaskRunner],
     autoStart = false
   )

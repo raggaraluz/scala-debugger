@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.lowlevel.exceptions
 import java.util.concurrent.ConcurrentHashMap
 
 import com.sun.jdi.{ReferenceType, VirtualMachine}
-import com.sun.jdi.request.ExceptionRequest
+import com.sun.jdi.request.{EventRequestManager, ExceptionRequest}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{SuspendPolicyProperty, EnabledProperty}
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
@@ -16,14 +16,14 @@ import scala.util.{Failure, Success, Try}
 /**
  * Represents the manager for exception requests.
  *
- * @param _virtualMachine The virtual machine whose exception requests to
- *                        manage
+ * @param virtualMachine The virtual machine whose classes related to
+ *                        exceptions to retrieve
+ * @param eventRequestManager The manager used to create exception requests
  */
 class ExceptionManager(
-  protected val _virtualMachine: VirtualMachine
-) extends JDIHelperMethods with Logging {
-  private val eventRequestManager = _virtualMachine.eventRequestManager()
-
+  private val virtualMachine: VirtualMachine,
+  private val eventRequestManager: EventRequestManager
+) extends Logging {
   type ExceptionKey = String
   private val exceptionRequests =
     new ConcurrentHashMap[ExceptionKey, Seq[ExceptionRequest]]()
@@ -36,7 +36,7 @@ class ExceptionManager(
    *
    * @return The collection of exception requests by full exception class name
    */
-  def exceptionList: Seq[ExceptionKey] =
+  def exceptionRequestList: Seq[ExceptionKey] =
     exceptionRequests.keySet().asScala.toSeq
 
   /**
@@ -50,7 +50,7 @@ class ExceptionManager(
    *
    * @return True if successful in creating the request, otherwise false
    */
-  def setCatchallException(
+  def createCatchallExceptionRequest(
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIRequestArgument*
@@ -77,14 +77,15 @@ class ExceptionManager(
    *
    * @return True if set, otherwise false
    */
-  def hasCatchallException: Boolean = catchallExceptionRequest.nonEmpty
+  def hasCatchallExceptionRequest: Boolean = catchallExceptionRequest.nonEmpty
 
   /**
    * Retrieves the exception request used to catch all exceptions.
    *
    * @return Some exception request if the catchall has been set, otherwise None
    */
-  def getCatchallException: Option[ExceptionRequest] = catchallExceptionRequest
+  def getCatchallExceptionRequest: Option[ExceptionRequest] =
+    catchallExceptionRequest
 
   /**
    * Removes the exception request used to catch all exceptions.
@@ -92,7 +93,7 @@ class ExceptionManager(
    * @return True if the exception request was removed (if it existed),
    *         otherwise false
    */
-  def removeCatchallException(): Boolean =
+  def removeCatchallExceptionRequest(): Boolean =
     catchallExceptionRequest.synchronized {
       catchallExceptionRequest match {
         case Some(r) =>
@@ -118,13 +119,13 @@ class ExceptionManager(
    *
    * @return True if successful in creating the request, otherwise false
    */
-  def setException(
+  def createExceptionRequest(
     exceptionName: String,
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIRequestArgument*
   ): Try[Boolean] = {
-    val exceptionReferenceTypes = _virtualMachine.classesByName(exceptionName)
+    val exceptionReferenceTypes = virtualMachine.classesByName(exceptionName)
 
     // If no classes match the requested exception type, exit early
     if (exceptionReferenceTypes.isEmpty) return Success(false)
@@ -158,7 +159,7 @@ class ExceptionManager(
    *
    * @return True if a exception request exists, otherwise false
    */
-  def hasException(exceptionName: String): Boolean = {
+  def hasExceptionRequest(exceptionName: String): Boolean = {
     exceptionRequests.containsKey(exceptionName)
   }
 
@@ -171,7 +172,9 @@ class ExceptionManager(
    *
    * @return Some collection of exception requests if they exist, otherwise None
    */
-  def getException(exceptionName: String): Option[Seq[ExceptionRequest]] = {
+  def getExceptionRequest(
+    exceptionName: String
+  ): Option[Seq[ExceptionRequest]] = {
     Option(exceptionRequests.get(exceptionName))
   }
 
@@ -185,7 +188,7 @@ class ExceptionManager(
    * @return True if the exception requests were removed (if they existed),
    *         otherwise false
    */
-  def removeException(exceptionName: String): Boolean = {
+  def removeExceptionRequest(exceptionName: String): Boolean = {
     val requests = Option(exceptionRequests.remove(exceptionName))
 
     requests.foreach(_.foreach(eventRequestManager.deleteEventRequest))

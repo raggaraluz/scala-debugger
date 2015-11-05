@@ -39,7 +39,7 @@ trait PureMethodEntryProfile extends MethodEntryProfile {
     /** Creates a new request using arguments. */
     def newRequest(args: Seq[JDIRequestArgument]): Unit = {
       // Ignore true/false, but propagate up any errors
-      methodEntryManager.setMethodEntry(
+      methodEntryManager.createMethodEntryRequest(
         className,
         methodName,
         args: _*

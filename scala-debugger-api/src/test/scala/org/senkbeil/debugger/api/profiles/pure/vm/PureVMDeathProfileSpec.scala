@@ -1,7 +1,8 @@
 package org.senkbeil.debugger.api.profiles.pure.vm
 
 import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.VMDeathEvent
+import com.sun.jdi.event.{EventQueue, VMDeathEvent}
+import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
@@ -26,9 +27,9 @@ class PureVMDeathProfileSpec extends FunSpec with Matchers
   private val mockSetVMDeathFunc =
     mockFunction[Seq[JDIRequestArgument], Try[VMDeathManager#VMDeathKey]]
   private val testVMDeathManager = new VMDeathManager(
-    stub[VirtualMachine]
+    stub[EventRequestManager]
   ) {
-    override def setVMDeath(
+    override def createVMDeathRequest(
       extraArguments: JDIRequestArgument*
     ): Try[VMDeathManager#VMDeathKey] = {
       mockSetVMDeathFunc(
@@ -39,7 +40,7 @@ class PureVMDeathProfileSpec extends FunSpec with Matchers
 
   // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
   private class ZeroArgEventManager extends EventManager(
-    stub[VirtualMachine],
+    stub[EventQueue],
     stub[LoopingTaskRunner],
     autoStart = false
   )

@@ -15,16 +15,12 @@ class VMDeathManagerSpec extends FunSpec with Matchers with MockFactory
   private val TestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]
 
-  private val mockVirtualMachine = mock[VirtualMachine]
-  (mockVirtualMachine.eventRequestManager _).expects()
-    .returning(mockEventRequestManager).once()
-
-  private val vmDeathManager = new VMDeathManager(mockVirtualMachine) {
+  private val vmDeathManager = new VMDeathManager(mockEventRequestManager) {
     override protected def newRequestId(): String = TestId
   }
 
   describe("VMDeathManager") {
-    describe("#vmDeathList") {
+    describe("#vmDeathRequestList") {
       it("should contain all vm death requests in the form of id -> request stored in the manager") {
         val vmDeathRequests = Seq(
           java.util.UUID.randomUUID().toString,
@@ -33,9 +29,7 @@ class VMDeathManagerSpec extends FunSpec with Matchers with MockFactory
 
         // Create a VMDeathManager whose generated request ids match the list
         // above
-        (mockVirtualMachine.eventRequestManager _).expects()
-          .returning(mockEventRequestManager).once()
-        val vmDeathManager = new VMDeathManager(mockVirtualMachine) {
+        val vmDeathManager = new VMDeathManager(mockEventRequestManager) {
           private val counter = new AtomicInteger(0)
           override protected def newRequestId(): String = {
             vmDeathRequests(counter.getAndIncrement % vmDeathRequests.length)
@@ -45,15 +39,15 @@ class VMDeathManagerSpec extends FunSpec with Matchers with MockFactory
         vmDeathRequests.foreach { case id =>
           (mockEventRequestManager.createVMDeathRequest _).expects()
             .returning(stub[VMDeathRequest]).once()
-          vmDeathManager.setVMDeath()
+          vmDeathManager.createVMDeathRequest()
         }
 
-        vmDeathManager.vmDeathList should
+        vmDeathManager.vmDeathRequestList should
           contain theSameElementsAs (vmDeathRequests)
       }
     }
 
-    describe("#setVMDeath") {
+    describe("#createVMDeathRequest") {
       it("should create the vm death request and return Success(id)") {
         val expected = Success(TestId)
 
@@ -67,7 +61,7 @@ class VMDeathManagerSpec extends FunSpec with Matchers with MockFactory
           .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
         (mockVMDeathRequest.setEnabled _).expects(true).once()
 
-        val actual = vmDeathManager.setVMDeath()
+        val actual = vmDeathManager.createVMDeathRequest()
         actual should be (expected)
       }
 
@@ -77,80 +71,74 @@ class VMDeathManagerSpec extends FunSpec with Matchers with MockFactory
         (mockEventRequestManager.createVMDeathRequest _).expects()
           .throwing(expected.failed.get).once()
 
-        val actual = vmDeathManager.setVMDeath()
+        val actual = vmDeathManager.createVMDeathRequest()
         actual should be (expected)
       }
     }
 
-    describe("#hasVMDeath") {
+    describe("#hasVMDeathRequest") {
       it("should return true if it exists") {
         val expected = true
 
         (mockEventRequestManager.createVMDeathRequest _).expects()
           .returning(stub[VMDeathRequest]).once()
 
-        val id = vmDeathManager.setVMDeath().get
+        val id = vmDeathManager.createVMDeathRequest().get
 
-        val actual = vmDeathManager.hasVMDeath(id)
+        val actual = vmDeathManager.hasVMDeathRequest(id)
         actual should be (expected)
       }
 
       it("should return false if it does not exist") {
         val expected = false
 
-        val actual = vmDeathManager.hasVMDeath(TestId)
+        val actual = vmDeathManager.hasVMDeathRequest(TestId)
         actual should be (expected)
       }
     }
 
-    describe("#getVMDeath") {
+    describe("#getVMDeathRequest") {
       it("should return Some(VMDeathRequest) if found") {
         val expected = stub[VMDeathRequest]
-
-        val testClassName = "some class name"
-        val testMethodName = "some method name"
 
         (mockEventRequestManager.createVMDeathRequest _).expects()
           .returning(expected).once()
 
-        val id = vmDeathManager.setVMDeath().get
+        val id = vmDeathManager.createVMDeathRequest().get
 
-        val actual = vmDeathManager.getVMDeath(id)
+        val actual = vmDeathManager.getVMDeathRequest(id)
         actual should be (Some(expected))
       }
 
       it("should return None if not found") {
         val expected = None
 
-        val actual = vmDeathManager.getVMDeath(TestId)
+        val actual = vmDeathManager.getVMDeathRequest(TestId)
         actual should be (expected)
       }
     }
 
-    describe("#removeVMDeath") {
+    describe("#removeVMDeathRequest") {
       it("should return true if the vm death request was removed") {
         val expected = true
         val stubRequest = stub[VMDeathRequest]
 
-        val testClassName = "some class name"
-        val testMethodName = "some method name"
-
         (mockEventRequestManager.createVMDeathRequest _).expects()
           .returning(stubRequest).once()
 
-        val id = vmDeathManager.setVMDeath().get
+        val id = vmDeathManager.createVMDeathRequest().get
 
         (mockEventRequestManager.deleteEventRequest _)
           .expects(stubRequest).once()
 
-        val actual = vmDeathManager.removeVMDeath(id)
+        val actual = vmDeathManager.removeVMDeathRequest(id)
         actual should be (expected)
       }
 
       it("should return false if the vm death request was not removed") {
         val expected = false
 
-        val actual = vmDeathManager.removeVMDeath(TestId)
+        val actual = vmDeathManager.removeVMDeathRequest(TestId)
         actual should be (expected)
       }
     }

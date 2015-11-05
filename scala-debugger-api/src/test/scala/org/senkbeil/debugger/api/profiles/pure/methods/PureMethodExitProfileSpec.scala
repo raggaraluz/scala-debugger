@@ -1,7 +1,8 @@
 package org.senkbeil.debugger.api.profiles.pure.methods
 
 import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.MethodExitEvent
+import com.sun.jdi.event.{EventQueue, MethodExitEvent}
+import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
@@ -27,9 +28,9 @@ class PureMethodExitProfileSpec extends FunSpec with Matchers
   private val mockSetMethodExitFunc =
     mockFunction[String, String, Seq[JDIRequestArgument], Try[Boolean]]
   private val testMethodExitManager = new MethodExitManager(
-    stub[VirtualMachine]
+    stub[EventRequestManager]
   ) {
-    override def setMethodExit(
+    override def createMethodExitRequest(
       className: String,
       methodName: String,
       extraArguments: JDIRequestArgument*
@@ -44,7 +45,7 @@ class PureMethodExitProfileSpec extends FunSpec with Matchers
 
   // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
   private class ZeroArgEventManager extends EventManager(
-    stub[VirtualMachine],
+    stub[EventQueue],
     stub[LoopingTaskRunner],
     autoStart = false
   )

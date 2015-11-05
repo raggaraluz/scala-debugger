@@ -1,7 +1,8 @@
 package org.senkbeil.debugger.api.profiles.pure.methods
 
 import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.MethodEntryEvent
+import com.sun.jdi.event.{EventQueue, MethodEntryEvent}
+import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
@@ -27,9 +28,9 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
   private val mockSetMethodEntryFunc =
     mockFunction[String, String, Seq[JDIRequestArgument], Try[Boolean]]
   private val testMethodEntryManager = new MethodEntryManager(
-    stub[VirtualMachine]
+    stub[EventRequestManager]
   ) {
-    override def setMethodEntry(
+    override def createMethodEntryRequest(
       className: String,
       methodName: String,
       extraArguments: JDIRequestArgument*
@@ -44,7 +45,7 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
 
   // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
   private class ZeroArgEventManager extends EventManager(
-    stub[VirtualMachine],
+    stub[EventQueue],
     stub[LoopingTaskRunner],
     autoStart = false
   )

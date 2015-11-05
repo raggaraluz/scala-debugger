@@ -40,7 +40,7 @@ trait PureBreakpointProfile extends BreakpointProfile {
     def newRequest(args: Seq[JDIRequestArgument]): Unit = {
       // Ignore true/false since we will be retrying any failed breakpoints,
       // but propagate up any errors
-      breakpointManager.setLineBreakpoint(
+      breakpointManager.createLineBreakpointRequest(
         fileName,
         lineNumber,
         args: _*

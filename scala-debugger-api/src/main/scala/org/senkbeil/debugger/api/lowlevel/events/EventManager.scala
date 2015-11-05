@@ -6,7 +6,7 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.pipelines.{CloseablePipeline, Pipeline}
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
 import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.{EventSet, Event}
+import com.sun.jdi.event.{EventQueue, EventSet, Event}
 
 import java.util.concurrent.ConcurrentHashMap
 
@@ -17,7 +17,7 @@ import scala.util.Try
 /**
  * Represents a manager for events coming in from a virtual machine.
  *
- * @param _virtualMachine The virtual machine whose events to manage
+ * @param eventQueue The event queue whose events to pull off and process
  * @param loopingTaskRunner The runner used to process events
  * @param autoStart If true, starts the event processing automatically
  * @param startTaskRunner If true, will attempt to start the task runner if
@@ -27,12 +27,12 @@ import scala.util.Try
  *                          it will cause the event set to not resume
  */
 class EventManager(
-  protected val _virtualMachine: VirtualMachine,
+  private val eventQueue: EventQueue,
   private val loopingTaskRunner: LoopingTaskRunner,
   private val autoStart: Boolean = true,
   private val startTaskRunner: Boolean = false,
   private val onExceptionResume: Boolean = true
-) extends JDIHelperMethods with Logging {
+) extends Logging {
   /**
    * Represents an event callback, receiving the event and returning whether or
    * not to resume.
@@ -83,7 +83,6 @@ class EventManager(
    * perform different tasks.
    */
   protected def eventHandlerTask(): Unit = {
-    val eventQueue = _virtualMachine.eventQueue()
     val eventSet = eventQueue.remove()
 
     // Process the set of events, returning whether or not the event

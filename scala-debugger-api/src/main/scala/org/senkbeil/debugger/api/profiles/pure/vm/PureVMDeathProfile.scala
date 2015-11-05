@@ -32,7 +32,7 @@ trait PureVMDeathProfile extends VMDeathProfile {
     /** Creates a new request using arguments. */
     def newRequest(args: Seq[JDIRequestArgument]): Unit = {
       // Ignore the id and propagate up any errors
-      vmDeathManager.setVMDeath(args: _*).get
+      vmDeathManager.createVMDeathRequest(args: _*).get
     }
 
     requestResponseBuilder.buildRequestResponse[VMDeathEvent](

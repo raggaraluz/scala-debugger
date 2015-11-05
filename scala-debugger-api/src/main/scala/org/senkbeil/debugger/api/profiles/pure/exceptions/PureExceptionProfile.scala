@@ -38,7 +38,7 @@ trait PureExceptionProfile extends ExceptionProfile {
     /** Creates a new request using arguments. */
     def newRequest(args: Seq[JDIRequestArgument]): Unit = {
       // Ignore true/false, but propagate up any errors
-      exceptionManager.setCatchallException(
+      exceptionManager.createCatchallExceptionRequest(
         notifyCaught,
         notifyUncaught,
         args: _*
@@ -73,7 +73,7 @@ trait PureExceptionProfile extends ExceptionProfile {
     /** Creates a new request using arguments. */
     def newRequest(args: Seq[JDIRequestArgument]): Unit = {
       // Ignore true/false, but propagate up any errors
-      exceptionManager.setException(
+      exceptionManager.createExceptionRequest(
         exceptionName,
         notifyCaught,
         notifyUncaught,

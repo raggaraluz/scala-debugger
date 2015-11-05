@@ -269,7 +269,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
     // Flag that indicates we reached the expected line
     val success = new AtomicBoolean(false)
 
-    breakpointManager.setLineBreakpoint(testFile, startingLine)
+    breakpointManager.createLineBreakpointRequest(testFile, startingLine)
 
     // On receiving a breakpoint, send a step request
     eventManager.addResumingEventHandler(BreakpointEventType, e => {
@@ -331,7 +331,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
     @volatile var failEarlyMessage = "???"
 
     // Add a breakpoint to get us in the right location for steps
-    breakpointManager.setLineBreakpoint(testFile, startingLine)
+    breakpointManager.createLineBreakpointRequest(testFile, startingLine)
 
     // On receiving a breakpoint, send a step request
     eventManager.addResumingEventHandler(BreakpointEventType, e => {

@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.lowlevel.breakpoints
 
 import java.util.concurrent.ConcurrentHashMap
 
-import com.sun.jdi.request.BreakpointRequest
+import com.sun.jdi.request.{EventRequestManager, BreakpointRequest}
 import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
@@ -18,17 +18,15 @@ import scala.util.{Try, Failure, Success}
 /**
  * Represents the manager for breakpoint requests.
  *
- * @param _virtualMachine The virtual machine whose breakpoint requests to
- *                        manage
- * @param _classManager The class manager associated with the virtual machine,
+ * @param eventRequestManager The manager used to create breakpoint requests
+ * @param classManager The class manager associated with the virtual machine,
  *                      used to retrieve location information
  */
 class BreakpointManager(
-  protected val _virtualMachine: VirtualMachine,
-  private val _classManager: ClassManager
-) extends JDIHelperMethods with Logging {
+  private val eventRequestManager: EventRequestManager,
+  private val classManager: ClassManager
+) extends Logging {
   import Implicits._
-  private val eventRequestManager = _virtualMachine.eventRequestManager()
 
   type BreakpointKey = (String, Int) // Class Name, Line Number
   private var lineBreakpoints = Map[BreakpointKey, Seq[BreakpointRequest]]()
@@ -47,7 +45,7 @@ class BreakpointManager(
    * @return The collection of breakpoints in the form of
    *         (class name, line number)
    */
-  def breakpointList: Seq[BreakpointKey] = lineBreakpoints.keys.toSeq
+  def breakpointRequestList: Seq[BreakpointKey] = lineBreakpoints.keys.toSeq
 
   /**
    * Processes pending breakpoint requests for the specified file name.
@@ -58,12 +56,14 @@ class BreakpointManager(
    *         added, otherwise false
    */
   def processPendingBreakpoints(fileName: String): Boolean = {
-    def tryBreakpoint(breakpointInfo: BreakpointInfo) = setLineBreakpoint(
-      fileName          = breakpointInfo.fileName,
-      lineNumber        = breakpointInfo.lineNumber,
-      setPendingIfFail  = true,
-      breakpointInfo.extraArguments: _*
-    )
+    def tryBreakpoint(breakpointInfo: BreakpointInfo) = {
+      createLineBreakpointRequest(
+        fileName = breakpointInfo.fileName,
+        lineNumber = breakpointInfo.lineNumber,
+        setPendingIfFail = true,
+        breakpointInfo.extraArguments: _*
+      )
+    }
 
     // Process all breakpoints
     pendingLineBreakpoints.remove(fileName).foreach(_.foreach(tryBreakpoint))
@@ -83,11 +83,11 @@ class BreakpointManager(
    *
    * @return True if successfully added breakpoints, otherwise false
    */
-  def setLineBreakpoint(
+  def createLineBreakpointRequest(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIRequestArgument*
-  ): Try[Boolean] = setLineBreakpoint(
+  ): Try[Boolean] = createLineBreakpointRequest(
     fileName = fileName,
     lineNumber = lineNumber,
     setPendingIfFail = true,
@@ -107,7 +107,7 @@ class BreakpointManager(
    *
    * @return True if successfully added breakpoints, otherwise false
    */
-  def setLineBreakpoint(
+  def createLineBreakpointRequest(
     fileName: String,
     lineNumber: Int,
     setPendingIfFail: Boolean,
@@ -117,7 +117,11 @@ class BreakpointManager(
       SuspendPolicyProperty.EventThread,
       EnabledProperty(value = true)
     ) ++ extraArguments
-    val result = setLineBreakpointImpl(fileName, lineNumber, arguments)
+    val result = createLineBreakpointRequestImpl(
+      fileName,
+      lineNumber,
+      arguments
+    )
 
     // Add the attempt to our list for processing later if no exception was
     // thrown but we were not able to find the location
@@ -148,13 +152,13 @@ class BreakpointManager(
    *
    * @return True if successfully added breakpoints, otherwise false
    */
-  private def setLineBreakpointImpl(
+  private def createLineBreakpointRequestImpl(
     fileName: String,
     lineNumber: Int,
     arguments: Seq[JDIRequestArgument]
   ): Try[Boolean] = {
     // Retrieve the available locations for the specified line
-    val locations = _classManager
+    val locations = classManager
       .linesAndLocationsForFile(fileName)
       .flatMap(_.get(lineNumber))
       .getOrElse(Nil)
@@ -197,7 +201,7 @@ class BreakpointManager(
    *
    * @return True if a breakpoint exists, otherwise false
    */
-  def hasLineBreakpoint(fileName: String, lineNumber: Int): Boolean =
+  def hasLineBreakpointRequest(fileName: String, lineNumber: Int): Boolean =
     lineBreakpoints.contains((fileName, lineNumber))
 
   /**
@@ -210,7 +214,7 @@ class BreakpointManager(
    * @return Some collection of breakpoints for the specified line, or None if
    *         the specified line has no breakpoints
    */
-  def getLineBreakpoint(
+  def getLineBreakpointRequest(
     fileName: String,
     lineNumber: Int
   ): Option[Seq[BreakpointRequest]] = lineBreakpoints.get((fileName, lineNumber))
@@ -223,7 +227,10 @@ class BreakpointManager(
    *
    * @return True if successfully removed breakpoint, otherwise false
    */
-  def removeLineBreakpoint(fileName: String, lineNumber: Int): Boolean = {
+  def removeLineBreakpointRequest(
+    fileName: String,
+    lineNumber: Int
+  ): Boolean = {
     // Remove breakpoints for all underlying locations
     val result = Try {
       val key: BreakpointKey = (fileName, lineNumber)

@@ -28,7 +28,7 @@ class VMDeathManagerIntegrationSpec extends FunSpec with Matchers
         import s.lowlevel._
 
         // Mark that we want to receive vm death events and watch for one
-        vmDeathManager.setVMDeath()
+        vmDeathManager.createVMDeathRequest()
         eventManager.addResumingEventHandler(VMDeathEventType, _ => {
           detectedDeath.set(true)
         })
