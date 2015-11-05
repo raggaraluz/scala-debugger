@@ -224,6 +224,8 @@ trait JDIMockHelpers { self: MockFactory =>
    *
    * @param mockRequestResponseBuilder The mocked request response builder
    * @param returnValue The value returned from invoking the builder
+   *
+   * @return The arguments given to the buildRequestReponse function
    */
   def expectCallAndInvokeRequestFunc[A <: Event : ClassTag](
     mockRequestResponseBuilder: JDIRequestResponseBuilder,
