@@ -27,7 +27,7 @@ class PureVMStartProfileSpec extends FunSpec with Matchers
 
   describe("PureVMStartProfile") {
     describe("#onVMStartWithData") {
-      it("should create a stream of events with data for startions") {
+      it("should create a stream of events with data for when a vm starts") {
         val expected = (mock[VMStartEvent], Seq(mock[JDIEventDataResult]))
         val arguments = Seq(mock[JDIEventArgument])
 
