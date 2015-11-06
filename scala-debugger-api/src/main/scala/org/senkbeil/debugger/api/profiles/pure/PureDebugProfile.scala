@@ -100,7 +100,7 @@ class PureDebugProfile(
 
   protected lazy val threadDeathManager = managerContainer.threadDeathManager
 
-  //protected lazy val threadStartManager = managerContainer.threadStartManager
+  protected lazy val threadStartManager = managerContainer.threadStartManager
 
   protected lazy val vmDeathManager = managerContainer.vmDeathManager
 }
