@@ -36,7 +36,7 @@ class VMDeathManagerIntegrationSpec extends FunSpec with Matchers
         // Kill the JVM process so we get a disconnect event
         s.underlyingVirtualMachine.process().destroy()
 
-        // Eventually, we should receive the start event
+        // Eventually, we should receive the death event
         logTimeTaken(eventually {
           detectedDeath.get() should be (true)
         })

@@ -1,15 +1,13 @@
-package org.senkbeil.debugger.api.profiles.pure.methods
+package org.senkbeil.debugger.api.profiles.pure.threads
 
-import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.{EventQueue, MethodExitEvent}
+import com.sun.jdi.event.{EventQueue, ThreadDeathEvent}
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.lowlevel.events.filters.MethodNameFilter
-import org.senkbeil.debugger.api.lowlevel.methods.MethodExitManager
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.senkbeil.debugger.api.lowlevel.threads.ThreadDeathManager
 import org.senkbeil.debugger.api.lowlevel.utils.JDIRequestResponseBuilder
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
@@ -17,7 +15,7 @@ import test.JDIMockHelpers
 
 import scala.util.{Success, Try}
 
-class PureMethodExitProfileSpec extends FunSpec with Matchers
+class PureThreadDeathProfileSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
@@ -25,19 +23,17 @@ class PureMethodExitProfileSpec extends FunSpec with Matchers
   // NOTE: Cannot mock the actual class and test the function using
   //       ScalaMock, so have to override the method we want to test and
   //       inject a mock function instead
-  private val mockSetMethodExitFunc =
-    mockFunction[String, String, Seq[JDIRequestArgument], Try[Boolean]]
-  private val testMethodExitManager = new MethodExitManager(
+  private val mockSetThreadDeathFunc = mockFunction[
+    Seq[JDIRequestArgument],
+    Try[ThreadDeathManager#ThreadDeathKey]
+  ]
+  private val testThreadDeathManager = new ThreadDeathManager(
     stub[EventRequestManager]
   ) {
-    override def createMethodExitRequest(
-      className: String,
-      methodName: String,
+    override def createThreadDeathRequest(
       extraArguments: JDIRequestArgument*
-    ): Try[Boolean] = {
-      mockSetMethodExitFunc(
-        className,
-        methodName,
+    ): Try[ThreadDeathManager#ThreadDeathKey] = {
+      mockSetThreadDeathFunc(
         extraArguments
       )
     }
@@ -59,71 +55,53 @@ class PureMethodExitProfileSpec extends FunSpec with Matchers
   }
   private val mockRequestResponseBuilder = mock[ZeroArgRequestResponseBuilder]
 
-  private val pureMethodExitProfile = new Object with PureMethodExitProfile {
-    override protected val methodExitManager = testMethodExitManager
+  private val pureThreadDeathProfile = new Object with PureThreadDeathProfile {
+    override protected val threadDeathManager = testThreadDeathManager
     override protected val requestResponseBuilder = mockRequestResponseBuilder
   }
 
-  describe("PureMethodExitProfile") {
-    describe("#onMethodExitWithData") {
-      it("should set a low-level method exit request and stream its events") {
+  describe("PureThreadDeathProfile") {
+    describe("#onThreadDeathWithData") {
+      it("should set a low-level thread death request and stream its events") {
         val expected = Success(Pipeline.newPipeline(
-          classOf[(MethodExitEvent, Seq[JDIEventDataResult])]
+          classOf[(ThreadDeathEvent, Seq[JDIEventDataResult])]
         ))
-        val className = "some.full.class.name"
-        val methodName = "someMethodName"
         val arguments = Seq(mock[JDIRequestArgument])
 
         inSequence {
-          expectCallAndInvokeRequestFunc[MethodExitEvent](
+          expectCallAndInvokeRequestFunc[ThreadDeathEvent](
             mockRequestResponseBuilder,
             expected
           )
 
-          mockSetMethodExitFunc.expects(
-            className,
-            methodName,
-            arguments
-          ).returning(Success(true)).once()
+          mockSetThreadDeathFunc.expects(arguments)
+            .returning(Success("")).once()
         }
 
-        val actual = pureMethodExitProfile.onMethodExitWithData(
-          className,
-          methodName,
-          arguments: _*
-        )
+        val actual = pureThreadDeathProfile.onThreadDeathWithData(arguments: _*)
 
         actual should be (expected)
       }
 
       it("should add a MethodNameFilter to the event stream") {
-        val className = "some.full.class.name"
-        val methodName = "someMethodName"
         val arguments = Seq(mock[JDIRequestArgument])
 
         inSequence {
           val returnValue = Success(Pipeline.newPipeline(
-            classOf[(MethodExitEvent, Seq[JDIEventDataResult])]
+            classOf[(ThreadDeathEvent, Seq[JDIEventDataResult])]
           ))
 
           // Inspect the function arguments to see if MethodNameFilter included
-          expectCallAndInvokeRequestFunc[MethodExitEvent](
+          expectCallAndInvokeRequestFunc[ThreadDeathEvent](
             mockRequestResponseBuilder,
             returnValue
-          ).map(_._2).foreach(_ should contain (MethodNameFilter(methodName)))
+          )
 
-          mockSetMethodExitFunc.expects(
-            className,
-            methodName,
-            arguments
-          ).returning(Success(true)).once()
+          mockSetThreadDeathFunc.expects(arguments)
+            .returning(Success("")).once()
         }
 
-        pureMethodExitProfile.onMethodExitWithData(
-          className,
-          methodName,
-          arguments: _*
-        )
+        pureThreadDeathProfile.onThreadDeathWithData(arguments: _*)
       }
     }
   }

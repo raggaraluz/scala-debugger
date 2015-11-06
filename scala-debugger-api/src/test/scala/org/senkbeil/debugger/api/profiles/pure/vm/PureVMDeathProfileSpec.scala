@@ -61,7 +61,7 @@ class PureVMDeathProfileSpec extends FunSpec with Matchers
 
   describe("PureVMDeathProfile") {
     describe("#onVMDeathWithData") {
-      it("should set a low-level method entry request and stream its events") {
+      it("should set a low-level vm death request and stream its events") {
         val expected = Success(Pipeline.newPipeline(
           classOf[(VMDeathEvent, Seq[JDIEventDataResult])]
         ))
