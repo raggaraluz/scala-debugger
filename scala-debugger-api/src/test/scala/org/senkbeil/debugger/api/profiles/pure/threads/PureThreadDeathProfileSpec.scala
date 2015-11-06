@@ -1,43 +1,32 @@
 package org.senkbeil.debugger.api.profiles.pure.threads
 
-import com.sun.jdi.event.{EventQueue, ThreadDeathEvent}
+import com.sun.jdi.event.{Event, EventQueue}
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
+import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.lowlevel.threads.ThreadDeathManager
-import org.senkbeil.debugger.api.lowlevel.utils.JDIRequestResponseBuilder
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 import test.JDIMockHelpers
+import org.senkbeil.debugger.api.lowlevel.events.EventType.ThreadDeathEventType
 
-import scala.util.{Success, Try}
+import scala.util.{Failure, Success}
 
 class PureThreadDeathProfileSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers
+with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
 
-  // NOTE: Cannot mock the actual class and test the function using
-  //       ScalaMock, so have to override the method we want to test and
-  //       inject a mock function instead
-  private val mockSetThreadDeathFunc = mockFunction[
-    Seq[JDIRequestArgument],
-    Try[ThreadDeathManager#ThreadDeathKey]
-  ]
-  private val testThreadDeathManager = new ThreadDeathManager(
+  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
+  private class ZeroArgThreadDeathManager extends ThreadDeathManager(
     stub[EventRequestManager]
-  ) {
-    override def createThreadDeathRequest(
-      extraArguments: JDIRequestArgument*
-    ): Try[ThreadDeathManager#ThreadDeathKey] = {
-      mockSetThreadDeathFunc(
-        extraArguments
-      )
-    }
-  }
+  )
+  private val mockThreadDeathManager = mock[ZeroArgThreadDeathManager]
 
   // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
   private class ZeroArgEventManager extends EventManager(
@@ -47,62 +36,223 @@ class PureThreadDeathProfileSpec extends FunSpec with Matchers
   )
   private val mockEventManager = mock[ZeroArgEventManager]
 
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgRequestResponseBuilder extends JDIRequestResponseBuilder(
-    mockEventManager
-  ) {
-    override protected def newRequestId(): String = TestRequestId
-  }
-  private val mockRequestResponseBuilder = mock[ZeroArgRequestResponseBuilder]
-
   private val pureThreadDeathProfile = new Object with PureThreadDeathProfile {
-    override protected val threadDeathManager = testThreadDeathManager
-    override protected val requestResponseBuilder = mockRequestResponseBuilder
+    private var requestId: String = _
+    def setRequestId(requestId: String): Unit = this.requestId = requestId
+
+    // NOTE: If we set a specific request id, return that, otherwise use the
+    //       default behavior
+    override protected def newThreadDeathRequestId(): String =
+      if (requestId != null) requestId else super.newThreadDeathRequestId()
+
+    override protected val threadDeathManager = mockThreadDeathManager
+    override protected val eventManager: EventManager = mockEventManager
   }
 
   describe("PureThreadDeathProfile") {
     describe("#onThreadDeathWithData") {
-      it("should set a low-level thread death request and stream its events") {
-        val expected = Success(Pipeline.newPipeline(
-          classOf[(ThreadDeathEvent, Seq[JDIEventDataResult])]
-        ))
+      it("should create a new request if one has not be made yet") {
         val arguments = Seq(mock[JDIRequestArgument])
 
-        inSequence {
-          expectCallAndInvokeRequestFunc[ThreadDeathEvent](
-            mockRequestResponseBuilder,
-            expected
-          )
+        val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+        val uniqueIdPropertyFilter = UniqueIdPropertyFilter(id = TestRequestId)
 
-          mockSetThreadDeathFunc.expects(arguments)
-            .returning(Success("")).once()
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureThreadDeathProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          // Memoized request function first checks to make sure the cache
+          // has not been invalidated underneath (first call will always be
+          // empty since we have never created the request)
+          (mockThreadDeathManager.threadDeathRequestList _)
+            .expects()
+            .returning(Nil).once()
+
+          // NOTE: Expect the request to be created with a unique id
+          (mockThreadDeathManager.createThreadDeathRequest _)
+            .expects(uniqueIdProperty +: arguments)
+            .returning(Success(TestRequestId)).once()
+
+          (mockEventManager.addEventDataStream _)
+            .expects(ThreadDeathEventType, Seq(uniqueIdPropertyFilter))
+            .returning(Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            )).once()
         }
 
-        val actual = pureThreadDeathProfile.onThreadDeathWithData(arguments: _*)
+        pureThreadDeathProfile.onThreadDeathWithData(
+          arguments: _*
+        )
+      }
+
+      it("should capture exceptions thrown when creating the request") {
+        val expected = Failure(new Throwable)
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureThreadDeathProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          // Memoized request function first checks to make sure the cache
+          // has not been invalidated underneath (first call will always be
+          // empty since we have never created the request)
+          (mockThreadDeathManager.threadDeathRequestList _)
+            .expects()
+            .returning(Nil).once()
+
+          // NOTE: Expect the request to be created with a unique id
+          (mockThreadDeathManager.createThreadDeathRequest _)
+            .expects(uniqueIdProperty +: arguments)
+            .throwing(expected.failed.get).once()
+        }
+
+        val actual = pureThreadDeathProfile.onThreadDeathWithData(
+          arguments: _*
+        )
 
         actual should be (expected)
       }
 
-      it("should add a MethodNameFilter to the event stream") {
+      it("should create a new request if the previous one was removed") {
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureThreadDeathProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          // Set a known test id so we can validate the unique property is added
+          import scala.language.reflectiveCalls
+          pureThreadDeathProfile.setRequestId(TestRequestId)
+
+          val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+          val uniqueIdPropertyFilter =
+            UniqueIdPropertyFilter(id = TestRequestId)
+
+          // Memoized request function first checks to make sure the cache
+          // has not been invalidated underneath (first call will always be
+          // empty since we have never created the request)
+          (mockThreadDeathManager.threadDeathRequestList _)
+            .expects()
+            .returning(Nil).once()
+
+          // NOTE: Expect the request to be created with a unique id
+          (mockThreadDeathManager.createThreadDeathRequest _)
+            .expects(uniqueIdProperty +: arguments)
+            .returning(Success(TestRequestId)).once()
+
+          (mockEventManager.addEventDataStream _)
+            .expects(ThreadDeathEventType, Seq(uniqueIdPropertyFilter))
+            .returning(Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            )).once()
+        }
+
+        pureThreadDeathProfile.onThreadDeathWithData(
+          arguments: _*
+        )
+
+        inSequence {
+          // Set a known test id so we can validate the unique property is added
+          import scala.language.reflectiveCalls
+          pureThreadDeathProfile.setRequestId(TestRequestId + "other")
+
+          val uniqueIdProperty = UniqueIdProperty(id = TestRequestId + "other")
+          val uniqueIdPropertyFilter =
+            UniqueIdPropertyFilter(id = TestRequestId + "other")
+
+          // Return empty this time to indicate that the thread death request
+          // was removed some time between the two calls
+          (mockThreadDeathManager.threadDeathRequestList _)
+            .expects()
+            .returning(Nil).once()
+
+          // NOTE: Expect the request to be created with a unique id
+          (mockThreadDeathManager.createThreadDeathRequest _)
+            .expects(uniqueIdProperty +: arguments)
+            .returning(Success(TestRequestId + "other")).once()
+
+          (mockEventManager.addEventDataStream _)
+            .expects(ThreadDeathEventType, Seq(uniqueIdPropertyFilter))
+            .returning(Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            )).once()
+        }
+
+        pureThreadDeathProfile.onThreadDeathWithData(
+          arguments: _*
+        )
+      }
+
+      it("should not create a new request if the previous one still exists") {
         val arguments = Seq(mock[JDIRequestArgument])
 
         inSequence {
-          val returnValue = Success(Pipeline.newPipeline(
-            classOf[(ThreadDeathEvent, Seq[JDIEventDataResult])]
-          ))
+          // Set a known test id so we can validate the unique property is added
+          import scala.language.reflectiveCalls
+          pureThreadDeathProfile.setRequestId(TestRequestId)
 
-          // Inspect the function arguments to see if MethodNameFilter included
-          expectCallAndInvokeRequestFunc[ThreadDeathEvent](
-            mockRequestResponseBuilder,
-            returnValue
-          )
+          val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+          val uniqueIdPropertyFilter =
+            UniqueIdPropertyFilter(id = TestRequestId)
 
-          mockSetThreadDeathFunc.expects(arguments)
-            .returning(Success("")).once()
+          // Memoized request function first checks to make sure the cache
+          // has not been invalidated underneath (first call will always be
+          // empty since we have never created the request)
+          (mockThreadDeathManager.threadDeathRequestList _)
+            .expects()
+            .returning(Nil).once()
+
+          // NOTE: Expect the request to be created with a unique id
+          (mockThreadDeathManager.createThreadDeathRequest _)
+            .expects(uniqueIdProperty +: arguments)
+            .returning(Success(TestRequestId)).once()
+
+          (mockEventManager.addEventDataStream _)
+            .expects(ThreadDeathEventType, Seq(uniqueIdPropertyFilter))
+            .returning(Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            )).once()
         }
 
-        pureThreadDeathProfile.onThreadDeathWithData(arguments: _*)
+        pureThreadDeathProfile.onThreadDeathWithData(
+          arguments: _*
+        )
+
+        inSequence {
+          // Set a known test id so we can validate the unique property is added
+          import scala.language.reflectiveCalls
+          pureThreadDeathProfile.setRequestId(TestRequestId + "other")
+
+          val uniqueIdPropertyFilter =
+            UniqueIdPropertyFilter(id = TestRequestId)
+
+          // Return collection of matching arguments to indicate that we do
+          // still have the request
+          val internalId = java.util.UUID.randomUUID().toString
+          (mockThreadDeathManager.threadDeathRequestList _)
+            .expects()
+            .returning(Seq(internalId)).once()
+          (mockThreadDeathManager.getThreadDeathRequestArguments _)
+            .expects(internalId)
+            .returning(Some(arguments)).once()
+
+          (mockEventManager.addEventDataStream _)
+            .expects(ThreadDeathEventType, Seq(uniqueIdPropertyFilter))
+            .returning(Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            )).once()
+        }
+
+        pureThreadDeathProfile.onThreadDeathWithData(
+          arguments: _*
+        )
       }
     }
   }
 }
+
