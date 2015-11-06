@@ -37,7 +37,7 @@ class ScalaVirtualMachine(
    */
   protected def initializeEvents(): Unit = {
     _virtualMachine.enableClassPrepareEvents()
-    _virtualMachine.enableThreadStartEvents()
+    //_virtualMachine.enableThreadStartEvents()
     //_virtualMachine.enableThreadDeathEvents()
   }
   initializeEvents()
