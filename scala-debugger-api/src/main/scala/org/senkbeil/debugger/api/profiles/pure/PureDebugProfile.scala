@@ -2,7 +2,6 @@ package org.senkbeil.debugger.api.profiles.pure
 
 import com.sun.jdi.VirtualMachine
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
-import org.senkbeil.debugger.api.lowlevel.utils.JDIRequestResponseBuilder
 import org.senkbeil.debugger.api.profiles.pure.breakpoints.PureBreakpointProfile
 import org.senkbeil.debugger.api.profiles.pure.classes.{PureClassUnloadProfile, PureClassPrepareProfile}
 import org.senkbeil.debugger.api.profiles.pure.events.PureEventProfile
@@ -73,9 +72,6 @@ class PureDebugProfile(
   protected lazy val eventManager = managerContainer.eventManager
 
   protected lazy val exceptionManager = managerContainer.exceptionManager
-
-  protected lazy val requestResponseBuilder =
-    new JDIRequestResponseBuilder(eventManager)
 
   //protected lazy val modificationWatchpointManager =
   //  managerContainer.modificationWatchpointManager

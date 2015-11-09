@@ -24,7 +24,6 @@ class PureThreadDeathProfileIntegrationSpec extends FunSpec with Matchers
 
       val threadDeathCount = new AtomicInteger(0)
 
-      // Start our Thread and listen for the start event
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
         val requestCreated = new AtomicBoolean(false)
 
@@ -45,6 +44,43 @@ class PureThreadDeathProfileIntegrationSpec extends FunSpec with Matchers
         // Eventually, we should receive a total of 10 thread deaths
         logTimeTaken(eventually {
           threadDeathCount.get() should be (10)
+        })
+      }
+    }
+
+    it("should cache request creation based on arguments") {
+      val testClass = "org.senkbeil.debugger.test.threads.ThreadDeath"
+      val testFile = scalaClassStringToFileString(testClass)
+
+      val threadDeathCount = new AtomicInteger(0)
+
+      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        val requestCreated = new AtomicBoolean(false)
+
+        // Set a breakpoint first so we can be ready
+        s.withProfile(PureDebugProfile.Name)
+          .onUnsafeBreakpoint(testFile, 10)
+          .foreach(_ => {
+            while (!requestCreated.get()) {
+              Thread.sleep(1)
+            }
+          })
+
+        // Mark that we want to receive thread death events
+        s.withProfile(PureDebugProfile.Name)
+          .onUnsafeThreadDeath()
+          .foreach(_ => threadDeathCount.incrementAndGet())
+
+        // Perform a second mark with same input
+        s.withProfile(PureDebugProfile.Name)
+          .onUnsafeThreadDeath()
+          .foreach(_ => threadDeathCount.incrementAndGet())
+
+        requestCreated.set(true)
+
+        // Eventually, we should receive a total of 10 + 10 thread deaths
+        logTimeTaken(eventually {
+          threadDeathCount.get() should be (20)
         })
       }
     }

@@ -20,8 +20,10 @@ class ThreadStartManager(
   private val eventRequestManager: EventRequestManager
 ) extends Logging {
   type ThreadStartKey = String
-  private val threadStartRequests =
-    new ConcurrentHashMap[ThreadStartKey, ThreadStartRequest]()
+  private val threadStartRequests = new ConcurrentHashMap[
+    ThreadStartKey,
+    (Seq[JDIRequestArgument], ThreadStartRequest)
+  ]()
 
   /**
    * Retrieves the list of thread start requests contained by this manager.
@@ -51,7 +53,7 @@ class ThreadStartManager(
 
     val id = newRequestId()
     if (request.isSuccess) {
-      threadStartRequests.put(id, request.get)
+      threadStartRequests.put(id, (extraArguments, request.get))
     }
 
     // If no exception was thrown, assume that we succeeded
@@ -77,7 +79,21 @@ class ThreadStartManager(
    * @return Some thread start request if it exists, otherwise None
    */
   def getThreadStartRequest(id: ThreadStartKey): Option[ThreadStartRequest] = {
-    Option(threadStartRequests.get(id))
+    Option(threadStartRequests.get(id)).map(_._2)
+  }
+
+  /**
+   * Retrieves the arguments provided to the thread start request with the
+   * specified id.
+   *
+   * @param id The id of the Thread Start Request
+   *
+   * @return Some collection of arguments if it exists, otherwise None
+   */
+  def getThreadStartRequestArguments(
+    id: ThreadStartKey
+  ): Option[Seq[JDIRequestArgument]] = {
+    Option(threadStartRequests.get(id)).map(_._1)
   }
 
   /**
@@ -89,7 +105,7 @@ class ThreadStartManager(
    *         otherwise false
    */
   def removeThreadStartRequest(id: ThreadStartKey): Boolean = {
-    val request = Option(threadStartRequests.remove(id))
+    val request = Option(threadStartRequests.remove(id)).map(_._2)
 
     request.foreach(eventRequestManager.deleteEventRequest)
 

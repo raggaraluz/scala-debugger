@@ -6,6 +6,7 @@ import com.sun.jdi.VirtualMachine
 import com.sun.jdi.request.{EventRequest, EventRequestManager, VMDeathRequest}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.senkbeil.debugger.api.lowlevel.requests.{JDIRequestArgument, JDIRequestProcessor}
 
 import scala.util.{Failure, Success}
 
@@ -56,7 +57,7 @@ class VMDeathManagerSpec extends FunSpec with Matchers with MockFactory
           .returning(mockVMDeathRequest).once()
 
         // Should set enabled to true by default, and
-        // set the suspend policy to thread level by default
+        // set the suspend policy to vm level by default
         (mockVMDeathRequest.setSuspendPolicy _)
           .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
         (mockVMDeathRequest.setEnabled _).expects(true).once()
@@ -114,6 +115,33 @@ class VMDeathManagerSpec extends FunSpec with Matchers with MockFactory
         val expected = None
 
         val actual = vmDeathManager.getVMDeathRequest(TestId)
+        actual should be (expected)
+      }
+    }
+
+    describe("#getVMDeathArguments") {
+      it("should return Some(Seq(input args)) if found") {
+        val expected = Seq(mock[JDIRequestArgument], mock[JDIRequestArgument])
+        expected.foreach(a => {
+          val mockRequestProcessor = mock[JDIRequestProcessor]
+          (mockRequestProcessor.process _).expects(*)
+            .onCall((er: EventRequest) => er).once()
+          (a.toProcessor _).expects().returning(mockRequestProcessor).once()
+        })
+
+        (mockEventRequestManager.createVMDeathRequest _).expects()
+          .returning(stub[VMDeathRequest]).once()
+
+        val id = vmDeathManager.createVMDeathRequest(expected: _*).get
+
+        val actual = vmDeathManager.getVMDeathRequestArguments(id)
+        actual should be (Some(expected))
+      }
+
+      it("should return None if not found") {
+        val expected = None
+
+        val actual = vmDeathManager.getVMDeathRequestArguments(TestId)
         actual should be (expected)
       }
     }

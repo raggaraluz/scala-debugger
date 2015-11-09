@@ -23,8 +23,10 @@ class VMDeathManager(
   private val eventRequestManager: EventRequestManager
 ) extends Logging {
   type VMDeathKey = String
-  private val vmDeathRequests =
-    new ConcurrentHashMap[VMDeathKey, VMDeathRequest]()
+  private val vmDeathRequests = new ConcurrentHashMap[
+    VMDeathKey,
+    (Seq[JDIRequestArgument], VMDeathRequest)
+  ]()
 
   /**
    * Retrieves the list of vm death requests contained by this manager.
@@ -54,7 +56,7 @@ class VMDeathManager(
 
     val id = newRequestId()
     if (request.isSuccess) {
-      vmDeathRequests.put(id, request.get)
+      vmDeathRequests.put(id, (extraArguments, request.get))
     }
 
     // If no exception was thrown, assume that we succeeded
@@ -80,7 +82,21 @@ class VMDeathManager(
    * @return Some vm death request if it exists, otherwise None
    */
   def getVMDeathRequest(id: VMDeathKey): Option[VMDeathRequest] = {
-    Option(vmDeathRequests.get(id))
+    Option(vmDeathRequests.get(id)).map(_._2)
+  }
+
+  /**
+   * Retrieves the arguments provided to the vm death request with the
+   * specified id.
+   *
+   * @param id The id of the Thread Start Request
+   *
+   * @return Some collection of arguments if it exists, otherwise None
+   */
+  def getVMDeathRequestArguments(
+    id: VMDeathKey
+  ): Option[Seq[JDIRequestArgument]] = {
+    Option(vmDeathRequests.get(id)).map(_._1)
   }
 
   /**
@@ -92,7 +108,7 @@ class VMDeathManager(
    *         otherwise false
    */
   def removeVMDeathRequest(id: VMDeathKey): Boolean = {
-    val request = Option(vmDeathRequests.remove(id))
+    val request = Option(vmDeathRequests.remove(id)).map(_._2)
 
     request.foreach(eventRequestManager.deleteEventRequest)
 

@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import com.sun.jdi.request.{EventRequest, EventRequestManager, ThreadDeathRequest}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.senkbeil.debugger.api.lowlevel.requests.{JDIRequestProcessor, JDIRequestArgumentProcessor, JDIRequestArgument}
 
 import scala.util.{Failure, Success}
 
@@ -113,6 +114,33 @@ class ThreadDeathManagerSpec extends FunSpec with Matchers with MockFactory
         val expected = None
 
         val actual = threadDeathManager.getThreadDeathRequest(TestId)
+        actual should be (expected)
+      }
+    }
+
+    describe("#getThreadDeathArguments") {
+      it("should return Some(Seq(input args)) if found") {
+        val expected = Seq(mock[JDIRequestArgument], mock[JDIRequestArgument])
+        expected.foreach(a => {
+          val mockRequestProcessor = mock[JDIRequestProcessor]
+          (mockRequestProcessor.process _).expects(*)
+            .onCall((er: EventRequest) => er).once()
+          (a.toProcessor _).expects().returning(mockRequestProcessor).once()
+        })
+
+        (mockEventRequestManager.createThreadDeathRequest _).expects()
+          .returning(stub[ThreadDeathRequest]).once()
+
+        val id = threadDeathManager.createThreadDeathRequest(expected: _*).get
+
+        val actual = threadDeathManager.getThreadDeathRequestArguments(id)
+        actual should be (Some(expected))
+      }
+
+      it("should return None if not found") {
+        val expected = None
+
+        val actual = threadDeathManager.getThreadDeathRequestArguments(TestId)
         actual should be (expected)
       }
     }

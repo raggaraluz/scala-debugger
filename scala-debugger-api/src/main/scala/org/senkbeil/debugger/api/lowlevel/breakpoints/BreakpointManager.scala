@@ -6,10 +6,8 @@ import com.sun.jdi.request.{EventRequestManager, BreakpointRequest}
 import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.lowlevel.requests.Implicits
-import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
 import org.senkbeil.debugger.api.utils.Logging
-import com.sun.jdi.{Location, VirtualMachine}
+import com.sun.jdi.Location
 
 import scala.collection.mutable
 import scala.collection.JavaConverters._
@@ -26,7 +24,7 @@ class BreakpointManager(
   private val eventRequestManager: EventRequestManager,
   private val classManager: ClassManager
 ) extends Logging {
-  import Implicits._
+  import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
 
   type BreakpointKey = (String, Int) // Class Name, Line Number
   private var lineBreakpoints = Map[BreakpointKey, Seq[BreakpointRequest]]()
@@ -60,7 +58,6 @@ class BreakpointManager(
       createLineBreakpointRequest(
         fileName = breakpointInfo.fileName,
         lineNumber = breakpointInfo.lineNumber,
-        setPendingIfFail = true,
         breakpointInfo.extraArguments: _*
       )
     }
@@ -73,8 +70,9 @@ class BreakpointManager(
   }
 
   /**
-   * Creates and enables a breakpoint on the specified line of the class.
-   * Will retry the breakpoint if it fails to be added immediately.
+   * Creates and enables a breakpoint on the specified line of the class. If
+   * the file/location is not found, the breakpoint will be placed on a pending
+   * breakpoint list to be tried later.
    *
    * @param fileName The name of the file to set a breakpoint
    * @param lineNumber The number of the line to break
@@ -86,31 +84,6 @@ class BreakpointManager(
   def createLineBreakpointRequest(
     fileName: String,
     lineNumber: Int,
-    extraArguments: JDIRequestArgument*
-  ): Try[Boolean] = createLineBreakpointRequest(
-    fileName = fileName,
-    lineNumber = lineNumber,
-    setPendingIfFail = true,
-    extraArguments: _*
-  )
-
-  /**
-   * Creates and enables a breakpoint on the specified line of the class.
-   *
-   * @param fileName The name of the file to set a breakpoint
-   * @param lineNumber The number of the line to break
-   * @param setPendingIfFail If true, will add the attempted breakpoint to a
-   *                         collection of pending breakpoints if it is not
-   *                         able to be added immediately
-   * @param extraArguments The additional arguments to provide to the breakpoint
-   *                       request
-   *
-   * @return True if successfully added breakpoints, otherwise false
-   */
-  def createLineBreakpointRequest(
-    fileName: String,
-    lineNumber: Int,
-    setPendingIfFail: Boolean,
     extraArguments: JDIRequestArgument*
   ): Try[Boolean] = {
     val arguments = Seq(
@@ -125,7 +98,7 @@ class BreakpointManager(
 
     // Add the attempt to our list for processing later if no exception was
     // thrown but we were not able to find the location
-    if (result.isSuccess && !result.get && setPendingIfFail) {
+    if (result.isSuccess && !result.get) {
       pendingLineBreakpoints.synchronized {
         val oldPendingBreakpoints =
           pendingLineBreakpoints.getOrElse(fileName, Nil)

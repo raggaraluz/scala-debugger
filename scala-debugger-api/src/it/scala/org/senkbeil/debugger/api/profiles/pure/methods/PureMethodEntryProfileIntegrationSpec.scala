@@ -1,6 +1,6 @@
 package org.senkbeil.debugger.api.profiles.pure.methods
 
-import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.{AtomicInteger, AtomicBoolean}
 
 import com.sun.jdi.event.{BreakpointEvent, MethodEntryEvent}
 import org.scalatest.concurrent.Eventually
@@ -8,6 +8,7 @@ import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
 import org.senkbeil.debugger.api.lowlevel.events.filters.MethodNameFilter
+import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureMethodEntryProfileIntegrationSpec extends FunSpec with Matchers
@@ -33,7 +34,7 @@ class PureMethodEntryProfileIntegrationSpec extends FunSpec with Matchers
       val reachedMethodBeforeFirstLine = new AtomicBoolean(false)
 
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
-        val methodPipeline = s
+        val methodPipeline = s.withProfile(PureDebugProfile.Name)
           .onUnsafeMethodEntry(expectedClassName, expectedMethodName)
           .map(_.method())
           .map(m => (m.declaringType().name(), m.name()))
@@ -64,6 +65,41 @@ class PureMethodEntryProfileIntegrationSpec extends FunSpec with Matchers
           reachedUnexpectedMethod.get() should be (false)
           reachedExpectedMethod.get() should be (true)
           reachedMethodBeforeFirstLine.get() should be (true)
+        })
+      }
+    }
+
+    it("should cache request creation based on arguments") {
+      val testClass = "org.senkbeil.debugger.test.methods.MethodEntry"
+      val testFile = scalaClassStringToFileString(testClass)
+
+      val expectedClassName =
+        "org.senkbeil.debugger.test.methods.MethodEntryTestClass"
+      val expectedMethodName = "testMethod"
+
+      val methodEntryHit = new AtomicInteger(0)
+
+      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        // Check the method entry for a matching invocation
+        s.withProfile(PureDebugProfile.Name)
+          .onUnsafeMethodEntry(expectedClassName, expectedMethodName)
+          .map(_.method())
+          .map(m => (m.declaringType().name(), m.name()))
+          .filter(_._1 == expectedClassName)
+          .filter(_._2 == expectedMethodName)
+          .foreach(_ => methodEntryHit.incrementAndGet())
+
+        // Repeat the check using the same arguments
+        s.withProfile(PureDebugProfile.Name)
+          .onUnsafeMethodEntry(expectedClassName, expectedMethodName)
+          .map(_.method())
+          .map(m => (m.declaringType().name(), m.name()))
+          .filter(_._1 == expectedClassName)
+          .filter(_._2 == expectedMethodName)
+          .foreach(_ => methodEntryHit.incrementAndGet())
+
+        logTimeTaken(eventually {
+          methodEntryHit.get() should be (2)
         })
       }
     }

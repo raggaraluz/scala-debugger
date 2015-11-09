@@ -127,5 +127,37 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
         })
       }
     }
+
+    it("should cache request creation based on arguments") {
+      val testClass = "org.senkbeil.debugger.test.breakpoints.DelayedInit"
+      val testFile = scalaClassStringToFileString(testClass)
+
+      val breakpointLine = 10
+      val breakpointHit = new AtomicInteger(0)
+
+      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        // Create a hit check for a breakpoint
+        s.withProfile(PureDebugProfile.Name)
+          .onUnsafeBreakpoint(testFile, breakpointLine)
+          .map(_.location())
+          .map(l => (l.sourcePath(), l.lineNumber()))
+          .filter(_._1 == testFile)
+          .filter(_._2 == breakpointLine)
+          .foreach(_ => breakpointHit.incrementAndGet())
+
+        // Create a second check for the same breakpoint
+        s.withProfile(PureDebugProfile.Name)
+          .onUnsafeBreakpoint(testFile, breakpointLine)
+          .map(_.location())
+          .map(l => (l.sourcePath(), l.lineNumber()))
+          .filter(_._1 == testFile)
+          .filter(_._2 == breakpointLine)
+          .foreach(_ => breakpointHit.incrementAndGet())
+
+        logTimeTaken(eventually {
+          breakpointHit.get() should be (2)
+        })
+      }
+    }
   }
 }

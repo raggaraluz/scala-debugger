@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import com.sun.jdi.request.{EventRequest, EventRequestManager, ThreadStartRequest}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.senkbeil.debugger.api.lowlevel.requests.{JDIRequestProcessor, JDIRequestArgument}
 
 import scala.util.{Failure, Success}
 
@@ -113,6 +114,33 @@ class ThreadStartManagerSpec extends FunSpec with Matchers with MockFactory
         val expected = None
 
         val actual = threadStartManager.getThreadStartRequest(TestId)
+        actual should be (expected)
+      }
+    }
+
+    describe("#getThreadStartArguments") {
+      it("should return Some(Seq(input args)) if found") {
+        val expected = Seq(mock[JDIRequestArgument], mock[JDIRequestArgument])
+        expected.foreach(a => {
+          val mockRequestProcessor = mock[JDIRequestProcessor]
+          (mockRequestProcessor.process _).expects(*)
+            .onCall((er: EventRequest) => er).once()
+          (a.toProcessor _).expects().returning(mockRequestProcessor).once()
+        })
+
+        (mockEventRequestManager.createThreadStartRequest _).expects()
+          .returning(stub[ThreadStartRequest]).once()
+
+        val id = threadStartManager.createThreadStartRequest(expected: _*).get
+
+        val actual = threadStartManager.getThreadStartRequestArguments(id)
+        actual should be (Some(expected))
+      }
+
+      it("should return None if not found") {
+        val expected = None
+
+        val actual = threadStartManager.getThreadStartRequestArguments(TestId)
         actual should be (expected)
       }
     }

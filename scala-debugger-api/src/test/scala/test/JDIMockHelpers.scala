@@ -1,18 +1,10 @@
 package test
 
 import com.sun.jdi._
-import com.sun.jdi.event.Event
 import org.scalamock.scalatest.MockFactory
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.events.JDIEventArgument
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.utils.{JDIArgumentGroup, JDIRequestResponseBuilder}
-import org.senkbeil.debugger.api.pipelines.Pipeline
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
-import scala.util.{Try, Random}
+import scala.util.Random
 
 /**
  * Contains helper methods to facilitate smaller test code for JDI.
@@ -216,45 +208,5 @@ trait JDIMockHelpers { self: MockFactory =>
       (stubLocation.lineNumber: Function0[Int]).when().throws(new Throwable)
 
     stubLocation
-  }
-
-  /**
-   * Expects the request response builder to be invoked and triggers the
-   * request creator function passed as its argument.
-   *
-   * @param mockRequestResponseBuilder The mocked request response builder
-   * @param returnValue The value returned from invoking the builder
-   *
-   * @return The arguments given to the buildRequestReponse function
-   */
-  def expectCallAndInvokeRequestFunc[A <: Event : ClassTag](
-    mockRequestResponseBuilder: JDIRequestResponseBuilder,
-    returnValue: Try[Pipeline[(A, Seq[JDIEventDataResult]), (A, Seq[JDIEventDataResult])]]
-  ): IdentityPipeline[(Seq[JDIRequestArgument] => Unit, Seq[JDIArgument])] = {
-    // Used to funnel onCall events from mock below
-    val pipeline = Pipeline.newPipeline(
-      classOf[(Seq[JDIRequestArgument] => Unit, Seq[JDIArgument])]
-    )
-
-    // NOTE: Forced to use ugly onCall with product due to the fact that
-    //       ScalaMock cannot handle varargs (casting failure when using
-    //       the trick with a single argument as a vararg filler)
-    (mockRequestResponseBuilder.buildRequestResponse[A](
-      _: Seq[JDIRequestArgument] => Unit,
-      _: JDIArgument
-    )(
-      _: ClassTag[A]
-    )).expects(*, *, *).onCall(t => {
-      val args = t.productElement(1).asInstanceOf[Seq[JDIArgument]]
-      val JDIArgumentGroup(rArgs, _, _) = JDIArgumentGroup(args: _*)
-      val func = t.productElement(0).asInstanceOf[Seq[JDIRequestArgument] => Unit]
-      func(rArgs)
-
-      pipeline.process((func, args))
-
-      returnValue
-    }).once()
-
-    pipeline
   }
 }

@@ -20,8 +20,10 @@ class ThreadDeathManager(
   private val eventRequestManager: EventRequestManager
 ) extends Logging {
   type ThreadDeathKey = String
-  private val threadDeathRequests =
-    new ConcurrentHashMap[ThreadDeathKey, ThreadDeathRequest]()
+  private val threadDeathRequests = new ConcurrentHashMap[
+    ThreadDeathKey,
+    (Seq[JDIRequestArgument], ThreadDeathRequest)
+  ]()
 
   /**
    * Retrieves the list of thread death requests contained by this manager.
@@ -51,7 +53,7 @@ class ThreadDeathManager(
 
     val id = newRequestId()
     if (request.isSuccess) {
-      threadDeathRequests.put(id, request.get)
+      threadDeathRequests.put(id, (extraArguments, request.get))
     }
 
     // If no exception was thrown, assume that we succeeded
@@ -77,7 +79,21 @@ class ThreadDeathManager(
    * @return Some thread death request if it exists, otherwise None
    */
   def getThreadDeathRequest(id: ThreadDeathKey): Option[ThreadDeathRequest] = {
-    Option(threadDeathRequests.get(id))
+    Option(threadDeathRequests.get(id)).map(_._2)
+  }
+
+  /**
+   * Retrieves the arguments provided to the thread death request with the
+   * specified id.
+   *
+   * @param id The id of the Thread Death Request
+   *
+   * @return Some collection of arguments if it exists, otherwise None
+   */
+  def getThreadDeathRequestArguments(
+    id: ThreadDeathKey
+  ): Option[Seq[JDIRequestArgument]] = {
+    Option(threadDeathRequests.get(id)).map(_._1)
   }
 
   /**
@@ -89,7 +105,7 @@ class ThreadDeathManager(
    *         otherwise false
    */
   def removeThreadDeathRequest(id: ThreadDeathKey): Boolean = {
-    val request = Option(threadDeathRequests.remove(id))
+    val request = Option(threadDeathRequests.remove(id)).map(_._2)
 
     request.foreach(eventRequestManager.deleteEventRequest)
 

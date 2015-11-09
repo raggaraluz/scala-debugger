@@ -1,6 +1,6 @@
 package org.senkbeil.debugger.api.profiles.pure.vm
 
-import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.{AtomicInteger, AtomicBoolean}
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
@@ -37,6 +37,33 @@ class PureVMDeathProfileIntegrationSpec extends FunSpec with Matchers
         // Eventually, we should receive the start event
         logTimeTaken(eventually {
           detectedDeath.get() should be (true)
+        })
+      }
+    }
+
+    it("should cache request creation based on arguments") {
+      val testClass = "org.senkbeil.debugger.test.misc.MainUsingApp"
+
+      val detectedDeathHit = new AtomicInteger(0)
+
+      // Start our VM and listen for the start event
+      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        // Mark that we want to receive vm death events and watch for one
+        s.withProfile(PureDebugProfile.Name)
+          .onUnsafeVMDeath()
+          .foreach(_ => detectedDeathHit.incrementAndGet())
+
+        // Perform the same check with same arguments
+        s.withProfile(PureDebugProfile.Name)
+          .onUnsafeVMDeath()
+          .foreach(_ => detectedDeathHit.incrementAndGet())
+
+        // Kill the JVM process so we get a disconnect event
+        s.underlyingVirtualMachine.process().destroy()
+
+        // Eventually, we should receive the start event
+        logTimeTaken(eventually {
+          detectedDeathHit.get() should be (2)
         })
       }
     }
