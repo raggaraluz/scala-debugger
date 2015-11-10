@@ -35,7 +35,7 @@ class ThreadDeathManager(
     threadDeathRequests.keySet().asScala.toSeq
 
   /**
-   * Sets the thread death request for the specified class and method.
+   * Creates a new thread death request for the specified class and method.
    *
    * @param extraArguments Any additional arguments to provide to the request
    *

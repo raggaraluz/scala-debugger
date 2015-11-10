@@ -35,7 +35,7 @@ class ThreadStartManager(
     threadStartRequests.keySet().asScala.toSeq
 
   /**
-   * Sets the thread start request for the specified class and method.
+   * Creates a new thread start request for the specified class and method.
    *
    * @param extraArguments Any additional arguments to provide to the request
    *

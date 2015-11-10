@@ -38,7 +38,7 @@ class VMDeathManager(
     vmDeathRequests.keySet().asScala.toSeq
 
   /**
-   * Sets the vm death request for the specified class and method.
+   * Creates a new vm death request.
    *
    * @param extraArguments Any additional arguments to provide to the request
    *

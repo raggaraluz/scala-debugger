@@ -40,7 +40,7 @@ class ExceptionManager(
     exceptionRequests.keySet().asScala.toSeq
 
   /**
-   * Sets the exception request to catch all exceptions from the JVM.
+   * Creates a new exception request to catch all exceptions from the JVM.
    *
    * @param notifyCaught If true, events will be reported when any exception
    *                     is detected within a try { ... } block
@@ -106,7 +106,7 @@ class ExceptionManager(
     }
 
   /**
-   * Sets the exception request for the specified exception class.
+   * Creates a new exception request for the specified exception class.
    *
    * @note Any exception and its subclass will be watched.
    *
