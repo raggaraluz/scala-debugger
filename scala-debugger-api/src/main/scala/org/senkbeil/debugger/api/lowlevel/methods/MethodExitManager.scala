@@ -36,7 +36,7 @@ class MethodExitManager(
     methodExitRequests.keySet().asScala.toSeq
 
   /**
-   * Sets the method exit request for the specified class and method.
+   * Creates a new method exit request for the specified class and method.
    *
    * @note The method name is purely used for indexing the request in the
    *       internal list. You should set a method name filter on the event
