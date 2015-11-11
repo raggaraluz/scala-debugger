@@ -50,46 +50,5 @@ class PureThreadStartProfileIntegrationSpec extends FunSpec with Matchers
         })
       }
     }
-
-    it("should cache request creation based on arguments") {
-      val testClass = "org.senkbeil.debugger.test.threads.ThreadStart"
-      val testFile = scalaClassStringToFileString(testClass)
-
-      val threadStartCount = new AtomicInteger(0)
-
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
-        val requestCreated = new AtomicBoolean(false)
-
-        // Set a breakpoint first so we can be ready
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeBreakpoint(testFile, 10)
-          .foreach(_ => {
-            while (!requestCreated.get()) {
-              Thread.sleep(1)
-            }
-          })
-
-        // Mark that we want to receive thread start events
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeThreadStart()
-          .map(_.thread().name())
-          .filterNot(_ == "main")
-          .foreach(_ => threadStartCount.incrementAndGet())
-
-        // Perform a second mark with same input
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeThreadStart()
-          .map(_.thread().name())
-          .filterNot(_ == "main")
-          .foreach(_ => threadStartCount.incrementAndGet())
-
-        requestCreated.set(true)
-
-        // Eventually, we should receive a total of 10 + 10 thread starts
-        logTimeTaken(eventually {
-          threadStartCount.get() should be (20)
-        })
-      }
-    }
   }
 }

@@ -12,10 +12,12 @@ object ClassUnload extends App {
     val urlClassLoader = new URLClassLoader(Array(testJarUrl), null)
 
     val className = "org.senkbeil.debugger.test.jar.CustomClass"
-    val c = urlClassLoader.loadClass(className)
+    val klass = urlClassLoader.loadClass(className)
+    val instance = klass.newInstance() // Causes class to be loaded
 
     println(s"Loading classes from ${testJarUrl.getPath}")
-    println(s"CustomClass: $c")
+    println(s"Class[CustomClass]: $klass")
+    println(s"CustomClass: $instance")
   }
 
   // Suggest garbage collecting our out-of-scope classloader to unload the

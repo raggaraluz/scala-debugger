@@ -1,5 +1,7 @@
 package test
 
+import java.io.{InputStreamReader, BufferedReader}
+
 import org.senkbeil.debugger.api.debuggers.LaunchingDebugger
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.lowlevel.events.EventType
@@ -10,6 +12,7 @@ import EventType._
 import com.sun.jdi.VirtualMachine
 
 import scala.concurrent.Future
+import scala.io.Source
 import scala.util.Try
 
 /**
@@ -22,6 +25,8 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
     arguments: Seq[String] = Nil,
     suspend: Boolean = true,
     timeout: Long = 1000,
+    echoStandardOut: Boolean = false,
+    echoStandardErr: Boolean = false,
     preStart: (ScalaVirtualMachine) => Any = (_) => {}
   )(
     testCode: (VirtualMachine, ScalaVirtualMachine) => Any
@@ -41,26 +46,50 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
 
       import scala.concurrent.ExecutionContext.Implicits.global
       Future {
-        val path = java.nio.file.Files.createTempFile("jvmfixture", ".out.log")
-        logger.debug(s"Creating JVM Output File: ${path.toString}")
+        if (echoStandardOut) {
+          val outStream = new BufferedReader(
+            new InputStreamReader(process.getInputStream)
+          )
 
-        Try(java.nio.file.Files.copy(process.getInputStream, path,
-          java.nio.file.StandardCopyOption.REPLACE_EXISTING))
+          logger.info("Echoing program output to standard out!")
+          while (!Thread.interrupted()) {
+            val line = outStream.readLine()
+            if (line != null) logger.info(s"Program output: $line")
+          }
+        } else {
+          val path = java.nio.file.Files.createTempFile("jvmfixture", ".out.log")
+          logger.debug(s"Creating JVM Output File: ${path.toString}")
 
-        // NOTE: Comment me out to keep around the log file
-        logger.debug(s"Deleting JVM Output File: ${path.toString}")
-        java.nio.file.Files.delete(path)
+          Try(java.nio.file.Files.copy(process.getInputStream, path,
+            java.nio.file.StandardCopyOption.REPLACE_EXISTING))
+
+          // NOTE: Comment me out to keep around the log file
+          logger.debug(s"Deleting JVM Output File: ${path.toString}")
+          java.nio.file.Files.delete(path)
+        }
       }
       Future {
-        val path = java.nio.file.Files.createTempFile("jvmfixture", ".err.log")
-        logger.debug(s"Creating JVM Error File: ${path.toString}")
+        if (echoStandardErr) {
+          val errStream = new BufferedReader(
+            new InputStreamReader(process.getErrorStream)
+          )
 
-        Try(java.nio.file.Files.copy(process.getErrorStream, path,
-          java.nio.file.StandardCopyOption.REPLACE_EXISTING))
+          logger.info("Echoing program error to standard error!")
+          while (!Thread.interrupted()) {
+            val line = errStream.readLine()
+            if (line != null) logger.error(s"Program error: $line")
+          }
+        } else {
+          val path = java.nio.file.Files.createTempFile("jvmfixture", ".err.log")
+          logger.debug(s"Creating JVM Error File: ${path.toString}")
 
-        // NOTE: Comment me out to keep around the log file
-        logger.debug(s"Deleting JVM Error File: ${path.toString}")
-        java.nio.file.Files.delete(path)
+          Try(java.nio.file.Files.copy(process.getErrorStream, path,
+            java.nio.file.StandardCopyOption.REPLACE_EXISTING))
+
+          // NOTE: Comment me out to keep around the log file
+          logger.debug(s"Deleting JVM Error File: ${path.toString}")
+          java.nio.file.Files.delete(path)
+        }
       }
 
       try {

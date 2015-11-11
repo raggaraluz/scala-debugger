@@ -129,51 +129,5 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
         })
       }
     }
-
-    it("should cache request creation based on arguments") {
-      val testClass =
-        "org.senkbeil.debugger.test.exceptions.InsideTryBlockException"
-      val testFile = scalaClassStringToFileString(testClass)
-
-      val detectedExceptionHit = new AtomicInteger(0)
-      val expectedExceptionName =
-        "org.senkbeil.debugger.test.exceptions.CustomException"
-
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
-        // Use a breakpoint prior to our exceptions to prepare without passing
-        // the exceptions
-        s.onUnsafeBreakpoint(testFile, 10).map(_.location()).foreach(l => {
-          // When breakpoint triggered, assume the exception class
-          // has been loaded
-          val fileName = l.sourcePath()
-          val lineNumber = l.lineNumber()
-
-          logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
-
-          // Mark the exception we want to watch (now that the class
-          // is available)
-          s.onUnsafeException(
-            exceptionName = expectedExceptionName,
-            notifyCaught = true,
-            notifyUncaught = false
-          ).map(_.exception().referenceType().name())
-            .filter(_ == expectedExceptionName)
-            .foreach(_ => detectedExceptionHit.incrementAndGet())
-
-          // Check for the same exception
-          s.onUnsafeException(
-            exceptionName = expectedExceptionName,
-            notifyCaught = true,
-            notifyUncaught = false
-          ).map(_.exception().referenceType().name())
-            .filter(_ == expectedExceptionName)
-            .foreach(_ => detectedExceptionHit.incrementAndGet())
-        })
-
-        logTimeTaken(eventually {
-          detectedExceptionHit.get() should be (2)
-        })
-      }
-    }
   }
 }

@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.lowlevel
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.request.EventRequestManager
 import org.senkbeil.debugger.api.lowlevel.breakpoints.BreakpointManager
-import org.senkbeil.debugger.api.lowlevel.classes.{ClassUnloadManager, ClassManager}
+import org.senkbeil.debugger.api.lowlevel.classes.{ClassPrepareManager, ClassUnloadManager, ClassManager}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.exceptions.ExceptionManager
 import org.senkbeil.debugger.api.lowlevel.methods.{MethodExitManager, MethodEntryManager}
@@ -18,6 +18,7 @@ import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 case class ManagerContainer(
   breakpointManager: BreakpointManager,
   classManager: ClassManager,
+  classPrepareManager: ClassPrepareManager,
   classUnloadManager: ClassUnloadManager,
   eventManager: EventManager,
   exceptionManager: ExceptionManager,
@@ -62,6 +63,8 @@ object ManagerContainer {
       new BreakpointManager(eventRequestManager, classManager)
     lazy val classManager =
       new ClassManager(virtualMachine, loadClasses = true)
+    lazy val classPrepareManager =
+      new ClassPrepareManager(eventRequestManager)
     lazy val classUnloadManager =
       new ClassUnloadManager(eventRequestManager)
     lazy val eventManager =
@@ -86,6 +89,7 @@ object ManagerContainer {
     ManagerContainer(
       breakpointManager   = breakpointManager,
       classManager        = classManager,
+      classPrepareManager = classPrepareManager,
       classUnloadManager  = classUnloadManager,
       eventManager        = eventManager,
       exceptionManager    = exceptionManager,
