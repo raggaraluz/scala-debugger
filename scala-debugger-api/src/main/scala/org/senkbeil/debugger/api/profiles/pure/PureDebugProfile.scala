@@ -64,8 +64,7 @@ class PureDebugProfile(
 
   protected lazy val classManager = managerContainer.classManager
 
-  //protected lazy val classPrepareManager =
-  // managerContainer.classPrepareManager
+  protected lazy val classPrepareManager = managerContainer.classPrepareManager
 
   protected lazy val classUnloadManager = managerContainer.classUnloadManager
 

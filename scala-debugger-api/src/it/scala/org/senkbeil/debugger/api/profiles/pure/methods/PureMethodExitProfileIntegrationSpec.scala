@@ -68,40 +68,5 @@ class PureMethodExitProfileIntegrationSpec extends FunSpec with Matchers
         })
       }
     }
-
-    it("should cache request creation based on arguments") {
-      val testClass = "org.senkbeil.debugger.test.methods.MethodExit"
-      val testFile = scalaClassStringToFileString(testClass)
-
-      val expectedClassName =
-        "org.senkbeil.debugger.test.methods.MethodExitTestClass"
-      val expectedMethodName = "testMethod"
-
-      val methodExitHit = new AtomicInteger(0)
-
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
-        // Check the method exit for a matching invocation
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeMethodExit(expectedClassName, expectedMethodName)
-          .map(_.method())
-          .map(m => (m.declaringType().name(), m.name()))
-          .filter(_._1 == expectedClassName)
-          .filter(_._2 == expectedMethodName)
-          .foreach(_ => methodExitHit.incrementAndGet())
-
-        // Repeat the check using the same arguments
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeMethodExit(expectedClassName, expectedMethodName)
-          .map(_.method())
-          .map(m => (m.declaringType().name(), m.name()))
-          .filter(_._1 == expectedClassName)
-          .filter(_._2 == expectedMethodName)
-          .foreach(_ => methodExitHit.incrementAndGet())
-
-        logTimeTaken(eventually {
-          methodExitHit.get() should be (2)
-        })
-      }
-    }
   }
 }

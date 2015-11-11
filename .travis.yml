@@ -9,7 +9,7 @@ jdk:
 env:
     global:
         - SCALATEST_SPAN_SCALE_FACTOR=10
-        - EXTRA_SBT_OPT=-J-XX:ReservedCodeCacheSize=256M
+        - EXTRA_SBT_OPT="-J-XX:ReservedCodeCacheSize=256M -Dsun.io.serialization.extendedDebugInfo=true"
     # Split build between unit and integration tests
     matrix:
         - TEST_SUITE=test

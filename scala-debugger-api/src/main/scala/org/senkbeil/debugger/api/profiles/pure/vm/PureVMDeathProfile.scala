@@ -64,8 +64,12 @@ trait PureVMDeathProfile extends VMDeathProfile {
         requestId
       },
       cacheInvalidFunc = (key: Key) => {
+        // TODO: Remove hard-coded filtering out of UniqueIdProperty,
+        //       which shows up in saved arguments since it is passed in
+        //       during the memoization above
         !vmDeathManager.vmDeathRequestList
           .flatMap(vmDeathManager.getVMDeathRequestArguments)
+          .map(_.filterNot(_.isInstanceOf[UniqueIdProperty]))
           .exists(_ == key)
       }
     )

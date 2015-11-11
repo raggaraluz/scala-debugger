@@ -68,40 +68,5 @@ class PureMethodEntryProfileIntegrationSpec extends FunSpec with Matchers
         })
       }
     }
-
-    it("should cache request creation based on arguments") {
-      val testClass = "org.senkbeil.debugger.test.methods.MethodEntry"
-      val testFile = scalaClassStringToFileString(testClass)
-
-      val expectedClassName =
-        "org.senkbeil.debugger.test.methods.MethodEntryTestClass"
-      val expectedMethodName = "testMethod"
-
-      val methodEntryHit = new AtomicInteger(0)
-
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
-        // Check the method entry for a matching invocation
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeMethodEntry(expectedClassName, expectedMethodName)
-          .map(_.method())
-          .map(m => (m.declaringType().name(), m.name()))
-          .filter(_._1 == expectedClassName)
-          .filter(_._2 == expectedMethodName)
-          .foreach(_ => methodEntryHit.incrementAndGet())
-
-        // Repeat the check using the same arguments
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeMethodEntry(expectedClassName, expectedMethodName)
-          .map(_.method())
-          .map(m => (m.declaringType().name(), m.name()))
-          .filter(_._1 == expectedClassName)
-          .filter(_._2 == expectedMethodName)
-          .foreach(_ => methodEntryHit.incrementAndGet())
-
-        logTimeTaken(eventually {
-          methodEntryHit.get() should be (2)
-        })
-      }
-    }
   }
 }

@@ -17,7 +17,7 @@ class PureClassUnloadProfileIntegrationSpec extends FunSpec with Matchers
     interval = scaled(Span(5, Milliseconds))
   )
 
-  describe("PureVMDeathProfile") {
+  describe("PureClassUnloadProfile") {
     // NOTE: It is not possible to trigger a class unload accurately due to the
     //       JVM's non-deterministic nature with garbage collection.
     ignore("should trigger when a class is unloaded") {
@@ -28,7 +28,7 @@ class PureClassUnloadProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
         // Mark that we want to receive class unload events and watch for one
         s.withProfile(PureDebugProfile.Name)
-          .onClassUnload()
+          .onUnsafeClassUnload()
           .foreach(_ => detectedUnload.set(true))
 
         // Eventually, we should receive the class unload event
