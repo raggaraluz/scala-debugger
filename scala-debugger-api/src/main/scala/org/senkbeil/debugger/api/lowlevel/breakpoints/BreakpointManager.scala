@@ -38,10 +38,21 @@ class BreakpointManager(
     new ConcurrentHashMap[String, Seq[BreakpointInfo]]().asScala
 
   /**
+   * Retrieves the list of pending breakpoints (not yet set) contained by
+   * this manager.
+   *
+   * @return The collection of breakpoints in the form of
+   *         (file name, line number)
+   */
+  def pendingBreakpointList: Seq[BreakpointKey] =
+    pendingLineBreakpoints.values.toSeq
+      .flatMap(_.map(b => (b.fileName, b.lineNumber)))
+
+  /**
    * Retrieves the list of breakpoints contained by this manager.
    *
    * @return The collection of breakpoints in the form of
-   *         (class name, line number)
+   *         (file name, line number)
    */
   def breakpointRequestList: Seq[BreakpointKey] = lineBreakpoints.keys.toSeq
 
@@ -67,6 +78,53 @@ class BreakpointManager(
 
     // Indicate whether or not we successfully added all of the breakpoints
     !pendingLineBreakpoints.contains(fileName)
+  }
+
+  /**
+   * Adds a new breakpoint to the pending breakpoint list.
+   *
+   * @param fileName The name of the file to containing the pending breakpoint
+   * @param lineNumber The line number containing the pending breakpoint
+   * @param extraArguments The extra arguments for the pending breakpoint
+   */
+  private def addPendingBreakpoint(
+    fileName: String,
+    lineNumber: Int,
+    extraArguments: Seq[JDIRequestArgument]
+  ): Unit = pendingLineBreakpoints.synchronized {
+    val oldPendingBreakpoints =
+      pendingLineBreakpoints.getOrElse(fileName, Nil)
+    val newPendingBreakpoint = BreakpointInfo(
+      fileName        = fileName,
+      lineNumber      = lineNumber,
+      extraArguments  = extraArguments
+    )
+
+    pendingLineBreakpoints.put(
+      fileName,
+      oldPendingBreakpoints :+ newPendingBreakpoint
+    )
+  }
+
+  /**
+   * Removes all pending breakpoints for the specified file and line.
+   *
+   * @param fileName The name of the file containing the pending breakpoints
+   * @param lineNumber The number of the line containing the pending breakpoints
+   */
+  private def removePendingBreakpoint(
+    fileName: String,
+    lineNumber: Int
+  ): Unit = pendingLineBreakpoints.synchronized {
+    val oldPendingBreakpoints = pendingLineBreakpoints.getOrElse(fileName, Nil)
+
+    pendingLineBreakpoints.put(
+      fileName,
+      oldPendingBreakpoints.filterNot(b =>
+        b.fileName == fileName &&
+        b.lineNumber == lineNumber
+      )
+    )
   }
 
   /**
@@ -99,18 +157,7 @@ class BreakpointManager(
     // Add the attempt to our list for processing later if no exception was
     // thrown but we were not able to find the location
     if (result.isSuccess && !result.get) {
-      pendingLineBreakpoints.synchronized {
-        val oldPendingBreakpoints =
-          pendingLineBreakpoints.getOrElse(fileName, Nil)
-        val newPendingBreakpoint = BreakpointInfo(
-          fileName        = fileName,
-          lineNumber      = lineNumber,
-          extraArguments  = extraArguments
-        )
-
-        pendingLineBreakpoints.put(
-          fileName, oldPendingBreakpoints :+ newPendingBreakpoint)
-      }
+      addPendingBreakpoint(fileName, lineNumber, extraArguments)
     }
 
     result
@@ -208,10 +255,14 @@ class BreakpointManager(
     val result = Try {
       val key: BreakpointKey = (fileName, lineNumber)
 
-      val requestsToRemove = lineBreakpoints(key)
+      // Remove pending breakpoints
+      removePendingBreakpoint(fileName, lineNumber)
 
+      // Remove set breakpoints
+      val requestsToRemove = lineBreakpoints(key)
       eventRequestManager.deleteEventRequests(requestsToRemove.asJava)
     }
+
 
     result match {
       case Success(_) =>

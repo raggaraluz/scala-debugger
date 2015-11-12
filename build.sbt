@@ -16,6 +16,7 @@ lazy val scalaDebuggerApi = project
     fork in IntegrationTest := true,
 
     // Run tests in parallel
+    // NOTE: Needed to avoid ScalaTest serialization issues
     parallelExecution in Test := true,
     testForkedParallel in Test := true,
 
