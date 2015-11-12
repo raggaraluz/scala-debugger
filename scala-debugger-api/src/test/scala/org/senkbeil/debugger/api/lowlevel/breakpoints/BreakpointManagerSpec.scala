@@ -26,6 +26,23 @@ class BreakpointManagerSpec extends FunSpec with Matchers
   )
 
   describe("BreakpointManager") {
+    describe("#pendingBreakpointList") {
+      it("should return a collection of pending breakpoint file names and lines") {
+        val expected = Seq(("file1", 1), ("file1", 2), ("file2", 999))
+
+        // An empty or invalid list of lines/locations yields a
+        // pending breakpoint
+        (mockClassManager.linesAndLocationsForFile _).expects(*)
+          .returning(None).repeated(expected.length).times()
+
+        expected.foreach(b => breakpointManager.createLineBreakpointRequest(b._1, b._2))
+
+        val actual = breakpointManager.pendingBreakpointList
+
+        actual should contain theSameElementsAs expected
+      }
+    }
+
     describe("#breakpointRequestList") {
       it("should return a collection of breakpoint file names and lines") {
         val expected = Seq(("file1", 1), ("file1", 2), ("file2", 999))
@@ -346,6 +363,32 @@ class BreakpointManagerSpec extends FunSpec with Matchers
         }).once()
 
         breakpointManager.removeLineBreakpointRequest("file", 1)
+      }
+
+      it("should delete all pending breakpoints matching the file and line") {
+        val expected = Seq(("file1", 1), ("file2", 999))
+        val breakpointToDelete = ("file1", 2)
+
+        // An empty or invalid list of lines/locations yields a
+        // pending breakpoint
+        (mockClassManager.linesAndLocationsForFile _).expects(*)
+          .returning(None).repeated(expected.length + 1).times()
+
+        // Add all of our breakpoints
+        expected.foreach(b => breakpointManager.createLineBreakpointRequest(b._1, b._2))
+        breakpointManager.createLineBreakpointRequest(
+          breakpointToDelete._1,
+          breakpointToDelete._2
+        )
+
+        // Remove our breakpoint
+        breakpointManager.removeLineBreakpointRequest(
+          breakpointToDelete._1,
+          breakpointToDelete._2
+        )
+
+        val actual = breakpointManager.pendingBreakpointList
+        actual should contain theSameElementsAs expected
       }
 
       it("should return false if the breakpoint was not found") {
