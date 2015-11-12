@@ -7,7 +7,7 @@ import org.senkbeil.debugger.api.lowlevel.classes.{ClassPrepareManager, ClassUnl
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.exceptions.ExceptionManager
 import org.senkbeil.debugger.api.lowlevel.methods.{MethodExitManager, MethodEntryManager}
-import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorWaitedManager, MonitorContendedEnterManager, MonitorContendedEnteredManager}
+import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorWaitManager, MonitorWaitedManager, MonitorContendedEnterManager, MonitorContendedEnteredManager}
 import org.senkbeil.debugger.api.lowlevel.steps.StepManager
 import org.senkbeil.debugger.api.lowlevel.threads.{ThreadStartManager, ThreadDeathManager}
 import org.senkbeil.debugger.api.lowlevel.vm.VMDeathManager
@@ -28,6 +28,7 @@ case class ManagerContainer(
   monitorContendedEnteredManager: MonitorContendedEnteredManager,
   monitorContendedEnterManager: MonitorContendedEnterManager,
   monitorWaitedManager: MonitorWaitedManager,
+  monitorWaitManager: MonitorWaitManager,
   requestManager: EventRequestManager,
   stepManager: StepManager,
   threadDeathManager: ThreadDeathManager,
@@ -85,6 +86,8 @@ object ManagerContainer {
       new MonitorContendedEnterManager(eventRequestManager)
     lazy val monitorWaitedManager =
       new MonitorWaitedManager(eventRequestManager)
+    lazy val monitorWaitManager =
+      new MonitorWaitManager(eventRequestManager)
     lazy val requestManager =
       virtualMachine.eventRequestManager()
     lazy val stepManager =
@@ -108,6 +111,7 @@ object ManagerContainer {
       monitorContendedEnteredManager  = monitorContendedEnteredManager,
       monitorContendedEnterManager    = monitorContendedEnterManager,
       monitorWaitedManager            = monitorWaitedManager,
+      monitorWaitManager              = monitorWaitManager,
       requestManager                  = requestManager,
       stepManager                     = stepManager,
       threadDeathManager              = threadDeathManager,

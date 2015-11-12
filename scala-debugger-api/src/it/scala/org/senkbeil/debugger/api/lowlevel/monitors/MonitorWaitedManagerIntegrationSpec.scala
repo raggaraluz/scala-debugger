@@ -27,7 +27,7 @@ class MonitorWaitedManagerIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, suspend = false) { (v, s) =>
         import s.lowlevel._
 
-        // Mark that we want to receive monitor contended enter events and
+        // Mark that we want to receive monitor waited events and
         // watch for one
         monitorWaitedManager.createMonitorWaitedRequest()
         eventManager.addResumingEventHandler(MonitorWaitedEventType, e => {
@@ -42,7 +42,7 @@ class MonitorWaitedManagerIntegrationSpec extends FunSpec with Matchers
           detectedWaited.set(true)
         })
 
-        // Eventually, we should receive the monitor contended enter event
+        // Eventually, we should receive the monitor waited event
         logTimeTaken(eventually {
           // NOTE: Using asserts to provide more helpful failure messages
           assert(detectedWaited.get(), s"No monitor finished waiting was detected!")
