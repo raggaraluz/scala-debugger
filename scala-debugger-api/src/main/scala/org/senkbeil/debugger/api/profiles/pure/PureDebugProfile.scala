@@ -75,17 +75,17 @@ class PureDebugProfile(
   //protected lazy val modificationWatchpointManager =
   //  managerContainer.modificationWatchpointManager
 
-  //protected lazy val monitorContendedEnteredManager =
-  //  managerContainer.monitorContendedEnteredManager
+  protected lazy val monitorContendedEnteredManager =
+    managerContainer.monitorContendedEnteredManager
 
-  //protected lazy val monitorContendedEnterManager =
-  //  managerContainer.monitorContendedEnterManager
+  protected lazy val monitorContendedEnterManager =
+    managerContainer.monitorContendedEnterManager
 
-  //protected lazy val monitorContendedWaitedManager =
-  //  managerContainer.monitorContendedWaitedManager
+  protected lazy val monitorWaitedManager =
+    managerContainer.monitorWaitedManager
 
-  //protected lazy val monitorContendedWaitManager =
-  //  managerContainer.monitorContendedWaitManager
+  protected lazy val monitorWaitManager =
+    managerContainer.monitorWaitManager
 
   protected lazy val methodEntryManager = managerContainer.methodEntryManager
 

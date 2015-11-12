@@ -40,12 +40,12 @@ trait PureClassUnloadProfile extends ClassUnloadProfile {
   }
 
   /**
-   * Creates a new vm death request using the given arguments. The request
+   * Creates a new class unload request using the given arguments. The request
    * is memoized, meaning that the same request will be returned for the same
    * arguments. The memoized result will be thrown out if the underlying
    * request storage indicates that the request has been removed.
    *
-   * @return The id of the created vm death request
+   * @return The id of the created class unload request
    */
   protected val newClassUnloadRequest = {
     type Input = (Seq[JDIRequestArgument])
@@ -76,7 +76,7 @@ trait PureClassUnloadProfile extends ClassUnloadProfile {
   }
 
   /**
-   * Creates a new pipeline of vm death events and data using the given
+   * Creates a new pipeline of class unload events and data using the given
    * arguments. The pipeline is NOT memoized; therefore, each call creates a
    * new pipeline with a new underlying event handler feeding the pipeline.
    * This means that the pipeline needs to be properly closed to remove the
@@ -86,7 +86,7 @@ trait PureClassUnloadProfile extends ClassUnloadProfile {
    *                  new pipeline
    * @param args The additional event arguments to provide to the event handler
    *             feeding the new pipeline
-   * @return The new vm death event and data pipeline
+   * @return The new class unload event and data pipeline
    */
   protected def newClassUnloadPipeline(
     requestId: String,

@@ -63,7 +63,7 @@ class ClassPrepareManager(
   /**
    * Determines if a class prepare request with the specified id.
    *
-   * @param id The id of the VM Death Request
+   * @param id The id of the Class Prepare Request
    *
    * @return True if a class prepare request with the id exists, otherwise false
    */
@@ -74,7 +74,7 @@ class ClassPrepareManager(
   /**
    * Retrieves the class prepare request using the specified id.
    *
-   * @param id The id of the VM Death Request
+   * @param id The id of the Class Prepare Request
    *
    * @return Some class prepare request if it exists, otherwise None
    */
@@ -99,7 +99,7 @@ class ClassPrepareManager(
   /**
    * Removes the specified class prepare request.
    *
-   * @param id The id of the VM Death Request
+   * @param id The id of the Class Prepare Request
    *
    * @return True if the class prepare request was removed (if it existed),
    *         otherwise false
