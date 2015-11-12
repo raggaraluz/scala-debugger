@@ -10,7 +10,7 @@ object MonitorWaited extends App {
 
   // This thread's purpose is to wait on the object
   val t1 = new Thread(new Runnable {
-    override def run(): Unit = while (true) {
+    override def run(): Unit = while (true) obj.synchronized {
       obj.wait()
       Thread.sleep(1)
     }
@@ -18,7 +18,7 @@ object MonitorWaited extends App {
 
   // This thread's purpose is to notify all other waiting threads for the object
   val t2 = new Thread(new Runnable {
-    override def run(): Unit = while (true) {
+    override def run(): Unit = while (true) obj.synchronized {
       obj.notifyAll()
       Thread.sleep(1)
     }

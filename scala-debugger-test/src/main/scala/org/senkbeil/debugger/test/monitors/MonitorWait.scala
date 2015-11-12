@@ -10,7 +10,7 @@ object MonitorWait extends App {
 
   // This thread's purpose is to wait on the object
   val t1 = new Thread(new Runnable {
-    override def run(): Unit = while (true) {
+    override def run(): Unit = while (true) obj.synchronized {
       obj.wait(100)
       Thread.sleep(1)
     }

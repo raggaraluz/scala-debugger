@@ -31,7 +31,7 @@ class MonitorContendedEnterManager(
    * this manager.
    *
    * @return The collection of monitor contended enter requests in the form of
-   *         (class name, method name)
+   *         ids
    */
   def monitorContendedEnterRequestList: Seq[MonitorContendedEnterKey] =
     monitorContendedEnterRequests.keySet().asScala.toSeq
