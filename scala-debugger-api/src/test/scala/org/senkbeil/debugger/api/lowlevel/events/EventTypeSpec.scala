@@ -49,6 +49,26 @@ class EventTypeSpec extends FunSpec with Matchers with MockFactory {
           be (Some(ModificationWatchpointEventType))
       }
 
+      it("should convert a MonitorContendedEnteredEvent to Some(MonitorContendedEnteredEventType)") {
+        EventType.eventToEventType(mock[MonitorContendedEnteredEvent]) should
+          be (Some(MonitorContendedEnteredEventType))
+      }
+
+      it("should convert a MonitorContendedEnterEvent to Some(MonitorContendedEnterEventType)") {
+        EventType.eventToEventType(mock[MonitorContendedEnterEvent]) should
+          be (Some(MonitorContendedEnterEventType))
+      }
+
+      it("should convert a MonitorWaitedEvent to Some(MonitorWaitedEventType)") {
+        EventType.eventToEventType(mock[MonitorWaitedEvent]) should
+          be (Some(MonitorWaitedEventType))
+      }
+
+      it("should convert a MonitorWaitEvent to Some(MonitorWaitEventType)") {
+        EventType.eventToEventType(mock[MonitorWaitEvent]) should
+          be (Some(MonitorWaitEventType))
+      }
+
       it("should convert an ExceptionEvent to Some(ExceptionEventType)") {
         EventType.eventToEventType(mock[ExceptionEvent]) should
           be (Some(ExceptionEventType))
@@ -118,6 +138,26 @@ class EventTypeSpec extends FunSpec with Matchers with MockFactory {
       it("should convert a ModificationWatchpointEvent class to Some(ModificationWatchpointEventType)") {
         EventType.eventClassToEventType(classOf[ModificationWatchpointEvent]) should
           be (Some(ModificationWatchpointEventType))
+      }
+
+      it("should convert a MonitorContendedEnteredEvent class to Some(MonitorContendedEnteredEventType)") {
+        EventType.eventClassToEventType(classOf[MonitorContendedEnteredEvent]) should
+          be (Some(MonitorContendedEnteredEventType))
+      }
+
+      it("should convert a MonitorContendedEnterEvent class to Some(MonitorContendedEnterEventType)") {
+        EventType.eventClassToEventType(classOf[MonitorContendedEnterEvent]) should
+          be (Some(MonitorContendedEnterEventType))
+      }
+
+      it("should convert a MonitorWaitedEvent class to Some(MonitorWaitedEventType)") {
+        EventType.eventClassToEventType(classOf[MonitorWaitedEvent]) should
+          be (Some(MonitorWaitedEventType))
+      }
+
+      it("should convert a MonitorWaitEvent class to Some(MonitorWaitEventType)") {
+        EventType.eventClassToEventType(classOf[MonitorWaitEvent]) should
+          be (Some(MonitorWaitEventType))
       }
 
       it("should convert an ExceptionEvent class to Some(ExceptionEventType)") {

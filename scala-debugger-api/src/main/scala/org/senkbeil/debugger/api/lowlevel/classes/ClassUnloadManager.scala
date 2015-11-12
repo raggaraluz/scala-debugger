@@ -63,7 +63,7 @@ class ClassUnloadManager(
   /**
    * Determines if a class unload request with the specified id.
    *
-   * @param id The id of the VM Death Request
+   * @param id The id of the Class Unload Request
    *
    * @return True if a class unload request with the id exists, otherwise false
    */
@@ -74,7 +74,7 @@ class ClassUnloadManager(
   /**
    * Retrieves the class unload request using the specified id.
    *
-   * @param id The id of the VM Death Request
+   * @param id The id of the Class Unload Request
    *
    * @return Some class unload request if it exists, otherwise None
    */
@@ -99,7 +99,7 @@ class ClassUnloadManager(
   /**
    * Removes the specified class unload request.
    *
-   * @param id The id of the VM Death Request
+   * @param id The id of the Class Unload Request
    *
    * @return True if the class unload request was removed (if it existed),
    *         otherwise false

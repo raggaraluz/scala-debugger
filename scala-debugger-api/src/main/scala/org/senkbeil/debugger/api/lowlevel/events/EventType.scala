@@ -18,6 +18,10 @@ object EventType extends Enumeration {
       ClassUnloadEventType,
       AccessWatchpointEventType,
       ModificationWatchpointEventType,
+      MonitorContendedEnteredEventType,
+      MonitorContendedEnterEventType,
+      MonitorWaitedEventType,
+      MonitorWaitEventType,
       ExceptionEventType,
       MethodEntryEventType,
       MethodExitEventType,
@@ -35,21 +39,25 @@ object EventType extends Enumeration {
   def eventToEventType(event: Event): Option[EventType] = {
     // NOTE: Small reminder that Option.apply(null) returns None in this case
     Option(event match {
-      case _: VMStartEvent                => VMStartEventType
-      case _: VMDisconnectEvent           => VMDisconnectEventType
-      case _: VMDeathEvent                => VMDeathEventType
-      case _: ThreadStartEvent            => ThreadStartEventType
-      case _: ThreadDeathEvent            => ThreadDeathEventType
-      case _: ClassPrepareEvent           => ClassPrepareEventType
-      case _: ClassUnloadEvent            => ClassUnloadEventType
-      case _: AccessWatchpointEvent       => AccessWatchpointEventType
-      case _: ModificationWatchpointEvent => ModificationWatchpointEventType
-      case _: ExceptionEvent              => ExceptionEventType
-      case _: MethodEntryEvent            => MethodEntryEventType
-      case _: MethodExitEvent             => MethodExitEventType
-      case _: BreakpointEvent             => BreakpointEventType
-      case _: StepEvent                   => StepEventType
-      case _                              => null
+      case _: VMStartEvent                  => VMStartEventType
+      case _: VMDisconnectEvent             => VMDisconnectEventType
+      case _: VMDeathEvent                  => VMDeathEventType
+      case _: ThreadStartEvent              => ThreadStartEventType
+      case _: ThreadDeathEvent              => ThreadDeathEventType
+      case _: ClassPrepareEvent             => ClassPrepareEventType
+      case _: ClassUnloadEvent              => ClassUnloadEventType
+      case _: AccessWatchpointEvent         => AccessWatchpointEventType
+      case _: ModificationWatchpointEvent   => ModificationWatchpointEventType
+      case _: MonitorContendedEnteredEvent  => MonitorContendedEnteredEventType
+      case _: MonitorContendedEnterEvent    => MonitorContendedEnterEventType
+      case _: MonitorWaitedEvent            => MonitorWaitedEventType
+      case _: MonitorWaitEvent              => MonitorWaitEventType
+      case _: ExceptionEvent                => ExceptionEventType
+      case _: MethodEntryEvent              => MethodEntryEventType
+      case _: MethodExitEvent               => MethodExitEventType
+      case _: BreakpointEvent               => BreakpointEventType
+      case _: StepEvent                     => StepEventType
+      case _                                => null
     })
   }
 
@@ -75,6 +83,10 @@ object EventType extends Enumeration {
       else if (eventClass == classOf[ClassUnloadEvent]) ClassUnloadEventType
       else if (eventClass == classOf[AccessWatchpointEvent]) AccessWatchpointEventType
       else if (eventClass == classOf[ModificationWatchpointEvent]) ModificationWatchpointEventType
+      else if (eventClass == classOf[MonitorContendedEnteredEvent]) MonitorContendedEnteredEventType
+      else if (eventClass == classOf[MonitorContendedEnterEvent]) MonitorContendedEnterEventType
+      else if (eventClass == classOf[MonitorWaitedEvent]) MonitorWaitedEventType
+      else if (eventClass == classOf[MonitorWaitEvent]) MonitorWaitEventType
       else if (eventClass == classOf[ExceptionEvent]) ExceptionEventType
       else if (eventClass == classOf[MethodEntryEvent]) MethodEntryEventType
       else if (eventClass == classOf[MethodExitEvent]) MethodExitEventType
