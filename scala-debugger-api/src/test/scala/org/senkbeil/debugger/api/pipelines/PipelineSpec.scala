@@ -202,6 +202,27 @@ class PipelineSpec extends FunSpec with Matchers with OneInstancePerTest
 
         unionPipeline.process(data: _*)
       }
+
+      it("should create a pipeline whose close invokes neither unioned pipelines' close methods") {
+        val mockCloseFunc1 = mockFunction[Unit]
+        val pipeline1 = new Pipeline(
+          mock[Operation[Int, Int]],
+          mockCloseFunc1
+        )
+
+        val mockCloseFunc2 = mockFunction[Unit]
+        val pipeline2 = new Pipeline(
+          mock[Operation[Int, Int]],
+          mockCloseFunc2
+        )
+
+        val unionInputPipeline = pipeline1.unionInput(pipeline2)
+
+        mockCloseFunc1.expects().never()
+        mockCloseFunc2.expects().never()
+
+        unionInputPipeline.close(now = true)
+      }
     }
 
     describe("#unionOutput") {
@@ -225,6 +246,67 @@ class PipelineSpec extends FunSpec with Matchers with OneInstancePerTest
 
         pipeline1.process(data: _*)
         pipeline2.process(data: _*)
+      }
+
+      it("should create a pipeline whose close invokes both unioned pipelines' close methods") {
+        val mockCloseFunc1 = mockFunction[Unit]
+        val pipeline1 = new Pipeline(
+          mock[Operation[Int, Int]],
+          mockCloseFunc1
+        )
+
+        val mockCloseFunc2 = mockFunction[Unit]
+        val pipeline2 = new Pipeline(
+          mock[Operation[Int, Int]],
+          mockCloseFunc2
+        )
+
+        val unionOutputPipeline = pipeline1.unionOutput(pipeline2)
+
+        mockCloseFunc1.expects().once()
+        mockCloseFunc2.expects().once()
+
+        unionOutputPipeline.close(now = true)
+      }
+    }
+
+    describe("#close") {
+      it("should invoke the close function immediately if 'now' is true") {
+        val mockCloseFunc = mockFunction[Unit]
+        val pipeline = new Pipeline(
+          mock[Operation[Int, Int]],
+          mockCloseFunc
+        )
+
+        mockCloseFunc.expects().once()
+
+        pipeline.close(now = true)
+      }
+
+      it("should generate a new pipeline containing the close operation if 'now' is false") {
+        val mockCloseFunc = mockFunction[Unit]
+        val pipeline = new Pipeline(
+          mock[Operation[Int, Int]],
+          mockCloseFunc
+        )
+
+        mockCloseFunc.expects().never()
+
+        pipeline.close(now = false)
+
+        pipeline.children.head shouldBe a [Pipeline[_, _]]
+      }
+
+      it("should invoke the close function immediately if no flag given") {
+        val mockCloseFunc = mockFunction[Unit]
+        val pipeline = new Pipeline(
+          mock[Operation[Int, Int]],
+          mockCloseFunc
+        )
+
+        mockCloseFunc.expects().once()
+
+        pipeline.close()
       }
     }
 
@@ -279,6 +361,15 @@ class PipelineSpec extends FunSpec with Matchers with OneInstancePerTest
         operation shouldBe a [NoOperation[_]]
         inputClass should be (classOf[AnyRef])
         outputClass should be (classOf[AnyRef])
+      }
+
+      it("should create a new pipeline with the specified close function") {
+        val mockCloseFunc = mockFunction[Unit]
+        val pipeline = Pipeline.newPipeline(classOf[AnyRef], mockCloseFunc)
+
+        mockCloseFunc.expects().once()
+
+        pipeline.close()
       }
     }
   }

@@ -1,18 +1,15 @@
 package org.senkbeil.debugger.api.lowlevel.events
 
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
-import org.senkbeil.debugger.api.pipelines.{CloseablePipeline, Pipeline}
+import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
-import com.sun.jdi.VirtualMachine
 import com.sun.jdi.event.{EventQueue, EventSet, Event}
 
 import java.util.concurrent.ConcurrentHashMap
 
 import EventType._
 import scala.collection.JavaConverters._
-import scala.util.Try
 
 /**
  * Represents a manager for events coming in from a virtual machine.
@@ -150,7 +147,7 @@ class EventManager(
   ): IdentityPipeline[EventAndData] = {
     val eventHandlerId = newEventHandlerId()
 
-    val eventPipeline = CloseablePipeline.newPipeline(
+    val eventPipeline = Pipeline.newPipeline(
       classOf[EventAndData],
       () => removeEventHandler(eventHandlerId)
     )
