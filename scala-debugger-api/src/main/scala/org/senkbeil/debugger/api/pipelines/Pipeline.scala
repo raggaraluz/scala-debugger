@@ -1,5 +1,7 @@
 package org.senkbeil.debugger.api.pipelines
 
+import java.io.Closeable
+
 import scala.collection.GenTraversableOnce
 import scala.util.Try
 
@@ -10,8 +12,23 @@ import scala.util.Try
  * @tparam A The incoming data type
  * @tparam B The outgoing data type
  * @param operation The operation to apply to incoming data
+ * @param closeFunc The function to invoke to close the pipeline
  */
-class Pipeline[A, B] private[pipelines] (val operation: Operation[A, B]) {
+class Pipeline[A, B] private[pipelines] (
+  val operation: Operation[A, B],
+  private val closeFunc: () => Unit
+) extends Closeable {
+  /**
+   * Creates a new instance of the pipeline with the specified operation. The
+   * close function is considered a no-op on this pipeline.
+   *
+   * @param operation The operation to apply to incoming data
+   *
+   * @return The new pipeline instance
+   */
+  private[pipelines] def this(operation: Operation[A, B]) =
+    this(operation, Pipeline.DefaultCloseFunc)
+
   /** Any child pipelines whose input is the output of this pipeline. */
   @volatile private var _children: Seq[Pipeline[B, _]] = Nil
 
@@ -54,13 +71,34 @@ class Pipeline[A, B] private[pipelines] (val operation: Operation[A, B]) {
    * when subclassing pipeline.
    *
    * @param operation The operation to provide to the new pipeline
+   * @param closeFunc The function used to close the new pipeline
+   * @tparam C The input type of the new pipeline
+   * @tparam D The output type of the new pipeline
+   *
+   * @return The new pipeline
+   */
+  protected def newPipeline[C, D](
+    operation: Operation[C, D],
+    closeFunc: () => Unit
+  ): Pipeline[C, D] = new Pipeline[C, D](operation, closeFunc)
+
+  /**
+   * Creates a new pipeline using the given operation. This is used to generate
+   * pipelines within the pipeline itself and can be overridden to generate
+   * a different kind of pipeline. It is recommended to override this method
+   * when subclassing pipeline.
+   *
+   * @note This implementation passes down the current pipeline's
+   *       close function.
+   *
+   * @param operation The operation to provide to the new pipeline
    * @tparam C The input type of the new pipeline
    * @tparam D The output type of the new pipeline
    *
    * @return The new pipeline
    */
   protected def newPipeline[C, D](operation: Operation[C, D]): Pipeline[C, D] =
-    new Pipeline[C, D](operation)
+    newPipeline[C, D](operation, closeFunc)
 
   /**
    * Processes the provided data through this specific pipeline instance and
@@ -171,7 +209,10 @@ class Pipeline[A, B] private[pipelines] (val operation: Operation[A, B]) {
    * @return The unioned pipeline
    */
   def unionInput(other: Pipeline[A, _]): Pipeline[A, A] = {
-    val parentPipeline = newPipeline(new NoOperation[A])
+    val parentPipeline = newPipeline(
+      new NoOperation[A],
+      Pipeline.DefaultCloseFunc
+    )
 
     parentPipeline.addChildPipeline(this)
     parentPipeline.addChildPipeline(other)
@@ -188,7 +229,10 @@ class Pipeline[A, B] private[pipelines] (val operation: Operation[A, B]) {
    * @return The unioned pipeline
    */
   def unionOutput(other: Pipeline[_, B]): Pipeline[B, B] = {
-    val childPipeline = newPipeline(new NoOperation[B])
+    val childPipeline = newPipeline(new NoOperation[B], () => {
+      Try(this.close(now = true))
+      Try(other.close(now = true))
+    })
 
     this.addChildPipeline(childPipeline)
     other.addChildPipeline(childPipeline)
@@ -204,12 +248,20 @@ class Pipeline[A, B] private[pipelines] (val operation: Operation[A, B]) {
   def noop(): Pipeline[B, B] = transform(new NoOperation[B])
 
   /**
-   * Closes the pipeline. Does nothing on a standard pipeline.
+   * Closes the pipeline.
    *
    * @param now If true, should perform the closing action immediately rather
    *            than on the next data fed through the pipeline
    */
-  def close(now: Boolean): Unit = {}
+  def close(now: Boolean): Unit = {
+    if (now) closeFunc()
+    else transform(new CloseOperation(closeFunc))
+  }
+
+  /**
+   * Closes the pipeline immediately.
+   */
+  def close(): Unit = close(now = true)
 }
 
 /**
@@ -219,8 +271,12 @@ object Pipeline {
   /** Represents a pipeline whose input and output types are the same. */
   type IdentityPipeline[A] = Pipeline[A, A]
 
+  /** Default close function. Does nothing. */
+  val DefaultCloseFunc: () => Unit = () => {}
+
   /**
-   * Creates an empty pipeline expecting data of the specified type.
+   * Creates an empty pipeline expecting data of the specified type. The
+   * associated close function is equivalent to a no-op.
    *
    * @tparam A The type of incoming data
    * @param klass The class representing the input of the new pipeline
@@ -229,4 +285,18 @@ object Pipeline {
    */
   def newPipeline[A](klass: Class[A]): IdentityPipeline[A] =
     new Pipeline(new NoOperation[A])
+
+  /**
+   * Creates an empty, closeable pipeline expecting data of the specified type.
+   *
+   * @tparam A The type of incoming data
+   * @param klass The class representing the input of the new pipeline
+   * @param closeFunc The function to invoke when closing the pipeline
+   *
+   * @return The new pipeline
+   */
+  def newPipeline[A](
+    klass: Class[A],
+    closeFunc: () => Unit
+  ): Pipeline[A, A] = new Pipeline(new NoOperation[A], closeFunc)
 }
