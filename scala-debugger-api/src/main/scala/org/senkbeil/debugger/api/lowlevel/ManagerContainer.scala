@@ -6,7 +6,7 @@ import org.senkbeil.debugger.api.lowlevel.breakpoints.BreakpointManager
 import org.senkbeil.debugger.api.lowlevel.classes.{ClassPrepareManager, ClassUnloadManager, ClassManager}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.exceptions.ExceptionManager
-import org.senkbeil.debugger.api.lowlevel.methods.{MethodExitManager, MethodEntryManager}
+import org.senkbeil.debugger.api.lowlevel.methods.{MethodEntryManager, MethodExitManager}
 import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorWaitManager, MonitorWaitedManager, MonitorContendedEnterManager, MonitorContendedEnteredManager}
 import org.senkbeil.debugger.api.lowlevel.steps.StepManager
 import org.senkbeil.debugger.api.lowlevel.threads.{ThreadStartManager, ThreadDeathManager}

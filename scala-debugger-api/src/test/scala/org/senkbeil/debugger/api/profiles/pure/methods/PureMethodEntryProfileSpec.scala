@@ -78,7 +78,7 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
           // NOTE: Expect the request to be created with a unique id
           (mockMethodEntryManager.createMethodEntryRequest _)
             .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodEntryEventType, eventArguments)
@@ -161,7 +161,7 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
           // NOTE: Expect the request to be created with a unique id
           (mockMethodEntryManager.createMethodEntryRequest _)
             .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodEntryEventType, eventArguments)
@@ -198,7 +198,7 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
           // NOTE: Expect the request to be created with a unique id
           (mockMethodEntryManager.createMethodEntryRequest _)
             .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodEntryEventType, eventArguments)
@@ -242,7 +242,7 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
           // NOTE: Expect the request to be created with a unique id
           (mockMethodEntryManager.createMethodEntryRequest _)
             .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodEntryEventType, eventArguments)
@@ -321,7 +321,7 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
           // NOTE: Expect the request to be created with a unique id
           (mockMethodEntryManager.createMethodEntryRequest _)
             .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodEntryEventType, eventArguments)
@@ -359,7 +359,7 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
           // NOTE: Expect the request to be created with a unique id
           (mockMethodEntryManager.createMethodEntryRequest _)
             .expects(className, methodName + 1, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodEntryEventType, eventArguments)
