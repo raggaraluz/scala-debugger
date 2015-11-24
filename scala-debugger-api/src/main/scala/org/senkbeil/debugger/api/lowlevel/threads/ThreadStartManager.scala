@@ -37,11 +37,13 @@ class ThreadStartManager(
   /**
    * Creates a new thread start request for the specified class and method.
    *
+   * @param requestId The id of the request used to retrieve and delete it
    * @param extraArguments Any additional arguments to provide to the request
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createThreadStartRequest(
+  def createThreadStartRequestWithId(
+    requestId: String,
     extraArguments: JDIRequestArgument*
   ): Try[ThreadStartKey] = {
     val request = Try(eventRequestManager.createThreadStartRequest(
@@ -51,13 +53,25 @@ class ThreadStartManager(
       ) ++ extraArguments: _*
     ))
 
-    val id = newRequestId()
     if (request.isSuccess) {
-      threadStartRequests.put(id, (extraArguments, request.get))
+      threadStartRequests.put(requestId, (extraArguments, request.get))
     }
 
     // If no exception was thrown, assume that we succeeded
-    request.map(_ => id)
+    request.map(_ => requestId)
+  }
+
+  /**
+   * Creates a new thread start request for the specified class and method.
+   *
+   * @param extraArguments Any additional arguments to provide to the request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createThreadStartRequest(
+    extraArguments: JDIRequestArgument*
+  ): Try[ThreadStartKey] = {
+    createThreadStartRequestWithId(newRequestId(), extraArguments: _*)
   }
 
   /**
