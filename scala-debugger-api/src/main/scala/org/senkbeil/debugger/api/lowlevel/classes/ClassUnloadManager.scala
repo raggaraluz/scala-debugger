@@ -37,11 +37,13 @@ class ClassUnloadManager(
   /**
    * Creates a new class unload request.
    *
+   * @param requestId The id of the request used to retrieve and delete it
    * @param extraArguments Any additional arguments to provide to the request
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createClassUnloadRequest(
+  def createClassUnloadRequestWithId(
+    requestId: String,
     extraArguments: JDIRequestArgument*
   ): Try[ClassUnloadKey] = {
     val request = Try(eventRequestManager.createClassUnloadRequest(
@@ -51,13 +53,25 @@ class ClassUnloadManager(
       ) ++ extraArguments: _*
     ))
 
-    val id = newRequestId()
     if (request.isSuccess) {
-      classUnloadRequests.put(id, (extraArguments, request.get))
+      classUnloadRequests.put(requestId, (extraArguments, request.get))
     }
 
     // If no exception was thrown, assume that we succeeded
-    request.map(_ => id)
+    request.map(_ => requestId)
+  }
+
+  /**
+   * Creates a new class unload request.
+   *
+   * @param extraArguments Any additional arguments to provide to the request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createClassUnloadRequest(
+    extraArguments: JDIRequestArgument*
+  ): Try[ClassUnloadKey] = {
+    createClassUnloadRequestWithId(newRequestId(), extraArguments: _*)
   }
 
   /**

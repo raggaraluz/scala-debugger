@@ -47,6 +47,25 @@ class ClassUnloadManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#createClassUnloadRequestWithId") {
+      it("should create the class unload request using the provided id") {
+        val expected = Success(java.util.UUID.randomUUID().toString)
+
+        val mockClassUnloadRequest = mock[ClassUnloadRequest]
+        (mockEventRequestManager.createClassUnloadRequest _).expects()
+          .returning(mockClassUnloadRequest).once()
+
+        // Should set enabled to true by default, and
+        // set the suspend policy to vm level by default
+        (mockClassUnloadRequest.setSuspendPolicy _)
+          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
+        (mockClassUnloadRequest.setEnabled _).expects(true).once()
+
+        val actual = classUnloadManager.createClassUnloadRequestWithId(expected.get)
+        actual should be(expected)
+      }
+    }
+
     describe("#createClassUnloadRequest") {
       it("should create the class unload request and return Success(id)") {
         val expected = Success(TestId)
