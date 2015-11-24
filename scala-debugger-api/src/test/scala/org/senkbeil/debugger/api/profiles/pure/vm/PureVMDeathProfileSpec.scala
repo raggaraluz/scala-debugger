@@ -70,8 +70,8 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Nil).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockVMDeathManager.createVMDeathRequest _)
-            .expects(uniqueIdProperty +: arguments)
+          (mockVMDeathManager.createVMDeathRequestWithId _)
+            .expects(TestRequestId, uniqueIdProperty +: arguments)
             .returning(Success(TestRequestId)).once()
 
           (mockEventManager.addEventDataStream _)
@@ -105,8 +105,8 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Nil).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockVMDeathManager.createVMDeathRequest _)
-            .expects(uniqueIdProperty +: arguments)
+          (mockVMDeathManager.createVMDeathRequestWithId _)
+            .expects(TestRequestId, uniqueIdProperty +: arguments)
             .throwing(expected.failed.get).once()
         }
 
@@ -141,8 +141,8 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Nil).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockVMDeathManager.createVMDeathRequest _)
-            .expects(uniqueIdProperty +: arguments)
+          (mockVMDeathManager.createVMDeathRequestWithId _)
+            .expects(TestRequestId, uniqueIdProperty +: arguments)
             .returning(Success(TestRequestId)).once()
 
           (mockEventManager.addEventDataStream _)
@@ -172,8 +172,8 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Nil).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockVMDeathManager.createVMDeathRequest _)
-            .expects(uniqueIdProperty +: arguments)
+          (mockVMDeathManager.createVMDeathRequestWithId _)
+            .expects(TestRequestId + "other", uniqueIdProperty +: arguments)
             .returning(Success(TestRequestId + "other")).once()
 
           (mockEventManager.addEventDataStream _)
@@ -208,8 +208,8 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Nil).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockVMDeathManager.createVMDeathRequest _)
-            .expects(uniqueIdProperty +: arguments)
+          (mockVMDeathManager.createVMDeathRequestWithId _)
+            .expects(TestRequestId, uniqueIdProperty +: arguments)
             .returning(Success(TestRequestId)).once()
 
           (mockEventManager.addEventDataStream _)
@@ -251,6 +251,56 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
         pureVMDeathProfile.onVMDeathWithData(
           arguments: _*
         )
+      }
+
+      it("should remove the underlying request if all pipelines are closed") {
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureVMDeathProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          inAnyOrder {
+            val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+            val uniqueIdPropertyFilter =
+              UniqueIdPropertyFilter(id = TestRequestId)
+
+            // Memoized request function first checks to make sure the cache
+            // has not been invalidated underneath (first call will always be
+            // empty since we have never created the request)
+            (mockVMDeathManager.vmDeathRequestList _)
+              .expects()
+              .returning(Nil).once()
+            (mockVMDeathManager.vmDeathRequestList _)
+              .expects()
+              .returning(Seq(TestRequestId)).once()
+
+            (mockVMDeathManager.getVMDeathRequestArguments _)
+              .expects(TestRequestId)
+              .returning(Some(arguments)).once()
+
+            // NOTE: Expect the request to be created with a unique id
+            (mockVMDeathManager.createVMDeathRequestWithId _)
+              .expects(TestRequestId, uniqueIdProperty +: arguments)
+              .returning(Success(TestRequestId)).once()
+
+            (mockEventManager.addEventDataStream _)
+              .expects(VMDeathEventType, Seq(uniqueIdPropertyFilter))
+              .returning(Pipeline.newPipeline(
+                classOf[(Event, Seq[JDIEventDataResult])]
+              )).twice()
+          }
+
+          (mockVMDeathManager.removeVMDeathRequest _)
+            .expects(TestRequestId).once()
+        }
+
+        val p1 = pureVMDeathProfile.onVMDeathWithData(arguments: _*)
+        val p2 = pureVMDeathProfile.onVMDeathWithData(arguments: _*)
+
+        p1.foreach(_.close())
+        p2.foreach(_.close())
       }
     }
   }

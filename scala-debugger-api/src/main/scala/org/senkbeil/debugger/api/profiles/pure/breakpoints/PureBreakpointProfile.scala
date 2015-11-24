@@ -1,5 +1,8 @@
 package org.senkbeil.debugger.api.profiles.pure.breakpoints
 
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.breakpoints.BreakpointManager
 import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager}

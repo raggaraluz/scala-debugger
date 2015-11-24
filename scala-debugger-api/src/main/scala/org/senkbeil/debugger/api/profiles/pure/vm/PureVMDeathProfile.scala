@@ -1,5 +1,8 @@
 package org.senkbeil.debugger.api.profiles.pure.vm
 
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+
 import com.sun.jdi.event.VMDeathEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument}
@@ -8,11 +11,12 @@ import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
 import org.senkbeil.debugger.api.lowlevel.vm.VMDeathManager
+import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.vm.VMDeathProfile
 import org.senkbeil.debugger.api.utils.Memoization
 import org.senkbeil.debugger.api.lowlevel.events.EventType.VMDeathEventType
-
+import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**
@@ -22,6 +26,15 @@ import scala.util.Try
 trait PureVMDeathProfile extends VMDeathProfile {
   protected val vmDeathManager: VMDeathManager
   protected val eventManager: EventManager
+
+  /**
+   * Contains mapping from input to a counter indicating how many pipelines
+   * are currently active for the input.
+   */
+  private val pipelineCounter = new ConcurrentHashMap[
+    Seq[JDIArgument],
+    AtomicInteger
+  ]().asScala
 
   /**
    * Constructs a stream of vm death events.
@@ -57,7 +70,8 @@ trait PureVMDeathProfile extends VMDeathProfile {
         val requestId = newVMDeathRequestId()
         val args = UniqueIdProperty(id = requestId) +: input
 
-        vmDeathManager.createVMDeathRequest(
+        vmDeathManager.createVMDeathRequestWithId(
+          requestId,
           args: _*
         ).get
 
@@ -93,8 +107,47 @@ trait PureVMDeathProfile extends VMDeathProfile {
     args: Seq[JDIEventArgument]
   ): IdentityPipeline[VMDeathEventAndData] = {
     val eArgsWithFilter = UniqueIdPropertyFilter(id = requestId) +: args
-    eventManager.addEventDataStream(VMDeathEventType, eArgsWithFilter: _*)
-      .map(t => (t._1.asInstanceOf[VMDeathEvent], t._2)).noop()
+    val newPipeline = eventManager
+      .addEventDataStream(VMDeathEventType, eArgsWithFilter: _*)
+      .map(t => (t._1.asInstanceOf[VMDeathEvent], t._2))
+      .noop()
+
+    // Create a companion pipeline who, when closed, checks to see if there
+    // are no more pipelines for the given request and, if so, removes the
+    // request as well
+    val closePipeline = Pipeline.newPipeline(
+      classOf[VMDeathEventAndData],
+      newPipelineCloseFunc(requestId, args)
+    )
+
+    // Increment the counter for open pipelines
+    pipelineCounter
+      .getOrElseUpdate(args, new AtomicInteger(0))
+      .incrementAndGet()
+
+    val combinedPipeline = newPipeline.unionOutput(closePipeline)
+    combinedPipeline
+  }
+
+  /**
+   * Creates a new function used for closing generated pipelines.
+   *
+   * @param requestId The id of the request
+   * @param args The arguments associated with the request
+   *
+   * @return The new function for closing the pipeline
+   */
+  protected def newPipelineCloseFunc(
+    requestId: String,
+    args: Seq[JDIEventArgument]
+  ): () => Unit = () => {
+    val pCounter = pipelineCounter(args)
+
+    val totalPipelinesRemaining = pCounter.decrementAndGet()
+
+    if (totalPipelinesRemaining == 0) {
+      vmDeathManager.removeVMDeathRequest(requestId)
+    }
   }
 
   /**

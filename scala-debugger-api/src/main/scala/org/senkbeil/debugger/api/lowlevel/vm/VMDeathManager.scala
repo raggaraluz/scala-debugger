@@ -40,11 +40,13 @@ class VMDeathManager(
   /**
    * Creates a new vm death request.
    *
+   * @param requestId The id of the request used to retrieve and delete it
    * @param extraArguments Any additional arguments to provide to the request
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createVMDeathRequest(
+  def createVMDeathRequestWithId(
+    requestId: String,
     extraArguments: JDIRequestArgument*
   ): Try[VMDeathKey] = {
     val request = Try(eventRequestManager.createVMDeathRequest(
@@ -54,13 +56,25 @@ class VMDeathManager(
       ) ++ extraArguments: _*
     ))
 
-    val id = newRequestId()
     if (request.isSuccess) {
-      vmDeathRequests.put(id, (extraArguments, request.get))
+      vmDeathRequests.put(requestId, (extraArguments, request.get))
     }
 
     // If no exception was thrown, assume that we succeeded
-    request.map(_ => id)
+    request.map(_ => requestId)
+  }
+
+  /**
+   * Creates a new vm death request. Generates a unique request id.
+   *
+   * @param extraArguments Any additional arguments to provide to the request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createVMDeathRequest(
+    extraArguments: JDIRequestArgument*
+  ): Try[VMDeathKey] = {
+    createVMDeathRequestWithId(newRequestId(), extraArguments: _*)
   }
 
   /**

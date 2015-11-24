@@ -77,6 +77,25 @@ class VMDeathManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#createVMDeathRequestWithId") {
+      it("should create the vm death request using the provided id") {
+        val expected = Success(java.util.UUID.randomUUID().toString)
+
+        val mockVMDeathRequest = mock[VMDeathRequest]
+        (mockEventRequestManager.createVMDeathRequest _).expects()
+          .returning(mockVMDeathRequest).once()
+
+        // Should set enabled to true by default, and
+        // set the suspend policy to vm level by default
+        (mockVMDeathRequest.setSuspendPolicy _)
+          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
+        (mockVMDeathRequest.setEnabled _).expects(true).once()
+
+        val actual = vmDeathManager.createVMDeathRequestWithId(expected.get)
+        actual should be (expected)
+      }
+    }
+
     describe("#hasVMDeathRequest") {
       it("should return true if it exists") {
         val expected = true
