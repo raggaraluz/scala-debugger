@@ -47,6 +47,26 @@ class ThreadDeathManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#createThreadDeathRequestWithId") {
+      it("should create the thread death request using the provided id") {
+        val expected = Success(java.util.UUID.randomUUID().toString)
+
+        val mockThreadDeathRequest = mock[ThreadDeathRequest]
+        (mockEventRequestManager.createThreadDeathRequest _).expects()
+          .returning(mockThreadDeathRequest).once()
+
+        // Should set enabled to true by default, and
+        // set the suspend policy to thread level by default
+        (mockThreadDeathRequest.setSuspendPolicy _)
+          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
+        (mockThreadDeathRequest.setEnabled _).expects(true).once()
+
+        val actual =
+          threadDeathManager.createThreadDeathRequestWithId(expected.get)
+        actual should be(expected)
+      }
+    }
+
     describe("#createThreadDeathRequest") {
       it("should create the thread death request and return Success(id)") {
         val expected = Success(TestId)

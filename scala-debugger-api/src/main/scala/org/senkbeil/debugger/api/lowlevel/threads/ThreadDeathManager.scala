@@ -37,11 +37,13 @@ class ThreadDeathManager(
   /**
    * Creates a new thread death request for the specified class and method.
    *
+   * @param requestId The id of the request used to retrieve and delete it
    * @param extraArguments Any additional arguments to provide to the request
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createThreadDeathRequest(
+  def createThreadDeathRequestWithId(
+    requestId: String,
     extraArguments: JDIRequestArgument*
   ): Try[ThreadDeathKey] = {
     val request = Try(eventRequestManager.createThreadDeathRequest(
@@ -51,13 +53,25 @@ class ThreadDeathManager(
       ) ++ extraArguments: _*
     ))
 
-    val id = newRequestId()
     if (request.isSuccess) {
-      threadDeathRequests.put(id, (extraArguments, request.get))
+      threadDeathRequests.put(requestId, (extraArguments, request.get))
     }
 
     // If no exception was thrown, assume that we succeeded
-    request.map(_ => id)
+    request.map(_ => requestId)
+  }
+
+  /**
+   * Creates a new thread death request for the specified class and method.
+   *
+   * @param extraArguments Any additional arguments to provide to the request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createThreadDeathRequest(
+    extraArguments: JDIRequestArgument*
+  ): Try[ThreadDeathKey] = {
+    createThreadDeathRequestWithId(newRequestId(), extraArguments: _*)
   }
 
   /**
