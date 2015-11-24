@@ -39,11 +39,13 @@ class MonitorContendedEnterManager(
   /**
    * Creates a new monitor contended enter request.
    *
+   * @param requestId The id of the request used to retrieve and delete it
    * @param extraArguments Any additional arguments to provide to the request
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createMonitorContendedEnterRequest(
+  def createMonitorContendedEnterRequestWithId(
+    requestId: String,
     extraArguments: JDIRequestArgument*
   ): Try[MonitorContendedEnterKey] = {
     val request = Try(eventRequestManager.createMonitorContendedEnterRequest(
@@ -53,13 +55,28 @@ class MonitorContendedEnterManager(
       ) ++ extraArguments: _*
     ))
 
-    val id = newRequestId()
     if (request.isSuccess) {
-      monitorContendedEnterRequests.put(id, (extraArguments, request.get))
+      monitorContendedEnterRequests.put(
+        requestId,
+        (extraArguments, request.get)
+      )
     }
 
     // If no exception was thrown, assume that we succeeded
-    request.map(_ => id)
+    request.map(_ => requestId)
+  }
+
+  /**
+   * Creates a new monitor contended enter request.
+   *
+   * @param extraArguments Any additional arguments to provide to the request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createMonitorContendedEnterRequest(
+    extraArguments: JDIRequestArgument*
+  ): Try[MonitorContendedEnterKey] = {
+    createMonitorContendedEnterRequestWithId(newRequestId(), extraArguments: _*)
   }
 
   /**
