@@ -472,8 +472,8 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
           testNotifyUncaught
         )
 
-        (mockEventRequestManager.deleteEventRequest _)
-          .expects(stubRequest).once()
+        (mockEventRequestManager.deleteEventRequests _)
+          .expects(Seq(stubRequest).asJava).once()
 
         val actual = exceptionManager.removeExceptionRequestWithId(TestRequestId)
         actual should be (expected)
@@ -506,8 +506,8 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
           testNotifyUncaught
         )
 
-        (mockEventRequestManager.deleteEventRequest _)
-          .expects(stubRequest).once()
+        (mockEventRequestManager.deleteEventRequests _)
+          .expects(Seq(stubRequest).asJava).once()
 
         val actual = exceptionManager.removeExceptionRequest(testExceptionName)
         actual should be (expected)

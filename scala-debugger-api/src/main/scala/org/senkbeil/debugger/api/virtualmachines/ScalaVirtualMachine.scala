@@ -65,8 +65,8 @@ class ScalaVirtualMachine(
       lowlevel.classManager.refreshAllClasses()
 
       logger.trace(vmString("Applying any pending breakpoints for references!"))
-      lowlevel.classManager.allFileNames
-        .foreach(lowlevel.breakpointManager.processPendingBreakpoints)
+      //lowlevel.classManager.allFileNames
+      //  .foreach(lowlevel.breakpointManager.processPendingBreakpoints)
     })
 
     // Mark class prepare events to signal refreshing our classes
@@ -82,7 +82,7 @@ class ScalaVirtualMachine(
 
         logger.trace(vmString(
           s"Processing any pending breakpoints for $referenceTypeName!"))
-        lowlevel.breakpointManager.processPendingBreakpoints(fileName)
+        //lowlevel.breakpointManager.processPendingBreakpoints(fileName)
       })
   }
 

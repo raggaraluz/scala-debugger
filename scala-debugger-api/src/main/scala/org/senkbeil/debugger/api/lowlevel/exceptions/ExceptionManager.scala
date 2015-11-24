@@ -325,7 +325,7 @@ class ExceptionManager(
     exceptionArgsToRequestId.find(_._2 == requestId).map(_._1)
       .foreach(exceptionArgsToRequestId.remove)
 
-    requests.foreach(_.foreach(eventRequestManager.deleteEventRequest))
+    requests.map(_.asJava).foreach(eventRequestManager.deleteEventRequests)
 
     requests.nonEmpty
   }

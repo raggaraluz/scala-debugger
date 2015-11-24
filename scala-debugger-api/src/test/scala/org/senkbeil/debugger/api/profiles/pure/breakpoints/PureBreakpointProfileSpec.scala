@@ -82,7 +82,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           // NOTE: Expect the request to be created with a unique id
           (mockBreakpointManager.createLineBreakpointRequest _)
             .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
@@ -161,7 +161,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           // NOTE: Expect the request to be created with a unique id
           (mockBreakpointManager.createLineBreakpointRequest _)
             .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
@@ -194,7 +194,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           // NOTE: Expect the request to be created with a unique id
           (mockBreakpointManager.createLineBreakpointRequest _)
             .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
@@ -234,7 +234,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           // NOTE: Expect the request to be created with a unique id
           (mockBreakpointManager.createLineBreakpointRequest _)
             .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
@@ -305,7 +305,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           // NOTE: Expect the request to be created with a unique id
           (mockBreakpointManager.createLineBreakpointRequest _)
             .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
@@ -339,7 +339,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           // NOTE: Expect the request to be created with a unique id
           (mockBreakpointManager.createLineBreakpointRequest _)
             .expects(fileName, lineNumber + 1, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
