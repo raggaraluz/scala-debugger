@@ -47,6 +47,25 @@ class MonitorContendedEnteredManagerSpec extends FunSpec with Matchers with Mock
       }
     }
 
+    describe("#createMonitorContendedEnteredRequestWithId") {
+      it("should create the monitor contended entered request using the provided id") {
+        val expected = Success(java.util.UUID.randomUUID().toString)
+
+        val mockMonitorContendedEnteredRequest = mock[MonitorContendedEnteredRequest]
+        (mockEventRequestManager.createMonitorContendedEnteredRequest _).expects()
+          .returning(mockMonitorContendedEnteredRequest).once()
+
+        // Should set enabled to true by default, and
+        // set the suspend policy to vm level by default
+        (mockMonitorContendedEnteredRequest.setSuspendPolicy _)
+          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
+        (mockMonitorContendedEnteredRequest.setEnabled _).expects(true).once()
+
+        val actual = monitorContendedEnteredManager.createMonitorContendedEnteredRequestWithId(expected.get)
+        actual should be(expected)
+      }
+    }
+
     describe("#createMonitorContendedEnteredRequest") {
       it("should create the monitor contended entered request and return Success(id)") {
         val expected = Success(TestId)

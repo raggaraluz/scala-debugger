@@ -39,11 +39,13 @@ class MonitorContendedEnteredManager(
   /**
    * Creates a new monitor contended entered request.
    *
+   * @param requestId The id of the request used to retrieve and delete it
    * @param extraArguments Any additional arguments to provide to the request
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createMonitorContendedEnteredRequest(
+  def createMonitorContendedEnteredRequestWithId(
+    requestId: String,
     extraArguments: JDIRequestArgument*
   ): Try[MonitorContendedEnteredKey] = {
     val request = Try(eventRequestManager.createMonitorContendedEnteredRequest(
@@ -53,13 +55,31 @@ class MonitorContendedEnteredManager(
       ) ++ extraArguments: _*
     ))
 
-    val id = newRequestId()
     if (request.isSuccess) {
-      monitorContendedEnteredRequests.put(id, (extraArguments, request.get))
+      monitorContendedEnteredRequests.put(
+        requestId,
+        (extraArguments, request.get)
+      )
     }
 
     // If no exception was thrown, assume that we succeeded
-    request.map(_ => id)
+    request.map(_ => requestId)
+  }
+
+  /**
+   * Creates a new monitor contended entered request.
+   *
+   * @param extraArguments Any additional arguments to provide to the request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createMonitorContendedEnteredRequest(
+    extraArguments: JDIRequestArgument*
+  ): Try[MonitorContendedEnteredKey] = {
+    createMonitorContendedEnteredRequestWithId(
+      newRequestId(),
+      extraArguments: _*
+    )
   }
 
   /**
