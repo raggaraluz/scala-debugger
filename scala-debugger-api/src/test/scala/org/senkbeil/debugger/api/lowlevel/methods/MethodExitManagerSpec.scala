@@ -9,9 +9,12 @@ import scala.util.{Failure, Success}
 class MethodExitManagerSpec extends FunSpec with Matchers with MockFactory
   with OneInstancePerTest with org.scalamock.matchers.Matchers
 {
+  private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]
 
-  private val methodExitManager = new MethodExitManager(mockEventRequestManager)
+  private val methodExitManager = new MethodExitManager(mockEventRequestManager) {
+    override protected def newRequestId(): String = TestRequestId
+  }
 
   describe("MethodExitManager") {
     describe("#methodExitRequestList") {
@@ -32,9 +35,58 @@ class MethodExitManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
-    describe("#setMethodExitRequest") {
+    describe("#methodExitRequestListById") {
+      it("should contain all method exit request ids") {
+        val methodExitRequests = Seq(
+          ("id1", "class1", "method1"),
+          ("id2", "class2", "method2")
+        )
+
+        methodExitRequests.foreach { case (requestId, className, methodName) =>
+          (mockEventRequestManager.createMethodExitRequest _).expects()
+            .returning(stub[MethodExitRequest]).once()
+          methodExitManager.createMethodExitRequestWithId(
+            requestId,
+            className,
+            methodName
+          )
+        }
+
+        methodExitManager.methodExitRequestListById should
+          contain theSameElementsAs (methodExitRequests.map(_._1))
+      }
+    }
+
+    describe("#createMethodExitRequestWithId") {
+      it("should create the method exit request using the provided id") {
+        val expected = Success(java.util.UUID.randomUUID().toString)
+        val testClassName = "some class name"
+        val testMethodName = "some method name"
+
+        val mockMethodExitRequest = mock[MethodExitRequest]
+        (mockEventRequestManager.createMethodExitRequest _).expects()
+          .returning(mockMethodExitRequest).once()
+
+        // Should apply the class filter, set enabled to true by default, and
+        // set the suspend policy to thread level by default
+        (mockMethodExitRequest.addClassFilter(_: String))
+          .expects(testClassName).once()
+        (mockMethodExitRequest.setSuspendPolicy _)
+          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
+        (mockMethodExitRequest.setEnabled _).expects(true).once()
+
+        val actual = methodExitManager.createMethodExitRequestWithId(
+          expected.get,
+          testClassName,
+          testMethodName
+        )
+        actual should be(expected)
+      }
+    }
+
+    describe("#createMethodExitRequest") {
       it("should create the method exit request with a class inclusion filter for the class name") {
-        val expected = Success(true)
+        val expected = Success(TestRequestId)
         val testClassName = "some class name"
         val testMethodName = "some method name"
 
@@ -67,6 +119,34 @@ class MethodExitManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#hasMethodExitRequestWithId") {
+      it("should return true if it exists") {
+        val expected = true
+
+        val testClassName = "some class name"
+        val testMethodName = "some method name"
+
+        (mockEventRequestManager.createMethodExitRequest _).expects()
+          .returning(stub[MethodExitRequest]).once()
+
+        methodExitManager.createMethodExitRequestWithId(
+          TestRequestId,
+          testClassName,
+          testMethodName
+        )
+
+        val actual = methodExitManager.hasMethodExitRequestWithId(TestRequestId)
+        actual should be (expected)
+      }
+
+      it("should return false if it does not exist") {
+        val expected = false
+
+        val actual = methodExitManager.hasMethodExitRequestWithId(TestRequestId)
+        actual should be (expected)
+      }
+    }
+
     describe("#hasMethodExitRequest") {
       it("should return true if it exists") {
         val expected = true
@@ -90,6 +170,34 @@ class MethodExitManagerSpec extends FunSpec with Matchers with MockFactory
         val testMethodName = "some method name"
 
         val actual = methodExitManager.hasMethodExitRequest(testClassName, testMethodName)
+        actual should be (expected)
+      }
+    }
+
+    describe("#getMethodExitRequestWithId") {
+      it("should return Some(MethodExitRequest) if found") {
+        val expected = stub[MethodExitRequest]
+
+        val testClassName = "some class name"
+        val testMethodName = "some method name"
+
+        (mockEventRequestManager.createMethodExitRequest _).expects()
+          .returning(expected).once()
+
+        methodExitManager.createMethodExitRequestWithId(
+          TestRequestId,
+          testClassName,
+          testMethodName
+        )
+
+        val actual = methodExitManager.getMethodExitRequestWithId(TestRequestId)
+        actual should be (Some(expected))
+      }
+
+      it("should return None if not found") {
+        val expected = None
+
+        val actual = methodExitManager.getMethodExitRequestWithId(TestRequestId)
         actual should be (expected)
       }
     }
@@ -119,6 +227,43 @@ class MethodExitManagerSpec extends FunSpec with Matchers with MockFactory
 
         val actual =
           methodExitManager.getMethodExitRequest(testClassName, testMethodName)
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeMethodExitRequestWithId") {
+      it("should return true if the method exit request was removed") {
+        val expected = true
+        val stubRequest = stub[MethodExitRequest]
+
+        val testClassName = "some class name"
+        val testMethodName = "some method name"
+
+        (mockEventRequestManager.createMethodExitRequest _).expects()
+          .returning(stubRequest).once()
+
+        methodExitManager.createMethodExitRequestWithId(
+          TestRequestId,
+          testClassName,
+          testMethodName
+        )
+
+        (mockEventRequestManager.deleteEventRequest _)
+          .expects(stubRequest).once()
+
+        val actual =
+          methodExitManager.removeMethodExitRequestWithId(TestRequestId)
+        actual should be (expected)
+      }
+
+      it("should return false if the method exit request was not removed") {
+        val expected = false
+
+        val testClassName = "some class name"
+        val testMethodName = "some method name"
+
+        val actual =
+          methodExitManager.removeMethodExitRequestWithId(TestRequestId)
         actual should be (expected)
       }
     }

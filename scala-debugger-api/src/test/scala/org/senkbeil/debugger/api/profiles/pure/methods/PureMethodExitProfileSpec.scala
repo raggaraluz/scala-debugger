@@ -78,7 +78,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           // NOTE: Expect the request to be created with a unique id
           (mockMethodExitManager.createMethodExitRequest _)
             .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodExitEventType, eventArguments)
@@ -161,7 +161,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           // NOTE: Expect the request to be created with a unique id
           (mockMethodExitManager.createMethodExitRequest _)
             .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodExitEventType, eventArguments)
@@ -198,7 +198,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           // NOTE: Expect the request to be created with a unique id
           (mockMethodExitManager.createMethodExitRequest _)
             .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodExitEventType, eventArguments)
@@ -242,7 +242,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           // NOTE: Expect the request to be created with a unique id
           (mockMethodExitManager.createMethodExitRequest _)
             .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodExitEventType, eventArguments)
@@ -321,7 +321,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           // NOTE: Expect the request to be created with a unique id
           (mockMethodExitManager.createMethodExitRequest _)
             .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodExitEventType, eventArguments)
@@ -359,7 +359,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           // NOTE: Expect the request to be created with a unique id
           (mockMethodExitManager.createMethodExitRequest _)
             .expects(className, methodName + 1, uniqueIdProperty +: arguments)
-            .returning(Success(true)).once()
+            .returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodExitEventType, eventArguments)

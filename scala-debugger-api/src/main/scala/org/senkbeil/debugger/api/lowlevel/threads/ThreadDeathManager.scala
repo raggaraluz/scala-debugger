@@ -131,6 +131,5 @@ class ThreadDeathManager(
    *
    * @return The id as a string
    */
-  protected def newRequestId(): String =
-    java.util.UUID.randomUUID().toString
+  protected def newRequestId(): String = java.util.UUID.randomUUID().toString
 }
