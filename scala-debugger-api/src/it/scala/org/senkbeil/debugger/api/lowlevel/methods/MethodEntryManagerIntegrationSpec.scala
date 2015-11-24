@@ -44,7 +44,7 @@ class MethodEntryManagerIntegrationSpec extends FunSpec with Matchers
         )
 
         // First line in test method
-        breakpointManager.createLineBreakpointRequest(testFile, 26)
+        breakpointManager.createBreakpointRequest(testFile, 26)
 
         // Listen for breakpoint on first line of method, checking if this
         // breakpoint is hit before or after the method entry event

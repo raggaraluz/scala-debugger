@@ -65,7 +65,7 @@ trait PureBreakpointProfile extends BreakpointProfile {
         val requestId = newBreakpointRequestId()
         val args = UniqueIdProperty(id = requestId) +: input._3
 
-        breakpointManager.createLineBreakpointRequest(
+        breakpointManager.createBreakpointRequest(
           input._1,
           input._2,
           args: _*
@@ -74,7 +74,7 @@ trait PureBreakpointProfile extends BreakpointProfile {
         requestId
       },
       cacheInvalidFunc = (key: Key) => {
-        !breakpointManager.hasLineBreakpointRequest(key._1, key._2)
+        !breakpointManager.hasBreakpointRequest(key._1, key._2)
       }
     )
   }

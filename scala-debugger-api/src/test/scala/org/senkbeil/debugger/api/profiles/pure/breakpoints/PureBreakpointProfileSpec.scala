@@ -75,12 +75,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           // Memoized request function first checks to make sure the cache
           // has not been invalidated underneath (first call will always be
           // false since we have never created the request)
-          (mockBreakpointManager.hasLineBreakpointRequest _)
+          (mockBreakpointManager.hasBreakpointRequest _)
             .expects(fileName, lineNumber)
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createLineBreakpointRequest _)
+          (mockBreakpointManager.createBreakpointRequest _)
             .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
             .returning(Success("")).once()
 
@@ -114,12 +114,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           // Memoized request function first checks to make sure the cache
           // has not been invalidated underneath (first call will always be
           // false since we have never created the request)
-          (mockBreakpointManager.hasLineBreakpointRequest _)
+          (mockBreakpointManager.hasBreakpointRequest _)
             .expects(fileName, lineNumber)
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createLineBreakpointRequest _)
+          (mockBreakpointManager.createBreakpointRequest _)
             .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
             .throwing(expected.failed.get).once()
         }
@@ -154,12 +154,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           // Memoized request function first checks to make sure the cache
           // has not been invalidated underneath (first call will always be
           // false since we have never created the request)
-          (mockBreakpointManager.hasLineBreakpointRequest _)
+          (mockBreakpointManager.hasBreakpointRequest _)
             .expects(fileName, lineNumber)
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createLineBreakpointRequest _)
+          (mockBreakpointManager.createBreakpointRequest _)
             .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
             .returning(Success("")).once()
 
@@ -187,12 +187,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
 
           // Return false this time to indicate that the breakpoint request
           // was removed some time between the two calls
-          (mockBreakpointManager.hasLineBreakpointRequest _)
+          (mockBreakpointManager.hasBreakpointRequest _)
             .expects(fileName, lineNumber)
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createLineBreakpointRequest _)
+          (mockBreakpointManager.createBreakpointRequest _)
             .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
             .returning(Success("")).once()
 
@@ -227,12 +227,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           // Memoized request function first checks to make sure the cache
           // has not been invalidated underneath (first call will always be
           // false since we have never created the request)
-          (mockBreakpointManager.hasLineBreakpointRequest _)
+          (mockBreakpointManager.hasBreakpointRequest _)
             .expects(fileName, lineNumber)
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createLineBreakpointRequest _)
+          (mockBreakpointManager.createBreakpointRequest _)
             .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
             .returning(Success("")).once()
 
@@ -259,7 +259,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             UniqueIdPropertyFilter(id = TestRequestId)
 
           // Return true to indicate that we do still have the request
-          (mockBreakpointManager.hasLineBreakpointRequest _)
+          (mockBreakpointManager.hasBreakpointRequest _)
             .expects(fileName, lineNumber)
             .returning(true).once()
 
@@ -298,12 +298,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           // Memoized request function first checks to make sure the cache
           // has not been invalidated underneath (first call will always be
           // false since we have never created the request)
-          (mockBreakpointManager.hasLineBreakpointRequest _)
+          (mockBreakpointManager.hasBreakpointRequest _)
             .expects(fileName, lineNumber)
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createLineBreakpointRequest _)
+          (mockBreakpointManager.createBreakpointRequest _)
             .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
             .returning(Success("")).once()
 
@@ -332,12 +332,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           // Memoized request function first checks to make sure the cache
           // has not been invalidated underneath (first call will always be
           // false since we have never created the request)
-          (mockBreakpointManager.hasLineBreakpointRequest _)
+          (mockBreakpointManager.hasBreakpointRequest _)
             .expects(fileName, lineNumber + 1)
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createLineBreakpointRequest _)
+          (mockBreakpointManager.createBreakpointRequest _)
             .expects(fileName, lineNumber + 1, uniqueIdProperty +: arguments)
             .returning(Success("")).once()
 

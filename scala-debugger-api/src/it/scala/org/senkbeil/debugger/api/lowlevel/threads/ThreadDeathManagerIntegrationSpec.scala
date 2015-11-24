@@ -32,7 +32,7 @@ class ThreadDeathManagerIntegrationSpec extends FunSpec with Matchers
         val requestCreated = new AtomicBoolean(false)
 
         // Set a breakpoint first so we can be ready
-        breakpointManager.createLineBreakpointRequest(testFile, 10)
+        breakpointManager.createBreakpointRequest(testFile, 10)
         eventManager.addResumingEventHandler(BreakpointEventType, _ => {
           while (!requestCreated.get()) { Thread.sleep(1) }
         })

@@ -33,7 +33,7 @@ class ExceptionManagerIntegrationSpec extends FunSpec with Matchers
 
         // Use a breakpoint prior to our exceptions to prepare without passing
         // the exceptions
-        breakpointManager.createLineBreakpointRequest(testFile, 10)
+        breakpointManager.createBreakpointRequest(testFile, 10)
 
         // When breakpoint triggered, assume the exception class has been loaded
         eventManager.addResumingEventHandler(BreakpointEventType, e => {
@@ -82,7 +82,7 @@ class ExceptionManagerIntegrationSpec extends FunSpec with Matchers
 
         // Use a breakpoint prior to our exceptions to prepare without passing
         // the exceptions
-        breakpointManager.createLineBreakpointRequest(testFile, 10)
+        breakpointManager.createBreakpointRequest(testFile, 10)
 
         // When breakpoint triggered, assume the exception class has been loaded
         eventManager.addResumingEventHandler(BreakpointEventType, e => {
@@ -131,7 +131,7 @@ class ExceptionManagerIntegrationSpec extends FunSpec with Matchers
 
         // Use a breakpoint prior to our exceptions to prepare without passing
         // the exceptions
-        breakpointManager.createLineBreakpointRequest(testFile, 10)
+        breakpointManager.createBreakpointRequest(testFile, 10)
 
         // When breakpoint triggered, assume the exception class has been loaded
         eventManager.addResumingEventHandler(BreakpointEventType, e => {

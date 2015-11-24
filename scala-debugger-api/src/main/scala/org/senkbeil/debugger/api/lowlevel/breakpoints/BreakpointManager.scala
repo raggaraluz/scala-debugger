@@ -64,7 +64,7 @@ class BreakpointManager(
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createLineBreakpointRequestWithId(
+  def createBreakpointRequestWithId(
     requestId: String,
     fileName: String,
     lineNumber: Int,
@@ -108,12 +108,12 @@ class BreakpointManager(
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createLineBreakpointRequest(
+  def createBreakpointRequest(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIRequestArgument*
   ): Try[BreakpointKey] = {
-    createLineBreakpointRequestWithId(
+    createBreakpointRequestWithId(
       newRequestId(),
       fileName,
       lineNumber,
@@ -129,9 +129,9 @@ class BreakpointManager(
    *
    * @return True if a breakpoint exists, otherwise false
    */
-  def hasLineBreakpointRequest(fileName: String, lineNumber: Int): Boolean = {
+  def hasBreakpointRequest(fileName: String, lineNumber: Int): Boolean = {
     breakpointArgsToRequestId.get((fileName, lineNumber))
-      .exists(hasLineBreakpointRequestWithId)
+      .exists(hasBreakpointRequestWithId)
   }
 
   /**
@@ -141,7 +141,7 @@ class BreakpointManager(
    *
    * @return True if a breakpoint exists, otherwise false
    */
-  def hasLineBreakpointRequestWithId(requestId: String): Boolean = {
+  def hasBreakpointRequestWithId(requestId: String): Boolean = {
     breakpointRequests.contains(requestId)
   }
 
@@ -155,12 +155,12 @@ class BreakpointManager(
    * @return Some collection of breakpoints for the specified line, or None if
    *         the specified line has no breakpoints
    */
-  def getLineBreakpointRequest(
+  def getBreakpointRequest(
     fileName: String,
     lineNumber: Int
   ): Option[Seq[BreakpointRequest]] = {
     breakpointArgsToRequestId.get((fileName, lineNumber))
-      .flatMap(getLineBreakpointRequestWithId)
+      .flatMap(getBreakpointRequestWithId)
   }
 
   /**
@@ -171,7 +171,7 @@ class BreakpointManager(
    * @return Some collection of breakpoints for the specified line, or None if
    *         the specified line has no breakpoints
    */
-  def getLineBreakpointRequestWithId(
+  def getBreakpointRequestWithId(
     requestId: String
   ): Option[Seq[BreakpointRequest]] = {
     breakpointRequests.get(requestId)
@@ -185,12 +185,12 @@ class BreakpointManager(
    *
    * @return True if successfully removed breakpoint, otherwise false
    */
-  def removeLineBreakpointRequest(
+  def removeBreakpointRequest(
     fileName: String,
     lineNumber: Int
   ): Boolean = {
     breakpointArgsToRequestId.get((fileName, lineNumber))
-      .exists(removeLineBreakpointRequestWithId)
+      .exists(removeBreakpointRequestWithId)
   }
 
   /**
@@ -200,7 +200,7 @@ class BreakpointManager(
    *
    * @return True if successfully removed breakpoint, otherwise false
    */
-  def removeLineBreakpointRequestWithId(
+  def removeBreakpointRequestWithId(
     requestId: String
   ): Boolean = {
     val requests = breakpointRequests.remove(requestId)

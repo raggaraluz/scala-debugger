@@ -45,11 +45,11 @@ class CustomPropertyFilterIntegrationSpec extends FunSpec with Matchers
 
         // Queue up our breakpoints
         breakpointLines.foreach(
-          breakpointManager.createLineBreakpointRequest(testFile, _: Int)
+          breakpointManager.createBreakpointRequest(testFile, _: Int)
         )
 
         // Set specific breakpoint with custom property
-        breakpointManager.createLineBreakpointRequest(
+        breakpointManager.createBreakpointRequest(
           fileName = testFile,
           lineNumber = propertyBreakpoint,
           property

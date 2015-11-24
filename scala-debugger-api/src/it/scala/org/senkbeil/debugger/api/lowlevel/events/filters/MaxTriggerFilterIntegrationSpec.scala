@@ -39,7 +39,7 @@ class MaxTriggerFilterIntegrationSpec extends FunSpec with Matchers
 
         // Queue up our breakpoints
         breakpointLines.foreach(
-          breakpointManager.createLineBreakpointRequest(testFile, _: Int)
+          breakpointManager.createBreakpointRequest(testFile, _: Int)
         )
 
         // Queue up a generic breakpoint event handler that filters events
