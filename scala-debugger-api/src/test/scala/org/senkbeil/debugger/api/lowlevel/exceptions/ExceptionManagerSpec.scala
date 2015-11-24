@@ -10,6 +10,7 @@ import scala.util.{Failure, Success}
 class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
   with OneInstancePerTest with org.scalamock.matchers.Matchers
 {
+  private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockReferenceType = mock[ReferenceType]
   private val mockEventRequestManager = mock[EventRequestManager]
 
@@ -22,12 +23,38 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
   private val exceptionManager = new ExceptionManager(
     mockVirtualMachine,
     mockEventRequestManager
-  )
+  ) {
+    override protected def newRequestId(): String = TestRequestId
+  }
 
   describe("ExceptionManager") {
+    describe("#createCatchallExceptionRequestWithId") {
+      it("should create the exception request using the provided id") {
+        val expected = Success(java.util.UUID.randomUUID().toString)
+        val testNotifyCaught = true
+        val testNotifyUncaught = false
+
+        val mockExceptionRequest = mock[ExceptionRequest]
+        (mockEventRequestManager.createExceptionRequest _)
+          .expects(null, testNotifyCaught, testNotifyUncaught)
+          .returning(mockExceptionRequest).once()
+
+        (mockExceptionRequest.setSuspendPolicy _)
+          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
+        (mockExceptionRequest.setEnabled _).expects(true).once()
+
+        val actual = exceptionManager.createCatchallExceptionRequestWithId(
+          expected.get,
+          testNotifyCaught,
+          testNotifyUncaught
+        )
+        actual should be(expected)
+      }
+    }
+
     describe("#createCatchallExceptionRequest") {
-      it("should create the exception request and return Success(true)") {
-        val expected = Success(true)
+      it("should create the exception request and return Success(id)") {
+        val expected = Success(TestRequestId)
         val testNotifyCaught = true
         val testNotifyUncaught = false
 
@@ -73,7 +100,7 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
           .returning(stub[ExceptionRequest]).once()
 
         exceptionManager.createCatchallExceptionRequest(true, true) should
-          be (Success(true))
+          be (Success(TestRequestId))
 
         val actual = exceptionManager.hasCatchallExceptionRequest
         actual should be (expected)
@@ -87,6 +114,29 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#getCatchallExceptionRequestId") {
+      it("should return Some(id) if the catchall has been set") {
+        val expected = Some(TestRequestId)
+
+        (mockEventRequestManager.createExceptionRequest _)
+          .expects(*, *, *)
+          .returning(stub[ExceptionRequest]).once()
+
+        exceptionManager.createCatchallExceptionRequest(true, true) should
+          be (Success(expected.get))
+
+        val actual = exceptionManager.getCatchallExceptionRequestId
+        actual should be (expected)
+      }
+
+      it("should return None if the catchall has not been set") {
+        val expected = None
+
+        val actual = exceptionManager.getCatchallExceptionRequestId
+        actual should be (expected)
+      }
+    }
+
     describe("#getCatchallExceptionRequest") {
       it("should return Some(ExceptionRequest) if the catchall has been set") {
         val expected = Some(stub[ExceptionRequest])
@@ -96,7 +146,7 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
           .returning(expected.get).once()
 
         exceptionManager.createCatchallExceptionRequest(true, true) should
-          be (Success(true))
+          be (Success(TestRequestId))
 
         val actual = exceptionManager.getCatchallExceptionRequest
         actual should be (expected)
@@ -121,7 +171,7 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
           .returning(stubExceptionRequest).once()
 
         exceptionManager.createCatchallExceptionRequest(true, true) should
-          be (Success(true))
+          be (Success(TestRequestId))
 
         (mockEventRequestManager.deleteEventRequest _)
           .expects(stubExceptionRequest).once()
@@ -135,6 +185,29 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
 
         val actual = exceptionManager.removeCatchallExceptionRequest()
         actual should be (expected)
+      }
+    }
+
+    describe("#exceptionRequestListById") {
+      it("should contain all exception requests in the form of (class, method) stored in the manager") {
+        val testNotifyCaught = true
+        val testNotifyUncaught = false
+        val exceptionRequests = Seq(("id1", "class1"), ("id2", "class2"))
+
+        exceptionRequests.foreach { case (requestId, exceptionName) =>
+          (mockEventRequestManager.createExceptionRequest _)
+            .expects(mockReferenceType, testNotifyCaught, testNotifyUncaught)
+            .returning(stub[ExceptionRequest]).once()
+          exceptionManager.createExceptionRequestWithId(
+            requestId,
+            exceptionName,
+            testNotifyCaught,
+            testNotifyUncaught
+          )
+        }
+
+        exceptionManager.exceptionRequestListById should
+          contain theSameElementsAs (exceptionRequests.map(_._1))
       }
     }
 
@@ -160,12 +233,38 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
-    describe("#createExceptionRequest") {
-      it("should create the exception request and return Success(true)") {
-        val expected = Success(true)
+    describe("#createExceptionRequestWithId") {
+      it("should create the exception request using the provided id") {
+        val expected = Success(java.util.UUID.randomUUID().toString)
+        val testExceptionName = "some.exception.name"
         val testNotifyCaught = true
         val testNotifyUncaught = false
-        val testExceptionName = "some exception name"
+
+        val mockExceptionRequest = mock[ExceptionRequest]
+        (mockEventRequestManager.createExceptionRequest _)
+          .expects(mockReferenceType, testNotifyCaught, testNotifyUncaught)
+          .returning(mockExceptionRequest).once()
+
+        (mockExceptionRequest.setSuspendPolicy _)
+          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
+        (mockExceptionRequest.setEnabled _).expects(true).once()
+
+        val actual = exceptionManager.createExceptionRequestWithId(
+          expected.get,
+          testExceptionName,
+          testNotifyCaught,
+          testNotifyUncaught
+        )
+        actual should be(expected)
+      }
+    }
+
+    describe("#createExceptionRequest") {
+      it("should create the exception request and return Success(id)") {
+        val expected = Success(TestRequestId)
+        val testExceptionName = "some.exception.name"
+        val testNotifyCaught = true
+        val testNotifyUncaught = false
 
         val mockExceptionRequest = mock[ExceptionRequest]
         (mockEventRequestManager.createExceptionRequest _)
@@ -184,11 +283,11 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
         actual should be (expected)
       }
 
-      it("should return false if no class is found for the request") {
-        val expected = Success(false)
+      it("should return a custom exception if no class is found for the request") {
+        val testExceptionName = "some.exception.name"
+        val expected = Failure(NoExceptionClassFound(testExceptionName))
         val testNotifyCaught = true
         val testNotifyUncaught = false
-        val testExceptionName = "some exception name"
 
         // Set up the virtual machine to not return any classes when asked
         val mockVirtualMachine = mock[VirtualMachine]
@@ -227,6 +326,37 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#hasExceptionRequestWithId") {
+      it("should return true if it exists") {
+        val expected = true
+
+        val testNotifyCaught = true
+        val testNotifyUncaught = false
+        val testExceptionName = "some exception name"
+
+        (mockEventRequestManager.createExceptionRequest _)
+          .expects(mockReferenceType, testNotifyCaught, testNotifyUncaught)
+          .returning(stub[ExceptionRequest]).once()
+
+        exceptionManager.createExceptionRequestWithId(
+          TestRequestId,
+          testExceptionName,
+          testNotifyCaught,
+          testNotifyUncaught
+        )
+
+        val actual = exceptionManager.hasExceptionRequestWithId(TestRequestId)
+        actual should be (expected)
+      }
+
+      it("should return false if it does not exist") {
+        val expected = false
+
+        val actual = exceptionManager.hasExceptionRequestWithId(TestRequestId)
+        actual should be (expected)
+      }
+    }
+
     describe("#hasExceptionRequest") {
       it("should return true if it exists") {
         val expected = true
@@ -259,6 +389,37 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#getExceptionRequestWithId") {
+      it("should return Some(Seq(ExceptionRequest)) if found") {
+        val expected = Seq(stub[ExceptionRequest])
+
+        val testNotifyCaught = true
+        val testNotifyUncaught = false
+        val testExceptionName = "some exception name"
+
+        (mockEventRequestManager.createExceptionRequest _)
+          .expects(mockReferenceType, testNotifyCaught, testNotifyUncaught)
+          .returning(expected.head).once()
+
+        exceptionManager.createExceptionRequestWithId(
+          TestRequestId,
+          testExceptionName,
+          testNotifyCaught,
+          testNotifyUncaught
+        )
+
+        val actual = exceptionManager.getExceptionRequestWithId(TestRequestId).get
+        actual should contain theSameElementsAs (expected)
+      }
+
+      it("should return None if not found") {
+        val expected = None
+
+        val actual = exceptionManager.getExceptionRequestWithId(TestRequestId)
+        actual should be (expected)
+      }
+    }
+
     describe("#getExceptionRequest") {
       it("should return Some(Seq(ExceptionRequest)) if found") {
         val expected = Seq(stub[ExceptionRequest])
@@ -287,6 +448,41 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
         val testExceptionName = "some exception name"
 
         val actual = exceptionManager.getExceptionRequest(testExceptionName)
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeExceptionRequestWithId") {
+      it("should return true if the exception request was removed") {
+        val expected = true
+        val stubRequest = stub[ExceptionRequest]
+
+        val testNotifyCaught = true
+        val testNotifyUncaught = false
+        val testExceptionName = "some exception name"
+
+        (mockEventRequestManager.createExceptionRequest _)
+          .expects(mockReferenceType, testNotifyCaught, testNotifyUncaught)
+          .returning(stubRequest).once()
+
+        exceptionManager.createExceptionRequestWithId(
+          TestRequestId,
+          testExceptionName,
+          testNotifyCaught,
+          testNotifyUncaught
+        )
+
+        (mockEventRequestManager.deleteEventRequest _)
+          .expects(stubRequest).once()
+
+        val actual = exceptionManager.removeExceptionRequestWithId(TestRequestId)
+        actual should be (expected)
+      }
+
+      it("should return false if the exception request was not removed") {
+        val expected = false
+
+        val actual = exceptionManager.removeExceptionRequestWithId(TestRequestId)
         actual should be (expected)
       }
     }

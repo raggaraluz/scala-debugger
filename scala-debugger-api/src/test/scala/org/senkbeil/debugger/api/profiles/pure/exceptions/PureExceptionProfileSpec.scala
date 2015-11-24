@@ -80,7 +80,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
-          ).returning(Success(true)).once()
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
@@ -169,7 +169,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
-          ).returning(Success(true)).once()
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
@@ -206,7 +206,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
-          ).returning(Success(true)).once()
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
@@ -251,7 +251,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
-          ).returning(Success(true)).once()
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
@@ -327,7 +327,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
-          ).returning(Success(true)).once()
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
@@ -365,7 +365,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
-          ).returning(Success(true)).once()
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
@@ -409,7 +409,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
-          ).returning(Success(true)).once()
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
@@ -492,7 +492,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
-          ).returning(Success(true)).once()
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
@@ -527,7 +527,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
-          ).returning(Success(true)).once()
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
@@ -569,7 +569,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
-          ).returning(Success(true)).once()
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))

@@ -20,7 +20,7 @@ import scala.util.Try
 class MethodExitManager(
   private val eventRequestManager: EventRequestManager
 ) extends Logging {
-  /** The arguments used to lookup method exit requests */
+  /** The arguments used to lookup method exit requests: (Class, Method) */
   type MethodExitArgs = (String, String)
 
   /** The key used to lookup method exit requests */

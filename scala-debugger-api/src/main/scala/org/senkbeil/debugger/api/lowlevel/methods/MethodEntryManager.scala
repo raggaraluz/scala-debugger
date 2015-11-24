@@ -20,7 +20,7 @@ import scala.util.Try
 class MethodEntryManager(
   private val eventRequestManager: EventRequestManager
 ) extends Logging {
-  /** The arguments used to lookup method entry requests */
+  /** The arguments used to lookup method entry requests: (Class, Method) */
   type MethodEntryArgs = (String, String)
 
   /** The key used to lookup method entry requests */
