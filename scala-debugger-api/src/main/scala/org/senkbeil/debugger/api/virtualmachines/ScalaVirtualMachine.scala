@@ -1,6 +1,7 @@
 package org.senkbeil.debugger.api.virtualmachines
 
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
+import org.senkbeil.debugger.api.lowlevel.breakpoints.ExtendedBreakpointManager
 import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
@@ -64,9 +65,13 @@ class ScalaVirtualMachine(
       logger.trace(vmString("Refreshing all class references!"))
       lowlevel.classManager.refreshAllClasses()
 
+      // TODO: Revert back to normal breakpoint manager and add pending
+      //       breakpoint functionality somewhere more separate
       logger.trace(vmString("Applying any pending breakpoints for references!"))
-      //lowlevel.classManager.allFileNames
-      //  .foreach(lowlevel.breakpointManager.processPendingBreakpoints)
+      lowlevel.classManager.allFileNames.foreach(
+        lowlevel.breakpointManager.asInstanceOf[ExtendedBreakpointManager]
+          .processPendingBreakpointsForFile
+      )
     })
 
     // Mark class prepare events to signal refreshing our classes
@@ -80,9 +85,12 @@ class ScalaVirtualMachine(
         logger.trace(vmString(s"Received new class: $referenceTypeName"))
         lowlevel.classManager.refreshClass(referenceType)
 
+        // TODO: Revert back to normal breakpoint manager and add pending
+        //       breakpoint functionality somewhere more separate
         logger.trace(vmString(
           s"Processing any pending breakpoints for $referenceTypeName!"))
-        //lowlevel.breakpointManager.processPendingBreakpoints(fileName)
+        lowlevel.breakpointManager.asInstanceOf[ExtendedBreakpointManager]
+          .processPendingBreakpointsForFile(fileName)
       })
   }
 

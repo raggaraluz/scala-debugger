@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.lowlevel
 
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.request.EventRequestManager
-import org.senkbeil.debugger.api.lowlevel.breakpoints.BreakpointManager
+import org.senkbeil.debugger.api.lowlevel.breakpoints.{ExtendedBreakpointManager, BreakpointManager}
 import org.senkbeil.debugger.api.lowlevel.classes.{ClassPrepareManager, ClassUnloadManager, ClassManager}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.exceptions.ExceptionManager
@@ -64,8 +64,11 @@ object ManagerContainer {
   ): ManagerContainer = {
     lazy val eventRequestManager = virtualMachine.eventRequestManager()
     lazy val eventQueue = virtualMachine.eventQueue()
+    // TODO: Revert back to normal breakpoint manager and add pending breakpoint
+    //       functionality somewhere more separate
     lazy val breakpointManager =
-      new BreakpointManager(eventRequestManager, classManager)
+      //new BreakpointManager(eventRequestManager, classManager)
+      new ExtendedBreakpointManager(eventRequestManager, classManager)
     lazy val classManager =
       new ClassManager(virtualMachine, loadClasses = true)
     lazy val classPrepareManager =

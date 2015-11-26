@@ -178,6 +178,17 @@ class BreakpointManager(
   }
 
   /**
+   * Returns the arguments for a breakpoint request with the specified id.
+   *
+   * @param requestId The id of the request
+   *
+   * @return Some breakpoint arguments if found, otherwise None
+   */
+  def getBreakpointArgsWithId(requestId: String): Option[BreakpointArgs] = {
+    breakpointArgsToRequestId.find(_._2 == requestId).map(_._1)
+  }
+
+  /**
    * Removes the breakpoint on the specified line of the file.
    *
    * @param fileName The name of the file to remove the breakpoint

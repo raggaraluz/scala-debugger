@@ -331,6 +331,39 @@ class BreakpointManagerSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#getBreakpointArgsWithId") {
+      it("should return Some((class name, line number)) if the id exists") {
+        val expected = Some(("file", 1))
+
+        // a line number that will be the one picked
+        (mockClassManager.linesAndLocationsForFile _).expects(*).returning(
+          Some(Map(expected.get._2 -> Seq(createRandomLocationStub())))
+        ).once()
+
+        // Stub out the call to create a breakpoint request
+        (mockEventRequestManager.createBreakpointRequest _).expects(*)
+          .returning(stub[BreakpointRequest]).once()
+
+        breakpointManager.createBreakpointRequestWithId(
+          TestRequestId,
+          expected.get._1,
+          expected.get._2
+        )
+
+        val actual = breakpointManager.getBreakpointArgsWithId(TestRequestId)
+
+        actual should be (expected)
+      }
+
+      it("should return None if there is no breakpoint with the id") {
+        val expected = None
+
+        val actual = breakpointManager.getBreakpointArgsWithId(TestRequestId)
+
+        actual should be (expected)
+      }
+    }
+
     describe("#getBreakpointRequest") {
       it("should return Some(collection of breakpoints representing the line)") {
         val stubBreakpointRequest = stub[BreakpointRequest]

@@ -1,10 +1,7 @@
 package org.senkbeil.debugger.api.profiles.pure.breakpoints
 
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
-
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.breakpoints.BreakpointManager
+import org.senkbeil.debugger.api.lowlevel.breakpoints.{NoBreakpointLocationFound, BreakpointManager}
 import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager}
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
@@ -65,11 +62,15 @@ trait PureBreakpointProfile extends BreakpointProfile {
         val requestId = newBreakpointRequestId()
         val args = UniqueIdProperty(id = requestId) +: input._3
 
+        // TODO: Handle pending breakpoint case in better way
         breakpointManager.createBreakpointRequest(
           input._1,
           input._2,
           args: _*
-        ).get
+        ).failed.foreach {
+          case _: NoBreakpointLocationFound => // Means breakpoint pending
+          case t: Throwable => throw t // Unexpected error, so throw
+        }
 
         requestId
       },
