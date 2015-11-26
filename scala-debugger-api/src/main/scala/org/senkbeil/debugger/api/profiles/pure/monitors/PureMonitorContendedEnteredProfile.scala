@@ -35,7 +35,7 @@ trait PureMonitorContendedEnteredProfile extends MonitorContendedEnteredProfile 
   private val pipelineCounter = new ConcurrentHashMap[
     Seq[JDIArgument],
     AtomicInteger
-    ]().asScala
+  ]().asScala
 
   /**
    * Constructs a stream of monitor contended entered events.
