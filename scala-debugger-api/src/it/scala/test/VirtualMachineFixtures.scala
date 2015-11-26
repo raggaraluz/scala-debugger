@@ -96,11 +96,9 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
         val profileManager = new ProfileManager
         val scalaVirtualMachine = new ScalaVirtualMachine(
           virtualMachine,
-          profileManager
-        ) {
-          override protected def newManagerContainer(unused: LoopingTaskRunner) =
-            super.newManagerContainer(loopingTaskRunner)
-        }
+          profileManager,
+          loopingTaskRunner
+        )
 
         val eventManager = scalaVirtualMachine.lowlevel.eventManager
 

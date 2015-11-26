@@ -2,25 +2,27 @@ package org.senkbeil.debugger.api.virtualmachines
 
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.lowlevel.breakpoints.ExtendedBreakpointManager
-import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
 import com.sun.jdi._
-import com.sun.jdi.event.ClassPrepareEvent
 
 /**
  * Represents a virtual machine running Scala code.
  *
  * @param _virtualMachine The underlying virtual machine
+ * @param profileManager The manager used to provide specific implementations
+ *                       of debugging via profiles
+ * @param loopingTaskRunner The runner used to process events from remote JVMs
  * @param uniqueId A unique id assigned to the Scala virtual machine on the
  *                 client (library) side to help distinguish multiple VMs
  */
 class ScalaVirtualMachine(
   protected val _virtualMachine: VirtualMachine,
   protected val profileManager: ProfileManager,
+  private val loopingTaskRunner: LoopingTaskRunner,
   val uniqueId: String = java.util.UUID.randomUUID().toString
 ) extends JDIHelperMethods with SwappableDebugProfile with Logging {
 
@@ -39,14 +41,14 @@ class ScalaVirtualMachine(
    * @return The new container of managers
    */
   protected def newManagerContainer(
-    loopingTaskRunner: LoopingTaskRunner = new LoopingTaskRunner()
+    loopingTaskRunner: LoopingTaskRunner
   ): ManagerContainer = ManagerContainer.fromVirtualMachine(
     virtualMachine = _virtualMachine,
     loopingTaskRunner = loopingTaskRunner
   )
 
   /** Represents the collection of low-level APIs for the virtual machine. */
-  lazy val lowlevel = newManagerContainer()
+  lazy val lowlevel = newManagerContainer(loopingTaskRunner)
 
   // Register our standard profiles
   profileManager.register(
