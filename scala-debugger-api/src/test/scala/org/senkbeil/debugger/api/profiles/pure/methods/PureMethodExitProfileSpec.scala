@@ -76,9 +76,12 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodExitManager.createMethodExitRequest _)
-            .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockMethodExitManager.createMethodExitRequestWithId _).expects(
+            TestRequestId,
+            className,
+            methodName,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodExitEventType, eventArguments)
@@ -115,9 +118,12 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodExitManager.createMethodExitRequest _)
-            .expects(className, methodName, uniqueIdProperty +: arguments)
-            .throwing(expected.failed.get).once()
+          (mockMethodExitManager.createMethodExitRequestWithId _).expects(
+            TestRequestId,
+            className,
+            methodName,
+            uniqueIdProperty +: arguments
+          ).throwing(expected.failed.get).once()
         }
 
         val actual = pureMethodExitProfile.onMethodExitWithData(
@@ -159,9 +165,12 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodExitManager.createMethodExitRequest _)
-            .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockMethodExitManager.createMethodExitRequestWithId _).expects(
+            TestRequestId,
+            className,
+            methodName,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodExitEventType, eventArguments)
@@ -196,9 +205,12 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodExitManager.createMethodExitRequest _)
-            .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockMethodExitManager.createMethodExitRequestWithId _).expects(
+            TestRequestId + "other",
+            className,
+            methodName,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodExitEventType, eventArguments)
@@ -240,9 +252,12 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodExitManager.createMethodExitRequest _)
-            .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockMethodExitManager.createMethodExitRequestWithId _).expects(
+            TestRequestId,
+            className,
+            methodName,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodExitEventType, eventArguments)
@@ -319,9 +334,12 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodExitManager.createMethodExitRequest _)
-            .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockMethodExitManager.createMethodExitRequestWithId _).expects(
+            TestRequestId,
+            className,
+            methodName,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodExitEventType, eventArguments)
@@ -357,9 +375,12 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodExitManager.createMethodExitRequest _)
-            .expects(className, methodName + 1, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockMethodExitManager.createMethodExitRequestWithId _).expects(
+            TestRequestId + "other",
+            className,
+            methodName + 1,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodExitEventType, eventArguments)
@@ -373,6 +394,70 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           methodName + 1,
           arguments: _*
         )
+      }
+
+      it("should remove the underlying request if all pipelines are closed") {
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureMethodExitProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          inAnyOrder {
+            val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+            val uniqueIdPropertyFilter =
+              UniqueIdPropertyFilter(id = TestRequestId)
+
+            val eventArguments = Seq(
+              uniqueIdPropertyFilter,
+              MethodNameFilter(methodName)
+            )
+
+            // Memoized request function first checks to make sure the cache
+            // has not been invalidated underneath (first call will always be
+            // empty since we have never created the request)
+            (mockMethodExitManager.hasMethodExitRequest _)
+              .expects(className, methodName)
+              .returning(false).once()
+            (mockMethodExitManager.hasMethodExitRequest _)
+              .expects(className, methodName)
+              .returning(true).once()
+
+            // NOTE: Expect the request to be created with a unique id
+            (mockMethodExitManager.createMethodExitRequestWithId _).expects(
+              TestRequestId,
+              className,
+              methodName,
+              uniqueIdProperty +: arguments
+            ).returning(Success("")).once()
+
+            (mockEventManager.addEventDataStream _)
+              .expects(MethodExitEventType, eventArguments)
+              .returning(Pipeline.newPipeline(
+                classOf[(Event, Seq[JDIEventDataResult])]
+              )).twice()
+          }
+
+          (mockMethodExitManager.removeMethodExitRequestWithId _)
+            .expects(TestRequestId).once()
+        }
+
+        val p1 = pureMethodExitProfile.onMethodExitWithData(
+          className,
+          methodName,
+          arguments: _*
+        )
+        val p2 = pureMethodExitProfile.onMethodExitWithData(
+          className,
+          methodName,
+          arguments: _*
+        )
+
+        p1.foreach(_.close())
+        p2.foreach(_.close())
       }
     }
   }
