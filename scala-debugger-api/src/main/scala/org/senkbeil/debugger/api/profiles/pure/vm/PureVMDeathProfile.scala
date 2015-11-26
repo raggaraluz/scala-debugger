@@ -84,7 +84,7 @@ trait PureVMDeathProfile extends VMDeathProfile {
         !vmDeathManager.vmDeathRequestList
           .flatMap(vmDeathManager.getVMDeathRequestArguments)
           .map(_.filterNot(_.isInstanceOf[UniqueIdProperty]))
-          .exists(_ == key)
+          .contains(key)
       }
     )
   }
@@ -117,7 +117,7 @@ trait PureVMDeathProfile extends VMDeathProfile {
     // request as well
     val closePipeline = Pipeline.newPipeline(
       classOf[VMDeathEventAndData],
-      newPipelineCloseFunc(requestId, args)
+      newVMDeathPipelineCloseFunc(requestId, args)
     )
 
     // Increment the counter for open pipelines
@@ -137,7 +137,7 @@ trait PureVMDeathProfile extends VMDeathProfile {
    *
    * @return The new function for closing the pipeline
    */
-  protected def newPipelineCloseFunc(
+  protected def newVMDeathPipelineCloseFunc(
     requestId: String,
     args: Seq[JDIEventArgument]
   ): () => Unit = () => {
