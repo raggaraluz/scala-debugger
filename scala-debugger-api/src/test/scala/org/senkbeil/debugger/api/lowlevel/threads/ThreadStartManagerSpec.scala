@@ -48,6 +48,26 @@ class ThreadStartManagerSpec extends FunSpec with Matchers with MockFactory
     }
 
     describe("#createThreadStartRequest") {
+      it("should create the thread start request using the provided id") {
+        val expected = Success(java.util.UUID.randomUUID().toString)
+
+        val mockThreadStartRequest = mock[ThreadStartRequest]
+        (mockEventRequestManager.createThreadStartRequest _).expects()
+          .returning(mockThreadStartRequest).once()
+
+        // Should set enabled to true by default, and
+        // set the suspend policy to thread level by default
+        (mockThreadStartRequest.setSuspendPolicy _)
+          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
+        (mockThreadStartRequest.setEnabled _).expects(true).once()
+
+        val actual =
+          threadStartManager.createThreadStartRequestWithId(expected.get)
+        actual should be(expected)
+      }
+    }
+
+    describe("#createThreadStartRequest") {
       it("should create the thread start request and return Success(id)") {
         val expected = Success(TestId)
 

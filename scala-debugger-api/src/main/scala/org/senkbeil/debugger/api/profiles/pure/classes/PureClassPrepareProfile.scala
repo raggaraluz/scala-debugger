@@ -1,5 +1,8 @@
 package org.senkbeil.debugger.api.profiles.pure.classes
 
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+
 import com.sun.jdi.event.ClassPrepareEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.classes.ClassPrepareManager
@@ -8,20 +11,31 @@ import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
+import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.classes.ClassPrepareProfile
 import org.senkbeil.debugger.api.utils.Memoization
-import org.senkbeil.debugger.api.lowlevel.events.EventType.ClassPrepareEventType
+import org.senkbeil.debugger.api.lowlevel.events.EventType._
 
+import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**
- * Represents a pure profile for class preparation that adds no extra logic on
- * top of the standard JDI.
+ * Represents a pure profile for class prepare events that adds no
+ * extra logic on top of the standard JDI.
  */
 trait PureClassPrepareProfile extends ClassPrepareProfile {
   protected val classPrepareManager: ClassPrepareManager
   protected val eventManager: EventManager
+
+  /**
+   * Contains mapping from input to a counter indicating how many pipelines
+   * are currently active for the input.
+   */
+  private val pipelineCounter = new ConcurrentHashMap[
+    Seq[JDIArgument],
+    AtomicInteger
+  ]().asScala
 
   /**
    * Constructs a stream of class prepare events.
@@ -57,7 +71,8 @@ trait PureClassPrepareProfile extends ClassPrepareProfile {
         val requestId = newClassPrepareRequestId()
         val args = UniqueIdProperty(id = requestId) +: input
 
-        classPrepareManager.createClassPrepareRequest(
+        classPrepareManager.createClassPrepareRequestWithId(
+          requestId,
           args: _*
         ).get
 
@@ -70,7 +85,7 @@ trait PureClassPrepareProfile extends ClassPrepareProfile {
         !classPrepareManager.classPrepareRequestList
           .flatMap(classPrepareManager.getClassPrepareRequestArguments)
           .map(_.filterNot(_.isInstanceOf[UniqueIdProperty]))
-          .exists(_ == key)
+          .contains(key)
       }
     )
   }
@@ -93,8 +108,47 @@ trait PureClassPrepareProfile extends ClassPrepareProfile {
     args: Seq[JDIEventArgument]
   ): IdentityPipeline[ClassPrepareEventAndData] = {
     val eArgsWithFilter = UniqueIdPropertyFilter(id = requestId) +: args
-    eventManager.addEventDataStream(ClassPrepareEventType, eArgsWithFilter: _*)
-      .map(t => (t._1.asInstanceOf[ClassPrepareEvent], t._2)).noop()
+    val newPipeline = eventManager
+      .addEventDataStream(ClassPrepareEventType, eArgsWithFilter: _*)
+      .map(t => (t._1.asInstanceOf[ClassPrepareEvent], t._2))
+      .noop()
+
+    // Create a companion pipeline who, when closed, checks to see if there
+    // are no more pipelines for the given request and, if so, removes the
+    // request as well
+    val closePipeline = Pipeline.newPipeline(
+      classOf[ClassPrepareEventAndData],
+      newClassPreparePipelineCloseFunc(requestId, args)
+    )
+
+    // Increment the counter for open pipelines
+    pipelineCounter
+      .getOrElseUpdate(args, new AtomicInteger(0))
+      .incrementAndGet()
+
+    val combinedPipeline = newPipeline.unionOutput(closePipeline)
+    combinedPipeline
+  }
+
+  /**
+   * Creates a new function used for closing generated pipelines.
+   *
+   * @param requestId The id of the request
+   * @param args The arguments associated with the request
+   *
+   * @return The new function for closing the pipeline
+   */
+  protected def newClassPreparePipelineCloseFunc(
+    requestId: String,
+    args: Seq[JDIEventArgument]
+  ): () => Unit = () => {
+    val pCounter = pipelineCounter(args)
+
+    val totalPipelinesRemaining = pCounter.decrementAndGet()
+
+    if (totalPipelinesRemaining == 0) {
+      classPrepareManager.removeClassPrepareRequest(requestId)
+    }
   }
 
   /**
@@ -105,3 +159,4 @@ trait PureClassPrepareProfile extends ClassPrepareProfile {
   protected def newClassPrepareRequestId(): String =
     java.util.UUID.randomUUID().toString
 }
+

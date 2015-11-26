@@ -43,7 +43,7 @@ class MethodExitManagerIntegrationSpec extends FunSpec with Matchers
         )
 
         // Last line in test method
-        breakpointManager.createLineBreakpointRequest(testFile, 28)
+        breakpointManager.createBreakpointRequest(testFile, 28)
 
         // Listen for breakpoint on first line of method, checking if this
         // breakpoint is hit before or after the method exit event

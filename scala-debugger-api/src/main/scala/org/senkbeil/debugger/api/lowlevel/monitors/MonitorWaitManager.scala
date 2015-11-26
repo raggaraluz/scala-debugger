@@ -37,11 +37,13 @@ class MonitorWaitManager(
   /**
    * Creates a new monitor wait request.
    *
+   * @param requestId The id of the request used to retrieve and delete it
    * @param extraArguments Any additional arguments to provide to the request
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createMonitorWaitRequest(
+  def createMonitorWaitRequestWithId(
+    requestId: String,
     extraArguments: JDIRequestArgument*
   ): Try[MonitorWaitKey] = {
     val request = Try(eventRequestManager.createMonitorWaitRequest(
@@ -51,13 +53,25 @@ class MonitorWaitManager(
       ) ++ extraArguments: _*
     ))
 
-    val id = newRequestId()
     if (request.isSuccess) {
-      monitorWaitRequests.put(id, (extraArguments, request.get))
+      monitorWaitRequests.put(requestId, (extraArguments, request.get))
     }
 
     // If no exception was thrown, assume that we succeeded
-    request.map(_ => id)
+    request.map(_ => requestId)
+  }
+
+  /**
+   * Creates a new monitor wait request.
+   *
+   * @param extraArguments Any additional arguments to provide to the request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createMonitorWaitRequest(
+    extraArguments: JDIRequestArgument*
+  ): Try[MonitorWaitKey] = {
+    createMonitorWaitRequestWithId(newRequestId(), extraArguments: _*)
   }
 
   /**
@@ -124,6 +138,5 @@ class MonitorWaitManager(
    *
    * @return The id as a string
    */
-  protected def newRequestId(): String =
-    java.util.UUID.randomUUID().toString
+  protected def newRequestId(): String = java.util.UUID.randomUUID().toString
 }

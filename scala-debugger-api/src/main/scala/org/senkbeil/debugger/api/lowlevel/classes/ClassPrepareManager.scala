@@ -37,11 +37,13 @@ class ClassPrepareManager(
   /**
    * Creates a new class prepare request.
    *
+   * @param requestId The id of the request used to retrieve and delete it
    * @param extraArguments Any additional arguments to provide to the request
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createClassPrepareRequest(
+  def createClassPrepareRequestWithId(
+    requestId: String,
     extraArguments: JDIRequestArgument*
   ): Try[ClassPrepareKey] = {
     val request = Try(eventRequestManager.createClassPrepareRequest(
@@ -51,13 +53,25 @@ class ClassPrepareManager(
       ) ++ extraArguments: _*
     ))
 
-    val id = newRequestId()
     if (request.isSuccess) {
-      classPrepareRequests.put(id, (extraArguments, request.get))
+      classPrepareRequests.put(requestId, (extraArguments, request.get))
     }
 
     // If no exception was thrown, assume that we succeeded
-    request.map(_ => id)
+    request.map(_ => requestId)
+  }
+
+  /**
+   * Creates a new class prepare request.
+   *
+   * @param extraArguments Any additional arguments to provide to the request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createClassPrepareRequest(
+    extraArguments: JDIRequestArgument*
+  ): Try[ClassPrepareKey] = {
+    createClassPrepareRequestWithId(newRequestId(), extraArguments: _*)
   }
 
   /**

@@ -47,6 +47,26 @@ class MonitorWaitedManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#createMonitorWaitedRequestWithId") {
+      it("should create the monitor waited request using the provided id") {
+        val expected = Success(java.util.UUID.randomUUID().toString)
+
+        val mockMonitorWaitedRequest = mock[MonitorWaitedRequest]
+        (mockEventRequestManager.createMonitorWaitedRequest _).expects()
+          .returning(mockMonitorWaitedRequest).once()
+
+        // Should set enabled to true by default, and
+        // set the suspend policy to vm level by default
+        (mockMonitorWaitedRequest.setSuspendPolicy _)
+          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
+        (mockMonitorWaitedRequest.setEnabled _).expects(true).once()
+
+        val actual =
+          monitorWaitedManager.createMonitorWaitedRequestWithId(expected.get)
+        actual should be(expected)
+      }
+    }
+
     describe("#createMonitorWaitedRequest") {
       it("should create the monitor waited request and return Success(id)") {
         val expected = Success(TestId)

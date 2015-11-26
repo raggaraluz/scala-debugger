@@ -70,8 +70,8 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Nil).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockClassPrepareManager.createClassPrepareRequest _)
-            .expects(uniqueIdProperty +: arguments)
+          (mockClassPrepareManager.createClassPrepareRequestWithId _)
+            .expects(TestRequestId, uniqueIdProperty +: arguments)
             .returning(Success(TestRequestId)).once()
 
           (mockEventManager.addEventDataStream _)
@@ -105,8 +105,8 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Nil).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockClassPrepareManager.createClassPrepareRequest _)
-            .expects(uniqueIdProperty +: arguments)
+          (mockClassPrepareManager.createClassPrepareRequestWithId _)
+            .expects(TestRequestId, uniqueIdProperty +: arguments)
             .throwing(expected.failed.get).once()
         }
 
@@ -141,8 +141,8 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Nil).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockClassPrepareManager.createClassPrepareRequest _)
-            .expects(uniqueIdProperty +: arguments)
+          (mockClassPrepareManager.createClassPrepareRequestWithId _)
+            .expects(TestRequestId, uniqueIdProperty +: arguments)
             .returning(Success(TestRequestId)).once()
 
           (mockEventManager.addEventDataStream _)
@@ -165,15 +165,15 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           val uniqueIdPropertyFilter =
             UniqueIdPropertyFilter(id = TestRequestId + "other")
 
-          // Return empty this time to indicate that the class prepare request
+          // Return empty this time to indicate that the vm death request
           // was removed some time between the two calls
           (mockClassPrepareManager.classPrepareRequestList _)
             .expects()
             .returning(Nil).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockClassPrepareManager.createClassPrepareRequest _)
-            .expects(uniqueIdProperty +: arguments)
+          (mockClassPrepareManager.createClassPrepareRequestWithId _)
+            .expects(TestRequestId + "other", uniqueIdProperty +: arguments)
             .returning(Success(TestRequestId + "other")).once()
 
           (mockEventManager.addEventDataStream _)
@@ -208,8 +208,8 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Nil).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockClassPrepareManager.createClassPrepareRequest _)
-            .expects(uniqueIdProperty +: arguments)
+          (mockClassPrepareManager.createClassPrepareRequestWithId _)
+            .expects(TestRequestId, uniqueIdProperty +: arguments)
             .returning(Success(TestRequestId)).once()
 
           (mockEventManager.addEventDataStream _)
@@ -251,6 +251,56 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
         pureClassPrepareProfile.onClassPrepareWithData(
           arguments: _*
         )
+      }
+
+      it("should remove the underlying request if all pipelines are closed") {
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureClassPrepareProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          inAnyOrder {
+            val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+            val uniqueIdPropertyFilter =
+              UniqueIdPropertyFilter(id = TestRequestId)
+
+            // Memoized request function first checks to make sure the cache
+            // has not been invalidated underneath (first call will always be
+            // empty since we have never created the request)
+            (mockClassPrepareManager.classPrepareRequestList _)
+              .expects()
+              .returning(Nil).once()
+            (mockClassPrepareManager.classPrepareRequestList _)
+              .expects()
+              .returning(Seq(TestRequestId)).once()
+
+            (mockClassPrepareManager.getClassPrepareRequestArguments _)
+              .expects(TestRequestId)
+              .returning(Some(arguments)).once()
+
+            // NOTE: Expect the request to be created with a unique id
+            (mockClassPrepareManager.createClassPrepareRequestWithId _)
+              .expects(TestRequestId, uniqueIdProperty +: arguments)
+              .returning(Success(TestRequestId)).once()
+
+            (mockEventManager.addEventDataStream _)
+              .expects(ClassPrepareEventType, Seq(uniqueIdPropertyFilter))
+              .returning(Pipeline.newPipeline(
+                classOf[(Event, Seq[JDIEventDataResult])]
+              )).twice()
+          }
+
+          (mockClassPrepareManager.removeClassPrepareRequest _)
+            .expects(TestRequestId).once()
+        }
+
+        val p1 = pureClassPrepareProfile.onClassPrepareWithData(arguments: _*)
+        val p2 = pureClassPrepareProfile.onClassPrepareWithData(arguments: _*)
+
+        p1.foreach(_.close())
+        p2.foreach(_.close())
       }
     }
   }

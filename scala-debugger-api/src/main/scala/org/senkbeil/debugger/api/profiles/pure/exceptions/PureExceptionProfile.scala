@@ -1,5 +1,8 @@
 package org.senkbeil.debugger.api.profiles.pure.exceptions
 
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+
 import com.sun.jdi.event.ExceptionEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument}
@@ -8,11 +11,13 @@ import org.senkbeil.debugger.api.lowlevel.exceptions.ExceptionManager
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
+import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.exceptions.ExceptionProfile
 import org.senkbeil.debugger.api.utils.Memoization
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
 
+import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**
@@ -22,6 +27,15 @@ import scala.util.Try
 trait PureExceptionProfile extends ExceptionProfile {
   protected val exceptionManager: ExceptionManager
   protected val eventManager: EventManager
+
+  /**
+   * Contains mapping from input to a counter indicating how many pipelines
+   * are currently active for the input.
+   */
+  private val pipelineCounter = new ConcurrentHashMap[
+    (String, Boolean, Boolean, Seq[JDIEventArgument]),
+    AtomicInteger
+  ]().asScala
 
   /**
    * Constructs a stream of exception events for all exceptions.
@@ -45,8 +59,11 @@ trait PureExceptionProfile extends ExceptionProfile {
       notifyCaught,
       notifyUncaught,
       rArgs
-      ))
-    newExceptionPipeline(requestId, eArgs)
+    ))
+    newExceptionPipeline(
+      requestId,
+      (null, notifyCaught, notifyUncaught, eArgs)
+    )
   }
 
   /**
@@ -68,6 +85,7 @@ trait PureExceptionProfile extends ExceptionProfile {
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ExceptionEventAndData]] = Try {
+    require(exceptionName != null, "Exception name cannot be null!")
     val JDIArgumentGroup(rArgs, eArgs, _) = JDIArgumentGroup(extraArguments: _*)
     val requestId = newExceptionRequest((
       exceptionName,
@@ -75,7 +93,10 @@ trait PureExceptionProfile extends ExceptionProfile {
       notifyUncaught,
       rArgs
     ))
-    newExceptionPipeline(requestId, eArgs)
+    newExceptionPipeline(
+      requestId,
+      (exceptionName, notifyCaught, notifyUncaught, eArgs)
+    )
   }
 
   /**
@@ -96,7 +117,8 @@ trait PureExceptionProfile extends ExceptionProfile {
         val requestId = newExceptionRequestId()
         val args = UniqueIdProperty(id = requestId) +: input._4
 
-        exceptionManager.createExceptionRequest(
+        exceptionManager.createExceptionRequestWithId(
+          requestId,
           input._1,
           input._2,
           input._3,
@@ -129,7 +151,8 @@ trait PureExceptionProfile extends ExceptionProfile {
         val requestId = newExceptionRequestId()
         val args = UniqueIdProperty(id = requestId) +: input._3
 
-        exceptionManager.createCatchallExceptionRequest(
+        exceptionManager.createCatchallExceptionRequestWithId(
+          requestId,
           input._1,
           input._2,
           args: _*
@@ -158,11 +181,50 @@ trait PureExceptionProfile extends ExceptionProfile {
    */
   protected def newExceptionPipeline(
     requestId: String,
-    args: Seq[JDIEventArgument]
+    args: (String, Boolean, Boolean, Seq[JDIEventArgument])
   ): IdentityPipeline[ExceptionEventAndData] = {
-    val eArgsWithFilter = UniqueIdPropertyFilter(id = requestId) +: args
-    eventManager.addEventDataStream(ExceptionEventType, eArgsWithFilter: _*)
-      .map(t => (t._1.asInstanceOf[ExceptionEvent], t._2)).noop()
+    val eArgsWithFilter = UniqueIdPropertyFilter(id = requestId) +: args._4
+    val newPipeline = eventManager
+      .addEventDataStream(ExceptionEventType, eArgsWithFilter: _*)
+      .map(t => (t._1.asInstanceOf[ExceptionEvent], t._2))
+      .noop()
+
+    // Create a companion pipeline who, when closed, checks to see if there
+    // are no more pipelines for the given request and, if so, removes the
+    // request as well
+    val closePipeline = Pipeline.newPipeline(
+      classOf[ExceptionEventAndData],
+      newExceptionPipelineCloseFunc(requestId, args)
+    )
+
+    // Increment the counter for open pipelines
+    pipelineCounter
+      .getOrElseUpdate(args, new AtomicInteger(0))
+      .incrementAndGet()
+
+    val combinedPipeline = newPipeline.unionOutput(closePipeline)
+    combinedPipeline
+  }
+
+  /**
+   * Creates a new function used for closing generated pipelines.
+   *
+   * @param requestId The id of the request
+   * @param args The arguments associated with the request
+   *
+   * @return The new function for closing the pipeline
+   */
+  protected def newExceptionPipelineCloseFunc(
+    requestId: String,
+    args: (String, Boolean, Boolean, Seq[JDIEventArgument])
+  ): () => Unit = () => {
+    val pCounter = pipelineCounter(args)
+
+    val totalPipelinesRemaining = pCounter.decrementAndGet()
+
+    if (totalPipelinesRemaining == 0) {
+      exceptionManager.removeExceptionRequestWithId(requestId)
+    }
   }
 
   /**
