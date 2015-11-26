@@ -50,6 +50,32 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
         )
         actual should be(expected)
       }
+
+      it("should add the exception request id to the standard exception request list") {
+        val expected = java.util.UUID.randomUUID().toString
+        val testNotifyCaught = true
+        val testNotifyUncaught = false
+
+        val mockExceptionRequest = mock[ExceptionRequest]
+        (mockEventRequestManager.createExceptionRequest _)
+          .expects(null, testNotifyCaught, testNotifyUncaught)
+          .returning(mockExceptionRequest).once()
+
+        (mockExceptionRequest.setSuspendPolicy _)
+          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
+        (mockExceptionRequest.setEnabled _).expects(true).once()
+
+        exceptionManager.createCatchallExceptionRequestWithId(
+          expected,
+          testNotifyCaught,
+          testNotifyUncaught
+        )
+
+        exceptionManager.exceptionRequestListById should have length 1
+
+        val actual = exceptionManager.exceptionRequestListById.head
+        actual should be(expected)
+      }
     }
 
     describe("#createCatchallExceptionRequest") {
@@ -453,6 +479,30 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
     }
 
     describe("#removeExceptionRequestWithId") {
+      it("should return true if the catchall exception request was removed") {
+        val expected = true
+        val stubRequest = stub[ExceptionRequest]
+
+        val testNotifyCaught = true
+        val testNotifyUncaught = false
+
+        (mockEventRequestManager.createExceptionRequest _)
+          .expects(null, testNotifyCaught, testNotifyUncaught)
+          .returning(stubRequest).once()
+
+        exceptionManager.createCatchallExceptionRequestWithId(
+          TestRequestId,
+          testNotifyCaught,
+          testNotifyUncaught
+        )
+
+        (mockEventRequestManager.deleteEventRequest _)
+          .expects(stubRequest).once()
+
+        val actual = exceptionManager.removeExceptionRequestWithId(TestRequestId)
+        actual should be (expected)
+      }
+
       it("should return true if the exception request was removed") {
         val expected = true
         val stubRequest = stub[ExceptionRequest]

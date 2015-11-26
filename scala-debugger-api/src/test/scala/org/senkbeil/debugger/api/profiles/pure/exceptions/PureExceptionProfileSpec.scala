@@ -75,7 +75,8 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockExceptionManager.createExceptionRequest _).expects(
+          (mockExceptionManager.createExceptionRequestWithId _).expects(
+            TestRequestId,
             exceptionName,
             notifyCaught,
             notifyUncaught,
@@ -119,7 +120,8 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockExceptionManager.createExceptionRequest _).expects(
+          (mockExceptionManager.createExceptionRequestWithId _).expects(
+            TestRequestId,
             exceptionName,
             notifyCaught,
             notifyUncaught,
@@ -164,7 +166,8 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockExceptionManager.createExceptionRequest _).expects(
+          (mockExceptionManager.createExceptionRequestWithId _).expects(
+            TestRequestId,
             exceptionName,
             notifyCaught,
             notifyUncaught,
@@ -201,7 +204,8 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockExceptionManager.createExceptionRequest _).expects(
+          (mockExceptionManager.createExceptionRequestWithId _).expects(
+            TestRequestId + "other",
             exceptionName,
             notifyCaught,
             notifyUncaught,
@@ -246,7 +250,8 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockExceptionManager.createExceptionRequest _).expects(
+          (mockExceptionManager.createExceptionRequestWithId _).expects(
+            TestRequestId,
             exceptionName,
             notifyCaught,
             notifyUncaught,
@@ -322,7 +327,8 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockExceptionManager.createExceptionRequest _).expects(
+          (mockExceptionManager.createExceptionRequestWithId _).expects(
+            TestRequestId,
             exceptionName,
             notifyCaught,
             notifyUncaught,
@@ -360,7 +366,8 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockExceptionManager.createExceptionRequest _).expects(
+          (mockExceptionManager.createExceptionRequestWithId _).expects(
+            TestRequestId + "other",
             exceptionName + 1,
             notifyCaught,
             notifyUncaught,
@@ -380,6 +387,67 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
           notifyUncaught,
           arguments: _*
         )
+      }
+
+      it("should remove the underlying request if all pipelines are closed") {
+        val exceptionName = "some.exception"
+        val notifyCaught = true
+        val notifyUncaught = true
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureExceptionProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          inAnyOrder {
+            val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+            val uniqueIdPropertyFilter =
+              UniqueIdPropertyFilter(id = TestRequestId)
+
+            // Memoized request function first checks to make sure the cache
+            // has not been invalidated underneath (first call will always be
+            // empty since we have never created the request)
+            (mockExceptionManager.hasExceptionRequest _).expects(exceptionName)
+              .returning(false).once()
+            (mockExceptionManager.hasExceptionRequest _).expects(exceptionName)
+              .returning(true).once()
+
+            // NOTE: Expect the request to be created with a unique id
+            (mockExceptionManager.createExceptionRequestWithId _).expects(
+              TestRequestId,
+              exceptionName,
+              notifyCaught,
+              notifyUncaught,
+              uniqueIdProperty +: arguments
+            ).returning(Success("")).once()
+
+            (mockEventManager.addEventDataStream _)
+              .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
+              .returning(Pipeline.newPipeline(
+                classOf[(Event, Seq[JDIEventDataResult])]
+              )).twice()
+          }
+
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(TestRequestId).once()
+        }
+
+        val p1 = pureExceptionProfile.onExceptionWithData(
+          exceptionName,
+          notifyCaught,
+          notifyUncaught,
+          arguments: _*
+        )
+        val p2 = pureExceptionProfile.onExceptionWithData(
+          exceptionName,
+          notifyCaught,
+          notifyUncaught,
+          arguments: _*
+        )
+
+        p1.foreach(_.close())
+        p2.foreach(_.close())
       }
     }
 
@@ -405,7 +473,8 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockExceptionManager.createCatchallExceptionRequest _).expects(
+          (mockExceptionManager.createCatchallExceptionRequestWithId _).expects(
+            TestRequestId,
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
@@ -446,7 +515,8 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockExceptionManager.createCatchallExceptionRequest _).expects(
+          (mockExceptionManager.createCatchallExceptionRequestWithId _).expects(
+            TestRequestId,
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
@@ -488,7 +558,8 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockExceptionManager.createCatchallExceptionRequest _).expects(
+          (mockExceptionManager.createCatchallExceptionRequestWithId _).expects(
+            TestRequestId,
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
@@ -523,7 +594,8 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockExceptionManager.createCatchallExceptionRequest _).expects(
+          (mockExceptionManager.createCatchallExceptionRequestWithId _).expects(
+            TestRequestId + "other",
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
@@ -565,7 +637,8 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockExceptionManager.createCatchallExceptionRequest _).expects(
+          (mockExceptionManager.createCatchallExceptionRequestWithId _).expects(
+            TestRequestId,
             notifyCaught,
             notifyUncaught,
             uniqueIdProperty +: arguments
@@ -609,6 +682,65 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
           notifyUncaught,
           arguments: _*
         )
+      }
+
+      it("should remove the underlying request if all pipelines are closed") {
+        val notifyCaught = true
+        val notifyUncaught = true
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureExceptionProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          inAnyOrder {
+            val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+            val uniqueIdPropertyFilter =
+              UniqueIdPropertyFilter(id = TestRequestId)
+
+            // Memoized request function first checks to make sure the cache
+            // has not been invalidated underneath (first call will always be
+            // empty since we have never created the request)
+            (mockExceptionManager.hasCatchallExceptionRequest _).expects()
+              .returning(false).once()
+            (mockExceptionManager.hasCatchallExceptionRequest _).expects()
+              .returning(true).once()
+
+            // NOTE: Expect the request to be created with a unique id
+            (mockExceptionManager.createCatchallExceptionRequestWithId _)
+              .expects(
+                TestRequestId,
+                notifyCaught,
+                notifyUncaught,
+                uniqueIdProperty +: arguments
+              )
+              .returning(Success("")).once()
+
+            (mockEventManager.addEventDataStream _)
+              .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
+              .returning(Pipeline.newPipeline(
+                classOf[(Event, Seq[JDIEventDataResult])]
+              )).twice()
+          }
+
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(TestRequestId).once()
+        }
+
+        val p1 = pureExceptionProfile.onAllExceptionsWithData(
+          notifyCaught,
+          notifyUncaught,
+          arguments: _*
+        )
+        val p2 = pureExceptionProfile.onAllExceptionsWithData(
+          notifyCaught,
+          notifyUncaught,
+          arguments: _*
+        )
+
+        p1.foreach(_.close())
+        p2.foreach(_.close())
       }
     }
   }

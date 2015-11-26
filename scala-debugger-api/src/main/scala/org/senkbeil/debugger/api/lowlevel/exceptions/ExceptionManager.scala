@@ -11,6 +11,14 @@ import scala.collection.JavaConverters._
 import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
 
 import scala.util.{Failure, Try}
+import ExceptionManager._
+
+/**
+ * Contains constants for the ExceptionManager.
+ */
+object ExceptionManager {
+  val DefaultCatchallExceptionName = "<CATCHALL>"
+}
 
 /**
  * Represents the manager for exception requests.
@@ -35,9 +43,7 @@ class ExceptionManager(
   private val exceptionRequests =
     new ConcurrentHashMap[ExceptionKey, Seq[ExceptionRequest]]().asScala
 
-  @volatile private var catchallExceptionRequest: Option[
-    (ExceptionKey, ExceptionRequest)
-  ] = None
+  @volatile private var catchallExceptionRequestId: Option[ExceptionKey] = None
 
   /**
    * Retrieves the list of exception requests contained by this manager.
@@ -86,7 +92,8 @@ class ExceptionManager(
     ))
 
     if (request.isSuccess) {
-      catchallExceptionRequest = Some((requestId, request.get))
+      catchallExceptionRequestId = Some(requestId)
+      exceptionArgsToRequestId.put(DefaultCatchallExceptionName, requestId)
       exceptionRequests.put(requestId, Seq(request.get))
     }
 
@@ -127,7 +134,7 @@ class ExceptionManager(
    * @return Some id if the catchall has been set, otherwise None
    */
   def getCatchallExceptionRequestId: Option[ExceptionKey] = {
-    catchallExceptionRequest.map(_._1)
+    catchallExceptionRequestId
   }
 
   /**
@@ -135,15 +142,18 @@ class ExceptionManager(
    *
    * @return True if set, otherwise false
    */
-  def hasCatchallExceptionRequest: Boolean = catchallExceptionRequest.nonEmpty
+  def hasCatchallExceptionRequest: Boolean = catchallExceptionRequestId.nonEmpty
 
   /**
    * Retrieves the exception request used to catch all exceptions.
    *
    * @return Some exception request if the catchall has been set, otherwise None
    */
-  def getCatchallExceptionRequest: Option[ExceptionRequest] =
-    catchallExceptionRequest.map(_._2)
+  def getCatchallExceptionRequest: Option[ExceptionRequest] = {
+    catchallExceptionRequestId
+      .flatMap(getExceptionRequestWithId)
+      .flatMap(_.headOption)
+  }
 
   /**
    * Removes the exception request used to catch all exceptions.
@@ -151,17 +161,18 @@ class ExceptionManager(
    * @return True if the exception request was removed (if it existed),
    *         otherwise false
    */
-  def removeCatchallExceptionRequest(): Boolean =
-    catchallExceptionRequest.synchronized {
-      catchallExceptionRequest match {
+  def removeCatchallExceptionRequest(): Boolean = {
+    catchallExceptionRequestId.synchronized {
+      getCatchallExceptionRequest match {
         case Some(r) =>
-          eventRequestManager.deleteEventRequest(r._2)
-          catchallExceptionRequest = None
+          eventRequestManager.deleteEventRequest(r)
+          catchallExceptionRequestId = None
           true
         case None =>
           false
       }
     }
+  }
 
   /**
    * Creates a new exception request for the specified exception class.
@@ -319,15 +330,24 @@ class ExceptionManager(
    *         otherwise false
    */
   def removeExceptionRequestWithId(requestId: String): Boolean = {
-    val requests = exceptionRequests.remove(requestId)
+    val isCatchallId = getCatchallExceptionRequestId.exists(_ == requestId)
 
-    // Reverse-lookup arguments to remove argsToId mapping
-    exceptionArgsToRequestId.find(_._2 == requestId).map(_._1)
-      .foreach(exceptionArgsToRequestId.remove)
+    // Special case for removing catchall exception request
+    if (isCatchallId) {
+      removeCatchallExceptionRequest()
 
-    requests.map(_.asJava).foreach(eventRequestManager.deleteEventRequests)
+    // Normal case for removing a standard exception request
+    } else {
+      val requests = exceptionRequests.remove(requestId)
 
-    requests.nonEmpty
+      // Reverse-lookup arguments to remove argsToId mapping
+      exceptionArgsToRequestId.find(_._2 == requestId).map(_._1)
+        .foreach(exceptionArgsToRequestId.remove)
+
+      requests.map(_.asJava).foreach(eventRequestManager.deleteEventRequests)
+
+      requests.nonEmpty
+    }
   }
 
   /**

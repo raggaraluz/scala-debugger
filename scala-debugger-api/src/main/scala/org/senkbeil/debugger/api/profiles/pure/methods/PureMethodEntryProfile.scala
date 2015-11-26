@@ -35,7 +35,7 @@ trait PureMethodEntryProfile extends MethodEntryProfile {
   private val pipelineCounter = new ConcurrentHashMap[
     (String, String, Seq[JDIArgument]),
     AtomicInteger
-    ]().asScala
+  ]().asScala
 
   /**
    * Constructs a stream of method entry events for the specified class and
