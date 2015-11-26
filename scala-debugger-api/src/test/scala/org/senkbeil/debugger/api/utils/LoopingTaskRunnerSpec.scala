@@ -1,5 +1,6 @@
 package org.senkbeil.debugger.api.utils
 
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
 import org.scalamock.scalatest.MockFactory
@@ -17,7 +18,7 @@ class LoopingTaskRunnerSpec extends FunSpec with Matchers
 
   private def waitDuringTest(): Unit = Thread.sleep(150)
 
-  private val loopingTaskRunner = new LoopingTaskRunner()
+  private val loopingTaskRunner = new LoopingTaskRunner(initialWorkers = 1)
 
   describe("LoopingTaskRunner") {
     describe("#start") {
@@ -50,7 +51,6 @@ class LoopingTaskRunnerSpec extends FunSpec with Matchers
       }
 
       it("should repeatedly execute tasks") {
-        val loopingTaskRunner = new LoopingTaskRunner(1)
         val tasksExecuted = new AtomicInteger(0)
 
         // Queue up a single task to be executed
@@ -83,6 +83,46 @@ class LoopingTaskRunnerSpec extends FunSpec with Matchers
         eventually {
           blockingTaskCounter.get() should be (0)
           nonBlockingTaskCounter.get() should be > 1
+        }
+      }
+    }
+
+    describe("#setDesiredTotalWorkers") {
+      it("should be able to increase the amount of active workers") {
+        val expected = 4
+
+        // Set a long wait period so we can ensure that we queue up workers
+        val loopingTaskRunner = new LoopingTaskRunner(
+          initialWorkers = 1,
+          maxTaskWaitTime = (100, TimeUnit.SECONDS)
+        )
+
+        loopingTaskRunner.start()
+
+        loopingTaskRunner.setDesiredTotalWorkers(expected)
+
+        eventually {
+          val actual = loopingTaskRunner.getCurrentActiveWorkers
+          actual should be (expected)
+        }
+      }
+
+      it("should be able to decrease the amount of active workers") {
+        val expected = 1
+
+        // Set a short queue time so workers can be removed
+        val loopingTaskRunner = new LoopingTaskRunner(
+          initialWorkers = 4,
+          maxTaskWaitTime = (10, TimeUnit.MILLISECONDS)
+        )
+
+        loopingTaskRunner.start()
+
+        loopingTaskRunner.setDesiredTotalWorkers(expected)
+
+        eventually {
+          val actual = loopingTaskRunner.getCurrentActiveWorkers
+          actual should be (expected)
         }
       }
     }
