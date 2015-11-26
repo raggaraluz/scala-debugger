@@ -1,9 +1,22 @@
 package org.senkbeil.debugger.api.utils
 
 import java.util
-import java.util.concurrent.{ConcurrentHashMap, ExecutorService, Executors, LinkedBlockingQueue}
+import java.util.concurrent._
 
 import scala.util.Try
+
+import LoopingTaskRunner._
+
+/**
+ * Contains defaults for the looping task runner.
+ */
+object LoopingTaskRunner {
+  /** Default maximum workers is equal to number of available processors */
+  val DefaultMaxWorkers: Int = Runtime.getRuntime.availableProcessors()
+
+  /** Default maximum wait time is 100 milliseconds */
+  val DefaultMaxTaskWaitTime: (Long, TimeUnit) = (100L, TimeUnit.MILLISECONDS)
+}
 
 /**
  * Represents a queue of tasks that will be executed infinitely in order
@@ -11,9 +24,12 @@ import scala.util.Try
  *
  * @param maxWorkers The total number of works to use for this runner,
  *                   defaulting to the total number of available processors
+ * @param maxTaskWaitTime The maximum time to wait for a task to be pulled off
+ *                        of the queue before allowing other tasks to be run
  */
 class LoopingTaskRunner(
-  private val maxWorkers: Int = Runtime.getRuntime.availableProcessors()
+  private val maxWorkers: Int = DefaultMaxWorkers,
+  private val maxTaskWaitTime: (Long, TimeUnit) = DefaultMaxTaskWaitTime
 ) {
   type TaskId = String
 
@@ -29,16 +45,22 @@ class LoopingTaskRunner(
     private val taskMap: util.Map[TaskId, Runnable]
   ) extends Runnable {
     override def run(): Unit = {
-      // Determine the next task to execute (waits if no task available)
-      val taskId = taskQueue.take()
+      // Determine the next task to execute (wait for a maximum time duration)
+      val retrievedTaskId = Option(taskQueue.poll(
+        maxTaskWaitTime._1,
+        maxTaskWaitTime._2
+      ))
 
-      // Retrieve and execute the next task
-      val tryTask = Try(taskMap.get(taskId))
-      tryTask.foreach(task => Try(task.run()))
+      // If there is a new task, perform the operation
+      retrievedTaskId.foreach { taskId =>
+        // Retrieve and execute the next task
+        val tryTask = Try(taskMap.get(taskId))
+        tryTask.foreach(task => Try(task.run()))
 
-      // Task finished, so add back to end of our queue
-      // NOTE: Only do so if the map knows about our task (allows removal)
-      if (tryTask.isSuccess) taskQueue.put(taskId)
+        // Task finished, so add back to end of our queue
+        // NOTE: Only do so if the map knows about our task (allows removal)
+        if (tryTask.isSuccess) taskQueue.put(taskId)
+      }
 
       // Start next task once this is free (suppress exceptions in the
       // situation that this runner has been stopped)
