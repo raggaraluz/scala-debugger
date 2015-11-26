@@ -80,9 +80,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createBreakpointRequest _)
-            .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockBreakpointManager.createBreakpointRequestWithId _).expects(
+            TestRequestId,
+            fileName,
+            lineNumber,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
@@ -119,9 +122,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createBreakpointRequest _)
-            .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
-            .throwing(expected.failed.get).once()
+          (mockBreakpointManager.createBreakpointRequestWithId _).expects(
+            TestRequestId,
+            fileName,
+            lineNumber,
+            uniqueIdProperty +: arguments
+          ).throwing(expected.failed.get).once()
         }
 
         val actual = pureBreakpointProfile.onBreakpointWithData(
@@ -159,9 +165,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createBreakpointRequest _)
-            .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockBreakpointManager.createBreakpointRequestWithId _).expects(
+            TestRequestId,
+            fileName,
+            lineNumber,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
@@ -192,9 +201,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createBreakpointRequest _)
-            .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockBreakpointManager.createBreakpointRequestWithId _).expects(
+            TestRequestId + "other",
+            fileName,
+            lineNumber,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
@@ -232,9 +244,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createBreakpointRequest _)
-            .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockBreakpointManager.createBreakpointRequestWithId _).expects(
+            TestRequestId,
+            fileName,
+            lineNumber,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
@@ -303,9 +318,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createBreakpointRequest _)
-            .expects(fileName, lineNumber, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockBreakpointManager.createBreakpointRequestWithId _).expects(
+            TestRequestId,
+            fileName,
+            lineNumber,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
@@ -337,9 +355,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockBreakpointManager.createBreakpointRequest _)
-            .expects(fileName, lineNumber + 1, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockBreakpointManager.createBreakpointRequestWithId _).expects(
+            TestRequestId + "other",
+            fileName,
+            lineNumber + 1,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
@@ -353,6 +374,65 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           lineNumber + 1,
           arguments: _*
         )
+      }
+
+      it("should remove the underlying request if all pipelines are closed") {
+        val fileName = "some file"
+        val lineNumber = 999
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureBreakpointProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          inAnyOrder {
+            val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+            val uniqueIdPropertyFilter =
+              UniqueIdPropertyFilter(id = TestRequestId)
+
+            // Memoized request function first checks to make sure the cache
+            // has not been invalidated underneath (first call will always be
+            // empty since we have never created the request)
+            (mockBreakpointManager.hasBreakpointRequest _)
+              .expects(fileName, lineNumber)
+              .returning(false).once()
+            (mockBreakpointManager.hasBreakpointRequest _)
+              .expects(fileName, lineNumber)
+              .returning(true).once()
+
+            // NOTE: Expect the request to be created with a unique id
+            (mockBreakpointManager.createBreakpointRequestWithId _).expects(
+              TestRequestId,
+              fileName,
+              lineNumber,
+              uniqueIdProperty +: arguments
+            ).returning(Success("")).once()
+
+            (mockEventManager.addEventDataStream _)
+              .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
+              .returning(Pipeline.newPipeline(
+                classOf[(Event, Seq[JDIEventDataResult])]
+              )).twice()
+          }
+
+          (mockBreakpointManager.removeBreakpointRequestWithId _)
+            .expects(TestRequestId).once()
+        }
+
+        val p1 = pureBreakpointProfile.onBreakpointWithData(
+          fileName,
+          lineNumber,
+          arguments: _*
+        )
+        val p2 = pureBreakpointProfile.onBreakpointWithData(
+          fileName,
+          lineNumber,
+          arguments: _*
+        )
+
+        p1.foreach(_.close())
+        p2.foreach(_.close())
       }
     }
   }
