@@ -7,7 +7,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Seconds, Milliseconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType
-import test.{TestUtilities, VirtualMachineFixtures}
+import test.{Constants, TestUtilities, VirtualMachineFixtures}
 import EventType._
 
 class BreakpointManagerIntegrationSpec extends FunSpec with Matchers
@@ -15,8 +15,8 @@ class BreakpointManagerIntegrationSpec extends FunSpec with Matchers
   with TestUtilities with Eventually
 {
   implicit override val patienceConfig = PatienceConfig(
-    timeout = scaled(Span(5, Seconds)),
-    interval = scaled(Span(5, Milliseconds))
+    timeout = scaled(test.Constants.EventuallyTimeout),
+    interval = scaled(test.Constants.EventuallyInterval)
   )
 
   describe("BreakpointManager") {

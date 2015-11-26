@@ -10,6 +10,7 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
+import test.Constants._
 import EventType._
 
 class StepManagerIntegrationSpec extends FunSpec with Matchers
@@ -17,8 +18,8 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
   with TestUtilities with Eventually
 {
   implicit override val patienceConfig = PatienceConfig(
-    timeout = scaled(Span(5, Seconds)),
-    interval = scaled(Span(5, Milliseconds))
+    timeout = scaled(test.Constants.EventuallyTimeout),
+    interval = scaled(test.Constants.EventuallyInterval)
   )
 
   describe("StepManager") {
@@ -102,7 +103,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
             startingLine = startingLine,
             expectedReachableLines = expectedReachableLines,
             failIfNotExact = true,
-            maxDuration = (10, Seconds)
+            maxDuration = (15, Seconds)
           )
         }
       }
@@ -201,7 +202,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
             startingLine = startingLine,
             expectedReachableLines = expectedReachableLines,
             failIfNotExact = true,
-            maxDuration = (7, Seconds)
+            maxDuration = (15, Seconds)
           )
         }
       }
@@ -319,7 +320,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
     startingLine: Int,
     expectedReachableLines: Seq[Int],
     failIfNotExact: Boolean = false,
-    maxDuration: (Int, Units) = (5, Seconds)
+    maxDuration: (Long, Units) = (EventuallyTimeout.toMillis, Milliseconds)
   ) = {
     import scalaVirtualMachine.lowlevel._
 
@@ -374,7 +375,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
     // NOTE: Using asserts to provide more helpful failure messages
     logTimeTaken(eventually(
       timeout = Timeout(scaled(Span(maxDuration._1, maxDuration._2))),
-      interval = Interval(scaled(Span(5, Milliseconds)))
+      interval = Interval(scaled(test.Constants.EventuallyInterval))
     ) {
       // If marked to fail early, use that message for better reporting
       assert(!failEarly.get(), failEarlyMessage)

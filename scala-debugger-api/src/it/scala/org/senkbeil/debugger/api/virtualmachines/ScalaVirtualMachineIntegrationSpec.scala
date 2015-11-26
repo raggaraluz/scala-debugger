@@ -10,8 +10,8 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
   with TestUtilities with Eventually
 {
   implicit override val patienceConfig = PatienceConfig(
-    timeout = scaled(Span(2, Seconds)),
-    interval = scaled(Span(5, Milliseconds))
+    timeout = scaled(test.Constants.EventuallyTimeout),
+    interval = scaled(test.Constants.EventuallyInterval)
   )
 
   describe("ScalaVirtualMachine") {

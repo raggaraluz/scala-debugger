@@ -13,8 +13,8 @@ class PureMonitorContendedEnterProfileIntegrationSpec extends FunSpec with Match
   with TestUtilities with Eventually
 {
   implicit override val patienceConfig = PatienceConfig(
-    timeout = scaled(Span(5, Seconds)),
-    interval = scaled(Span(5, Milliseconds))
+    timeout = scaled(test.Constants.EventuallyTimeout),
+    interval = scaled(test.Constants.EventuallyInterval)
   )
 
   describe("PureMonitorContendedEnterProfile") {
