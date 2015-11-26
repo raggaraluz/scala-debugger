@@ -18,7 +18,7 @@ import org.senkbeil.debugger.api.lowlevel.events.EventType.MethodEntryEventType
 import scala.util.{Failure, Success}
 
 class PureMethodEntryProfileSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers
+with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
 
@@ -76,9 +76,12 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodEntryManager.createMethodEntryRequest _)
-            .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockMethodEntryManager.createMethodEntryRequestWithId _).expects(
+            TestRequestId,
+            className,
+            methodName,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodEntryEventType, eventArguments)
@@ -115,9 +118,12 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodEntryManager.createMethodEntryRequest _)
-            .expects(className, methodName, uniqueIdProperty +: arguments)
-            .throwing(expected.failed.get).once()
+          (mockMethodEntryManager.createMethodEntryRequestWithId _).expects(
+            TestRequestId,
+            className,
+            methodName,
+            uniqueIdProperty +: arguments
+          ).throwing(expected.failed.get).once()
         }
 
         val actual = pureMethodEntryProfile.onMethodEntryWithData(
@@ -159,9 +165,12 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodEntryManager.createMethodEntryRequest _)
-            .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockMethodEntryManager.createMethodEntryRequestWithId _).expects(
+            TestRequestId,
+            className,
+            methodName,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodEntryEventType, eventArguments)
@@ -196,9 +205,12 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodEntryManager.createMethodEntryRequest _)
-            .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockMethodEntryManager.createMethodEntryRequestWithId _).expects(
+            TestRequestId + "other",
+            className,
+            methodName,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodEntryEventType, eventArguments)
@@ -240,9 +252,12 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodEntryManager.createMethodEntryRequest _)
-            .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockMethodEntryManager.createMethodEntryRequestWithId _).expects(
+            TestRequestId,
+            className,
+            methodName,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodEntryEventType, eventArguments)
@@ -319,9 +334,12 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodEntryManager.createMethodEntryRequest _)
-            .expects(className, methodName, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockMethodEntryManager.createMethodEntryRequestWithId _).expects(
+            TestRequestId,
+            className,
+            methodName,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodEntryEventType, eventArguments)
@@ -357,9 +375,12 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
             .returning(false).once()
 
           // NOTE: Expect the request to be created with a unique id
-          (mockMethodEntryManager.createMethodEntryRequest _)
-            .expects(className, methodName + 1, uniqueIdProperty +: arguments)
-            .returning(Success("")).once()
+          (mockMethodEntryManager.createMethodEntryRequestWithId _).expects(
+            TestRequestId + "other",
+            className,
+            methodName + 1,
+            uniqueIdProperty +: arguments
+          ).returning(Success("")).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MethodEntryEventType, eventArguments)
@@ -374,6 +395,71 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
           arguments: _*
         )
       }
+
+      it("should remove the underlying request if all pipelines are closed") {
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureMethodEntryProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          inAnyOrder {
+            val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+            val uniqueIdPropertyFilter =
+              UniqueIdPropertyFilter(id = TestRequestId)
+
+            val eventArguments = Seq(
+              uniqueIdPropertyFilter,
+              MethodNameFilter(methodName)
+            )
+
+            // Memoized request function first checks to make sure the cache
+            // has not been invalidated underneath (first call will always be
+            // empty since we have never created the request)
+            (mockMethodEntryManager.hasMethodEntryRequest _)
+              .expects(className, methodName)
+              .returning(false).once()
+            (mockMethodEntryManager.hasMethodEntryRequest _)
+              .expects(className, methodName)
+              .returning(true).once()
+
+            // NOTE: Expect the request to be created with a unique id
+            (mockMethodEntryManager.createMethodEntryRequestWithId _).expects(
+              TestRequestId,
+              className,
+              methodName,
+              uniqueIdProperty +: arguments
+            ).returning(Success("")).once()
+
+            (mockEventManager.addEventDataStream _)
+              .expects(MethodEntryEventType, eventArguments)
+              .returning(Pipeline.newPipeline(
+                classOf[(Event, Seq[JDIEventDataResult])]
+              )).twice()
+          }
+
+          (mockMethodEntryManager.removeMethodEntryRequestWithId _)
+            .expects(TestRequestId).once()
+        }
+
+        val p1 = pureMethodEntryProfile.onMethodEntryWithData(
+          className,
+          methodName,
+          arguments: _*
+        )
+        val p2 = pureMethodEntryProfile.onMethodEntryWithData(
+          className,
+          methodName,
+          arguments: _*
+        )
+
+        p1.foreach(_.close())
+        p2.foreach(_.close())
+      }
     }
   }
 }
+
