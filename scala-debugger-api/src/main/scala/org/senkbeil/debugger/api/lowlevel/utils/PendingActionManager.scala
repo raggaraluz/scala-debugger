@@ -140,7 +140,7 @@ class PendingActionManager[T] {
     cleanupActions()
 
     // Return the information for the successful actions
-    results.map(_._2).map(_.filter(_._2.isSuccess).map(_._1)).flatten.toSeq
+    results.values.flatMap(_.filter(_._2.isSuccess).map(_._1)).toSeq
   }
 
   /**
@@ -248,7 +248,7 @@ class PendingActionManager[T] {
   protected def cleanupActions(): Unit = pendingActions.synchronized {
     val actionsToRemove = pendingActions
       .filter(t => t._2 == null || t._2.isEmpty)
-      .map(_._1)
+      .keys
 
     actionsToRemove.foreach(pendingActions.remove)
   }
