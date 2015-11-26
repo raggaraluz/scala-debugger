@@ -1,5 +1,8 @@
 package org.senkbeil.debugger.api.profiles.pure.threads
 
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+
 import com.sun.jdi.event.ThreadDeathEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
@@ -8,15 +11,17 @@ import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.lowlevel.threads.ThreadDeathManager
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
+import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.threads.ThreadDeathProfile
 import org.senkbeil.debugger.api.utils.Memoization
 import org.senkbeil.debugger.api.lowlevel.events.EventType.ThreadDeathEventType
 
+import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**
- * Represents a pure profile for thread death events that adds no
+ * Represents a pure profile for thread start events that adds no
  * extra logic on top of the standard JDI.
  */
 trait PureThreadDeathProfile extends ThreadDeathProfile {
@@ -24,11 +29,20 @@ trait PureThreadDeathProfile extends ThreadDeathProfile {
   protected val eventManager: EventManager
 
   /**
-   * Constructs a stream of thread death events.
+   * Contains mapping from input to a counter indicating how many pipelines
+   * are currently active for the input.
+   */
+  private val pipelineCounter = new ConcurrentHashMap[
+    Seq[JDIArgument],
+    AtomicInteger
+  ]().asScala
+
+  /**
+   * Constructs a stream of thread start events.
    *
    * @param extraArguments The additional JDI arguments to provide
    *
-   * @return The stream of thread death events and any retrieved data based on
+   * @return The stream of thread start events and any retrieved data based on
    *         requests from extra arguments
    */
   override def onThreadDeathWithData(
@@ -40,12 +54,12 @@ trait PureThreadDeathProfile extends ThreadDeathProfile {
   }
 
   /**
-   * Creates a new thread death request using the given arguments. The request
+   * Creates a new thread start request using the given arguments. The request
    * is memoized, meaning that the same request will be returned for the same
    * arguments. The memoized result will be thrown out if the underlying
    * request storage indicates that the request has been removed.
    *
-   * @return The id of the created thread death request
+   * @return The id of the created thread start request
    */
   protected val newThreadDeathRequest = {
     type Input = (Seq[JDIRequestArgument])
@@ -57,7 +71,8 @@ trait PureThreadDeathProfile extends ThreadDeathProfile {
         val requestId = newThreadDeathRequestId()
         val args = UniqueIdProperty(id = requestId) +: input
 
-        threadDeathManager.createThreadDeathRequest(
+        threadDeathManager.createThreadDeathRequestWithId(
+          requestId,
           args: _*
         ).get
 
@@ -70,13 +85,13 @@ trait PureThreadDeathProfile extends ThreadDeathProfile {
         !threadDeathManager.threadDeathRequestList
           .flatMap(threadDeathManager.getThreadDeathRequestArguments)
           .map(_.filterNot(_.isInstanceOf[UniqueIdProperty]))
-          .exists(_ == key)
+          .contains(key)
       }
     )
   }
 
   /**
-   * Creates a new pipeline of thread death events and data using the given
+   * Creates a new pipeline of thread start events and data using the given
    * arguments. The pipeline is NOT memoized; therefore, each call creates a
    * new pipeline with a new underlying event handler feeding the pipeline.
    * This means that the pipeline needs to be properly closed to remove the
@@ -86,15 +101,54 @@ trait PureThreadDeathProfile extends ThreadDeathProfile {
    *                  new pipeline
    * @param args The additional event arguments to provide to the event handler
    *             feeding the new pipeline
-   * @return The new thread death event and data pipeline
+   * @return The new thread start event and data pipeline
    */
   protected def newThreadDeathPipeline(
     requestId: String,
     args: Seq[JDIEventArgument]
   ): IdentityPipeline[ThreadDeathEventAndData] = {
     val eArgsWithFilter = UniqueIdPropertyFilter(id = requestId) +: args
-    eventManager.addEventDataStream(ThreadDeathEventType, eArgsWithFilter: _*)
-      .map(t => (t._1.asInstanceOf[ThreadDeathEvent], t._2)).noop()
+    val newPipeline = eventManager
+      .addEventDataStream(ThreadDeathEventType, eArgsWithFilter: _*)
+      .map(t => (t._1.asInstanceOf[ThreadDeathEvent], t._2))
+      .noop()
+
+    // Create a companion pipeline who, when closed, checks to see if there
+    // are no more pipelines for the given request and, if so, removes the
+    // request as well
+    val closePipeline = Pipeline.newPipeline(
+      classOf[ThreadDeathEventAndData],
+      newThreadDeathPipelineCloseFunc(requestId, args)
+    )
+
+    // Increment the counter for open pipelines
+    pipelineCounter
+      .getOrElseUpdate(args, new AtomicInteger(0))
+      .incrementAndGet()
+
+    val combinedPipeline = newPipeline.unionOutput(closePipeline)
+    combinedPipeline
+  }
+
+  /**
+   * Creates a new function used for closing generated pipelines.
+   *
+   * @param requestId The id of the request
+   * @param args The arguments associated with the request
+   *
+   * @return The new function for closing the pipeline
+   */
+  protected def newThreadDeathPipelineCloseFunc(
+    requestId: String,
+    args: Seq[JDIEventArgument]
+  ): () => Unit = () => {
+    val pCounter = pipelineCounter(args)
+
+    val totalPipelinesRemaining = pCounter.decrementAndGet()
+
+    if (totalPipelinesRemaining == 0) {
+      threadDeathManager.removeThreadDeathRequest(requestId)
+    }
   }
 
   /**
@@ -105,3 +159,4 @@ trait PureThreadDeathProfile extends ThreadDeathProfile {
   protected def newThreadDeathRequestId(): String =
     java.util.UUID.randomUUID().toString
 }
+
