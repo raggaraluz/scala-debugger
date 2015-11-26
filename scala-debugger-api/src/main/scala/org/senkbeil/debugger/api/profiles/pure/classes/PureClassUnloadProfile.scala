@@ -1,5 +1,8 @@
 package org.senkbeil.debugger.api.profiles.pure.classes
 
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+
 import com.sun.jdi.event.ClassUnloadEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.classes.ClassUnloadManager
@@ -8,20 +11,31 @@ import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
+import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.classes.ClassUnloadProfile
 import org.senkbeil.debugger.api.utils.Memoization
-import org.senkbeil.debugger.api.lowlevel.events.EventType.ClassUnloadEventType
+import org.senkbeil.debugger.api.lowlevel.events.EventType._
 
+import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**
- * Represents a pure profile for class unloading that adds no extra logic on
- * top of the standard JDI.
+ * Represents a pure profile for class unload events that adds no
+ * extra logic on top of the standard JDI.
  */
 trait PureClassUnloadProfile extends ClassUnloadProfile {
   protected val classUnloadManager: ClassUnloadManager
   protected val eventManager: EventManager
+
+  /**
+   * Contains mapping from input to a counter indicating how many pipelines
+   * are currently active for the input.
+   */
+  private val pipelineCounter = new ConcurrentHashMap[
+    Seq[JDIArgument],
+    AtomicInteger
+  ]().asScala
 
   /**
    * Constructs a stream of class unload events.
@@ -57,7 +71,8 @@ trait PureClassUnloadProfile extends ClassUnloadProfile {
         val requestId = newClassUnloadRequestId()
         val args = UniqueIdProperty(id = requestId) +: input
 
-        classUnloadManager.createClassUnloadRequest(
+        classUnloadManager.createClassUnloadRequestWithId(
+          requestId,
           args: _*
         ).get
 
@@ -70,7 +85,7 @@ trait PureClassUnloadProfile extends ClassUnloadProfile {
         !classUnloadManager.classUnloadRequestList
           .flatMap(classUnloadManager.getClassUnloadRequestArguments)
           .map(_.filterNot(_.isInstanceOf[UniqueIdProperty]))
-          .exists(_ == key)
+          .contains(key)
       }
     )
   }
@@ -93,8 +108,47 @@ trait PureClassUnloadProfile extends ClassUnloadProfile {
     args: Seq[JDIEventArgument]
   ): IdentityPipeline[ClassUnloadEventAndData] = {
     val eArgsWithFilter = UniqueIdPropertyFilter(id = requestId) +: args
-    eventManager.addEventDataStream(ClassUnloadEventType, eArgsWithFilter: _*)
-      .map(t => (t._1.asInstanceOf[ClassUnloadEvent], t._2)).noop()
+    val newPipeline = eventManager
+      .addEventDataStream(ClassUnloadEventType, eArgsWithFilter: _*)
+      .map(t => (t._1.asInstanceOf[ClassUnloadEvent], t._2))
+      .noop()
+
+    // Create a companion pipeline who, when closed, checks to see if there
+    // are no more pipelines for the given request and, if so, removes the
+    // request as well
+    val closePipeline = Pipeline.newPipeline(
+      classOf[ClassUnloadEventAndData],
+      newClassUnloadPipelineCloseFunc(requestId, args)
+    )
+
+    // Increment the counter for open pipelines
+    pipelineCounter
+      .getOrElseUpdate(args, new AtomicInteger(0))
+      .incrementAndGet()
+
+    val combinedPipeline = newPipeline.unionOutput(closePipeline)
+    combinedPipeline
+  }
+
+  /**
+   * Creates a new function used for closing generated pipelines.
+   *
+   * @param requestId The id of the request
+   * @param args The arguments associated with the request
+   *
+   * @return The new function for closing the pipeline
+   */
+  protected def newClassUnloadPipelineCloseFunc(
+    requestId: String,
+    args: Seq[JDIEventArgument]
+  ): () => Unit = () => {
+    val pCounter = pipelineCounter(args)
+
+    val totalPipelinesRemaining = pCounter.decrementAndGet()
+
+    if (totalPipelinesRemaining == 0) {
+      classUnloadManager.removeClassUnloadRequest(requestId)
+    }
   }
 
   /**
@@ -105,3 +159,4 @@ trait PureClassUnloadProfile extends ClassUnloadProfile {
   protected def newClassUnloadRequestId(): String =
     java.util.UUID.randomUUID().toString
 }
+
