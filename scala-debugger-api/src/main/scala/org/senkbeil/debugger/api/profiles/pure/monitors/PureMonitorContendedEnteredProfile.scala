@@ -1,5 +1,8 @@
 package org.senkbeil.debugger.api.profiles.pure.monitors
 
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+
 import com.sun.jdi.event.MonitorContendedEnteredEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument}
@@ -8,11 +11,13 @@ import org.senkbeil.debugger.api.lowlevel.monitors.MonitorContendedEnteredManage
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
+import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.monitors.MonitorContendedEnteredProfile
 import org.senkbeil.debugger.api.utils.Memoization
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
 
+import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**
@@ -22,6 +27,15 @@ import scala.util.Try
 trait PureMonitorContendedEnteredProfile extends MonitorContendedEnteredProfile {
   protected val monitorContendedEnteredManager: MonitorContendedEnteredManager
   protected val eventManager: EventManager
+
+  /**
+   * Contains mapping from input to a counter indicating how many pipelines
+   * are currently active for the input.
+   */
+  private val pipelineCounter = new ConcurrentHashMap[
+    Seq[JDIArgument],
+    AtomicInteger
+    ]().asScala
 
   /**
    * Constructs a stream of monitor contended entered events.
@@ -57,7 +71,8 @@ trait PureMonitorContendedEnteredProfile extends MonitorContendedEnteredProfile 
         val requestId = newMonitorContendedEnteredRequestId()
         val args = UniqueIdProperty(id = requestId) +: input
 
-        monitorContendedEnteredManager.createMonitorContendedEnteredRequest(
+        monitorContendedEnteredManager.createMonitorContendedEnteredRequestWithId(
+          requestId,
           args: _*
         ).get
 
@@ -70,7 +85,7 @@ trait PureMonitorContendedEnteredProfile extends MonitorContendedEnteredProfile 
         !monitorContendedEnteredManager.monitorContendedEnteredRequestList
           .flatMap(monitorContendedEnteredManager.getMonitorContendedEnteredRequestArguments)
           .map(_.filterNot(_.isInstanceOf[UniqueIdProperty]))
-          .exists(_ == key)
+          .contains(key)
       }
     )
   }
@@ -91,12 +106,49 @@ trait PureMonitorContendedEnteredProfile extends MonitorContendedEnteredProfile 
   protected def newMonitorContendedEnteredPipeline(
     requestId: String,
     args: Seq[JDIEventArgument]
-    ): IdentityPipeline[MonitorContendedEnteredEventAndData] = {
+  ): IdentityPipeline[MonitorContendedEnteredEventAndData] = {
     val eArgsWithFilter = UniqueIdPropertyFilter(id = requestId) +: args
-    eventManager.addEventDataStream(
-      MonitorContendedEnteredEventType,
-      eArgsWithFilter: _*
-    ).map(t => (t._1.asInstanceOf[MonitorContendedEnteredEvent], t._2)).noop()
+    val newPipeline = eventManager
+      .addEventDataStream(MonitorContendedEnteredEventType, eArgsWithFilter: _*)
+      .map(t => (t._1.asInstanceOf[MonitorContendedEnteredEvent], t._2))
+      .noop()
+
+    // Create a companion pipeline who, when closed, checks to see if there
+    // are no more pipelines for the given request and, if so, removes the
+    // request as well
+    val closePipeline = Pipeline.newPipeline(
+      classOf[MonitorContendedEnteredEventAndData],
+      newMonitorContendedEnteredPipelineCloseFunc(requestId, args)
+    )
+
+    // Increment the counter for open pipelines
+    pipelineCounter
+      .getOrElseUpdate(args, new AtomicInteger(0))
+      .incrementAndGet()
+
+    val combinedPipeline = newPipeline.unionOutput(closePipeline)
+    combinedPipeline
+  }
+
+  /**
+   * Creates a new function used for closing generated pipelines.
+   *
+   * @param requestId The id of the request
+   * @param args The arguments associated with the request
+   *
+   * @return The new function for closing the pipeline
+   */
+  protected def newMonitorContendedEnteredPipelineCloseFunc(
+    requestId: String,
+    args: Seq[JDIEventArgument]
+  ): () => Unit = () => {
+    val pCounter = pipelineCounter(args)
+
+    val totalPipelinesRemaining = pCounter.decrementAndGet()
+
+    if (totalPipelinesRemaining == 0) {
+      monitorContendedEnteredManager.removeMonitorContendedEnteredRequest(requestId)
+    }
   }
 
   /**
@@ -107,3 +159,4 @@ trait PureMonitorContendedEnteredProfile extends MonitorContendedEnteredProfile 
   protected def newMonitorContendedEnteredRequestId(): String =
     java.util.UUID.randomUUID().toString
 }
+
