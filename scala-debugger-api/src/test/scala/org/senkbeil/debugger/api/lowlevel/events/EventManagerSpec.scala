@@ -73,21 +73,6 @@ class EventManagerSpec extends FunSpec with Matchers with MockFactory
 
         eventManager.start()
       }
-
-      it("should start the looping task runner if not already started and flag enabled") {
-        val eventManager = new EventManager(
-          mockEventQueue,
-          mockLoopingTaskRunner,
-          autoStart = false,
-          startTaskRunner = true
-        )
-
-        (mockLoopingTaskRunner.isRunning _).expects().returning(false).once()
-        (mockLoopingTaskRunner.addTask _).expects(*).once()
-        (mockLoopingTaskRunner.start _).expects().once()
-
-        eventManager.start()
-      }
     }
 
     describe("#isRunning") {

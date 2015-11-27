@@ -40,6 +40,7 @@ object ManagerContainer {
   /**
    * Initializes all managers for the specified virtual machine. Uses the
    * default instance of the looping task runner for created managers.
+   * Automatically starts the event manager.
    *
    * @param virtualMachine The virtual machine whose managers to initialize
    *
@@ -47,7 +48,11 @@ object ManagerContainer {
    */
   def fromVirtualMachine(virtualMachine: VirtualMachine): ManagerContainer = {
     val loopingTaskRunner = new LoopingTaskRunner()
-    fromVirtualMachine(virtualMachine, loopingTaskRunner)
+    fromVirtualMachine(
+      virtualMachine,
+      loopingTaskRunner,
+      autoStartEventManager = true
+    )
   }
 
   /**
@@ -60,7 +65,8 @@ object ManagerContainer {
    */
   def fromVirtualMachine(
     virtualMachine: VirtualMachine,
-    loopingTaskRunner: LoopingTaskRunner
+    loopingTaskRunner: LoopingTaskRunner,
+    autoStartEventManager: Boolean
   ): ManagerContainer = {
     lazy val eventRequestManager = virtualMachine.eventRequestManager()
     lazy val eventQueue = virtualMachine.eventQueue()
@@ -75,8 +81,11 @@ object ManagerContainer {
       new ClassPrepareManager(eventRequestManager)
     lazy val classUnloadManager =
       new ClassUnloadManager(eventRequestManager)
-    lazy val eventManager =
-      new EventManager(eventQueue, loopingTaskRunner)
+    lazy val eventManager = new EventManager(
+      eventQueue,
+      loopingTaskRunner,
+      autoStart = autoStartEventManager
+    )
     lazy val exceptionManager =
       new ExceptionManager(virtualMachine, eventRequestManager)
     lazy val methodEntryManager =

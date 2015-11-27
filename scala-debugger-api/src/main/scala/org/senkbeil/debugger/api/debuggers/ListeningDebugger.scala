@@ -1,10 +1,10 @@
 package org.senkbeil.debugger.api.debuggers
 
-import java.util.concurrent.{ExecutorService, Executors}
-
 import com.sun.jdi._
 import com.sun.jdi.connect.{Connector, ListeningConnector}
-import org.senkbeil.debugger.api.utils.Logging
+import org.senkbeil.debugger.api.profiles.ProfileManager
+import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
+import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -19,24 +19,21 @@ object ListeningDebugger {
    * @param address The address to use for remote JVMs to attach to this
    *                debugger
    * @param port The port to use for remote JVMs to attach to this debugger
-   * @param executorServiceFunc The function used to create a new executor
-   *                            service to use to spawn worker threads
    * @param workers The total number of worker tasks to spawn
    */
   def apply(
     address: String,
     port: Int,
-    executorServiceFunc: () => ExecutorService =
-      () => Executors.newSingleThreadExecutor(),
     workers: Int = 1
   )(
     implicit virtualMachineManager: VirtualMachineManager =
       Bootstrap.virtualMachineManager()
   ): ListeningDebugger = new ListeningDebugger(
     virtualMachineManager,
+    () => new ProfileManager,
+    new LoopingTaskRunner(initialWorkers = workers),
     address,
     port,
-    executorServiceFunc,
     workers
   )
 }
@@ -44,27 +41,30 @@ object ListeningDebugger {
 /**
  * Represents a debugger that listens for connections from remote JVMs.
  *
- * @param address The address to use for remote JVMs to attach to this debugger
- * @param port The port to use for remote JVMs to attach to this debugger
- * @param executorServiceFunc The function used to create a new executor
- *                            service to use to spawn worker threads
- * @param workers The total number of worker tasks to spawn
- *
  * @param virtualMachineManager The manager to use for virtual machine
  *                              connectors
+ * @param newProfileManagerFunc The function to be executed per new VM
+ *                              connection that generates a profile manager for
+ *                              each new ScalaVirtualMachine
+ * @param loopingTaskRunner The task runner to use with the ScalaVirtualMachines
+ *                          created from the listening VMs
+ * @param address The address to use for remote JVMs to attach to this debugger
+ * @param port The port to use for remote JVMs to attach to this debugger
+ * @param workers The total number of worker tasks to spawn
  */
 class ListeningDebugger private[debugger] (
   private val virtualMachineManager: VirtualMachineManager,
+  private val newProfileManagerFunc: () => ProfileManager,
+  private val loopingTaskRunner: LoopingTaskRunner,
   private val address: String,
   private val port: Int,
-  private val executorServiceFunc: () => ExecutorService,
   private val workers: Int
 ) extends Debugger with Logging {
   private val ConnectorClassString = "com.sun.jdi.SocketListen"
 
   // Contains all components for the currently-running debugger
   @volatile private var components: Option[(
-    ExecutorService, ListeningConnector, Map[String, _ <: Connector.Argument]
+    LoopingTaskRunner, ListeningConnector, Map[String, _ <: Connector.Argument]
   )] = None
 
   /**
@@ -98,11 +98,16 @@ class ListeningDebugger private[debugger] (
    * Starts the debugger, resulting in opening the specified socket to listen
    * for remote JVM connections.
    *
+   * @param startProcessingEvents If true, events are immediately processed by
+   *                              the VM as soon as it is connected
    * @param newVirtualMachineFunc The function to be invoked once per JVM that
    *                              connects to this debugger
    * @tparam T The return type of the callback function
    */
-  def start[T](newVirtualMachineFunc: VirtualMachine => T): Unit = {
+  def start[T](
+    startProcessingEvents: Boolean,
+    newVirtualMachineFunc: ScalaVirtualMachine => T
+  ): Unit = {
     assert(!isRunning, "Debugger already started!")
     assertJdiLoaded()
 
@@ -122,32 +127,44 @@ class ListeningDebugger private[debugger] (
     logger.info(s"Listening on $address:$port")
     connector.startListening(arguments)
 
-    // Create the executor service to use
-    logger.info("Creating executor service")
-    val executorService = executorServiceFunc()
+    // Start the task runner to process JVMs
+    logger.info("Starting looping task runner")
+    loopingTaskRunner.start()
 
     // Store the connector and arguments (used for shutdown)
-    components = Some((executorService, connector, arguments.asScala.toMap))
+    components = Some((loopingTaskRunner, connector, arguments.asScala.toMap))
 
     // Start X workers to process connection requests
     logger.info(s"Spawning $workers worker tasks")
-    (1 to workers).foreach(_ => executorService.execute(new Runnable {
-      override def run(): Unit = while (!Thread.interrupted()) {
-        val newVirtualMachine = Try(connector.accept(arguments))
-
-        // Invoke our callback upon receiving a new virtual machine
-        newVirtualMachine.foreach(newVirtualMachineFunc)
-
-        // Release CPU
-        Thread.sleep(1)
-      }
-    }))
+    (1 to workers).foreach(_ => loopingTaskRunner.addTask {
+      listenTask(
+        connector,
+        arguments,
+        startProcessingEvents,
+        newVirtualMachineFunc
+      )
+    })
   }
 
+  /**
+   * Starts the debugger, resulting in opening the specified socket to listen
+   * for remote JVM connections.
+   *
+   * @param newVirtualMachineFunc The function to be invoked once per JVM that
+   *                              connects to this debugger
+   * @tparam T The return type of the callback function
+   */
+  def start[T](newVirtualMachineFunc: ScalaVirtualMachine => T): Unit = {
+    start(startProcessingEvents = true, newVirtualMachineFunc)
+  }
+
+  /**
+   * Stops listening for incoming connections and shuts down the task runner.
+   */
   def stop(): Unit = {
     assert(isRunning, "Debugger has not been started!")
 
-    val (executorService, connector, arguments) = components.get
+    val (loopingTaskRunner, connector, arguments) = components.get
 
     // Close the listening port
     logger.info(s"Shutting down $address:$port")
@@ -155,7 +172,7 @@ class ListeningDebugger private[debugger] (
 
     // Cancel all worker threads via interrupt
     logger.info("Cancelling worker threads")
-    executorService.shutdownNow()
+    loopingTaskRunner.stop()
 
     // Mark that we have completely stopped the debugger
     components = None
@@ -169,6 +186,63 @@ class ListeningDebugger private[debugger] (
    */
   def connectedVirtualMachines =
     virtualMachineManager.connectedVirtualMachines().asScala.toSeq
+
+  /**
+   * Checks for an incoming connection, creates a new ScalaVirtualMachine for
+   * the connection, and invokes the callback with the new ScalaVirtualMachine
+   * instance.
+   *
+   * @param connector The connector to use when listening
+   * @param arguments The arguments for the connector to use when accepting
+   *                  new connections
+   * @param startProcessingEvents If true, events are immediately processed by
+   *                              the VM as soon as it is connected
+   * @param newVirtualMachineFunc The callback for the new ScalaVirtualMachine
+   * @tparam T The return type of the callback
+   */
+  protected def listenTask[T](
+    connector: ListeningConnector,
+    arguments: java.util.Map[String, Connector.Argument],
+    startProcessingEvents: Boolean,
+    newVirtualMachineFunc: ScalaVirtualMachine => T
+  ): Unit = {
+    val newVirtualMachine = Try(connector.accept(arguments))
+
+    // Invoke our callback upon receiving a new virtual machine
+    val scalaVirtualMachine = newVirtualMachine.map(newScalaVirtualMachine(
+      _: VirtualMachine,
+      newProfileManagerFunc(),
+      loopingTaskRunner
+    ))
+    scalaVirtualMachine.foreach(_.initialize(
+      startProcessingEvents = startProcessingEvents
+    ))
+    scalaVirtualMachine.foreach(newVirtualMachineFunc)
+
+    // Release CPU
+    Thread.sleep(1)
+  }
+
+  /**
+   * Creates a new ScalaVirtualMachine instance.
+   *
+   * @param virtualMachine The underlying virtual machine
+   * @param profileManager The profile manager associated with the
+   *                       virtual machine
+   * @param loopingTaskRunner The looping task runner used to process events
+   *                          for the virtual machine
+   *
+   * @return The new ScalaVirtualMachine instance
+   */
+  protected def newScalaVirtualMachine(
+    virtualMachine: VirtualMachine,
+    profileManager: ProfileManager,
+    loopingTaskRunner: LoopingTaskRunner
+  ): ScalaVirtualMachine = new ScalaVirtualMachine(
+    virtualMachine,
+    profileManager,
+    loopingTaskRunner
+  )
 
   /**
    * Retrieves the connector to be used to listen for incoming JVM connections.

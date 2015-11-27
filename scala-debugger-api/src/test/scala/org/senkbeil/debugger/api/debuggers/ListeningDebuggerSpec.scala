@@ -1,11 +1,15 @@
 package org.senkbeil.debugger.api.debuggers
 
-import java.util.concurrent.ExecutorService
+import java.util
 
-import com.sun.jdi.connect.{Connector, ListeningConnector}
+import com.sun.jdi.connect.Connector.Argument
+import com.sun.jdi.connect.{TransportTimeoutException, Connector, ListeningConnector}
 import com.sun.jdi.{VirtualMachine, VirtualMachineManager}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.senkbeil.debugger.api.profiles.ProfileManager
+import org.senkbeil.debugger.api.utils.LoopingTaskRunner
+import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.collection.JavaConverters._
 
@@ -27,21 +31,49 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
   private val testPort = 1234
   private val testWorkers = 4
 
-  private val mockExecutorService = mock[ExecutorService]
-
   private implicit val mockVirtualMachineManager = mock[VirtualMachineManager]
+  private val mockProfileManager = mock[ProfileManager]
+  private val mockLoopingTaskRunner = mock[LoopingTaskRunner]
+  private val mockNewScalaVirtualMachineFunc = mockFunction[
+    VirtualMachine, ProfileManager, LoopingTaskRunner, ScalaVirtualMachine
+  ]
+
   private class TestListeningDebugger(
     override val isAvailable: Boolean = true,
     private val shouldJdiLoad: Boolean = true
   ) extends ListeningDebugger(
     virtualMachineManager = mockVirtualMachineManager,
-    address = testAddress,
-    port = testPort,
-    executorServiceFunc = () => mockExecutorService,
-    workers = testWorkers
+    newProfileManagerFunc = () => mockProfileManager,
+    loopingTaskRunner     = mockLoopingTaskRunner,
+    address               = testAddress,
+    port                  = testPort,
+    workers               = testWorkers
   ) {
+    /** Exposing as public method. */
+    override def listenTask[T](
+      connector: ListeningConnector,
+      arguments: util.Map[String, Argument],
+      startProcessingEvents: Boolean,
+      newVirtualMachineFunc: (ScalaVirtualMachine) => T
+    ): Unit = super.listenTask(
+      connector,
+      arguments,
+      startProcessingEvents,
+      newVirtualMachineFunc
+    )
+
     override def assertJdiLoaded(): Unit =
       if (!shouldJdiLoad) throw new AssertionError
+
+    override protected def newScalaVirtualMachine(
+      virtualMachine: VirtualMachine,
+      profileManager: ProfileManager,
+      loopingTaskRunner: LoopingTaskRunner
+    ): ScalaVirtualMachine = mockNewScalaVirtualMachineFunc(
+      virtualMachine,
+      profileManager,
+      loopingTaskRunner
+    )
   }
   private val listeningDebugger = new TestListeningDebugger()
 
@@ -73,7 +105,9 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
 
         (mockListeningConnector.supportsMultipleConnections _).expects().once()
         (mockListeningConnector.startListening _).expects(*).once()
-        (mockExecutorService.execute _).expects(*).repeated(testWorkers).times()
+        (mockLoopingTaskRunner.start _).expects().once()
+        (mockLoopingTaskRunner.addTask _).expects(*)
+          .repeated(testWorkers).times()
         // MOCK ===============================================================
 
         listeningDebugger.start((_) => {})
@@ -109,7 +143,8 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
         ).asJava)
 
         (mockListeningConnector.supportsMultipleConnections _).expects().once()
-        (mockExecutorService.execute _).expects(*)
+        (mockLoopingTaskRunner.start _).expects().once()
+        (mockLoopingTaskRunner.addTask _).expects(*)
           .repeated(testWorkers).times()
         // MOCK ===============================================================
 
@@ -135,9 +170,10 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
 
         (mockListeningConnector.supportsMultipleConnections _).expects().once()
         (mockListeningConnector.startListening _).expects(*).once()
+        (mockLoopingTaskRunner.start _).expects().once()
         // MOCK ===============================================================
 
-        (mockExecutorService.execute _).expects(*)
+        (mockLoopingTaskRunner.addTask _).expects(*)
           .repeated(testWorkers).times()
 
         listeningDebugger.start((_) => {})
@@ -161,7 +197,8 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
         ).asJava)
 
         (mockListeningConnector.supportsMultipleConnections _).expects().once()
-        (mockExecutorService.execute _).expects(*)
+        (mockLoopingTaskRunner.start _).expects().once()
+        (mockLoopingTaskRunner.addTask _).expects(*)
           .repeated(testWorkers).times()
         (mockListeningConnector.startListening _).expects(*).once()
         // MOCK ===============================================================
@@ -200,15 +237,90 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
 
         (mockListeningConnector.supportsMultipleConnections _).expects().once()
         (mockListeningConnector.startListening _).expects(*).once()
-        (mockExecutorService.execute _).expects(*).repeated(testWorkers).times()
+        (mockLoopingTaskRunner.start _).expects().once()
+        (mockLoopingTaskRunner.addTask _).expects(*)
+          .repeated(testWorkers).times()
         // MOCK ===============================================================
 
         listeningDebugger.start((_) => {})
 
         (mockListeningConnector.stopListening _).expects(*).once()
-        (mockExecutorService.shutdownNow _).expects().once()
+        (mockLoopingTaskRunner.stop _).expects(true).once()
 
         listeningDebugger.stop()
+      }
+    }
+
+    describe("#listeningTask") {
+      it("should listen for a new connection") {
+        val mockListeningConnector = mock[ListeningConnector]
+        val mockArguments = mock[java.util.Map[String, Connector.Argument]]
+        val mockCallback = mockFunction[ScalaVirtualMachine, Unit]
+
+        // Expect accept call (and throw exception to do nothing)
+        (mockListeningConnector.accept _).expects(mockArguments)
+          .throwing(new TransportTimeoutException).once()
+
+        listeningDebugger.listenTask(
+          mockListeningConnector,
+          mockArguments,
+          true,
+          mockCallback
+        )
+      }
+
+      it("should create a new ScalaVirtualMachine and pass it to the callback") {
+        val mockListeningConnector = mock[ListeningConnector]
+        val mockArguments = mock[java.util.Map[String, Connector.Argument]]
+        val mockCallback = mockFunction[ScalaVirtualMachine, Unit]
+
+        val mockVirtualMachine = mock[VirtualMachine]
+
+        // Expect accept call, returning a new virtual machine instance
+        (mockListeningConnector.accept _).expects(mockArguments)
+          .returning(mockVirtualMachine).once()
+
+        class TestScalaVirtualMachine extends ScalaVirtualMachine(
+          mockVirtualMachine, null, null
+        )
+        val stubScalaVirtualMachine = stub[TestScalaVirtualMachine]
+        mockNewScalaVirtualMachineFunc.expects(mockVirtualMachine, *, *)
+          .returning(stubScalaVirtualMachine).once()
+
+        mockCallback.expects(stubScalaVirtualMachine).once()
+
+        listeningDebugger.listenTask(
+          mockListeningConnector,
+          mockArguments,
+          true,
+          mockCallback
+        )
+      }
+
+      it("should initialize the created ScalaVirtualMachine") {
+        val mockListeningConnector = mock[ListeningConnector]
+        val mockArguments = mock[java.util.Map[String, Connector.Argument]]
+        val mockVirtualMachine = mock[VirtualMachine]
+
+        // Expect accept call, returning a new virtual machine instance
+        (mockListeningConnector.accept _).expects(mockArguments)
+          .returning(mockVirtualMachine).once()
+
+        class TestScalaVirtualMachine extends ScalaVirtualMachine(
+          mockVirtualMachine, null, null
+        )
+        val mockScalaVirtualMachine = mock[TestScalaVirtualMachine]
+        mockNewScalaVirtualMachineFunc.expects(mockVirtualMachine, *, *)
+          .returning(mockScalaVirtualMachine).once()
+
+        (mockScalaVirtualMachine.initialize _).expects(true).once()
+
+        listeningDebugger.listenTask(
+          mockListeningConnector,
+          mockArguments,
+          true,
+          _ => {}
+        )
       }
     }
 

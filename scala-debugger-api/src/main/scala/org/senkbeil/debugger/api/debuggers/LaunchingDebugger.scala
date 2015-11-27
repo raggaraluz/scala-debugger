@@ -2,7 +2,9 @@ package org.senkbeil.debugger.api.debuggers
 
 import com.sun.jdi._
 import com.sun.jdi.connect.LaunchingConnector
-import org.senkbeil.debugger.api.utils.Logging
+import org.senkbeil.debugger.api.profiles.ProfileManager
+import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
+import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.collection.JavaConverters._
 
@@ -28,6 +30,8 @@ object LaunchingDebugger {
     Bootstrap.virtualMachineManager()
   ) = new LaunchingDebugger(
     virtualMachineManager,
+    new ProfileManager,
+    new LoopingTaskRunner(),
     className,
     commandLineArguments,
     jvmOptions,
@@ -40,6 +44,10 @@ object LaunchingDebugger {
  *
  * @param virtualMachineManager The manager to use for virtual machine
  *                              connectors
+ * @param profileManager The manager of profiles to use with the
+ *                       ScalaVirtualMachine created from the launched VM
+ * @param loopingTaskRunner The task runner to use with the ScalaVirtualMachine
+ *                          created from the launched VM
  * @param className The name of the class to use as the entrypoint for the new
  *                  process
  * @param commandLineArguments The command line arguments to provide to the new
@@ -49,6 +57,8 @@ object LaunchingDebugger {
  */
 class LaunchingDebugger private[debugger] (
   private val virtualMachineManager: VirtualMachineManager,
+  private val profileManager: ProfileManager,
+  private val loopingTaskRunner: LoopingTaskRunner,
   private val className: String,
   private val commandLineArguments: Seq[String] = Nil,
   private val jvmOptions: Seq[String] = Nil,
@@ -74,11 +84,16 @@ class LaunchingDebugger private[debugger] (
   /**
    * Starts the debugger, resulting in launching a new process to connect to.
    *
+   * @param startProcessingEvents If true, events are immediately processed by
+   *                              the VM as soon as it is connected
    * @param newVirtualMachineFunc The function to be invoked once the process
    *                              has been launched
    * @tparam T The return type of the callback function
    */
-  def start[T](newVirtualMachineFunc: VirtualMachine => T): Unit = {
+  def start[T](
+    startProcessingEvents: Boolean,
+    newVirtualMachineFunc: ScalaVirtualMachine => T
+  ): Unit = {
     assert(!isRunning, "Debugger already started!")
     assertJdiLoaded()
 
@@ -98,7 +113,30 @@ class LaunchingDebugger private[debugger] (
     logger.info("Launching options: " + options)
     logger.info("Launching suspend: " + suspend)
     virtualMachine = Some(connector.launch(arguments))
-    newVirtualMachineFunc(virtualMachine.get)
+
+    logger.debug("Starting looping task runner")
+    loopingTaskRunner.start()
+
+    val scalaVirtualMachine = newScalaVirtualMachine(
+      virtualMachine.get,
+      profileManager,
+      loopingTaskRunner
+    )
+    scalaVirtualMachine.initialize(
+      startProcessingEvents = startProcessingEvents
+    )
+    newVirtualMachineFunc(scalaVirtualMachine)
+  }
+
+  /**
+   * Starts the debugger, resulting in launching a new process to connect to.
+   *
+   * @param newVirtualMachineFunc The function to be invoked once the process
+   *                              has been launched
+   * @tparam T The return type of the callback function
+   */
+  def start[T](newVirtualMachineFunc: ScalaVirtualMachine => T): Unit = {
+    start(startProcessingEvents = true, newVirtualMachineFunc)
   }
 
   /**
@@ -106,6 +144,9 @@ class LaunchingDebugger private[debugger] (
    */
   def stop(): Unit = {
     assert(isRunning, "Debugger has not been started!")
+
+    // Stop the looping task runner processing events
+    loopingTaskRunner.stop()
 
     // TODO: Investigate why dispose throws a VMDisconnectedException
     // Invalidate the virtual machine mirror
@@ -119,6 +160,27 @@ class LaunchingDebugger private[debugger] (
     // Wipe our reference to the old virtual machine
     virtualMachine = None
   }
+
+  /**
+   * Creates a new ScalaVirtualMachine instance.
+   *
+   * @param virtualMachine The underlying virtual machine
+   * @param profileManager The profile manager associated with the
+   *                       virtual machine
+   * @param loopingTaskRunner The looping task runner used to process events
+   *                          for the virtual machine
+   *
+   * @return The new ScalaVirtualMachine instance
+   */
+  protected def newScalaVirtualMachine(
+    virtualMachine: VirtualMachine,
+    profileManager: ProfileManager,
+    loopingTaskRunner: LoopingTaskRunner
+  ): ScalaVirtualMachine = new ScalaVirtualMachine(
+    virtualMachine,
+    profileManager,
+    loopingTaskRunner
+  )
 
   /**
    * Retrieves the connector to be used to launch a new process and connect
