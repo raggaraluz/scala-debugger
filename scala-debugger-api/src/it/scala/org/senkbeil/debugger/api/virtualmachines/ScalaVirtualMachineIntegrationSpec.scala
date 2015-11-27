@@ -10,11 +10,21 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
   with TestUtilities with Eventually
 {
   implicit override val patienceConfig = PatienceConfig(
-    timeout = scaled(Span(2, Seconds)),
-    interval = scaled(Span(5, Milliseconds))
+    timeout = scaled(test.Constants.EventuallyTimeout),
+    interval = scaled(test.Constants.EventuallyInterval)
   )
 
   describe("ScalaVirtualMachine") {
+    it("should indicate that it has started upon receiving the start event") {
+      val testClass = "org.senkbeil.debugger.test.misc.MainUsingMethod"
+
+      withVirtualMachine(testClass) { (_, scalaVirtualMachine) =>
+        eventually {
+          assert(scalaVirtualMachine.isStarted, "ScalaVirtualMachine not started!")
+        }
+      }
+    }
+
     it("should return the class name of a Scala main method entrypoint") {
       val testClass = "org.senkbeil.debugger.test.misc.MainUsingMethod"
 

@@ -2,6 +2,7 @@ package test
 
 import java.io.{InputStreamReader, BufferedReader}
 
+import com.sun.jdi.event.VMStartEvent
 import org.senkbeil.debugger.api.debuggers.LaunchingDebugger
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.lowlevel.events.EventType
@@ -38,9 +39,10 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
       suspend = true // This should always be true for our tests, using resume
                      // above to indicate whether should resume after start
     )
-    val loopingTaskRunner = new LoopingTaskRunner()
 
-    launchingDebugger.start { (virtualMachine) =>
+    launchingDebugger.start(startProcessingEvents = false, { scalaVirtualMachine =>
+      val virtualMachine = scalaVirtualMachine.underlyingVirtualMachine
+
       // Redirect output of JVM to our logs
       val process = virtualMachine.process()
 
@@ -93,23 +95,18 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
       }
 
       try {
-        val profileManager = new ProfileManager
-        val scalaVirtualMachine = new ScalaVirtualMachine(
-          virtualMachine,
-          profileManager
-        ) {
-          override protected def newManagerContainer(unused: LoopingTaskRunner) =
-            super.newManagerContainer(loopingTaskRunner)
-        }
-
-        val eventManager = scalaVirtualMachine.lowlevel.eventManager
+        import scalaVirtualMachine.lowlevel.eventManager
 
         // Invoke our pre-start function
         preStart(scalaVirtualMachine)
 
         // Wait for connection event to run the test code (ensures everything
         // is ready)
+        logger.trace("Ensuring that VM is ready before starting test")
         var virtualMachineReady = false
+
+        // NOTE: Using event handler so we can return a boolean to indicate
+        //       whether or not to resume the VM
         eventManager.addEventHandler(VMStartEventType, _ => {
           logger.debug("Received start event for test, marking ready!")
           virtualMachineReady = true
@@ -119,14 +116,16 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
           !suspend
         })
 
-        loopingTaskRunner.start()
+        // Forced to start listening events now so we guarantee that we
+        // receive the start event AFTER adding our handler
+        scalaVirtualMachine.lowlevel.eventManager.start()
+
         while (!virtualMachineReady) { Thread.sleep(1) }
 
         testCode(virtualMachine, scalaVirtualMachine)
       } finally {
-        loopingTaskRunner.stop()
         launchingDebugger.stop()
       }
-    }
+    })
   }
 }

@@ -17,8 +17,6 @@ import scala.collection.JavaConverters._
  * @param eventQueue The event queue whose events to pull off and process
  * @param loopingTaskRunner The runner used to process events
  * @param autoStart If true, starts the event processing automatically
- * @param startTaskRunner If true, will attempt to start the task runner if
- *                        not already started (upon starting the event manager)
  * @param onExceptionResume If true, any event handler that throws an exception
  *                          will count towards resuming the event set, otherwise
  *                          it will cause the event set to not resume
@@ -27,7 +25,6 @@ class EventManager(
   private val eventQueue: EventQueue,
   private val loopingTaskRunner: LoopingTaskRunner,
   private val autoStart: Boolean = true,
-  private val startTaskRunner: Boolean = false,
   private val onExceptionResume: Boolean = true
 ) extends Logging {
   /**
@@ -62,11 +59,6 @@ class EventManager(
    */
   def start(): Unit = {
     assert(!isRunning, "Event manager already started!")
-
-    if (startTaskRunner && !loopingTaskRunner.isRunning) {
-      logger.debug("Event manager starting looping task runner!")
-      loopingTaskRunner.start()
-    }
 
     logger.trace("Starting event manager for virtual machine!")
     eventTaskId = Some(loopingTaskRunner.addTask(eventHandlerTask()))
