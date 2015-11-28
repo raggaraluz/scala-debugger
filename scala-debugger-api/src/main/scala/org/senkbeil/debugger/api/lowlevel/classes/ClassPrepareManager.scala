@@ -6,7 +6,7 @@ import com.sun.jdi.request.{ClassPrepareRequest, EventRequestManager}
 import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.utils.Logging
+import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -19,20 +19,15 @@ import scala.util.Try
 class ClassPrepareManager(
   private val eventRequestManager: EventRequestManager
 ) extends Logging {
-  type ClassPrepareKey = String
-  private val classPrepareRequests = new ConcurrentHashMap[
-    ClassPrepareKey,
-    (Seq[JDIRequestArgument], ClassPrepareRequest)
-  ]()
+  private val classPrepareRequests =
+    new MultiMap[Seq[JDIRequestArgument], ClassPrepareRequest]
 
   /**
    * Retrieves the list of class prepare requests contained by this manager.
    *
-   * @return The collection of class prepare requests in the form of
-   *         (class name, method name)
+   * @return The collection of class prepare requests in the form of ids
    */
-  def classPrepareRequestList: Seq[ClassPrepareKey] =
-    classPrepareRequests.keySet().asScala.toSeq
+  def classPrepareRequestList: Seq[String] = classPrepareRequests.ids
 
   /**
    * Creates a new class prepare request.
@@ -45,7 +40,7 @@ class ClassPrepareManager(
   def createClassPrepareRequestWithId(
     requestId: String,
     extraArguments: JDIRequestArgument*
-  ): Try[ClassPrepareKey] = {
+  ): Try[String] = {
     val request = Try(eventRequestManager.createClassPrepareRequest(
       Seq(
         EnabledProperty(value = true),
@@ -54,7 +49,7 @@ class ClassPrepareManager(
     ))
 
     if (request.isSuccess) {
-      classPrepareRequests.put(requestId, (extraArguments, request.get))
+      classPrepareRequests.putWithId(requestId, extraArguments, request.get)
     }
 
     // If no exception was thrown, assume that we succeeded
@@ -70,7 +65,7 @@ class ClassPrepareManager(
    */
   def createClassPrepareRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[ClassPrepareKey] = {
+  ): Try[String] = {
     createClassPrepareRequestWithId(newRequestId(), extraArguments: _*)
   }
 
@@ -81,8 +76,8 @@ class ClassPrepareManager(
    *
    * @return True if a class prepare request with the id exists, otherwise false
    */
-  def hasClassPrepareRequest(id: ClassPrepareKey): Boolean = {
-    classPrepareRequests.containsKey(id)
+  def hasClassPrepareRequest(id: String): Boolean = {
+    classPrepareRequests.hasWithId(id)
   }
 
   /**
@@ -92,8 +87,8 @@ class ClassPrepareManager(
    *
    * @return Some class prepare request if it exists, otherwise None
    */
-  def getClassPrepareRequest(id: ClassPrepareKey): Option[ClassPrepareRequest] = {
-    Option(classPrepareRequests.get(id)).map(_._2)
+  def getClassPrepareRequest(id: String): Option[ClassPrepareRequest] = {
+    classPrepareRequests.getWithId(id)
   }
 
   /**
@@ -105,9 +100,9 @@ class ClassPrepareManager(
    * @return Some collection of arguments if it exists, otherwise None
    */
   def getClassPrepareRequestArguments(
-    id: ClassPrepareKey
+    id: String
   ): Option[Seq[JDIRequestArgument]] = {
-    Option(classPrepareRequests.get(id)).map(_._1)
+    classPrepareRequests.getKeyWithId(id)
   }
 
   /**
@@ -118,8 +113,8 @@ class ClassPrepareManager(
    * @return True if the class prepare request was removed (if it existed),
    *         otherwise false
    */
-  def removeClassPrepareRequest(id: ClassPrepareKey): Boolean = {
-    val request = Option(classPrepareRequests.remove(id)).map(_._2)
+  def removeClassPrepareRequest(id: String): Boolean = {
+    val request = classPrepareRequests.removeWithId(id)
 
     request.foreach(eventRequestManager.deleteEventRequest)
 

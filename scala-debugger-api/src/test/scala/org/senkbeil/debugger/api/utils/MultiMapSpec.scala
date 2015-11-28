@@ -256,7 +256,7 @@ class MultiMapSpec extends FunSpec with Matchers with OneInstancePerTest {
       }
     }
 
-    describe("#getIdsForKey") {
+    describe("#getIdsWithKey") {
       it("should return Some(collection of ids) if the key exists") {
         val expected = Some(Seq(TestId, TestId + 1, TestId + 2))
 
