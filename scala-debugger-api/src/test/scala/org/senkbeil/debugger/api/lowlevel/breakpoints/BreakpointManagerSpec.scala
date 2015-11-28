@@ -69,6 +69,14 @@ class BreakpointManagerSpec extends FunSpec with Matchers
       it("should return a collection of breakpoint file names and lines") {
         val expected = Seq(("file1", 1), ("file1", 2), ("file2", 999))
 
+        // NOTE: Must create a new breakpoint manager that does NOT override the
+        //       request id to always be the same since we do not allow
+        //       duplicates of the test id when storing it
+        val breakpointManager = new BreakpointManager(
+          mockEventRequestManager,
+          mockClassManager
+        )
+
         // Build the map to return from linesAndLocationsForFile(...)
         (mockClassManager.linesAndLocationsForFile _).expects(*).onCall(
           (fileName: String) => Some(expected
