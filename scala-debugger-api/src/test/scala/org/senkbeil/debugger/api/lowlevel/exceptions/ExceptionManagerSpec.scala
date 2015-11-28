@@ -243,6 +243,14 @@ class ExceptionManagerSpec extends FunSpec with Matchers with MockFactory
         val testNotifyUncaught = false
         val exceptionRequests = Seq("class1", "class2")
 
+        // NOTE: Must create a new exception manager that does NOT override the
+        //       request id to always be the same since we do not allow
+        //       duplicates of the test id when storing it
+        val exceptionManager = new ExceptionManager(
+          mockVirtualMachine,
+          mockEventRequestManager
+        )
+
         exceptionRequests.foreach { case exceptionName =>
           (mockEventRequestManager.createExceptionRequest _)
             .expects(mockReferenceType, testNotifyCaught, testNotifyUncaught)
