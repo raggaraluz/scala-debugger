@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.lowlevel.events
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline
-import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
+import org.senkbeil.debugger.api.utils.{MultiMap, LoopingTaskRunner, Logging}
 import com.sun.jdi.event.{EventQueue, EventSet, Event}
 
 import java.util.concurrent.ConcurrentHashMap
@@ -38,12 +38,8 @@ class EventManager(
    */
   type EventAndData = (Event, Seq[JDIEventDataResult])
 
-  /** Represents the event id associated with the event handler. */
-  type EventHandlerId = String
-
   /** Contains the events, associated handlers and their ids. */
-  private val eventTypeToHandlerIds =
-    new ConcurrentHashMap[EventType, ConcurrentHashMap[EventHandlerId, EventHandler]]()
+  private val eventHandlers = new MultiMap[EventType, EventHandler]
 
   private var eventTaskId: Option[String] = None
 
@@ -137,7 +133,7 @@ class EventManager(
     eventType: EventType,
     eventArguments: JDIEventArgument*
   ): IdentityPipeline[EventAndData] = {
-    val eventHandlerId = newEventHandlerId()
+    val eventHandlerId = newEventId()
 
     val eventPipeline = Pipeline.newPipeline(
       classOf[EventAndData],
@@ -171,7 +167,7 @@ class EventManager(
     eventType: EventType,
     eventHandler: (Event, Seq[JDIEventDataResult]) => Unit,
     eventArguments: JDIEventArgument*
-  ): EventHandlerId = {
+  ): String = {
     // Convert the function to an "always true" event function
     val fullEventFunction = (event: Event, data: Seq[JDIEventDataResult]) => {
       eventHandler(event, data)
@@ -196,7 +192,7 @@ class EventManager(
     eventType: EventType,
     eventHandler: (Event) => Unit,
     eventArguments: JDIEventArgument*
-  ): EventHandlerId = addResumingEventHandler(
+  ): String = addResumingEventHandler(
     eventType = eventType,
     eventHandler = (event: Event, _: Seq[JDIEventDataResult]) => {
       eventHandler(event)
@@ -220,9 +216,9 @@ class EventManager(
     eventType: EventType,
     eventHandler: EventHandler,
     eventArguments: JDIEventArgument*
-  ): EventHandlerId = {
+  ): String = {
     // Generate the id for this handler
-    val eventHandlerId = newEventHandlerId()
+    val eventHandlerId = newEventId()
 
     wrapAndAddEventHandler(
       eventHandlerId,
@@ -247,7 +243,7 @@ class EventManager(
     eventType: EventType,
     eventHandler: (Event) => Boolean,
     eventArguments: JDIEventArgument*
-  ): EventHandlerId = addEventHandler(
+  ): String = addEventHandler(
     eventType = eventType,
     eventHandler = (event: Event, _: Seq[JDIEventDataResult]) => {
       eventHandler(event)
@@ -267,27 +263,17 @@ class EventManager(
    * @return The id associated with the wrapped event handler
    */
   protected def wrapAndAddEventHandler(
-    eventHandlerId: EventHandlerId,
+    eventHandlerId: String,
     eventType: EventType,
     eventHandler: EventHandler,
     eventArguments: JDIEventArgument*
-    ): EventHandlerId = {
-    // Retrieve the existing id -> handler map or create one
-    val eventHandlerMap =
-      if (eventTypeToHandlerIds.containsKey(eventType)) {
-        eventTypeToHandlerIds.get(eventType)
-      } else {
-        val _newMap = new ConcurrentHashMap[EventHandlerId, EventHandler]()
-        eventTypeToHandlerIds.put(eventType, _newMap)
-        _newMap
-      }
-
+    ): String = {
     // Create a wrapper that contains our filtering logic
     val wrapperEventHandler =
       newWrapperEventHandler(eventHandler, eventArguments)
 
     // Store the event handler with the filtering logic
-    eventHandlerMap.put(eventHandlerId, wrapperEventHandler)
+    eventHandlers.putWithId(eventHandlerId, eventType, wrapperEventHandler)
 
     eventHandlerId
   }
@@ -329,11 +315,7 @@ class EventManager(
    * @return The collection of event functions
    */
   def getHandlersForEventType(eventType: EventType) : Seq[EventHandler] = {
-    if (eventTypeToHandlerIds.containsKey(eventType)) {
-      eventTypeToHandlerIds.get(eventType).values().asScala.toSeq
-    } else {
-      Nil
-    }
+    eventHandlers.get(eventType).getOrElse(Nil)
   }
 
   /**
@@ -344,12 +326,8 @@ class EventManager(
    *
    * @return The collection of event functions
    */
-  def getHandlerIdsForEventType(eventType: EventType): Seq[EventHandlerId] = {
-    if (eventTypeToHandlerIds.containsKey(eventType)) {
-      eventTypeToHandlerIds.get(eventType).keys().asScala.toSeq
-    } else {
-      Nil
-    }
+  def getHandlerIdsForEventType(eventType: EventType): Seq[String] = {
+    eventHandlers.getIdsWithKey(eventType).getOrElse(Nil)
   }
 
   /**
@@ -359,10 +337,8 @@ class EventManager(
    *
    * @return Some event handler if found, otherwise None
    */
-  def getEventHandler(eventHandlerId: EventHandlerId): Option[EventHandler] = {
-    eventTypeToHandlerIds.values().asScala
-      .find(_.containsKey(eventHandlerId))
-      .map(_.get(eventHandlerId))
+  def getEventHandler(eventHandlerId: String): Option[EventHandler] = {
+    eventHandlers.getWithId(eventHandlerId)
   }
 
   /**
@@ -372,10 +348,8 @@ class EventManager(
    *
    * @return Some event handler if removed, otherwise None
    */
-  def removeEventHandler(eventHandlerId: EventHandlerId): Option[EventHandler] = {
-    eventTypeToHandlerIds.values().asScala
-      .find(_.containsKey(eventHandlerId))
-      .map(_.remove(eventHandlerId))
+  def removeEventHandler(eventHandlerId: String): Option[EventHandler] = {
+    eventHandlers.removeWithId(eventHandlerId)
   }
 
   /**
@@ -383,7 +357,7 @@ class EventManager(
    *
    * @return The id as a string
    */
-  protected def newEventHandlerId(): String =
+  protected def newEventId(): String =
     java.util.UUID.randomUUID().toString
 
   // ==========================================================================
