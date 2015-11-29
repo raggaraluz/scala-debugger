@@ -110,7 +110,7 @@ class ExtendedBreakpointManager(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIRequestArgument*
-  ): Try[BreakpointKey] = {
+  ): Try[String] = {
     def createBreakpoint() = super.createBreakpointRequestWithId(
       requestId,
       fileName,

@@ -1,12 +1,10 @@
 package org.senkbeil.debugger.api.lowlevel.exceptions
 
-import java.util.concurrent.ConcurrentHashMap
-
 import com.sun.jdi.{ReferenceType, VirtualMachine}
 import com.sun.jdi.request.{EventRequestManager, ExceptionRequest}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{SuspendPolicyProperty, EnabledProperty}
-import org.senkbeil.debugger.api.utils.Logging
+import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
 import scala.collection.JavaConverters._
 import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
 
@@ -34,32 +32,24 @@ class ExceptionManager(
   /** The arguments used to lookup exception requests: (Exception) */
   type ExceptionArgs = String
 
-  /** The key used to lookup exception requests */
-  type ExceptionKey = String
-
-  private val exceptionArgsToRequestId =
-    new ConcurrentHashMap[ExceptionArgs, ExceptionKey]().asScala
-
   private val exceptionRequests =
-    new ConcurrentHashMap[ExceptionKey, Seq[ExceptionRequest]]().asScala
+    new MultiMap[ExceptionArgs, Seq[ExceptionRequest]]
 
-  @volatile private var catchallExceptionRequestId: Option[ExceptionKey] = None
+  @volatile private var catchallExceptionRequestId: Option[String] = None
 
   /**
    * Retrieves the list of exception requests contained by this manager.
    *
    * @return The collection of exception requests by full exception class name
    */
-  def exceptionRequestList: Seq[ExceptionArgs] =
-    exceptionArgsToRequestId.keySet.toSeq
+  def exceptionRequestList: Seq[ExceptionArgs] = exceptionRequests.keys
 
   /**
    * Retrieves the list of exception requests contained by this manager.
    *
    * @return The collection of exception requests by id
    */
-  def exceptionRequestListById: Seq[ExceptionKey] =
-    exceptionRequests.keySet.toSeq
+  def exceptionRequestListById: Seq[String] = exceptionRequests.ids
 
   /**
    * Creates a new exception request to catch all exceptions from the JVM.
@@ -81,7 +71,7 @@ class ExceptionManager(
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIRequestArgument*
-  ): Try[ExceptionKey] = {
+  ): Try[String] = {
     val arguments = Seq(
       EnabledProperty(value = true),
       SuspendPolicyProperty.EventThread
@@ -93,8 +83,11 @@ class ExceptionManager(
 
     if (request.isSuccess) {
       catchallExceptionRequestId = Some(requestId)
-      exceptionArgsToRequestId.put(DefaultCatchallExceptionName, requestId)
-      exceptionRequests.put(requestId, Seq(request.get))
+      exceptionRequests.putWithId(
+        requestId,
+        DefaultCatchallExceptionName,
+        Seq(request.get)
+      )
     }
 
     // If no exception was thrown, assume that we succeeded
@@ -119,7 +112,7 @@ class ExceptionManager(
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIRequestArgument*
-  ): Try[ExceptionKey] = {
+  ): Try[String] = {
     createCatchallExceptionRequestWithId(
       newRequestId(),
       notifyCaught,
@@ -133,7 +126,7 @@ class ExceptionManager(
    *
    * @return Some id if the catchall has been set, otherwise None
    */
-  def getCatchallExceptionRequestId: Option[ExceptionKey] = {
+  def getCatchallExceptionRequestId: Option[String] = {
     catchallExceptionRequestId
   }
 
@@ -195,7 +188,7 @@ class ExceptionManager(
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIRequestArgument*
-  ): Try[ExceptionKey] = {
+  ): Try[String] = {
     val exceptionReferenceTypes = virtualMachine.classesByName(exceptionName)
 
     // If no classes match the requested exception type, exit early
@@ -215,8 +208,7 @@ class ExceptionManager(
     ))
 
     if (requests.isSuccess) {
-      exceptionArgsToRequestId.put(exceptionName, requestId)
-      exceptionRequests.put(requestId, requests.get)
+      exceptionRequests.putWithId(requestId, exceptionName, requests.get)
     }
 
     // If no exception was thrown, assume that we succeeded
@@ -242,7 +234,7 @@ class ExceptionManager(
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIRequestArgument*
-  ): Try[ExceptionKey] = {
+  ): Try[String] = {
     createExceptionRequestWithId(
       newRequestId(),
       exceptionName,
@@ -262,8 +254,7 @@ class ExceptionManager(
    * @return True if a exception request exists, otherwise false
    */
   def hasExceptionRequest(exceptionName: String): Boolean = {
-    exceptionArgsToRequestId.get(exceptionName)
-      .exists(hasExceptionRequestWithId)
+    exceptionRequests.has(exceptionName)
   }
 
   /**
@@ -274,7 +265,7 @@ class ExceptionManager(
    * @return True if a exception request exists, otherwise false
    */
   def hasExceptionRequestWithId(requestId: String): Boolean = {
-    exceptionRequests.contains(requestId)
+    exceptionRequests.hasWithId(requestId)
   }
 
   /**
@@ -289,8 +280,7 @@ class ExceptionManager(
   def getExceptionRequest(
     exceptionName: String
   ): Option[Seq[ExceptionRequest]] = {
-    exceptionArgsToRequestId.get(exceptionName)
-      .flatMap(getExceptionRequestWithId)
+    exceptionRequests.get(exceptionName).map(_.flatten)
   }
 
   /**
@@ -303,7 +293,7 @@ class ExceptionManager(
   def getExceptionRequestWithId(
     requestId: String
   ): Option[Seq[ExceptionRequest]] = {
-    exceptionRequests.get(requestId)
+    exceptionRequests.getWithId(requestId)
   }
 
   /**
@@ -317,8 +307,8 @@ class ExceptionManager(
    *         otherwise false
    */
   def removeExceptionRequest(exceptionName: String): Boolean = {
-    exceptionArgsToRequestId.get(exceptionName)
-      .exists(removeExceptionRequestWithId)
+    exceptionRequests.getIdsWithKey(exceptionName)
+      .exists(_.forall(removeExceptionRequestWithId))
   }
 
   /**
@@ -338,11 +328,7 @@ class ExceptionManager(
 
     // Normal case for removing a standard exception request
     } else {
-      val requests = exceptionRequests.remove(requestId)
-
-      // Reverse-lookup arguments to remove argsToId mapping
-      exceptionArgsToRequestId.find(_._2 == requestId).map(_._1)
-        .foreach(exceptionArgsToRequestId.remove)
+      val requests = exceptionRequests.removeWithId(requestId)
 
       requests.map(_.asJava).foreach(eventRequestManager.deleteEventRequests)
 

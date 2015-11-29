@@ -1,14 +1,11 @@
 package org.senkbeil.debugger.api.lowlevel.threads
 
-import java.util.concurrent.ConcurrentHashMap
-
 import com.sun.jdi.request.{EventRequestManager, ThreadDeathRequest}
 import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.utils.Logging
+import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
 
-import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**
@@ -19,20 +16,15 @@ import scala.util.Try
 class ThreadDeathManager(
   private val eventRequestManager: EventRequestManager
 ) extends Logging {
-  type ThreadDeathKey = String
-  private val threadDeathRequests = new ConcurrentHashMap[
-    ThreadDeathKey,
-    (Seq[JDIRequestArgument], ThreadDeathRequest)
-  ]()
+  private val threadDeathRequests =
+    new MultiMap[Seq[JDIRequestArgument], ThreadDeathRequest]
 
   /**
    * Retrieves the list of thread death requests contained by this manager.
    *
-   * @return The collection of thread death requests in the form of
-   *         (class name, method name)
+   * @return The collection of thread death requests in the form of ids
    */
-  def threadDeathRequestList: Seq[ThreadDeathKey] =
-    threadDeathRequests.keySet().asScala.toSeq
+  def threadDeathRequestList: Seq[String] = threadDeathRequests.ids
 
   /**
    * Creates a new thread death request for the specified class and method.
@@ -45,7 +37,7 @@ class ThreadDeathManager(
   def createThreadDeathRequestWithId(
     requestId: String,
     extraArguments: JDIRequestArgument*
-  ): Try[ThreadDeathKey] = {
+  ): Try[String] = {
     val request = Try(eventRequestManager.createThreadDeathRequest(
       Seq(
         EnabledProperty(value = true),
@@ -53,9 +45,11 @@ class ThreadDeathManager(
       ) ++ extraArguments: _*
     ))
 
-    if (request.isSuccess) {
-      threadDeathRequests.put(requestId, (extraArguments, request.get))
-    }
+    if (request.isSuccess) threadDeathRequests.putWithId(
+      requestId,
+      extraArguments,
+      request.get
+    )
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)
@@ -70,7 +64,7 @@ class ThreadDeathManager(
    */
   def createThreadDeathRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[ThreadDeathKey] = {
+  ): Try[String] = {
     createThreadDeathRequestWithId(newRequestId(), extraArguments: _*)
   }
 
@@ -81,8 +75,8 @@ class ThreadDeathManager(
    *
    * @return True if a thread death request with the id exists, otherwise false
    */
-  def hasThreadDeathRequest(id: ThreadDeathKey): Boolean = {
-    threadDeathRequests.containsKey(id)
+  def hasThreadDeathRequest(id: String): Boolean = {
+    threadDeathRequests.hasWithId(id)
   }
 
   /**
@@ -92,8 +86,8 @@ class ThreadDeathManager(
    *
    * @return Some thread death request if it exists, otherwise None
    */
-  def getThreadDeathRequest(id: ThreadDeathKey): Option[ThreadDeathRequest] = {
-    Option(threadDeathRequests.get(id)).map(_._2)
+  def getThreadDeathRequest(id: String): Option[ThreadDeathRequest] = {
+    threadDeathRequests.getWithId(id)
   }
 
   /**
@@ -105,9 +99,9 @@ class ThreadDeathManager(
    * @return Some collection of arguments if it exists, otherwise None
    */
   def getThreadDeathRequestArguments(
-    id: ThreadDeathKey
+    id: String
   ): Option[Seq[JDIRequestArgument]] = {
-    Option(threadDeathRequests.get(id)).map(_._1)
+    threadDeathRequests.getKeyWithId(id)
   }
 
   /**
@@ -118,8 +112,8 @@ class ThreadDeathManager(
    * @return True if the thread death request was removed (if it existed),
    *         otherwise false
    */
-  def removeThreadDeathRequest(id: ThreadDeathKey): Boolean = {
-    val request = Option(threadDeathRequests.remove(id)).map(_._2)
+  def removeThreadDeathRequest(id: String): Boolean = {
+    val request = threadDeathRequests.removeWithId(id)
 
     request.foreach(eventRequestManager.deleteEventRequest)
 

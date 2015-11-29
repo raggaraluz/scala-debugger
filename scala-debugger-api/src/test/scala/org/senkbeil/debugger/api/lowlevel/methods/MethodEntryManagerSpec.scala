@@ -24,6 +24,11 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
           ("class2", "method2")
         )
 
+        // NOTE: Must create a new method entry manager that does NOT override
+        //       the request id to always be the same since we do not allow
+        //       duplicates of the test id when storing it
+        val methodEntryManager = new MethodEntryManager(mockEventRequestManager)
+
         methodEntryRequests.foreach { case (className, methodName) =>
           (mockEventRequestManager.createMethodEntryRequest _).expects()
             .returning(stub[MethodEntryRequest]).once()
@@ -175,7 +180,7 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
     }
 
     describe("#getMethodEntryRequestWithId") {
-      it("should return Some(MethodEntryRequest) if found") {
+      it("should return Some(collection of MethodEntryRequest) if found") {
         val expected = stub[MethodEntryRequest]
 
         val testClassName = "some class name"
@@ -204,13 +209,13 @@ class MethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
 
     describe("#getMethodEntryRequest") {
       it("should return Some(MethodEntryRequest) if found") {
-        val expected = stub[MethodEntryRequest]
+        val expected = Seq(stub[MethodEntryRequest])
 
         val testClassName = "some class name"
         val testMethodName = "some method name"
 
         (mockEventRequestManager.createMethodEntryRequest _).expects()
-          .returning(expected).once()
+          .returning(expected.head).once()
 
         methodEntryManager.createMethodEntryRequest(testClassName, testMethodName)
 

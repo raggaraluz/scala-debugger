@@ -6,7 +6,7 @@ import com.sun.jdi.request.{EventRequestManager, BreakpointRequest}
 import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.utils.Logging
+import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
 import com.sun.jdi.Location
 
 import scala.collection.JavaConverters._
@@ -28,14 +28,8 @@ class BreakpointManager(
   /** The arguments used to lookup breakpoint requests: (Class, Line) */
   type BreakpointArgs = (String, Int)
 
-  /** The key used to lookup breakpoint requests */
-  type BreakpointKey = String
-
-  private val breakpointArgsToRequestId =
-    new ConcurrentHashMap[BreakpointArgs, BreakpointKey]().asScala
-
   private val breakpointRequests =
-    new ConcurrentHashMap[BreakpointKey, Seq[BreakpointRequest]]().asScala
+    new MultiMap[BreakpointArgs, Seq[BreakpointRequest]]
 
   /**
    * Retrieves the list of breakpoints contained by this manager.
@@ -43,16 +37,14 @@ class BreakpointManager(
    * @return The collection of breakpoints in the form of
    *         (file name, line number)
    */
-  def breakpointRequestList: Seq[BreakpointArgs] =
-    breakpointArgsToRequestId.keys.toSeq
+  def breakpointRequestList: Seq[BreakpointArgs] = breakpointRequests.keys
 
   /**
    * Retrieves the list of breakpoints contained by this manager.
    *
    * @return The collection of breakpoints by id
    */
-  def breakpointRequestListById: Seq[BreakpointKey] =
-    breakpointRequests.keys.toSeq
+  def breakpointRequestListById: Seq[String] = breakpointRequests.ids
 
   /**
    * Creates and enables a breakpoint on the specified line of the class.
@@ -69,7 +61,7 @@ class BreakpointManager(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIRequestArgument*
-  ): Try[BreakpointKey] = {
+  ): Try[String] = {
     // Retrieve the available locations for the specified line
     val locations = classManager
       .linesAndLocationsForFile(fileName)
@@ -90,10 +82,11 @@ class BreakpointManager(
       eventRequestManager.createBreakpointRequest(_: Location, arguments: _*)
     ))
 
-    if (requests.isSuccess) {
-      breakpointArgsToRequestId.put((fileName, lineNumber), requestId)
-      breakpointRequests.put(requestId, requests.get)
-    }
+    if (requests.isSuccess) breakpointRequests.putWithId(
+      requestId,
+      (fileName, lineNumber),
+      requests.get
+    )
 
     // If no exception was thrown, assume that we succeeded
     requests.map(_ => requestId)
@@ -112,7 +105,7 @@ class BreakpointManager(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIRequestArgument*
-  ): Try[BreakpointKey] = {
+  ): Try[String] = {
     createBreakpointRequestWithId(
       newRequestId(),
       fileName,
@@ -130,8 +123,7 @@ class BreakpointManager(
    * @return True if a breakpoint exists, otherwise false
    */
   def hasBreakpointRequest(fileName: String, lineNumber: Int): Boolean = {
-    breakpointArgsToRequestId.get((fileName, lineNumber))
-      .exists(hasBreakpointRequestWithId)
+    breakpointRequests.has((fileName, lineNumber))
   }
 
   /**
@@ -142,7 +134,7 @@ class BreakpointManager(
    * @return True if a breakpoint exists, otherwise false
    */
   def hasBreakpointRequestWithId(requestId: String): Boolean = {
-    breakpointRequests.contains(requestId)
+    breakpointRequests.hasWithId(requestId)
   }
 
   /**
@@ -159,8 +151,7 @@ class BreakpointManager(
     fileName: String,
     lineNumber: Int
   ): Option[Seq[BreakpointRequest]] = {
-    breakpointArgsToRequestId.get((fileName, lineNumber))
-      .flatMap(getBreakpointRequestWithId)
+    breakpointRequests.get((fileName, lineNumber)).map(_.flatten)
   }
 
   /**
@@ -174,7 +165,7 @@ class BreakpointManager(
   def getBreakpointRequestWithId(
     requestId: String
   ): Option[Seq[BreakpointRequest]] = {
-    breakpointRequests.get(requestId)
+    breakpointRequests.getWithId(requestId)
   }
 
   /**
@@ -185,7 +176,7 @@ class BreakpointManager(
    * @return Some breakpoint arguments if found, otherwise None
    */
   def getBreakpointArgsWithId(requestId: String): Option[BreakpointArgs] = {
-    breakpointArgsToRequestId.find(_._2 == requestId).map(_._1)
+    breakpointRequests.getKeyWithId(requestId)
   }
 
   /**
@@ -200,8 +191,8 @@ class BreakpointManager(
     fileName: String,
     lineNumber: Int
   ): Boolean = {
-    breakpointArgsToRequestId.get((fileName, lineNumber))
-      .exists(removeBreakpointRequestWithId)
+    breakpointRequests.getIdsWithKey((fileName, lineNumber))
+      .exists(_.forall(removeBreakpointRequestWithId))
   }
 
   /**
@@ -214,11 +205,7 @@ class BreakpointManager(
   def removeBreakpointRequestWithId(
     requestId: String
   ): Boolean = {
-    val requests = breakpointRequests.remove(requestId)
-
-    // Reverse-lookup arguments to remove argsToId mapping
-    breakpointArgsToRequestId.find(_._2 == requestId).map(_._1)
-      .foreach(breakpointArgsToRequestId.remove)
+    val requests = breakpointRequests.removeWithId(requestId)
 
     requests.map(_.asJava).foreach(eventRequestManager.deleteEventRequests)
 

@@ -1,15 +1,12 @@
 package org.senkbeil.debugger.api.lowlevel.methods
 
-import java.util.concurrent.ConcurrentHashMap
-
 import com.sun.jdi.request.{EventRequestManager, MethodExitRequest}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.filters.ClassInclusionFilter
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
 import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
-import org.senkbeil.debugger.api.utils.Logging
+import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
 
-import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**
@@ -23,13 +20,8 @@ class MethodExitManager(
   /** The arguments used to lookup method exit requests: (Class, Method) */
   type MethodExitArgs = (String, String)
 
-  /** The key used to lookup method exit requests */
-  type MethodExitKey = String
-
-  private val methodExitArgsToRequestId =
-    new ConcurrentHashMap[MethodExitArgs, MethodExitKey]().asScala
   private val methodExitRequests =
-    new ConcurrentHashMap[MethodExitKey, MethodExitRequest]().asScala
+    new MultiMap[MethodExitArgs, MethodExitRequest]
 
   /**
    * Retrieves the list of method exit requests contained by this manager.
@@ -37,16 +29,14 @@ class MethodExitManager(
    * @return The collection of method exit requests in the form of
    *         (class name, method name)
    */
-  def methodExitRequestList: Seq[MethodExitArgs] =
-    methodExitArgsToRequestId.keySet.toSeq
+  def methodExitRequestList: Seq[MethodExitArgs] = methodExitRequests.keys
 
   /**
    * Retrieves the list of method exit requests contained by this manager.
    *
    * @return The collection of method exit requests by id
    */
-  def methodExitRequestListById: Seq[MethodExitKey] =
-    methodExitRequests.keySet.toSeq
+  def methodExitRequestListById: Seq[String] = methodExitRequests.ids
 
   /**
    * Creates a new method exit request for the specified class and method.
@@ -67,7 +57,7 @@ class MethodExitManager(
     className: String,
     methodName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[MethodExitKey] = {
+  ): Try[String] = {
     val request = Try(eventRequestManager.createMethodExitRequest(
       Seq(
         ClassInclusionFilter(classPattern = className),
@@ -76,10 +66,11 @@ class MethodExitManager(
       ) ++ extraArguments: _*
     ))
 
-    if (request.isSuccess) {
-      methodExitArgsToRequestId.put((className, methodName), requestId)
-      methodExitRequests.put(requestId, request.get)
-    }
+    if (request.isSuccess) methodExitRequests.putWithId(
+      requestId,
+      (className, methodName),
+      request.get
+    )
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)
@@ -102,7 +93,7 @@ class MethodExitManager(
     className: String,
     methodName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[MethodExitKey] = {
+  ): Try[String] = {
     createMethodExitRequestWithId(
       newRequestId(),
       className,
@@ -122,9 +113,7 @@ class MethodExitManager(
    * @return True if a method exit request exists, otherwise false
    */
   def hasMethodExitRequest(className: String, methodName: String): Boolean = {
-    methodExitArgsToRequestId
-      .get((className, methodName))
-      .exists(hasMethodExitRequestWithId)
+    methodExitRequests.has((className, methodName))
   }
 
   /**
@@ -135,7 +124,7 @@ class MethodExitManager(
    * @return True if a method exit request exists, otherwise false
    */
   def hasMethodExitRequestWithId(requestId: String): Boolean = {
-    methodExitRequests.contains(requestId)
+    methodExitRequests.hasWithId(requestId)
   }
 
   /**
@@ -150,10 +139,8 @@ class MethodExitManager(
   def getMethodExitRequest(
     className: String,
     methodName: String
-  ): Option[MethodExitRequest] = {
-    methodExitArgsToRequestId
-      .get((className, methodName))
-      .flatMap(getMethodExitRequestWithId)
+  ): Option[Seq[MethodExitRequest]] = {
+    methodExitRequests.get((className, methodName))
   }
 
   /**
@@ -166,7 +153,7 @@ class MethodExitManager(
   def getMethodExitRequestWithId(
     requestId: String
   ): Option[MethodExitRequest] = {
-    methodExitRequests.get(requestId)
+    methodExitRequests.getWithId(requestId)
   }
 
   /**
@@ -183,8 +170,8 @@ class MethodExitManager(
     className: String,
     methodName: String
   ): Boolean = {
-    methodExitArgsToRequestId.get((className, methodName))
-      .exists(removeMethodExitRequestWithId)
+    methodExitRequests.getIdsWithKey((className, methodName))
+      .exists(_.forall(removeMethodExitRequestWithId))
   }
 
   /**
@@ -199,11 +186,7 @@ class MethodExitManager(
     requestId: String
   ): Boolean = {
     // Remove request with given id
-    val request = methodExitRequests.remove(requestId)
-
-    // Reverse-lookup arguments to remove argsToId mapping
-    methodExitArgsToRequestId.find(_._2 == requestId).map(_._1)
-      .foreach(methodExitArgsToRequestId.remove)
+    val request = methodExitRequests.removeWithId(requestId)
 
     request.foreach(eventRequestManager.deleteEventRequest)
 
