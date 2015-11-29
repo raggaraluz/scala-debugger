@@ -106,7 +106,7 @@ class MonitorContendedEnteredManager(
    * Retrieves the arguments provided to the monitor contended entered request
    * with the specified id.
    *
-   * @param id The id of the Thread Start Request
+   * @param id The id of the Monitor Contended Entered Request
    *
    * @return Some collection of arguments if it exists, otherwise None
    */

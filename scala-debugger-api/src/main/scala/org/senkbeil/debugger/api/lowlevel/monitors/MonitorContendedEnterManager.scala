@@ -78,7 +78,7 @@ class MonitorContendedEnterManager(
   /**
    * Determines if a monitor contended enter request with the specified id.
    *
-   * @param id The id of the Monitor Contended Entered Request
+   * @param id The id of the Monitor Contended Enter Request
    *
    * @return True if a monitor contended enter request with the id exists,
    *         otherwise false
@@ -92,7 +92,7 @@ class MonitorContendedEnterManager(
   /**
    * Retrieves the monitor contended enter request using the specified id.
    *
-   * @param id The id of the Monitor Contended Entered Request
+   * @param id The id of the Monitor Contended Enter Request
    *
    * @return Some monitor contended enter request if it exists, otherwise None
    */
@@ -106,7 +106,7 @@ class MonitorContendedEnterManager(
    * Retrieves the arguments provided to the monitor contended enter request
    * with the specified id.
    *
-   * @param id The id of the Thread Start Request
+   * @param id The id of the Monitor Contended Enter Request
    *
    * @return Some collection of arguments if it exists, otherwise None
    */
@@ -119,7 +119,7 @@ class MonitorContendedEnterManager(
   /**
    * Removes the specified monitor contended enter request.
    *
-   * @param id The id of the Monitor Contended Entered Request
+   * @param id The id of the Monitor Contended Enter Request
    *
    * @return True if the monitor contended enter request was removed
    *         (if it existed), otherwise false
