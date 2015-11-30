@@ -310,6 +310,64 @@ class PipelineSpec extends FunSpec with Matchers with OneInstancePerTest
       }
     }
 
+    describe("#toFuture") {
+      it("should return a future that evaluates the next time the pipeline is evaluated") {
+        val mockOperation = mock[Operation[Int, Int]]
+        val pipeline = new Pipeline(mockOperation)
+
+        val pipelineFuture = pipeline.toFuture
+
+        (mockOperation.process _).expects(Seq(1, 2, 3))
+          .returning(Seq(1, 2, 3)).once()
+
+        pipeline.process(1, 2, 3)
+        pipelineFuture.value.get.isSuccess should be (true)
+      }
+
+      it("should return a future that closes the pipeline upon success") {
+        val mockOperation = mock[Operation[Int, Int]]
+        val mockCloseFunc = mockFunction[Unit]
+        val pipeline = new Pipeline(mockOperation, mockCloseFunc)
+
+        val pipelineFuture = pipeline.toFuture
+
+        (mockOperation.process _).expects(Seq(1, 2, 3))
+          .returning(Seq(1, 2, 3)).once()
+        mockCloseFunc.expects().once()
+
+        pipeline.process(1, 2, 3)
+        pipelineFuture.value.get.isSuccess should be (true)
+      }
+
+      it("should return a future that evaluates to a failure when the pipeline fails") {
+        val mockOperation = mock[Operation[Int, Int]]
+        val pipeline = new Pipeline(mockOperation)
+
+        val pipelineFuture = pipeline.toFuture
+
+        (mockOperation.process _).expects(Seq(1, 2, 3))
+          .throwing(new Throwable).once()
+
+        pipeline.process(1, 2, 3)
+        pipelineFuture.value.get.isFailure should be (true)
+      }
+
+      it("should return a future that closes the pipeline upon failure") {
+        val mockOperation = mock[Operation[Int, Int]]
+        val mockCloseFunc = mockFunction[Unit]
+        val pipeline = new Pipeline(mockOperation, mockCloseFunc)
+
+        val pipelineFuture = pipeline.toFuture
+
+        (mockOperation.process _).expects(Seq(1, 2, 3))
+          .throwing(new Throwable).once()
+        mockCloseFunc.expects().once()
+
+        pipeline.process(1, 2, 3)
+        pipelineFuture.value.get.isFailure should be (true)
+      }
+    }
+
     describe("#noop") {
       it("should create a new child pipeline using a no-op") {
         val pipeline = new Pipeline(mock[Operation[Int, Int]])
