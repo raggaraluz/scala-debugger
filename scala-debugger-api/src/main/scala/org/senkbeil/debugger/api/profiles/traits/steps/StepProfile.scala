@@ -16,67 +16,140 @@ trait StepProfile {
   type StepEventAndData = (StepEvent, Seq[JDIEventDataResult])
 
   /**
-   * Steps in from the current location.
+   * Steps in from the current location to the next line.
    *
    * @param extraArguments The additional JDI arguments to provide
    *
    * @return The resulting event
    */
-  def stepIn(extraArguments: JDIArgument*): Future[StepEvent] = {
-    stepInWithData(extraArguments: _*).map(_._1)
+  def stepInLine(extraArguments: JDIArgument*): Future[StepEvent] = {
+    stepInLineWithData(extraArguments: _*).map(_._1)
   }
 
   /**
-   * Steps in from the current location.
+   * Steps in from the current location to the next line.
    *
    * @param extraArguments The additional JDI arguments to provide
    *
    * @return The resulting event and any retrieved data based on
    *         requests from extra arguments
    */
-  def stepInWithData(extraArguments: JDIArgument*): Future[StepEventAndData]
+  def stepInLineWithData(extraArguments: JDIArgument*): Future[StepEventAndData]
 
   /**
-   * Steps over from the current location.
+   * Steps over from the current location to the next line.
    *
    * @param extraArguments The additional JDI arguments to provide
    *
    * @return The resulting event
    */
-  def stepOver(extraArguments: JDIArgument*): Future[StepEvent] = {
-    stepOverWithData(extraArguments: _*).map(_._1)
+  def stepOverLine(extraArguments: JDIArgument*): Future[StepEvent] = {
+    stepOverLineWithData(extraArguments: _*).map(_._1)
   }
 
   /**
-   * Steps over from the current location.
+   * Steps over from the current location to the next line.
    *
    * @param extraArguments The additional JDI arguments to provide
    *
    * @return The resulting event and any retrieved data based on
    *         requests from extra arguments
    */
-  def stepOverWithData(extraArguments: JDIArgument*): Future[StepEventAndData]
+  def stepOverLineWithData(
+    extraArguments: JDIArgument*
+  ): Future[StepEventAndData]
 
   /**
    * Constructs a stream of step events caused by stepping out from the
-   * current location.
+   * current location to the next line.
    *
    * @param extraArguments The additional JDI arguments to provide
    *
    * @return The resulting event
    */
-  def stepOut(extraArguments: JDIArgument*): Future[StepEvent] = {
-    stepOutWithData(extraArguments: _*).map(_._1)
+  def stepOutLine(extraArguments: JDIArgument*): Future[StepEvent] = {
+    stepOutLineWithData(extraArguments: _*).map(_._1)
   }
 
   /**
    * Constructs a stream of step events caused by stepping out from the
-   * current location.
+   * current location to the next line.
    *
    * @param extraArguments The additional JDI arguments to provide
    *
    * @return The resulting event and any retrieved data based on
    *         requests from extra arguments
    */
-  def stepOutWithData(extraArguments: JDIArgument*): Future[StepEventAndData]
+  def stepOutLineWithData(
+    extraArguments: JDIArgument*
+  ): Future[StepEventAndData]
+
+  /**
+   * Steps in from the current location to the next location.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The resulting event
+   */
+  def stepInMin(extraArguments: JDIArgument*): Future[StepEvent] = {
+    stepInMinWithData(extraArguments: _*).map(_._1)
+  }
+
+  /**
+   * Steps in from the current location to the next location.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The resulting event and any retrieved data based on
+   *         requests from extra arguments
+   */
+  def stepInMinWithData(extraArguments: JDIArgument*): Future[StepEventAndData]
+
+  /**
+   * Steps over from the current location to the next location.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The resulting event
+   */
+  def stepOverMin(extraArguments: JDIArgument*): Future[StepEvent] = {
+    stepOverMinWithData(extraArguments: _*).map(_._1)
+  }
+
+  /**
+   * Steps over from the current location to the next location.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The resulting event and any retrieved data based on
+   *         requests from extra arguments
+   */
+  def stepOverMinWithData(
+    extraArguments: JDIArgument*
+  ): Future[StepEventAndData]
+
+  /**
+   * Constructs a stream of step events caused by stepping out from the
+   * current location to the next location.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The resulting event
+   */
+  def stepOutMin(extraArguments: JDIArgument*): Future[StepEvent] = {
+    stepOutMinWithData(extraArguments: _*).map(_._1)
+  }
+
+  /**
+   * Constructs a stream of step events caused by stepping out from the
+   * current location to the next location.
+   *
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The resulting event and any retrieved data based on
+   *         requests from extra arguments
+   */
+  def stepOutMinWithData(
+    extraArguments: JDIArgument*
+  ): Future[StepEventAndData]
 }

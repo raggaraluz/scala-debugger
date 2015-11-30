@@ -13,21 +13,39 @@ import scala.concurrent.Future
 trait SwappableStepProfile extends StepProfile {
   this: SwappableDebugProfile =>
 
-  override def stepInWithData(
+  override def stepInLineWithData(
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepInWithData(extraArguments: _*)
+    withCurrentProfile.stepInLineWithData(extraArguments: _*)
   }
 
-  override def stepOverWithData(
+  override def stepOverLineWithData(
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepOverWithData(extraArguments: _*)
+    withCurrentProfile.stepOverLineWithData(extraArguments: _*)
   }
 
-  override def stepOutWithData(
+  override def stepOutLineWithData(
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepOutWithData(extraArguments: _*)
+    withCurrentProfile.stepOutLineWithData(extraArguments: _*)
+  }
+
+  override def stepInMinWithData(
+    extraArguments: JDIArgument*
+  ): Future[StepEventAndData] = {
+    withCurrentProfile.stepInMinWithData(extraArguments: _*)
+  }
+
+  override def stepOverMinWithData(
+    extraArguments: JDIArgument*
+  ): Future[StepEventAndData] = {
+    withCurrentProfile.stepOverMinWithData(extraArguments: _*)
+  }
+
+  override def stepOutMinWithData(
+    extraArguments: JDIArgument*
+  ): Future[StepEventAndData] = {
+    withCurrentProfile.stepOutMinWithData(extraArguments: _*)
   }
 }

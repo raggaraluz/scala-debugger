@@ -18,16 +18,16 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
   }
 
   describe("SwappableStepProfile") {
-    describe("#stepInWithData") {
+    describe("#stepInLineWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])
 
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.stepInWithData _).expects(arguments).once()
+        (mockDebugProfile.stepInLineWithData _).expects(arguments).once()
 
-        swappableDebugProfile.stepInWithData(arguments: _*)
+        swappableDebugProfile.stepInLineWithData(arguments: _*)
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -36,21 +36,21 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.stepInWithData(arguments: _*)
+          swappableDebugProfile.stepInLineWithData(arguments: _*)
         }
       }
     }
 
-    describe("#stepOverWithData") {
+    describe("#stepOverLineWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])
 
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.stepOverWithData _).expects(arguments).once()
+        (mockDebugProfile.stepOverLineWithData _).expects(arguments).once()
 
-        swappableDebugProfile.stepOverWithData(arguments: _*)
+        swappableDebugProfile.stepOverLineWithData(arguments: _*)
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -59,21 +59,21 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.stepOverWithData(arguments: _*)
+          swappableDebugProfile.stepOverLineWithData(arguments: _*)
         }
       }
     }
 
-    describe("#stepOutWithData") {
+    describe("#stepOutLineWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])
 
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.stepOutWithData _).expects(arguments).once()
+        (mockDebugProfile.stepOutLineWithData _).expects(arguments).once()
 
-        swappableDebugProfile.stepOutWithData(arguments: _*)
+        swappableDebugProfile.stepOutLineWithData(arguments: _*)
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -82,7 +82,76 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.stepOutWithData(arguments: _*)
+          swappableDebugProfile.stepOutLineWithData(arguments: _*)
+        }
+      }
+    }
+
+    describe("#stepInMinWithData") {
+      it("should invoke the method on the underlying profile") {
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.stepInMinWithData _).expects(arguments).once()
+
+        swappableDebugProfile.stepInMinWithData(arguments: _*)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.stepInMinWithData(arguments: _*)
+        }
+      }
+    }
+
+    describe("#stepOverMinWithData") {
+      it("should invoke the method on the underlying profile") {
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.stepOverMinWithData _).expects(arguments).once()
+
+        swappableDebugProfile.stepOverMinWithData(arguments: _*)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.stepOverMinWithData(arguments: _*)
+        }
+      }
+    }
+
+    describe("#stepOutMinWithData") {
+      it("should invoke the method on the underlying profile") {
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.stepOutMinWithData _).expects(arguments).once()
+
+        swappableDebugProfile.stepOutMinWithData(arguments: _*)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.stepOutMinWithData(arguments: _*)
         }
       }
     }

@@ -14,7 +14,7 @@ class StepProfileSpec extends FunSpec with Matchers with OneInstancePerTest
 {
 
   describe("StepProfile") {
-    describe("#stepIn") {
+    describe("#stepInLine") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[StepEvent]
 
@@ -26,22 +26,34 @@ class StepProfileSpec extends FunSpec with Matchers with OneInstancePerTest
         val futureWithData = promiseWithData.future
 
         val stepProfile = new Object with StepProfile {
-          override def stepInWithData(
+          override def stepInLineWithData(
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = {
             futureWithData
           }
 
-          override def stepOverWithData(
+          override def stepOverLineWithData(
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
-          override def stepOutWithData(
+          override def stepOutLineWithData(
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
+
+          override def stepInMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
+
+          override def stepOutMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
+
+          override def stepOverMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
         }
 
-        val actual = stepProfile.stepIn()
+        val actual = stepProfile.stepInLine()
 
         // Funnel the data through the future that is mapped by the wrapper
         // method
@@ -53,7 +65,7 @@ class StepProfileSpec extends FunSpec with Matchers with OneInstancePerTest
       }
     }
 
-    describe("#stepOver") {
+    describe("#stepOverLine") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[StepEvent]
 
@@ -65,22 +77,34 @@ class StepProfileSpec extends FunSpec with Matchers with OneInstancePerTest
         val futureWithData = promiseWithData.future
 
         val stepProfile = new Object with StepProfile {
-          override def stepInWithData(
+          override def stepInLineWithData(
             extraArguments: JDIArgument*
             ): Future[StepEventAndData] = ???
 
-          override def stepOverWithData(
+          override def stepOverLineWithData(
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = {
             futureWithData
           }
 
-          override def stepOutWithData(
+          override def stepOutLineWithData(
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
+
+          override def stepInMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
+
+          override def stepOutMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
+
+          override def stepOverMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
         }
 
-        val actual = stepProfile.stepOver()
+        val actual = stepProfile.stepOverLine()
 
         // Funnel the data through the future that is mapped by the wrapper
         // method
@@ -92,7 +116,7 @@ class StepProfileSpec extends FunSpec with Matchers with OneInstancePerTest
       }
     }
 
-    describe("#stepOut") {
+    describe("#stepOutLine") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[StepEvent]
 
@@ -104,22 +128,187 @@ class StepProfileSpec extends FunSpec with Matchers with OneInstancePerTest
         val futureWithData = promiseWithData.future
 
         val stepProfile = new Object with StepProfile {
-          override def stepInWithData(
+          override def stepInLineWithData(
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
-          override def stepOverWithData(
+          override def stepOverLineWithData(
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
-          override def stepOutWithData(
+          override def stepOutLineWithData(
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = {
             futureWithData
           }
+
+          override def stepInMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
+
+          override def stepOutMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
+
+          override def stepOverMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
         }
 
-        val actual = stepProfile.stepOut()
+        val actual = stepProfile.stepOutLine()
+
+        // Funnel the data through the future that is mapped by the wrapper
+        // method
+        promiseWithData.success(data)
+
+        whenReady(actual) { a =>
+          a should be (expected)
+        }
+      }
+    }
+
+    describe("#stepInMin") {
+      it("should return a pipeline with the event data results filtered out") {
+        val expected = mock[StepEvent]
+
+        // Data to be run through pipeline
+        val data = (expected, Seq(mock[JDIEventDataResult]))
+
+        // Pipeline that is parent to the one that just streams the event
+        val promiseWithData = Promise[StepProfile#StepEventAndData]()
+        val futureWithData = promiseWithData.future
+
+        val stepProfile = new Object with StepProfile {
+          override def stepInLineWithData(
+            extraArguments: JDIArgument*
+          ): Future[StepEventAndData] = ???
+
+          override def stepOverLineWithData(
+            extraArguments: JDIArgument*
+          ): Future[StepEventAndData] = ???
+
+          override def stepOutLineWithData(
+            extraArguments: JDIArgument*
+          ): Future[StepEventAndData] = ???
+
+          override def stepInMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[StepEventAndData] = {
+            futureWithData
+          }
+
+          override def stepOutMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
+
+          override def stepOverMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
+        }
+
+        val actual = stepProfile.stepInMin()
+
+        // Funnel the data through the future that is mapped by the wrapper
+        // method
+        promiseWithData.success(data)
+
+        whenReady(actual) { a =>
+          a should be(expected)
+        }
+      }
+    }
+
+    describe("#stepOverMin") {
+      it("should return a pipeline with the event data results filtered out") {
+        val expected = mock[StepEvent]
+
+        // Data to be run through pipeline
+        val data = (expected, Seq(mock[JDIEventDataResult]))
+
+        // Pipeline that is parent to the one that just streams the event
+        val promiseWithData = Promise[StepProfile#StepEventAndData]()
+        val futureWithData = promiseWithData.future
+
+        val stepProfile = new Object with StepProfile {
+          override def stepInLineWithData(
+            extraArguments: JDIArgument*
+          ): Future[StepEventAndData] = ???
+
+          override def stepOverLineWithData(
+            extraArguments: JDIArgument*
+          ): Future[StepEventAndData] = ???
+
+          override def stepOutLineWithData(
+            extraArguments: JDIArgument*
+          ): Future[StepEventAndData] = ???
+
+          override def stepInMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
+
+          override def stepOutMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
+
+          override def stepOverMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = {
+            futureWithData
+          }
+        }
+
+        val actual = stepProfile.stepOverMin()
+
+        // Funnel the data through the future that is mapped by the wrapper
+        // method
+        promiseWithData.success(data)
+
+        whenReady(actual) { a =>
+          a should be(expected)
+        }
+      }
+    }
+
+    describe("#stepOutMin") {
+      it("should return a pipeline with the event data results filtered out") {
+        val expected = mock[StepEvent]
+
+        // Data to be run through pipeline
+        val data = (expected, Seq(mock[JDIEventDataResult]))
+
+        // Pipeline that is parent to the one that just streams the event
+        val promiseWithData = Promise[StepProfile#StepEventAndData]()
+        val futureWithData = promiseWithData.future
+
+        val stepProfile = new Object with StepProfile {
+          override def stepInLineWithData(
+            extraArguments: JDIArgument*
+          ): Future[StepEventAndData] = ???
+
+          override def stepOverLineWithData(
+            extraArguments: JDIArgument*
+          ): Future[StepEventAndData] = ???
+
+          override def stepOutLineWithData(
+            extraArguments: JDIArgument*
+          ): Future[StepEventAndData] = ???
+
+          override def stepInMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
+
+          override def stepOutMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = {
+            futureWithData
+          }
+
+          override def stepOverMinWithData(
+            extraArguments: JDIArgument*
+          ): Future[(StepEventAndData)] = ???
+        }
+
+        val actual = stepProfile.stepOutMin()
 
         // Funnel the data through the future that is mapped by the wrapper
         // method
