@@ -1,8 +1,6 @@
 package org.senkbeil.debugger.api.profiles.pure.steps
 
-import com.sun.jdi.event.StepEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.profiles.traits.steps.StepProfile
 
 import scala.concurrent.Future

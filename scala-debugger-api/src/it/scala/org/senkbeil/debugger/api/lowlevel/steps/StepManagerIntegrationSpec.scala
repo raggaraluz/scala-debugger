@@ -37,7 +37,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsFromTo(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.stepOut(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.createStepOutLineRequest(_: ThreadReference),
             startingLine = startingLine,
             expectedLine = expectedLine
           )
@@ -57,7 +57,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsFromTo(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.stepOut(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.createStepOutLineRequest(_: ThreadReference),
             startingLine = startingLine,
             expectedLine = expectedLine
           )
@@ -99,7 +99,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.stepOver(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.createStepOverLineRequest(_: ThreadReference),
             startingLine = startingLine,
             expectedReachableLines = expectedReachableLines,
             failIfNotExact = true,
@@ -120,7 +120,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.stepOver(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.createStepOverLineRequest(_: ThreadReference),
             startingLine = startingLine,
             expectedReachableLines = expectedReachableLines
           )
@@ -140,7 +140,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsFromTo(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.stepOver(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.createStepOverLineRequest(_: ThreadReference),
             startingLine = startingLine,
             expectedLine = expectedLine
           )
@@ -159,7 +159,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.stepOver(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.createStepOverLineRequest(_: ThreadReference),
             startingLine = startingLine,
             expectedReachableLines = expectedReachableLines
           )
@@ -198,7 +198,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.stepInto(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.createStepIntoLineRequest(_: ThreadReference),
             startingLine = startingLine,
             expectedReachableLines = expectedReachableLines,
             failIfNotExact = true,
@@ -220,7 +220,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.stepInto(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.createStepIntoLineRequest(_: ThreadReference),
             startingLine = startingLine,
             expectedReachableLines = expectedReachableLines
           )
@@ -237,7 +237,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
           verifyStepsFromTo(
             testClass = testClass,
             scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.stepInto(_: ThreadReference),
+            stepMethod = s.lowlevel.stepManager.createStepIntoLineRequest(_: ThreadReference),
             startingLine = startingLine,
             expectedLine = expectedLine
           )
