@@ -1,5 +1,6 @@
 package org.senkbeil.debugger.api.profiles.swappable.steps
 
+import com.sun.jdi.ThreadReference
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
@@ -10,6 +11,7 @@ import org.senkbeil.debugger.api.profiles.traits.DebugProfile
 class SwappableStepProfileSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory
 {
+  private val mockThreadReference = mock[ThreadReference]
   private val mockDebugProfile = mock[DebugProfile]
   private val mockProfileManager = mock[ProfileManager]
 
@@ -25,9 +27,13 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.stepInLineWithData _).expects(arguments).once()
+        (mockDebugProfile.stepInLineWithData _)
+          .expects(mockThreadReference, arguments).once()
 
-        swappableDebugProfile.stepInLineWithData(arguments: _*)
+        swappableDebugProfile.stepInLineWithData(
+          mockThreadReference,
+          arguments: _*
+        )
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -36,7 +42,10 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.stepInLineWithData(arguments: _*)
+          swappableDebugProfile.stepInLineWithData(
+            mockThreadReference,
+            arguments: _*
+          )
         }
       }
     }
@@ -48,9 +57,14 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.stepOverLineWithData _).expects(arguments).once()
+        (mockDebugProfile.stepOverLineWithData _)
+          .expects(mockThreadReference, arguments).once()
 
-        swappableDebugProfile.stepOverLineWithData(arguments: _*)
+
+        swappableDebugProfile.stepOverLineWithData(
+          mockThreadReference,
+          arguments: _*
+        )
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -59,7 +73,10 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.stepOverLineWithData(arguments: _*)
+          swappableDebugProfile.stepOverLineWithData(
+            mockThreadReference,
+            arguments: _*
+          )
         }
       }
     }
@@ -71,9 +88,14 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.stepOutLineWithData _).expects(arguments).once()
+        (mockDebugProfile.stepOutLineWithData _)
+          .expects(mockThreadReference, arguments).once()
 
-        swappableDebugProfile.stepOutLineWithData(arguments: _*)
+
+        swappableDebugProfile.stepOutLineWithData(
+          mockThreadReference,
+          arguments: _*
+        )
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -82,7 +104,10 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.stepOutLineWithData(arguments: _*)
+          swappableDebugProfile.stepOutLineWithData(
+            mockThreadReference,
+            arguments: _*
+          )
         }
       }
     }
@@ -94,9 +119,14 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.stepInMinWithData _).expects(arguments).once()
+        (mockDebugProfile.stepInMinWithData _)
+          .expects(mockThreadReference, arguments).once()
 
-        swappableDebugProfile.stepInMinWithData(arguments: _*)
+
+        swappableDebugProfile.stepInMinWithData(
+          mockThreadReference,
+          arguments: _*
+        )
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -105,7 +135,10 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.stepInMinWithData(arguments: _*)
+          swappableDebugProfile.stepInMinWithData(
+            mockThreadReference,
+            arguments: _*
+          )
         }
       }
     }
@@ -117,9 +150,14 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.stepOverMinWithData _).expects(arguments).once()
+        (mockDebugProfile.stepOverMinWithData _)
+          .expects(mockThreadReference, arguments).once()
 
-        swappableDebugProfile.stepOverMinWithData(arguments: _*)
+
+        swappableDebugProfile.stepOverMinWithData(
+          mockThreadReference,
+          arguments: _*
+        )
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -128,7 +166,10 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.stepOverMinWithData(arguments: _*)
+          swappableDebugProfile.stepOverMinWithData(
+            mockThreadReference,
+            arguments: _*
+          )
         }
       }
     }
@@ -140,9 +181,14 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.stepOutMinWithData _).expects(arguments).once()
+        (mockDebugProfile.stepOutMinWithData _)
+          .expects(mockThreadReference, arguments).once()
 
-        swappableDebugProfile.stepOutMinWithData(arguments: _*)
+
+        swappableDebugProfile.stepOutMinWithData(
+          mockThreadReference,
+          arguments: _*
+        )
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -151,7 +197,10 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.stepOutMinWithData(arguments: _*)
+          swappableDebugProfile.stepOutMinWithData(
+            mockThreadReference,
+            arguments: _*
+          )
         }
       }
     }

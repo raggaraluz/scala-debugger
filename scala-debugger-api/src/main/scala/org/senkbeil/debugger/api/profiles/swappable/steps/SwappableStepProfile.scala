@@ -1,5 +1,6 @@
 package org.senkbeil.debugger.api.profiles.swappable.steps
 
+import com.sun.jdi.ThreadReference
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.steps.StepProfile
@@ -14,38 +15,44 @@ trait SwappableStepProfile extends StepProfile {
   this: SwappableDebugProfile =>
 
   override def stepInLineWithData(
+    threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepInLineWithData(extraArguments: _*)
+    withCurrentProfile.stepInLineWithData(threadReference, extraArguments: _*)
   }
 
   override def stepOverLineWithData(
+    threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepOverLineWithData(extraArguments: _*)
+    withCurrentProfile.stepOverLineWithData(threadReference, extraArguments: _*)
   }
 
   override def stepOutLineWithData(
+    threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepOutLineWithData(extraArguments: _*)
+    withCurrentProfile.stepOutLineWithData(threadReference, extraArguments: _*)
   }
 
   override def stepInMinWithData(
+    threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepInMinWithData(extraArguments: _*)
+    withCurrentProfile.stepInMinWithData(threadReference, extraArguments: _*)
   }
 
   override def stepOverMinWithData(
+    threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepOverMinWithData(extraArguments: _*)
+    withCurrentProfile.stepOverMinWithData(threadReference, extraArguments: _*)
   }
 
   override def stepOutMinWithData(
+    threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepOutMinWithData(extraArguments: _*)
+    withCurrentProfile.stepOutMinWithData(threadReference, extraArguments: _*)
   }
 }
