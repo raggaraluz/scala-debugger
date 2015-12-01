@@ -3,6 +3,7 @@ package org.senkbeil.debugger.api.pipelines
 import java.io.Closeable
 
 import scala.collection.GenTraversableOnce
+import scala.concurrent.{Promise, Future}
 import scala.util.Try
 
 /**
@@ -262,6 +263,28 @@ class Pipeline[A, B] private[pipelines] (
    * Closes the pipeline immediately.
    */
   def close(): Unit = close(now = true)
+
+  /**
+   * Transforms the pipeline into a future that will be evaluated once and then
+   * closes the underlying pipeline.
+   *
+   * @return The future representing this pipeline
+   */
+  def toFuture: Future[B] = {
+    val pipelinePromise = Promise[B]()
+
+    foreach(value => {
+      pipelinePromise.success(value)
+      close()
+    })
+
+    failed.foreach(throwable => {
+      pipelinePromise.failure(throwable)
+      close()
+    })
+
+    pipelinePromise.future
+  }
 }
 
 /**

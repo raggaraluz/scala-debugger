@@ -1,19 +1,21 @@
-package org.senkbeil.debugger.api.lowlevel.steps
+package org.senkbeil.debugger.api.profiles.pure.steps
 
 import java.util.concurrent.atomic.AtomicBoolean
+
 import com.sun.jdi.ThreadReference
-import com.sun.jdi.event.{StepEvent, BreakpointEvent}
+import com.sun.jdi.event.{BreakpointEvent, StepEvent}
 import org.scalatest.concurrent.Eventually
-import org.scalatest.concurrent.PatienceConfiguration.{Timeout, Interval}
-import org.scalatest.time.{Units, Milliseconds, Seconds, Span}
+import org.scalatest.concurrent.PatienceConfiguration.{Interval, Timeout}
+import org.scalatest.time.{Milliseconds, Seconds, Span, Units}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType
+import org.senkbeil.debugger.api.lowlevel.events.EventType._
+import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
 import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
-import test.{TestUtilities, VirtualMachineFixtures}
 import test.Constants._
-import EventType._
+import test.{TestUtilities, VirtualMachineFixtures}
 
-class StepManagerIntegrationSpec extends FunSpec with Matchers
+class PureStepProfileIntegrationSpec extends FunSpec with Matchers
   with ParallelTestExecution with VirtualMachineFixtures
   with TestUtilities with Eventually
 {
@@ -22,7 +24,7 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
     interval = scaled(test.Constants.EventuallyInterval)
   )
 
-  describe("StepManager") {
+  describe("PureStepProfile") {
     describe("stepping out of") {
       it("should be able to finish executing a method and return to the next line in the parent frame") {
         val testClass = "org.senkbeil.debugger.test.steps.MethodCalls"
@@ -322,8 +324,6 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
     failIfNotExact: Boolean = false,
     maxDuration: (Long, Units) = (EventuallyTimeout.toMillis, Milliseconds)
   ) = {
-    import scalaVirtualMachine.lowlevel._
-
     val testFile = scalaClassStringToFileString(testClass)
     val expectedLines = collection.mutable.Stack(expectedReachableLines: _*)
 
@@ -332,45 +332,44 @@ class StepManagerIntegrationSpec extends FunSpec with Matchers
     @volatile var failEarlyMessage = "???"
 
     // Add a breakpoint to get us in the right location for steps
-    breakpointManager.createBreakpointRequest(testFile, startingLine)
-
     // On receiving a breakpoint, send a step request
-    eventManager.addResumingEventHandler(BreakpointEventType, e => {
-      val breakpointEvent = e.asInstanceOf[BreakpointEvent]
-      val className = breakpointEvent.location().declaringType().name()
-      val lineNumber = breakpointEvent.location.lineNumber()
+    scalaVirtualMachine
+      .withProfile(PureDebugProfile.Name)
+      .onUnsafeBreakpoint(testFile, startingLine)
+      .map(_.thread())
+      .foreach(thread => {
+        // On receiving a step request, verify that we are in the right
+        // location
+        scalaVirtualMachine
+          .withProfile(PureDebugProfile.Name)
+          .onUnsafeStep(thread)
+          .foreach(stepEvent => {
+            val className = stepEvent.location().declaringType().name()
+            val lineNumber = stepEvent.location().lineNumber()
 
-      logger.debug(s"Hit breakpoint at $className:$lineNumber")
-      stepMethod(breakpointEvent.thread())
-    })
+            logger.debug(s"Stepped onto $className:$lineNumber")
 
-    // On receiving a step request, verify that we are in the right
-    // location
-    eventManager.addResumingEventHandler(StepEventType, e => {
-      val stepEvent = e.asInstanceOf[StepEvent]
-      val className = stepEvent.location().declaringType().name()
-      val lineNumber = stepEvent.location().lineNumber()
+            val nextLine = expectedLines.top
 
-      logger.debug(s"Stepped onto $className:$lineNumber")
+            // Mark the line as stepped on by removing it (if next in line)
+            if (nextLine == lineNumber) {
+              expectedLines.pop()
 
-      val nextLine = expectedLines.top
+              // Fail the test if we are enforcing strictness and the next line does
+              // not match what we expect
+            } else if (failIfNotExact) {
+              failEarlyMessage =
+                s"Line $lineNumber is not the next expected line of $nextLine!"
+              failEarly.set(true)
+            }
 
-      // Mark the line as stepped on by removing it (if next in line)
-      if (nextLine == lineNumber) {
-        expectedLines.pop()
+            // Continue stepping if not reached all lines and not exiting early
+            if (expectedLines.nonEmpty && !failEarly.get())
+              stepMethod(stepEvent.thread())
+          })
 
-      // Fail the test if we are enforcing strictness and the next line does
-      // not match what we expect
-      } else if (failIfNotExact) {
-        failEarlyMessage =
-          s"Line $lineNumber is not the next expected line of $nextLine!"
-        failEarly.set(true)
-      }
-
-      // Continue stepping if not reached all lines and not exiting early
-      if (expectedLines.nonEmpty && !failEarly.get())
-        stepMethod(stepEvent.thread())
-    })
+        stepMethod(thread)
+      })
 
     // NOTE: Using asserts to provide more helpful failure messages
     logTimeTaken(eventually(

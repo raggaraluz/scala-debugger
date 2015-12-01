@@ -1,10 +1,15 @@
 package org.senkbeil.debugger.api.profiles.swappable.steps
 
+import com.sun.jdi.ThreadReference
+import com.sun.jdi.event.StepEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
+import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.steps.StepProfile
 
 import scala.concurrent.Future
+import scala.util.Try
 
 /**
  * Represents a swappable profile for step events that redirects the
@@ -13,21 +18,52 @@ import scala.concurrent.Future
 trait SwappableStepProfile extends StepProfile {
   this: SwappableDebugProfile =>
 
-  override def stepInWithData(
+  override def stepIntoLineWithData(
+    threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepInWithData(extraArguments: _*)
+    withCurrentProfile.stepIntoLineWithData(threadReference, extraArguments: _*)
   }
 
-  override def stepOverWithData(
+  override def stepOverLineWithData(
+    threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepOverWithData(extraArguments: _*)
+    withCurrentProfile.stepOverLineWithData(threadReference, extraArguments: _*)
   }
 
-  override def stepOutWithData(
+  override def stepOutLineWithData(
+    threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepOutWithData(extraArguments: _*)
+    withCurrentProfile.stepOutLineWithData(threadReference, extraArguments: _*)
+  }
+
+  override def stepIntoMinWithData(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Future[StepEventAndData] = {
+    withCurrentProfile.stepIntoMinWithData(threadReference, extraArguments: _*)
+  }
+
+  override def stepOverMinWithData(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Future[StepEventAndData] = {
+    withCurrentProfile.stepOverMinWithData(threadReference, extraArguments: _*)
+  }
+
+  override def stepOutMinWithData(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Future[StepEventAndData] = {
+    withCurrentProfile.stepOutMinWithData(threadReference, extraArguments: _*)
+  }
+
+  override def onStepWithData(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = {
+    withCurrentProfile.onStepWithData(threadReference, extraArguments: _*)
   }
 }
