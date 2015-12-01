@@ -11,12 +11,14 @@ import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorWaitManager, MonitorW
 import org.senkbeil.debugger.api.lowlevel.steps.StepManager
 import org.senkbeil.debugger.api.lowlevel.threads.{ThreadStartManager, ThreadDeathManager}
 import org.senkbeil.debugger.api.lowlevel.vm.VMDeathManager
+import org.senkbeil.debugger.api.lowlevel.watchpoints.AccessWatchpointManager
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 
 /**
  * Represents a container for low-level managers.
  */
 case class ManagerContainer(
+  accessWatchpointManager: AccessWatchpointManager,
   breakpointManager: BreakpointManager,
   classManager: ClassManager,
   classPrepareManager: ClassPrepareManager,
@@ -70,6 +72,8 @@ object ManagerContainer {
   ): ManagerContainer = {
     lazy val eventRequestManager = virtualMachine.eventRequestManager()
     lazy val eventQueue = virtualMachine.eventQueue()
+    lazy val accessWatchpointManager =
+      new AccessWatchpointManager(eventRequestManager, classManager)
     // TODO: Revert back to normal breakpoint manager and add pending breakpoint
     //       functionality somewhere more separate
     lazy val breakpointManager =
@@ -112,6 +116,7 @@ object ManagerContainer {
       new VMDeathManager(eventRequestManager)
 
     ManagerContainer(
+      accessWatchpointManager         = accessWatchpointManager,
       breakpointManager               = breakpointManager,
       classManager                    = classManager,
       classPrepareManager             = classPrepareManager,

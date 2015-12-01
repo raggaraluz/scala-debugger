@@ -1,7 +1,5 @@
 package org.senkbeil.debugger.api.lowlevel.breakpoints
 
-import java.util.concurrent.ConcurrentHashMap
-
 import com.sun.jdi.request.{EventRequestManager, BreakpointRequest}
 import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
