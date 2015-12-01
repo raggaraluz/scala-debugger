@@ -27,12 +27,12 @@ trait AccessWatchpointProfile {
    *
    * @return The stream of access watchpoint events
    */
-  def onAccessFieldWatchpoint(
+  def onAccessWatchpoint(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[AccessWatchpointEvent]] = {
-    onAccessFieldWatchpointWithData(
+    onAccessWatchpointWithData(
       className,
       fieldName,
       extraArguments: _*
@@ -50,7 +50,7 @@ trait AccessWatchpointProfile {
    * @return The stream of access watchpoint events and any retrieved data
    *         based on requests from extra arguments
    */
-  def onAccessFieldWatchpointWithData(
+  def onAccessWatchpointWithData(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
@@ -66,12 +66,12 @@ trait AccessWatchpointProfile {
    *
    * @return The stream of access watchpoint events
    */
-  def onUnsafeAccessFieldWatchpoint(
+  def onUnsafeAccessWatchpoint(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): IdentityPipeline[AccessWatchpointEvent] = {
-    onAccessFieldWatchpoint(
+    onAccessWatchpoint(
       className,
       fieldName,
       extraArguments: _*
@@ -89,83 +89,14 @@ trait AccessWatchpointProfile {
    * @return The stream of access watchpoint events and any retrieved data
    *         based on requests from extra arguments
    */
-  def onUnsafeAccessFieldWatchpointWithData(
+  def onUnsafeAccessWatchpointWithData(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): IdentityPipeline[AccessWatchpointEventAndData] = {
-    onAccessFieldWatchpointWithData(
+    onAccessWatchpointWithData(
       className,
       fieldName,
-      extraArguments: _*
-    ).get
-  }
-
-  /**
-   * Constructs a stream of access watchpoint events for the instance variable.
-   *
-   * @param instanceVarName The name of the instance variable to watch
-   * @param extraArguments The additional JDI arguments to provide
-   *
-   * @return The stream of access watchpoint events
-   */
-  def onAccessInstanceWatchpoint(
-    instanceVarName: String,
-    extraArguments: JDIArgument*
-  ): Try[IdentityPipeline[AccessWatchpointEvent]] = {
-    onAccessInstanceWatchpointWithData(
-      instanceVarName,
-      extraArguments: _*
-    ).map(_.map(_._1).noop())
-  }
-
-  /**
-   * Constructs a stream of access watchpoint events for the instance variable.
-   *
-   * @param instanceVarName The name of the instance variable to watch
-   * @param extraArguments The additional JDI arguments to provide
-   *
-   * @return The stream of access watchpoint events and any retrieved data
-   *         based on requests from extra arguments
-   */
-  def onAccessInstanceWatchpointWithData(
-    instanceVarName: String,
-    extraArguments: JDIArgument*
-  ): Try[IdentityPipeline[AccessWatchpointEventAndData]]
-
-  /**
-   * Constructs a stream of access watchpoint events for the instance variable.
-   *
-   * @param instanceVarName The name of the instance variable to watch
-   * @param extraArguments The additional JDI arguments to provide
-   *
-   * @return The stream of access watchpoint events
-   */
-  def onUnsafeAccessInstanceWatchpoint(
-    instanceVarName: String,
-    extraArguments: JDIArgument*
-  ): IdentityPipeline[AccessWatchpointEvent] = {
-    onAccessInstanceWatchpoint(
-      instanceVarName,
-      extraArguments: _*
-    ).get
-  }
-
-  /**
-   * Constructs a stream of access watchpoint events for the instance variable.
-   *
-   * @param instanceVarName The name of the instance variable to watch
-   * @param extraArguments The additional JDI arguments to provide
-   *
-   * @return The stream of access watchpoint events and any retrieved data
-   *         based on requests from extra arguments
-   */
-  def onUnsafeAccessInstanceWatchpointWithData(
-    instanceVarName: String,
-    extraArguments: JDIArgument*
-  ): IdentityPipeline[AccessWatchpointEventAndData] = {
-    onAccessInstanceWatchpointWithData(
-      instanceVarName,
       extraArguments: _*
     ).get
   }

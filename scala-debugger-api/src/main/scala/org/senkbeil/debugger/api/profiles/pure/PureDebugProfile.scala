@@ -57,8 +57,8 @@ class PureDebugProfile(
   with PureVMDeathProfile
   with PureVMDisconnectProfile
 {
-  //protected lazy val accessWatchpointManager =
-  //  managerContainer.accessWatchpointManager
+  protected lazy val accessWatchpointManager =
+    managerContainer.accessWatchpointManager
 
   protected lazy val breakpointManager = managerContainer.breakpointManager
 

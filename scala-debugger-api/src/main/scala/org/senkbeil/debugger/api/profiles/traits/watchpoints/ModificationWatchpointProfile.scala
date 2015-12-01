@@ -27,12 +27,12 @@ trait ModificationWatchpointProfile {
    *
    * @return The stream of modification watchpoint events
    */
-  def onModificationFieldWatchpoint(
+  def onModificationWatchpoint(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ModificationWatchpointEvent]] = {
-    onModificationFieldWatchpointWithData(
+    onModificationWatchpointWithData(
       className: String,
       fieldName: String,
       extraArguments: _*
@@ -50,7 +50,7 @@ trait ModificationWatchpointProfile {
    * @return The stream of modification watchpoint events and any retrieved data
    *         based on requests from extra arguments
    */
-  def onModificationFieldWatchpointWithData(
+  def onModificationWatchpointWithData(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
@@ -66,12 +66,12 @@ trait ModificationWatchpointProfile {
    *
    * @return The stream of modification watchpoint events
    */
-  def onUnsafeModificationFieldWatchpoint(
+  def onUnsafeModificationWatchpoint(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): IdentityPipeline[ModificationWatchpointEvent] = {
-    onModificationFieldWatchpoint(
+    onModificationWatchpoint(
       className,
       fieldName,
       extraArguments: _*
@@ -89,87 +89,14 @@ trait ModificationWatchpointProfile {
    * @return The stream of modification watchpoint events and any retrieved data
    *         based on requests from extra arguments
    */
-  def onUnsafeModificationFieldWatchpointWithData(
+  def onUnsafeModificationWatchpointWithData(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): IdentityPipeline[ModificationWatchpointEventAndData] = {
-    onModificationFieldWatchpointWithData(
+    onModificationWatchpointWithData(
       className,
       fieldName,
-      extraArguments: _*
-    ).get
-  }
-
-  /**
-   * Constructs a stream of modification watchpoint events for the
-   * instance variable.
-   *
-   * @param instanceVarName The name of the instance variable to watch
-   * @param extraArguments The additional JDI arguments to provide
-   *
-   * @return The stream of modification watchpoint events
-   */
-  def onModificationInstanceWatchpoint(
-    instanceVarName: String,
-    extraArguments: JDIArgument*
-  ): Try[IdentityPipeline[ModificationWatchpointEvent]] = {
-    onModificationInstanceWatchpointWithData(
-      instanceVarName,
-      extraArguments: _*
-    ).map(_.map(_._1).noop())
-  }
-
-  /**
-   * Constructs a stream of modification watchpoint events for the
-   * instance variable.
-   *
-   * @param instanceVarName The name of the instance variable to watch
-   * @param extraArguments The additional JDI arguments to provide
-   *
-   * @return The stream of modification watchpoint events and any retrieved data
-   *         based on requests from extra arguments
-   */
-  def onModificationInstanceWatchpointWithData(
-    instanceVarName: String,
-    extraArguments: JDIArgument*
-  ): Try[IdentityPipeline[ModificationWatchpointEventAndData]]
-
-  /**
-   * Constructs a stream of modification watchpoint events for the
-   * instance variable.
-   *
-   * @param instanceVarName The name of the instance variable to watch
-   * @param extraArguments The additional JDI arguments to provide
-   *
-   * @return The stream of modification watchpoint events
-   */
-  def onUnsafeModificationInstanceWatchpoint(
-    instanceVarName: String,
-    extraArguments: JDIArgument*
-  ): IdentityPipeline[ModificationWatchpointEvent] = {
-    onModificationInstanceWatchpoint(
-      instanceVarName,
-      extraArguments: _*
-    ).get
-  }
-
-  /**
-   * Constructs a stream of modification watchpoint events for the
-   * instance variable.
-   *
-   * @param instanceVarName The name of the instance variable to watch
-   * @param extraArguments The additional JDI arguments to provide
-   *
-   * @return The stream of modification watchpoint events and any retrieved data
-   *         based on requests from extra arguments
-   */
-  def onUnsafeModificationInstanceWatchpointWithData(
-    instanceVarName: String,
-    extraArguments: JDIArgument*
-  ): IdentityPipeline[ModificationWatchpointEventAndData] = {
-    onModificationInstanceWatchpointWithData(
-      instanceVarName,
       extraArguments: _*
     ).get
   }

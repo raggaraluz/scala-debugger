@@ -18,7 +18,7 @@ class SwappableAccessWatchpointProfileSpec extends FunSpec with Matchers
   }
 
   describe("SwappableAccessWatchpointProfile") {
-    describe("#onAccessFieldWatchpointWithData") {
+    describe("#onAccessWatchpointWithData") {
       it("should invoke the method on the underlying profile") {
         val className = "some class"
         val fieldName = "some field"
@@ -29,7 +29,7 @@ class SwappableAccessWatchpointProfileSpec extends FunSpec with Matchers
 
         // NOTE: Forced to use onCall with product due to issues with ScalaMock
         //       casting and inability to work with varargs directly
-        (mockDebugProfile.onAccessFieldWatchpointWithData(
+        (mockDebugProfile.onAccessWatchpointWithData(
           _: String,
           _: String,
           _: JDIArgument)
@@ -39,7 +39,7 @@ class SwappableAccessWatchpointProfileSpec extends FunSpec with Matchers
           null
         })
 
-        swappableDebugProfile.onAccessFieldWatchpointWithData(
+        swappableDebugProfile.onAccessWatchpointWithData(
           className,
           fieldName,
           arguments: _*
@@ -54,7 +54,7 @@ class SwappableAccessWatchpointProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onAccessFieldWatchpointWithData(
+          swappableDebugProfile.onAccessWatchpointWithData(
             className,
             fieldName,
             arguments: _*
@@ -62,46 +62,5 @@ class SwappableAccessWatchpointProfileSpec extends FunSpec with Matchers
         }
       }
     }
-
-    describe("#onAccessInstanceWatchpointWithData") {
-      it("should invoke the method on the underlying profile") {
-        val instanceName = "some instance"
-        val arguments = Seq(mock[JDIArgument])
-
-        (mockProfileManager.retrieve _).expects(*)
-          .returning(Some(mockDebugProfile)).once()
-
-        // NOTE: Forced to use onCall with product due to issues with ScalaMock
-        //       casting and inability to work with varargs directly
-        (mockDebugProfile.onAccessInstanceWatchpointWithData(
-          _: String,
-          _: JDIArgument)
-        ).expects(instanceName, *).onCall(t => {
-          val args = t.productElement(1).asInstanceOf[Seq[JDIArgument]]
-          args should be (arguments)
-          null
-        })
-
-        swappableDebugProfile.onAccessInstanceWatchpointWithData(
-          instanceName,
-          arguments: _*
-        )
-      }
-
-      it("should throw an exception if there is no underlying profile") {
-        val instanceName = "some instance"
-        val arguments = Seq(mock[JDIArgument])
-
-        (mockProfileManager.retrieve _).expects(*).returning(None).once()
-
-        intercept[AssertionError] {
-          swappableDebugProfile.onAccessInstanceWatchpointWithData(
-            instanceName,
-            arguments: _*
-          )
-        }
-      }
-    }
-
   }
 }
