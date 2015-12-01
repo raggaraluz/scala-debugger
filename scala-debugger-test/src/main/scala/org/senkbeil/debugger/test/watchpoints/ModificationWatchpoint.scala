@@ -5,11 +5,15 @@ package org.senkbeil.debugger.test.watchpoints
  * ModificationWatchpoint request.
  */
 object ModificationWatchpoint extends App {
-  var x = 0
+  val someModificationClass = new SomeModificationClass
 
   while (true) {
-    x += 1
+    someModificationClass.field += 1
 
     Thread.sleep(100)
   }
+}
+
+class SomeModificationClass {
+  var field = 0
 }

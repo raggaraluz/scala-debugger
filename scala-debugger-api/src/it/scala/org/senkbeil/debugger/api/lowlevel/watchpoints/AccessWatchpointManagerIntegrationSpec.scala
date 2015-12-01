@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.lowlevel.watchpoints
 
 import java.util.concurrent.atomic.AtomicBoolean
 
-import com.sun.jdi.event.{BreakpointEvent, AccessWatchpointEvent}
+import com.sun.jdi.event.{ClassPrepareEvent, BreakpointEvent, AccessWatchpointEvent}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
@@ -23,7 +23,7 @@ class AccessWatchpointManagerIntegrationSpec extends FunSpec with Matchers
       val testClass = "org.senkbeil.debugger.test.watchpoints.AccessWatchpoint"
       val testFile = scalaClassStringToFileString(testClass)
 
-      val className = "org.senkbeil.debugger.test.watchpoints.SomeClass"
+      val className = "org.senkbeil.debugger.test.watchpoints.SomeAccessClass"
       val fieldName = "field"
 
       val detectedAccessWatchpoint = new AtomicBoolean(false)
@@ -34,7 +34,18 @@ class AccessWatchpointManagerIntegrationSpec extends FunSpec with Matchers
         // TODO: This is currently in place to force our request to eventually
         //       be created - once we have pending requests, we should not do
         //       creation this way
-        @volatile var request: Option[String] = None
+        eventManager.addResumingEventHandler(ClassPrepareEventType, e => {
+          val classPrepareEvent = e.asInstanceOf[ClassPrepareEvent]
+          val name = classPrepareEvent.referenceType().name()
+
+          // Once class with field is ready, create access watchpoint request
+          if (name == className) {
+            accessWatchpointManager.createAccessWatchpointRequest(
+              className,
+              fieldName
+            )
+          }
+        })
 
         // Listen for access watchpoint events for specific variable
         eventManager.addResumingEventHandler(AccessWatchpointEventType, e => {
@@ -47,14 +58,6 @@ class AccessWatchpointManagerIntegrationSpec extends FunSpec with Matchers
 
 
         logTimeTaken(eventually {
-          // Set up the access watchpoint event
-          if (request.isEmpty) {
-            request = accessWatchpointManager.createAccessWatchpointRequestByName(
-              className,
-              fieldName
-            ).toOption
-          }
-
           assert(detectedAccessWatchpoint.get(), s"$fieldName never accessed!")
         })
       }

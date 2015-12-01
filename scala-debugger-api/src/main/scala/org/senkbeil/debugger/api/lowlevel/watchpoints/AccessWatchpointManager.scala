@@ -1,6 +1,5 @@
 package org.senkbeil.debugger.api.lowlevel.watchpoints
 
-import com.sun.jdi.Field
 import com.sun.jdi.request.{AccessWatchpointRequest, EventRequestManager}
 import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
@@ -22,8 +21,11 @@ class AccessWatchpointManager(
 ) extends Logging {
   import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
 
-  /** The arguments used to lookup access watchpoint requests: (Field) */
-  type AccessWatchpointArgs = (Field)
+  /**
+   * The arguments used to lookup access watchpoint requests:
+   * (Class name, field name)
+   */
+  type AccessWatchpointArgs = (String, String)
 
   private val accessWatchpointRequests =
     new MultiMap[AccessWatchpointArgs, AccessWatchpointRequest]
@@ -55,7 +57,7 @@ class AccessWatchpointManager(
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createAccessWatchpointRequestByNameWithId(
+  def createAccessWatchpointRequestWithId(
     requestId: String,
     className: String,
     fieldName: String,
@@ -68,11 +70,22 @@ class AccessWatchpointManager(
 
     if (field.isEmpty) return Failure(NoFieldFound(className, fieldName))
 
-    createAccessWatchpointRequestWithId(
-      requestId,
+    val request = Try(eventRequestManager.createAccessWatchpointRequest(
       field.get,
-      extraArguments: _*
+      Seq(
+        EnabledProperty(value = true),
+        SuspendPolicyProperty.EventThread
+      ) ++ extraArguments: _*
+    ))
+
+    if (request.isSuccess) accessWatchpointRequests.putWithId(
+      requestId,
+      (className, fieldName),
+      request.get
     )
+
+    // If no exception was thrown, assume that we succeeded
+    request.map(_ => requestId)
   }
 
   /**
@@ -85,12 +98,12 @@ class AccessWatchpointManager(
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createAccessWatchpointRequestByName(
+  def createAccessWatchpointRequest(
     className: String,
     fieldName: String,
     extraArguments: JDIRequestArgument*
   ): Try[String] = {
-    createAccessWatchpointRequestByNameWithId(
+    createAccessWatchpointRequestWithId(
       newRequestId(),
       className,
       fieldName,
@@ -99,66 +112,19 @@ class AccessWatchpointManager(
   }
 
   /**
-   * Creates a new access watchpoint request for the specified field.
-   *
-   * @param requestId The id of the request used to retrieve and delete it
-   * @param field The field to watch for access
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  def createAccessWatchpointRequestWithId(
-    requestId: String,
-    field: Field,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    val request = Try(eventRequestManager.createAccessWatchpointRequest(
-      field,
-      Seq(
-        EnabledProperty(value = true),
-        SuspendPolicyProperty.EventThread
-      ) ++ extraArguments: _*
-    ))
-
-    if (request.isSuccess) accessWatchpointRequests.putWithId(
-      requestId,
-      field,
-      request.get
-    )
-
-    // If no exception was thrown, assume that we succeeded
-    request.map(_ => requestId)
-  }
-
-  /**
-   * Creates a new access watchpoint request for the specified field.
-   *
-   * @param field The field to watch for access
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  def createAccessWatchpointRequest(
-    field: Field,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createAccessWatchpointRequestWithId(
-      newRequestId(),
-      field,
-      extraArguments: _*
-    )
-  }
-
-  /**
    * Determines if a access watchpoint request with the specified field.
    *
-   * @param field The field being watched for access
+   * @param className The name of the class containing the field
+   * @param fieldName The name of the field to watch
    *
    * @return True if a access watchpoint request with the id exists,
    *         otherwise false
    */
-  def hasAccessWatchpointRequest(field: Field): Boolean = {
-    accessWatchpointRequests.has(field)
+  def hasAccessWatchpointRequest(
+    className: String,
+    fieldName: String
+  ): Boolean = {
+    accessWatchpointRequests.has((className, fieldName))
   }
 
   /**
@@ -177,15 +143,17 @@ class AccessWatchpointManager(
    * Returns the collection of access watchpoint requests representing the
    * access watchpoint for the specified field.
    *
-   * @param field The field being watched for access
+   * @param className The name of the class containing the field
+   * @param fieldName The name of the field to watch
    *
    * @return Some collection of access watchpoints for the field, or None if
    *         the specified field has no access watchpoints
    */
   def getAccessWatchpointRequest(
-    field: Field
+    className: String,
+    fieldName: String
   ): Option[Seq[AccessWatchpointRequest]] = {
-    accessWatchpointRequests.get(field)
+    accessWatchpointRequests.get((className, fieldName))
   }
 
   /**
@@ -204,14 +172,16 @@ class AccessWatchpointManager(
   /**
    * Removes the access watchpoint for the specified field.
    *
-   * @param field The field being watched for access
+   * @param className The name of the class containing the field
+   * @param fieldName The name of the field to watch
    *
    * @return True if successfully removed access watchpoint, otherwise false
    */
   def removeAccessWatchpointRequest(
-    field: Field
+    className: String,
+    fieldName: String
   ): Boolean = {
-    accessWatchpointRequests.getIdsWithKey(field)
+    accessWatchpointRequests.getIdsWithKey((className, fieldName))
       .exists(_.forall(removeAccessWatchpointRequestWithId))
   }
 

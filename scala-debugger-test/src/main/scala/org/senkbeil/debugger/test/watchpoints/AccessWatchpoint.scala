@@ -5,15 +5,15 @@ package org.senkbeil.debugger.test.watchpoints
  * AccessWatchpoint request.
  */
 object AccessWatchpoint extends App {
-  val someClass = new SomeClass
+  val someAccessClass = new SomeAccessClass
 
   while (true) {
-    println(s"SomeClass.field is ${someClass.field}")
+    println(s"SomeClass.field is ${someAccessClass.field}")
 
     Thread.sleep(100)
   }
 }
 
-class SomeClass {
+class SomeAccessClass {
   val field = 999
 }

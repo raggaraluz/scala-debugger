@@ -23,24 +23,9 @@ trait PureModificationWatchpointProfile extends ModificationWatchpointProfile {
    * @return The stream of modification watchpoint events and any retrieved data
    *         based on requests from extra arguments
    */
-  override def onModificationFieldWatchpointWithData(
+  override def onModificationWatchpointWithData(
     className: String,
     fieldName: String,
-    extraArguments: JDIArgument*
-  ): Try[IdentityPipeline[ModificationWatchpointEventAndData]] = ???
-
-  /**
-   * Constructs a stream of modification watchpoint events for the instance
-   * variable.
-   *
-   * @param instanceVarName The name of the instance variable to watch
-   * @param extraArguments The additional JDI arguments to provide
-   *
-   * @return The stream of modification watchpoint events and any retrieved data
-   *         based on requests from extra arguments
-   */
-  override def onModificationInstanceWatchpointWithData(
-    instanceVarName: String,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ModificationWatchpointEventAndData]] = ???
 }

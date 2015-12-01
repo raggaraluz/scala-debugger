@@ -14,24 +14,14 @@ import scala.util.Try
 trait SwappableModificationWatchpointProfile extends ModificationWatchpointProfile {
   this: SwappableDebugProfile =>
 
-  override def onModificationFieldWatchpointWithData(
+  override def onModificationWatchpointWithData(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ModificationWatchpointEventAndData]] = {
-    withCurrentProfile.onModificationFieldWatchpointWithData(
+    withCurrentProfile.onModificationWatchpointWithData(
       className,
       fieldName,
-      extraArguments: _*
-    )
-  }
-
-  override def onModificationInstanceWatchpointWithData(
-    instanceVarName: String,
-    extraArguments: JDIArgument*
-  ): Try[IdentityPipeline[ModificationWatchpointEventAndData]] = {
-    withCurrentProfile.onModificationInstanceWatchpointWithData(
-      instanceVarName,
       extraArguments: _*
     )
   }
