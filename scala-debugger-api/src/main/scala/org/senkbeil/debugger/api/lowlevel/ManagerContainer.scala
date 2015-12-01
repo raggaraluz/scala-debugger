@@ -11,7 +11,7 @@ import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorWaitManager, MonitorW
 import org.senkbeil.debugger.api.lowlevel.steps.StepManager
 import org.senkbeil.debugger.api.lowlevel.threads.{ThreadStartManager, ThreadDeathManager}
 import org.senkbeil.debugger.api.lowlevel.vm.VMDeathManager
-import org.senkbeil.debugger.api.lowlevel.watchpoints.AccessWatchpointManager
+import org.senkbeil.debugger.api.lowlevel.watchpoints.{ModificationWatchpointManager, AccessWatchpointManager}
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 
 /**
@@ -27,6 +27,7 @@ case class ManagerContainer(
   exceptionManager: ExceptionManager,
   methodEntryManager: MethodEntryManager,
   methodExitManager: MethodExitManager,
+  modificationWatchpointManager: ModificationWatchpointManager,
   monitorContendedEnteredManager: MonitorContendedEnteredManager,
   monitorContendedEnterManager: MonitorContendedEnterManager,
   monitorWaitedManager: MonitorWaitedManager,
@@ -96,6 +97,8 @@ object ManagerContainer {
       new MethodEntryManager(eventRequestManager)
     lazy val methodExitManager =
       new MethodExitManager(eventRequestManager)
+    lazy val modificationWatchpointManager =
+      new ModificationWatchpointManager(eventRequestManager, classManager)
     lazy val monitorContendedEnteredManager =
       new MonitorContendedEnteredManager(eventRequestManager)
     lazy val monitorContendedEnterManager =
@@ -125,6 +128,7 @@ object ManagerContainer {
       exceptionManager                = exceptionManager,
       methodEntryManager              = methodEntryManager,
       methodExitManager               = methodExitManager,
+      modificationWatchpointManager   = modificationWatchpointManager,
       monitorContendedEnteredManager  = monitorContendedEnteredManager,
       monitorContendedEnterManager    = monitorContendedEnterManager,
       monitorWaitedManager            = monitorWaitedManager,

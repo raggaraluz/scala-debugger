@@ -72,8 +72,8 @@ class PureDebugProfile(
 
   protected lazy val exceptionManager = managerContainer.exceptionManager
 
-  //protected lazy val modificationWatchpointManager =
-  //  managerContainer.modificationWatchpointManager
+  protected lazy val modificationWatchpointManager =
+    managerContainer.modificationWatchpointManager
 
   protected lazy val monitorContendedEnteredManager =
     managerContainer.monitorContendedEnteredManager

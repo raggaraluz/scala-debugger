@@ -14,6 +14,8 @@ import scala.util.{Failure, Try}
  *
  * @param eventRequestManager The manager used to create access watchpoint
  *                            requests
+ * @param classManager The manager used to retrieve information about classes
+ *                     and their respective fields
  */
 class AccessWatchpointManager(
   private val eventRequestManager: EventRequestManager,
