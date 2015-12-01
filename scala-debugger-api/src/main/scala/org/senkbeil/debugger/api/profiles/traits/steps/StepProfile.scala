@@ -4,10 +4,13 @@ import com.sun.jdi.ThreadReference
 import com.sun.jdi.event.StepEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 import scala.concurrent.Future
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Try
+
 /**
  * Represents the interface that needs to be implemented to provide
  * step functionality for a specific debug profile.
@@ -22,13 +25,13 @@ trait StepProfile {
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
    *
-   * @return The resulting event
+   * @return The resulting one-time event
    */
-  def stepInLine(
+  def stepIntoLine(
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEvent] = {
-    stepInLineWithData(threadReference, extraArguments: _*).map(_._1)
+    stepIntoLineWithData(threadReference, extraArguments: _*).map(_._1)
   }
 
   /**
@@ -37,10 +40,10 @@ trait StepProfile {
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
    *
-   * @return The resulting event and any retrieved data based on
+   * @return The resulting one-time event and any retrieved data based on
    *         requests from extra arguments
    */
-  def stepInLineWithData(
+  def stepIntoLineWithData(
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData]
@@ -51,7 +54,7 @@ trait StepProfile {
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
    *
-   * @return The resulting event
+   * @return The resulting one-time event
    */
   def stepOverLine(
     threadReference: ThreadReference,
@@ -66,7 +69,7 @@ trait StepProfile {
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
    *
-   * @return The resulting event and any retrieved data based on
+   * @return The resulting one-time event and any retrieved data based on
    *         requests from extra arguments
    */
   def stepOverLineWithData(
@@ -75,13 +78,12 @@ trait StepProfile {
   ): Future[StepEventAndData]
 
   /**
-   * Constructs a stream of step events caused by stepping out from the
-   * current location to the next line.
+   * Steps out from the current location to the next line.
    *
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
    *
-   * @return The resulting event
+   * @return The resulting one-time event
    */
   def stepOutLine(
     threadReference: ThreadReference,
@@ -91,13 +93,12 @@ trait StepProfile {
   }
 
   /**
-   * Constructs a stream of step events caused by stepping out from the
-   * current location to the next line.
+   * Steps out from the current location to the next line.
    *
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
    *
-   * @return The resulting event and any retrieved data based on
+   * @return The resulting one-time event and any retrieved data based on
    *         requests from extra arguments
    */
   def stepOutLineWithData(
@@ -111,13 +112,13 @@ trait StepProfile {
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
    *
-   * @return The resulting event
+   * @return The resulting one-time event
    */
-  def stepInMin(
+  def stepIntoMin(
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEvent] = {
-    stepInMinWithData(threadReference, extraArguments: _*).map(_._1)
+    stepIntoMinWithData(threadReference, extraArguments: _*).map(_._1)
   }
 
   /**
@@ -126,10 +127,10 @@ trait StepProfile {
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
    *
-   * @return The resulting event and any retrieved data based on
+   * @return The resulting one-time event and any retrieved data based on
    *         requests from extra arguments
    */
-  def stepInMinWithData(
+  def stepIntoMinWithData(
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData]
@@ -140,7 +141,7 @@ trait StepProfile {
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
    *
-   * @return The resulting event
+   * @return The resulting one-time event
    */
   def stepOverMin(
     threadReference: ThreadReference,
@@ -155,7 +156,7 @@ trait StepProfile {
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
    *
-   * @return The resulting event and any retrieved data based on
+   * @return The resulting one-time event and any retrieved data based on
    *         requests from extra arguments
    */
   def stepOverMinWithData(
@@ -164,13 +165,12 @@ trait StepProfile {
   ): Future[StepEventAndData]
 
   /**
-   * Constructs a stream of step events caused by stepping out from the
-   * current location to the next location.
+   * Steps out from the current location to the next location.
    *
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
    *
-   * @return The resulting event
+   * @return The resulting one-time event
    */
   def stepOutMin(
     threadReference: ThreadReference,
@@ -180,17 +180,76 @@ trait StepProfile {
   }
 
   /**
-   * Constructs a stream of step events caused by stepping out from the
-   * current location to the next location.
+   * Steps out from the current location to the next location.
    *
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
    *
-   * @return The resulting event and any retrieved data based on
+   * @return The resulting one-time event and any retrieved data based on
    *         requests from extra arguments
    */
   def stepOutMinWithData(
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData]
+
+  /**
+   * Constructs a stream of step events.
+   *
+   * @param threadReference The thread with which to receive step events
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of step events
+   */
+  def onStep(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Try[IdentityPipeline[StepEvent]] = {
+    onStepWithData(threadReference, extraArguments: _*).map(_.map(_._1).noop())
+  }
+
+  /**
+   * Constructs a stream of step events.
+   *
+   * @param threadReference The thread with which to receive step events
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of step events and any retrieved data based on
+   *         requests from extra arguments
+   */
+  def onStepWithData(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Try[IdentityPipeline[StepEventAndData]]
+
+  /**
+   * Constructs a stream of step events.
+   *
+   * @param threadReference The thread with which to receive step events
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of step events
+   */
+  def onUnsafeStep(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): IdentityPipeline[StepEvent] = {
+    onStep(threadReference, extraArguments: _*).get
+  }
+
+  /**
+   * Constructs a stream of step events.
+   *
+   * @param threadReference The thread with which to receive step events
+   * @param extraArguments The additional JDI arguments to provide
+   *
+   * @return The stream of step events and any retrieved data based on
+   *         requests from extra arguments
+   */
+  def onUnsafeStepWithData(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): IdentityPipeline[StepEventAndData] = {
+    onStepWithData(threadReference, extraArguments: _*).get
+  }
 }

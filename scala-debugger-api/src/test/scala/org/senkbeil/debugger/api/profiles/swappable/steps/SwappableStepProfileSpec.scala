@@ -20,17 +20,17 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
   }
 
   describe("SwappableStepProfile") {
-    describe("#stepInLineWithData") {
+    describe("#stepIntoLineWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])
 
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.stepInLineWithData _)
+        (mockDebugProfile.stepIntoLineWithData _)
           .expects(mockThreadReference, arguments).once()
 
-        swappableDebugProfile.stepInLineWithData(
+        swappableDebugProfile.stepIntoLineWithData(
           mockThreadReference,
           arguments: _*
         )
@@ -42,7 +42,7 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.stepInLineWithData(
+          swappableDebugProfile.stepIntoLineWithData(
             mockThreadReference,
             arguments: _*
           )
@@ -112,18 +112,18 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#stepInMinWithData") {
+    describe("#stepIntoMinWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])
 
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.stepInMinWithData _)
+        (mockDebugProfile.stepIntoMinWithData _)
           .expects(mockThreadReference, arguments).once()
 
 
-        swappableDebugProfile.stepInMinWithData(
+        swappableDebugProfile.stepIntoMinWithData(
           mockThreadReference,
           arguments: _*
         )
@@ -135,7 +135,7 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.stepInMinWithData(
+          swappableDebugProfile.stepIntoMinWithData(
             mockThreadReference,
             arguments: _*
           )
@@ -198,6 +198,37 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
 
         intercept[AssertionError] {
           swappableDebugProfile.stepOutMinWithData(
+            mockThreadReference,
+            arguments: _*
+          )
+        }
+      }
+    }
+
+    describe("#onStepWithData") {
+      it("should invoke the method on the underlying profile") {
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.onStepWithData _)
+          .expects(mockThreadReference, arguments).once()
+
+
+        swappableDebugProfile.onStepWithData(
+          mockThreadReference,
+          arguments: _*
+        )
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.onStepWithData(
             mockThreadReference,
             arguments: _*
           )

@@ -1,11 +1,15 @@
 package org.senkbeil.debugger.api.profiles.swappable.steps
 
 import com.sun.jdi.ThreadReference
+import com.sun.jdi.event.StepEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
+import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.steps.StepProfile
 
 import scala.concurrent.Future
+import scala.util.Try
 
 /**
  * Represents a swappable profile for step events that redirects the
@@ -14,11 +18,11 @@ import scala.concurrent.Future
 trait SwappableStepProfile extends StepProfile {
   this: SwappableDebugProfile =>
 
-  override def stepInLineWithData(
+  override def stepIntoLineWithData(
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepInLineWithData(threadReference, extraArguments: _*)
+    withCurrentProfile.stepIntoLineWithData(threadReference, extraArguments: _*)
   }
 
   override def stepOverLineWithData(
@@ -35,11 +39,11 @@ trait SwappableStepProfile extends StepProfile {
     withCurrentProfile.stepOutLineWithData(threadReference, extraArguments: _*)
   }
 
-  override def stepInMinWithData(
+  override def stepIntoMinWithData(
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
-    withCurrentProfile.stepInMinWithData(threadReference, extraArguments: _*)
+    withCurrentProfile.stepIntoMinWithData(threadReference, extraArguments: _*)
   }
 
   override def stepOverMinWithData(
@@ -54,5 +58,12 @@ trait SwappableStepProfile extends StepProfile {
     extraArguments: JDIArgument*
   ): Future[StepEventAndData] = {
     withCurrentProfile.stepOutMinWithData(threadReference, extraArguments: _*)
+  }
+
+  override def onStepWithData(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = {
+    withCurrentProfile.onStepWithData(threadReference, extraArguments: _*)
   }
 }
