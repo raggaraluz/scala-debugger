@@ -24,7 +24,7 @@ class PureThreadDeathProfileIntegrationSpec extends FunSpec with Matchers
 
       val threadDeathCount = new AtomicInteger(0)
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         val requestCreated = new AtomicBoolean(false)
 
         // Set a breakpoint first so we can be ready

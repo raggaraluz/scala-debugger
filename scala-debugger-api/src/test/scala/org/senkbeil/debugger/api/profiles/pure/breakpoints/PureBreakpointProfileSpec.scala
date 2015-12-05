@@ -5,7 +5,7 @@ import com.sun.jdi.event.{Event, EventQueue}
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
-import org.senkbeil.debugger.api.lowlevel.breakpoints.BreakpointManager
+import org.senkbeil.debugger.api.lowlevel.breakpoints.{BreakpointManager, StandardBreakpointManager}
 import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
@@ -22,27 +22,9 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgClassManager extends ClassManager(
-    stub[VirtualMachine], loadClasses = false
-  )
-  private val stubClassManager = stub[ZeroArgClassManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgBreakpointManager extends BreakpointManager(
-    stub[EventRequestManager],
-    stubClassManager
-  )
-  private val mockBreakpointManager = mock[ZeroArgBreakpointManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val stubClassManager = stub[ClassManager]
+  private val mockBreakpointManager = mock[BreakpointManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureBreakpointProfile = new Object with PureBreakpointProfile {
     private var requestId: String = _

@@ -25,7 +25,7 @@ class PureVMDeathProfileIntegrationSpec extends FunSpec with Matchers
       val detectedDeath = new AtomicBoolean(false)
 
       // Start our VM and listen for the start event
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         // Mark that we want to receive vm death events and watch for one
         s.withProfile(PureDebugProfile.Name)
           .onUnsafeVMDeath()

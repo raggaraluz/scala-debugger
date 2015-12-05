@@ -8,7 +8,7 @@ import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.EventType.MonitorWaitEventType
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
-import org.senkbeil.debugger.api.lowlevel.monitors.MonitorWaitManager
+import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorWaitManager, MonitorWaitRequestInfo, StandardMonitorWaitManager}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.pipelines.Pipeline
@@ -21,20 +21,8 @@ class PureMonitorWaitProfileSpec extends FunSpec with Matchers
 with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgMonitorWaitManager extends MonitorWaitManager(
-    stub[EventRequestManager]
-  )
-  private val mockMonitorWaitManager = mock[ZeroArgMonitorWaitManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val mockMonitorWaitManager = mock[MonitorWaitManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureMonitorWaitProfile = new Object with PureMonitorWaitProfile {
     private var requestId: String = _
@@ -237,9 +225,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           (mockMonitorWaitManager.monitorWaitRequestList _)
             .expects()
             .returning(Seq(internalId)).once()
-          (mockMonitorWaitManager.getMonitorWaitRequestArguments _)
+          (mockMonitorWaitManager.getMonitorWaitRequestInfo _)
             .expects(internalId)
-            .returning(Some(arguments)).once()
+            .returning(Some(MonitorWaitRequestInfo(arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MonitorWaitEventType, Seq(uniqueIdPropertyFilter))
@@ -276,9 +264,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
               .expects()
               .returning(Seq(TestRequestId)).once()
 
-            (mockMonitorWaitManager.getMonitorWaitRequestArguments _)
+            (mockMonitorWaitManager.getMonitorWaitRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(arguments)).once()
+              .returning(Some(MonitorWaitRequestInfo(arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockMonitorWaitManager.createMonitorWaitRequestWithId _)

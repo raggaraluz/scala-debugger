@@ -28,7 +28,7 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
       val expectedExceptionName =
         "org.senkbeil.debugger.test.exceptions.CustomException"
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         // Use a breakpoint prior to our exceptions to prepare without passing
         // the exceptions
         s.onUnsafeBreakpoint(testFile, 10).map(_.location()).foreach(l => {
@@ -65,7 +65,7 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
       val expectedExceptionName =
         "org.senkbeil.debugger.test.exceptions.CustomException"
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         // Use a breakpoint prior to our exceptions to prepare without passing
         // the exceptions
         s.onUnsafeBreakpoint(testFile, 10).map(_.location()).foreach(l => {
@@ -102,7 +102,7 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
       val expectedExceptionName =
         "org.senkbeil.debugger.test.exceptions.CustomException"
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         // Use a breakpoint prior to our exceptions to prepare without passing
         // the exceptions
         s.onUnsafeBreakpoint(testFile, 10).map(_.location()).foreach(l => {

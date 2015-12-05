@@ -1,14 +1,11 @@
 package org.senkbeil.debugger.api.profiles.pure.events
 
-import com.sun.jdi.event.EventQueue
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
-import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager}
 import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
+import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.pipelines.Pipeline
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
-import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 import test.JDIMockHelpers
 
 import scala.util.Success
@@ -16,28 +13,9 @@ import scala.util.Success
 class PureEventProfileSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
-  // NOTE: Cannot mock the actual class and test the function using
-  //       ScalaMock, so have to override the method we want to test and
-  //       inject a mock function instead
-  private val mockAddEventDataStreamFunc = mockFunction[
-    EventType,
-    Seq[JDIEventArgument],
-    IdentityPipeline[PureEventProfile#EventAndData]
-  ]
-  private val testEventManager = new EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner]
-  ) {
-    override def addEventDataStream(
-      eventType: EventType,
-      eventArguments: JDIEventArgument*
-    ): IdentityPipeline[PureEventProfile#EventAndData] = {
-      mockAddEventDataStreamFunc(eventType, eventArguments)
-    }
-  }
-
+  private val mockEventManager = mock[EventManager]
   private val pureEventProfile = new Object with PureEventProfile {
-    override protected val eventManager = testEventManager
+    override protected val eventManager = mockEventManager
   }
 
   describe("PureEventProfile") {
@@ -51,7 +29,8 @@ class PureEventProfileSpec extends FunSpec with Matchers
         val eventArguments = Seq(mock[JDIEventArgument])
         val arguments = requestArguments ++ eventArguments
 
-        mockAddEventDataStreamFunc.expects(eventType, eventArguments)
+        (mockEventManager.addEventDataStream _)
+          .expects(eventType, eventArguments)
           .returning(expected.get).once()
 
         val actual = pureEventProfile.onEventWithData(

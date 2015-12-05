@@ -1,45 +1,27 @@
 package org.senkbeil.debugger.api.lowlevel.methods
 
-import java.util.concurrent.ConcurrentHashMap
-
-import com.sun.jdi.request.{EventRequestManager, MethodEntryRequest}
-import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
+import com.sun.jdi.request.MethodEntryRequest
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.filters.ClassInclusionFilter
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
 
-import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**
  * Represents the manager for method entry requests.
- *
- * @param eventRequestManager The manager used to create method entry requests
  */
-class MethodEntryManager(
-  private val eventRequestManager: EventRequestManager
-) extends Logging {
-  /** The arguments used to lookup method entry requests: (Class, Method) */
-  type MethodEntryArgs = (String, String)
-
-  private val methodEntryRequests =
-    new MultiMap[MethodEntryArgs, MethodEntryRequest]
-
+trait MethodEntryManager {
   /**
    * Retrieves the list of method entry requests contained by this manager.
    *
-   * @return The collection of method entry requests in the form of
-   *         (class name, method name)
+   * @return The collection of method entry request information
    */
-  def methodEntryRequestList: Seq[MethodEntryArgs] = methodEntryRequests.keys
+  def methodEntryRequestList: Seq[MethodEntryRequestInfo]
 
   /**
    * Retrieves the list of method entry requests contained by this manager.
    *
    * @return The collection of method entry requests by id
    */
-  def methodEntryRequestListById: Seq[String] = methodEntryRequests.ids
+  def methodEntryRequestListById: Seq[String]
 
   /**
    * Creates a new method entry request for the specified class and method.
@@ -60,24 +42,7 @@ class MethodEntryManager(
     className: String,
     methodName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    val request = Try(eventRequestManager.createMethodEntryRequest(
-      Seq(
-        ClassInclusionFilter(classPattern = className),
-        EnabledProperty(value = true),
-        SuspendPolicyProperty.EventThread
-      ) ++ extraArguments: _*
-    ))
-
-    if (request.isSuccess) methodEntryRequests.putWithId(
-      requestId,
-      (className, methodName),
-      request.get
-    )
-
-    // If no exception was thrown, assume that we succeeded
-    request.map(_ => requestId)
-  }
+  ): Try[String]
 
   /**
    * Creates a new method entry request for the specified class and method.
@@ -96,14 +61,7 @@ class MethodEntryManager(
     className: String,
     methodName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createMethodEntryRequestWithId(
-      newRequestId(),
-      className,
-      methodName,
-      extraArguments: _*
-    )
-  }
+  ): Try[String]
 
   /**
    * Determines if a method entry request for the specific class and method
@@ -115,9 +73,7 @@ class MethodEntryManager(
    *
    * @return True if a method entry request exists, otherwise false
    */
-  def hasMethodEntryRequest(className: String, methodName: String): Boolean = {
-    methodEntryRequests.has((className, methodName))
-  }
+  def hasMethodEntryRequest(className: String, methodName: String): Boolean
 
   /**
    * Determines if a method entry request exists with the specified id.
@@ -126,9 +82,7 @@ class MethodEntryManager(
    *
    * @return True if a method entry request exists, otherwise false
    */
-  def hasMethodEntryRequestWithId(requestId: String): Boolean = {
-    methodEntryRequests.hasWithId(requestId)
-  }
+  def hasMethodEntryRequestWithId(requestId: String): Boolean
 
   /**
    * Retrieves the method entry requests for the specific class and method.
@@ -143,9 +97,7 @@ class MethodEntryManager(
   def getMethodEntryRequest(
     className: String,
     methodName: String
-  ): Option[Seq[MethodEntryRequest]] = {
-    methodEntryRequests.get((className, methodName))
-  }
+  ): Option[Seq[MethodEntryRequest]]
 
   /**
    * Retrieves the method entry request with the specified id.
@@ -156,9 +108,7 @@ class MethodEntryManager(
    */
   def getMethodEntryRequestWithId(
     requestId: String
-  ): Option[MethodEntryRequest] = {
-    methodEntryRequests.getWithId(requestId)
-  }
+  ): Option[MethodEntryRequest]
 
   /**
    * Removes the specified method entry request.
@@ -173,10 +123,7 @@ class MethodEntryManager(
   def removeMethodEntryRequest(
     className: String,
     methodName: String
-  ): Boolean = {
-    methodEntryRequests.getIdsWithKey((className, methodName))
-      .exists(_.forall(removeMethodEntryRequestWithId))
-  }
+  ): Boolean
 
   /**
    * Removes the specified method entry request.
@@ -188,14 +135,7 @@ class MethodEntryManager(
    */
   def removeMethodEntryRequestWithId(
     requestId: String
-  ): Boolean = {
-    // Remove request with given id
-    val request = methodEntryRequests.removeWithId(requestId)
-
-    request.foreach(eventRequestManager.deleteEventRequest)
-
-    request.nonEmpty
-  }
+  ): Boolean
 
   /**
    * Generates an id for a new request.

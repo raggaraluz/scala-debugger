@@ -6,7 +6,7 @@ import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
-import org.senkbeil.debugger.api.lowlevel.exceptions.ExceptionManager
+import org.senkbeil.debugger.api.lowlevel.exceptions.{ExceptionManager, StandardExceptionManager}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
@@ -22,21 +22,8 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgExceptionManager extends ExceptionManager(
-    stub[VirtualMachine],
-    stub[EventRequestManager]
-  )
-  private val mockExceptionManager = mock[ZeroArgExceptionManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val mockExceptionManager = mock[ExceptionManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureExceptionProfile = new Object with PureExceptionProfile {
     private var requestId: String = _

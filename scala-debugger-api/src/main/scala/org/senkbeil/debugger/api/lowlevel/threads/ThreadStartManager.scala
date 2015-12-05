@@ -1,30 +1,20 @@
 package org.senkbeil.debugger.api.lowlevel.threads
 
-import com.sun.jdi.request.{EventRequestManager, ThreadStartRequest}
-import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
+import com.sun.jdi.request.ThreadStartRequest
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
 
 import scala.util.Try
 
 /**
  * Represents the manager for thread start requests.
- *
- * @param eventRequestManager The manager used to create thread start requests
  */
-class ThreadStartManager(
-  private val eventRequestManager: EventRequestManager
-) extends Logging {
-  private val threadStartRequests =
-    new MultiMap[Seq[JDIRequestArgument], ThreadStartRequest]
-
+trait ThreadStartManager {
   /**
    * Retrieves the list of thread start requests contained by this manager.
    *
    * @return The collection of thread start requests in the form of ids
    */
-  def threadStartRequestList: Seq[String] = threadStartRequests.ids
+  def threadStartRequestList: Seq[String]
 
   /**
    * Creates a new thread start request for the specified class and method.
@@ -37,23 +27,7 @@ class ThreadStartManager(
   def createThreadStartRequestWithId(
     requestId: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    val request = Try(eventRequestManager.createThreadStartRequest(
-      Seq(
-        EnabledProperty(value = true),
-        SuspendPolicyProperty.EventThread
-      ) ++ extraArguments: _*
-    ))
-
-    if (request.isSuccess) threadStartRequests.putWithId(
-      requestId,
-      extraArguments,
-      request.get
-    )
-
-    // If no exception was thrown, assume that we succeeded
-    request.map(_ => requestId)
-  }
+  ): Try[String]
 
   /**
    * Creates a new thread start request for the specified class and method.
@@ -64,9 +38,7 @@ class ThreadStartManager(
    */
   def createThreadStartRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createThreadStartRequestWithId(newRequestId(), extraArguments: _*)
-  }
+  ): Try[String]
 
   /**
    * Determines if a thread start request with the specified id.
@@ -75,9 +47,7 @@ class ThreadStartManager(
    *
    * @return True if a thread start request with the id exists, otherwise false
    */
-  def hasThreadStartRequest(id: String): Boolean = {
-    threadStartRequests.hasWithId(id)
-  }
+  def hasThreadStartRequest(id: String): Boolean
 
   /**
    * Retrieves the thread start request using the specified id.
@@ -86,23 +56,17 @@ class ThreadStartManager(
    *
    * @return Some thread start request if it exists, otherwise None
    */
-  def getThreadStartRequest(id: String): Option[ThreadStartRequest] = {
-    threadStartRequests.getWithId(id)
-  }
+  def getThreadStartRequest(id: String): Option[ThreadStartRequest]
 
   /**
-   * Retrieves the arguments provided to the thread start request with the
+   * Retrieves the information for a thread start request with the
    * specified id.
    *
    * @param id The id of the Thread Start Request
    *
-   * @return Some collection of arguments if it exists, otherwise None
+   * @return Some information about the request if it exists, otherwise None
    */
-  def getThreadStartRequestArguments(
-    id: String
-  ): Option[Seq[JDIRequestArgument]] = {
-    threadStartRequests.getKeyWithId(id)
-  }
+  def getThreadStartRequestInfo(id: String): Option[ThreadStartRequestInfo]
 
   /**
    * Removes the specified thread start request.
@@ -112,13 +76,7 @@ class ThreadStartManager(
    * @return True if the thread start request was removed (if it existed),
    *         otherwise false
    */
-  def removeThreadStartRequest(id: String): Boolean = {
-    val request = threadStartRequests.removeWithId(id)
-
-    request.foreach(eventRequestManager.deleteEventRequest)
-
-    request.nonEmpty
-  }
+  def removeThreadStartRequest(id: String): Boolean
 
   /**
    * Generates an id for a new request.
@@ -127,4 +85,3 @@ class ThreadStartManager(
    */
   protected def newRequestId(): String = java.util.UUID.randomUUID().toString
 }
-

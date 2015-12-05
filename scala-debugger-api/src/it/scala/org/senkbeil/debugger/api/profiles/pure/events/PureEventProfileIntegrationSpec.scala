@@ -29,7 +29,7 @@ class PureEventProfileIntegrationSpec extends FunSpec with Matchers
       val hitLines = collection.mutable.Set[Int]()
       val eventCount = new AtomicInteger(0)
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         // Set our breakpoints
         s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber1)
         s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber2)
@@ -62,7 +62,7 @@ class PureEventProfileIntegrationSpec extends FunSpec with Matchers
       val hitLines = collection.mutable.Set[Int]()
       val eventCount = new AtomicInteger(0)
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         // Set our breakpoints
         s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber1)
         s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber2)

@@ -9,7 +9,7 @@ import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
-import org.senkbeil.debugger.api.lowlevel.threads.ThreadDeathManager
+import org.senkbeil.debugger.api.lowlevel.threads.{ThreadDeathManager, ThreadDeathRequestInfo, StandardThreadDeathManager}
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 import test.JDIMockHelpers
@@ -21,20 +21,8 @@ class PureThreadDeathProfileSpec extends FunSpec with Matchers
 with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgThreadDeathManager extends ThreadDeathManager(
-    stub[EventRequestManager]
-  )
-  private val mockThreadDeathManager = mock[ZeroArgThreadDeathManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val mockThreadDeathManager = mock[ThreadDeathManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureThreadDeathProfile = new Object with PureThreadDeathProfile {
     private var requestId: String = _
@@ -237,9 +225,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           (mockThreadDeathManager.threadDeathRequestList _)
             .expects()
             .returning(Seq(internalId)).once()
-          (mockThreadDeathManager.getThreadDeathRequestArguments _)
+          (mockThreadDeathManager.getThreadDeathRequestInfo _)
             .expects(internalId)
-            .returning(Some(arguments)).once()
+            .returning(Some(ThreadDeathRequestInfo(arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ThreadDeathEventType, Seq(uniqueIdPropertyFilter))
@@ -276,9 +264,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
               .expects()
               .returning(Seq(TestRequestId)).once()
 
-            (mockThreadDeathManager.getThreadDeathRequestArguments _)
+            (mockThreadDeathManager.getThreadDeathRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(arguments)).once()
+              .returning(Some(ThreadDeathRequestInfo(arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockThreadDeathManager.createThreadDeathRequestWithId _)

@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.breakpoints.{NoBreakpointLocationFound, BreakpointManager}
+import org.senkbeil.debugger.api.lowlevel.breakpoints.{BreakpointManager, NoBreakpointLocationFound, StandardBreakpointManager}
 import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager}
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument

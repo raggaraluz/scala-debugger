@@ -7,7 +7,7 @@ import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.filters.ThreadFilter
-import org.senkbeil.debugger.api.lowlevel.steps.StepManager
+import org.senkbeil.debugger.api.lowlevel.steps.{StepManager, StandardStepManager}
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.steps.StepProfile

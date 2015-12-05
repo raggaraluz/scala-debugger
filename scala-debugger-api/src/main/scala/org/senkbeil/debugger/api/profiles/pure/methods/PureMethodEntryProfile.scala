@@ -7,7 +7,7 @@ import com.sun.jdi.event.MethodEntryEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument}
 import org.senkbeil.debugger.api.lowlevel.events.filters.{UniqueIdPropertyFilter, MethodNameFilter}
-import org.senkbeil.debugger.api.lowlevel.methods.MethodEntryManager
+import org.senkbeil.debugger.api.lowlevel.methods.{MethodEntryManager, StandardMethodEntryManager}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup

@@ -14,22 +14,15 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-  private val mockEventRequestManager = mock[EventRequestManager]
-  private val stubVirtualMachine = stub[VirtualMachine]
-
-  // NOTE: Needed until https://github.com/paulbutcher/ScalaMock/issues/56
-  class ZeroArgClassManager
-    extends ClassManager(stubVirtualMachine, loadClasses = false)
-  private val mockClassManager = mock[ZeroArgClassManager]
+  private val mockBreakpointManager = mock[BreakpointManager]
 
   private class TestBreakpointInfoPendingActionManager
-    extends PendingActionManager[BreakpointInfo]
+    extends PendingActionManager[BreakpointRequestInfo]
   private val mockPendingActionManager =
     mock[TestBreakpointInfoPendingActionManager]
 
   private val extendedBreakpointManager = new ExtendedBreakpointManager(
-    mockEventRequestManager,
-    mockClassManager,
+    mockBreakpointManager,
     mockPendingActionManager
   ) {
     override protected def newRequestId(): String = TestRequestId
@@ -42,27 +35,23 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
         val testLineNumber = 1
 
         val expected = Seq(
-          BreakpointInfo(testFileName, testLineNumber, Nil)
+          BreakpointRequestInfo(testFileName, testLineNumber, Nil)
         )
 
-        // Mark the retrieval of lines and locations to a map with
-        // a line number that will be the one picked
-        (mockClassManager.linesAndLocationsForFile _).expects(*)
-          .returning(Some(Map(1 -> Seq(createRandomLocationStub())))).once()
-
-        // Stub out the call to create a breakpoint request
-        (mockEventRequestManager.createBreakpointRequest _).expects(*)
-          .returning(stub[BreakpointRequest]).once()
-
-        // Return our data that represents the expected file and line
-        (mockPendingActionManager.processActions _).expects(*)
-          .returning(Seq(ActionInfo("id", expected.head, () => {})))
-          .once()
+        // Create a breakpoint to use for testing
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(TestRequestId, testFileName, testLineNumber, Nil)
+          .returning(Success(TestRequestId)).once()
 
         extendedBreakpointManager.createBreakpointRequest(
           testFileName,
           testLineNumber
         )
+
+        // Return our data that represents the expected file and line
+        (mockPendingActionManager.processActions _).expects(*)
+          .returning(Seq(ActionInfo("id", expected.head, () => {})))
+          .once()
 
         val actual = extendedBreakpointManager.processPendingBreakpointsForFile(
           testFileName
@@ -77,26 +66,22 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
         val testFileName = "some/file/name"
         val testLineNumber = 1
 
-        val expected = Seq((testFileName, testLineNumber))
+        val expected = Seq(BreakpointRequestInfo(testFileName, testLineNumber))
 
-        // Mark the retrieval of lines and locations to a map with
-        // a line number that will be the one picked
-        (mockClassManager.linesAndLocationsForFile _).expects(*)
-          .returning(Some(Map(1 -> Seq(createRandomLocationStub())))).once()
-
-        // Stub out the call to create a breakpoint request
-        (mockEventRequestManager.createBreakpointRequest _).expects(*)
-          .returning(stub[BreakpointRequest]).once()
-
-        // Return our data that represents the expected file and line
-        (mockPendingActionManager.getPendingActionData _).expects(*)
-          .returning(Seq(BreakpointInfo(testFileName, testLineNumber, Nil)))
-          .once()
+        // Create a breakpoint to use for testing
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(TestRequestId, testFileName, testLineNumber, Nil)
+          .returning(Success(TestRequestId)).once()
 
         extendedBreakpointManager.createBreakpointRequest(
           testFileName,
           testLineNumber
         )
+
+        // Return our data that represents the expected file and line
+        (mockPendingActionManager.getPendingActionData _).expects(*)
+          .returning(Seq(BreakpointRequestInfo(testFileName, testLineNumber, Nil)))
+          .once()
 
         val actual =
           extendedBreakpointManager.pendingBreakpointsForFile(testFileName)
@@ -124,14 +109,10 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
 
         val expected = Success(TestRequestId)
 
-        // Mark the retrieval of lines and locations to a map with
-        // a line number that will be the one picked
-        (mockClassManager.linesAndLocationsForFile _).expects(*)
-          .returning(Some(Map(1 -> Seq(createRandomLocationStub())))).once()
-
-        // Stub out the call to create a breakpoint request
-        (mockEventRequestManager.createBreakpointRequest _).expects(*)
-          .returning(stub[BreakpointRequest]).once()
+        // Create a breakpoint to use for testing
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(TestRequestId, testFileName, testLineNumber, Nil)
+          .returning(expected).once()
 
         val actual = extendedBreakpointManager.createBreakpointRequestWithId(
           TestRequestId,
@@ -148,14 +129,10 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
 
         val expected = Failure(new Throwable)
 
-        // Mark the retrieval of lines and locations to a map with
-        // a line number that will be the one picked
-        (mockClassManager.linesAndLocationsForFile _).expects(*)
-          .returning(Some(Map(1 -> Seq(createRandomLocationStub())))).once()
-
-        // Throw an exception when attempting to create the request
-        (mockEventRequestManager.createBreakpointRequest _).expects(*)
-          .throwing(expected.exception).once()
+        // Create a breakpoint to use for testing
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(TestRequestId, testFileName, testLineNumber, Nil)
+          .returning(expected).once()
 
         val actual = extendedBreakpointManager.createBreakpointRequestWithId(
           TestRequestId,
@@ -169,24 +146,19 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
       it("should add a pending breakpoint if NoBreakpointLocationFound thrown") {
         val testFileName = "some/file/name"
         val testLineNumber = 1
+        val error = NoBreakpointLocationFound(testFileName, testLineNumber)
 
-        val expected = Failure(new NoBreakpointLocationFound(
-          testFileName, testLineNumber
-        ))
+        val expected = Success(TestRequestId)
 
-        // Mark the retrieval of lines and locations to a map with
-        // a line number that will be the one picked
-        (mockClassManager.linesAndLocationsForFile _).expects(*)
-          .returning(Some(Map(1 -> Seq(createRandomLocationStub())))).once()
-
-        // Throw an exception when attempting to create the request
-        (mockEventRequestManager.createBreakpointRequest _).expects(*)
-          .throwing(expected.exception).once()
+        // Create a breakpoint to use for testing
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(TestRequestId, testFileName, testLineNumber, Nil)
+          .returning(Failure(error)).once()
 
         // Pending breakpoint should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          BreakpointInfo(testFileName, testLineNumber, Nil),
+          BreakpointRequestInfo(testFileName, testLineNumber, Nil),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -207,14 +179,9 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
 
         val expected = Success(TestRequestId)
 
-        // Mark the retrieval of lines and locations to a map with
-        // a line number that will be the one picked
-        (mockClassManager.linesAndLocationsForFile _).expects(*)
-          .returning(Some(Map(1 -> Seq(createRandomLocationStub())))).once()
-
-        // Stub out the call to create a breakpoint request
-        (mockEventRequestManager.createBreakpointRequest _).expects(*)
-          .returning(stub[BreakpointRequest]).once()
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(TestRequestId, testFileName, testLineNumber, Nil)
+          .returning(expected).once()
 
         val actual = extendedBreakpointManager.createBreakpointRequest(
           testFileName,
@@ -230,14 +197,9 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
 
         val expected = Failure(new Throwable)
 
-        // Mark the retrieval of lines and locations to a map with
-        // a line number that will be the one picked
-        (mockClassManager.linesAndLocationsForFile _).expects(*)
-          .returning(Some(Map(1 -> Seq(createRandomLocationStub())))).once()
-
-        // Throw an exception when attempting to create the request
-        (mockEventRequestManager.createBreakpointRequest _).expects(*)
-          .throwing(expected.exception).once()
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(TestRequestId, testFileName, testLineNumber, Nil)
+          .returning(expected).once()
 
         val actual = extendedBreakpointManager.createBreakpointRequest(
           testFileName,
@@ -250,19 +212,18 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
       it("should add a pending breakpoint if NoBreakpointLocationFound thrown") {
         val testFileName = "some/file/name"
         val testLineNumber = 1
+        val error = NoBreakpointLocationFound(testFileName, testLineNumber)
 
-        val expected = Failure(new NoBreakpointLocationFound(
-          testFileName, testLineNumber
-        ))
+        val expected = Success(TestRequestId)
 
-        // Mark no location found
-        (mockClassManager.linesAndLocationsForFile _).expects(*)
-          .returning(None).once()
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(TestRequestId, testFileName, testLineNumber, Nil)
+          .returning(Failure(error)).once()
 
         // Pending breakpoint should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          BreakpointInfo(testFileName, testLineNumber, Nil),
+          BreakpointRequestInfo(testFileName, testLineNumber, Nil),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -278,30 +239,23 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
     describe("#removeBreakpointRequestWithId") {
       it("should return true if the breakpoint was successfully deleted") {
         val expected = true
-        val totalBreakpointRequests = 3
 
-        // Create X locations that will result in X breakpoint requests
-        val locations = (1 to totalBreakpointRequests)
-          .map(_ => createRandomLocationStub())
+        val testFileName = "some/file/name"
+        val testLineNumber = 1
 
-        // Mark the retrieval of lines and locations to a map with
-        // a line number that will be the one picked
-        (mockClassManager.linesAndLocationsForFile _).expects(*)
-          .returning(Some(Map(1 -> locations))).once()
-
-        // Stub out the call to create a breakpoint request
-        (mockEventRequestManager.createBreakpointRequest _).expects(*)
-          .returning(stub[BreakpointRequest])
-          .repeated(totalBreakpointRequests).times()
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(TestRequestId, testFileName, testLineNumber, Nil)
+          .returning(Success(TestRequestId)).once()
 
         // Set a breakpoint on a line that is returned by linesAndLocations
-        extendedBreakpointManager.createBreakpointRequest("file", 1)
+        extendedBreakpointManager.createBreakpointRequest(
+          testFileName,
+          testLineNumber
+        )
 
-        // Should remove X breakpoint requests through one call
-        (mockEventRequestManager.deleteEventRequests _).expects(where {
-          l: java.util.List[_ <: EventRequest] =>
-            l.size == totalBreakpointRequests
-        }).once()
+        (mockBreakpointManager.removeBreakpointRequestWithId _)
+          .expects(TestRequestId)
+          .returning(true).once()
 
         // Return "no removals" for pending breakpoints
         (mockPendingActionManager.removePendingActionsWithId _)
@@ -320,15 +274,16 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
 
         val testFileName = "some/file/name"
         val testLineNumber = 1
+        val error = NoBreakpointLocationFound(testFileName, testLineNumber)
 
-        // Mark no location found
-        (mockClassManager.linesAndLocationsForFile _).expects(*)
-          .returning(None).once()
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(TestRequestId, testFileName, testLineNumber, Nil)
+          .returning(Failure(error)).once()
 
         // Pending breakpoint should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          BreakpointInfo(testFileName, testLineNumber, Nil),
+          BreakpointRequestInfo(testFileName, testLineNumber, Nil),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -342,10 +297,13 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Some(Seq(
           ActionInfo(
             TestRequestId,
-            BreakpointInfo(testFileName, testLineNumber, Nil),
+            BreakpointRequestInfo(testFileName, testLineNumber, Nil),
             () => {}
           )
         ))
+        (mockBreakpointManager.removeBreakpointRequestWithId _)
+          .expects(TestRequestId)
+          .returning(false).once()
         (mockPendingActionManager.removePendingActionsWithId _)
           .expects(TestRequestId)
           .returning(pendingRemovalReturn).once()
@@ -359,6 +317,10 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
 
       it("should return false if the breakpoint was not found") {
         val expected = false
+
+        (mockBreakpointManager.removeBreakpointRequestWithId _)
+          .expects(TestRequestId)
+          .returning(false).once()
 
         // Return "no removals" for pending breakpoints
         (mockPendingActionManager.removePendingActionsWithId _)
@@ -376,38 +338,20 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
     describe("#removeBreakpointRequest") {
       it("should return true if the breakpoint was successfully deleted") {
         val expected = true
-        val totalBreakpointRequests = 3
+
         val testFileName = "some/file/name"
+        val testLineNumber = 1
 
-        // Create X locations that will result in X breakpoint requests
-        val locations = (1 to totalBreakpointRequests)
-          .map(_ => createRandomLocationStub())
-
-        // Mark the retrieval of lines and locations to a map with
-        // a line number that will be the one picked
-        (mockClassManager.linesAndLocationsForFile _).expects(*)
-          .returning(Some(Map(1 -> locations))).once()
-
-        // Stub out the call to create a breakpoint request
-        (mockEventRequestManager.createBreakpointRequest _).expects(*)
-          .returning(stub[BreakpointRequest])
-          .repeated(totalBreakpointRequests).times()
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(TestRequestId, testFileName, testLineNumber, Nil)
+          .returning(Success(TestRequestId)).once()
 
         // Set a breakpoint on a line that is returned by linesAndLocations
         extendedBreakpointManager.createBreakpointRequest(testFileName, 1)
 
-        // Should remove X breakpoint requests through one call
-        (mockEventRequestManager.deleteEventRequests _).expects(where {
-          l: java.util.List[_ <: EventRequest] =>
-            l.size == totalBreakpointRequests
-        }).once()
-
-        // Return "no removals" for pending breakpoints (performed by standard
-        // removeBreakpointRequestWithId call that removeBreakpointRequest
-        // delegates to)
-        (mockPendingActionManager.removePendingActionsWithId _)
-          .expects(TestRequestId)
-          .returning(None).once()
+        (mockBreakpointManager.removeBreakpointRequest _)
+          .expects(testFileName, testLineNumber)
+          .returning(true).once()
 
         // Return "no removals" for pending breakpoints (performed by standard
         // removeBreakpointRequest call)
@@ -427,15 +371,16 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
 
         val testFileName = "some/file/name"
         val testLineNumber = 1
+        val error = NoBreakpointLocationFound(testFileName, testLineNumber)
 
-        // Mark no location found
-        (mockClassManager.linesAndLocationsForFile _).expects(*)
-          .returning(None).once()
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(TestRequestId, testFileName, testLineNumber, Nil)
+          .returning(Failure(error)).once()
 
         // Pending breakpoint should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          BreakpointInfo(testFileName, testLineNumber, Nil),
+          BreakpointRequestInfo(testFileName, testLineNumber, Nil),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -449,10 +394,13 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            BreakpointInfo(testFileName, testLineNumber, Nil),
+            BreakpointRequestInfo(testFileName, testLineNumber, Nil),
             () => {}
           )
         )
+        (mockBreakpointManager.removeBreakpointRequest _)
+          .expects(testFileName, testLineNumber)
+          .returning(false).once()
         (mockPendingActionManager.removePendingActions _)
           .expects(*)
           .returning(pendingRemovalReturn).once()
@@ -467,14 +415,20 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
 
       it("should return false if the breakpoint was not found") {
         val expected = false
+        val testFileName = "some/file/name"
+        val testLineNumber = 1
+
+        (mockBreakpointManager.removeBreakpointRequest _)
+          .expects(testFileName, testLineNumber)
+          .returning(false).once()
 
         // Return "no removals" for pending breakpoints
         (mockPendingActionManager.removePendingActions _).expects(*)
           .returning(Nil).once()
 
         val actual = extendedBreakpointManager.removeBreakpointRequest(
-          "file",
-          1
+          testFileName,
+          testLineNumber
         )
 
         actual should be (expected)

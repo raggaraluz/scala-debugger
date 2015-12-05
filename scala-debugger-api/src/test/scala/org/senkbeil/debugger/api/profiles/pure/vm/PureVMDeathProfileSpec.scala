@@ -9,7 +9,7 @@ import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
-import org.senkbeil.debugger.api.lowlevel.vm.VMDeathManager
+import org.senkbeil.debugger.api.lowlevel.vm.{VMDeathManager, VMDeathRequestInfo, StandardVMDeathManager}
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 import test.JDIMockHelpers
@@ -21,20 +21,8 @@ class PureVMDeathProfileSpec extends FunSpec with Matchers
 with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgVMDeathManager extends VMDeathManager(
-    stub[EventRequestManager]
-  )
-  private val mockVMDeathManager = mock[ZeroArgVMDeathManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val mockVMDeathManager = mock[VMDeathManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureVMDeathProfile = new Object with PureVMDeathProfile {
     private var requestId: String = _
@@ -237,9 +225,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           (mockVMDeathManager.vmDeathRequestList _)
             .expects()
             .returning(Seq(internalId)).once()
-          (mockVMDeathManager.getVMDeathRequestArguments _)
+          (mockVMDeathManager.getVMDeathRequestInfo _)
             .expects(internalId)
-            .returning(Some(arguments)).once()
+            .returning(Some(VMDeathRequestInfo(arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(VMDeathEventType, Seq(uniqueIdPropertyFilter))
@@ -276,9 +264,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
               .expects()
               .returning(Seq(TestRequestId)).once()
 
-            (mockVMDeathManager.getVMDeathRequestArguments _)
+            (mockVMDeathManager.getVMDeathRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(arguments)).once()
+              .returning(Some(VMDeathRequestInfo(arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockVMDeathManager.createVMDeathRequestWithId _)

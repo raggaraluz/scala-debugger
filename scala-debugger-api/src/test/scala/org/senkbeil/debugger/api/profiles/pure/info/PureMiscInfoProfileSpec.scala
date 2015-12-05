@@ -10,12 +10,7 @@ class PureMiscInfoProfileSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val mockVirtualMachine = mock[VirtualMachine]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgClassManager extends ClassManager(
-    mockVirtualMachine, loadClasses = false
-  )
-  private val mockClassManager = mock[ZeroArgClassManager]
+  private val mockClassManager = mock[ClassManager]
 
   private val mockRetrieveCommandLineArguments = mockFunction[Seq[String]]
   private val mockRetrieveMainClassName = mockFunction[String]

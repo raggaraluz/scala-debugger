@@ -40,7 +40,7 @@ class CustomPropertyFilterIntegrationSpec extends FunSpec with Matchers
       // Will contain the hit breakpoints
       @volatile var actual = collection.mutable.Seq[Int]()
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         import s.lowlevel._
 
         // Queue up our breakpoints

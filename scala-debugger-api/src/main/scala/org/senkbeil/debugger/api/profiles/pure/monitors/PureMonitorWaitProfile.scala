@@ -7,7 +7,7 @@ import com.sun.jdi.event.MonitorWaitEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument}
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
-import org.senkbeil.debugger.api.lowlevel.monitors.MonitorWaitManager
+import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorWaitManager, StandardMonitorWaitManager}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
@@ -83,7 +83,8 @@ trait PureMonitorWaitProfile extends MonitorWaitProfile {
         //       which shows up in saved arguments since it is passed in
         //       during the memoization above
         !monitorWaitManager.monitorWaitRequestList
-          .flatMap(monitorWaitManager.getMonitorWaitRequestArguments)
+          .flatMap(monitorWaitManager.getMonitorWaitRequestInfo)
+          .map(_.extraArguments)
           .map(_.filterNot(_.isInstanceOf[UniqueIdProperty]))
           .contains(key)
       }

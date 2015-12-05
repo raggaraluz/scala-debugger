@@ -3,50 +3,29 @@ package org.senkbeil.debugger.api.lowlevel.watchpoints
 import com.sun.jdi.request.{AccessWatchpointRequest, EventRequestManager}
 import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{SuspendPolicyProperty, EnabledProperty}
-import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
+import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
+import org.senkbeil.debugger.api.utils.{Logging, MultiMap}
 
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Try}
 
 /**
  * Represents the manager for access watchpoint requests.
- *
- * @param eventRequestManager The manager used to create access watchpoint
- *                            requests
- * @param classManager The manager used to retrieve information about classes
- *                     and their respective fields
  */
-class AccessWatchpointManager(
-  private val eventRequestManager: EventRequestManager,
-  private val classManager: ClassManager
-) extends Logging {
-  import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
-
-  /**
-   * The arguments used to lookup access watchpoint requests:
-   * (Class name, field name)
-   */
-  type AccessWatchpointArgs = (String, String)
-
-  private val accessWatchpointRequests =
-    new MultiMap[AccessWatchpointArgs, AccessWatchpointRequest]
-
+trait AccessWatchpointManager {
   /**
    * Retrieves the list of access watchpoints contained by this manager.
    *
-   * @return The collection of access watchpoints in the form of fields
+   * @return The collection of access watchpoint request information
    */
-  def accessWatchpointRequestList: Seq[AccessWatchpointArgs] =
-    accessWatchpointRequests.keys
+  def accessWatchpointRequestList: Seq[AccessWatchpointRequestInfo]
 
   /**
    * Retrieves the list of access watchpoints contained by this manager.
    *
    * @return The collection of access watchpoints by id
    */
-  def accessWatchpointRequestListById: Seq[String] =
-    accessWatchpointRequests.ids
+  def accessWatchpointRequestListById: Seq[String]
 
   /**
    * Creates a new access watchpoint request for the specified field using the
@@ -64,31 +43,7 @@ class AccessWatchpointManager(
     className: String,
     fieldName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    val classReferenceType = classManager.allClasses.find(_.name() == className)
-    val field = classReferenceType.flatMap(
-      _.allFields().asScala.find(_.name() == fieldName)
-    )
-
-    if (field.isEmpty) return Failure(NoFieldFound(className, fieldName))
-
-    val request = Try(eventRequestManager.createAccessWatchpointRequest(
-      field.get,
-      Seq(
-        EnabledProperty(value = true),
-        SuspendPolicyProperty.EventThread
-      ) ++ extraArguments: _*
-    ))
-
-    if (request.isSuccess) accessWatchpointRequests.putWithId(
-      requestId,
-      (className, fieldName),
-      request.get
-    )
-
-    // If no exception was thrown, assume that we succeeded
-    request.map(_ => requestId)
-  }
+  ): Try[String]
 
   /**
    * Creates a new access watchpoint request for the specified field using the
@@ -104,14 +59,7 @@ class AccessWatchpointManager(
     className: String,
     fieldName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createAccessWatchpointRequestWithId(
-      newRequestId(),
-      className,
-      fieldName,
-      extraArguments: _*
-    )
-  }
+  ): Try[String]
 
   /**
    * Determines if a access watchpoint request with the specified field.
@@ -125,9 +73,7 @@ class AccessWatchpointManager(
   def hasAccessWatchpointRequest(
     className: String,
     fieldName: String
-  ): Boolean = {
-    accessWatchpointRequests.has((className, fieldName))
-  }
+  ): Boolean
 
   /**
    * Determines if a access watchpoint request with the specified id.
@@ -137,9 +83,7 @@ class AccessWatchpointManager(
    * @return True if a access watchpoint request with the id exists,
    *         otherwise false
    */
-  def hasAccessWatchpointRequestWithId(id: String): Boolean = {
-    accessWatchpointRequests.hasWithId(id)
-  }
+  def hasAccessWatchpointRequestWithId(id: String): Boolean
 
   /**
    * Returns the collection of access watchpoint requests representing the
@@ -154,9 +98,7 @@ class AccessWatchpointManager(
   def getAccessWatchpointRequest(
     className: String,
     fieldName: String
-  ): Option[Seq[AccessWatchpointRequest]] = {
-    accessWatchpointRequests.get((className, fieldName))
-  }
+  ): Option[Seq[AccessWatchpointRequest]]
 
   /**
    * Retrieves the access watchpoint request using the specified id.
@@ -167,9 +109,7 @@ class AccessWatchpointManager(
    */
   def getAccessWatchpointRequestWithId(
     id: String
-  ): Option[AccessWatchpointRequest] = {
-    accessWatchpointRequests.getWithId(id)
-  }
+  ): Option[AccessWatchpointRequest]
 
   /**
    * Removes the access watchpoint for the specified field.
@@ -182,10 +122,7 @@ class AccessWatchpointManager(
   def removeAccessWatchpointRequest(
     className: String,
     fieldName: String
-  ): Boolean = {
-    accessWatchpointRequests.getIdsWithKey((className, fieldName))
-      .exists(_.forall(removeAccessWatchpointRequestWithId))
-  }
+  ): Boolean
 
   /**
    * Removes the access watchpoint request with the specified id.
@@ -195,13 +132,7 @@ class AccessWatchpointManager(
    * @return True if the access watchpoint request was removed (if it existed),
    *         otherwise false
    */
-  def removeAccessWatchpointRequestWithId(id: String): Boolean = {
-    val request = accessWatchpointRequests.removeWithId(id)
-
-    request.foreach(eventRequestManager.deleteEventRequest)
-
-    request.nonEmpty
-  }
+  def removeAccessWatchpointRequestWithId(id: String): Boolean
 
   /**
    * Generates an id for a new request.

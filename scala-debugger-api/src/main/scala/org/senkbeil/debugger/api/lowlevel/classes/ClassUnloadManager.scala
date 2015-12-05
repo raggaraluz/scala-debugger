@@ -1,30 +1,20 @@
 package org.senkbeil.debugger.api.lowlevel.classes
 
-import com.sun.jdi.request.{EventRequestManager, ClassUnloadRequest}
-import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
+import com.sun.jdi.request.ClassUnloadRequest
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
 
 import scala.util.Try
 
 /**
  * Represents the manager for class unload requests.
- *
- * @param eventRequestManager The manager used to create class unload requests
  */
-class ClassUnloadManager(
-  private val eventRequestManager: EventRequestManager
-) extends Logging {
-  private val classUnloadRequests =
-    new MultiMap[Seq[JDIRequestArgument], ClassUnloadRequest]
-
+trait ClassUnloadManager {
   /**
    * Retrieves the list of class unload requests contained by this manager.
    *
    * @return The collection of class unload requests in the form of ids
    */
-  def classUnloadRequestList: Seq[String] = classUnloadRequests.ids
+  def classUnloadRequestList: Seq[String]
 
   /**
    * Creates a new class unload request.
@@ -37,21 +27,7 @@ class ClassUnloadManager(
   def createClassUnloadRequestWithId(
     requestId: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    val request = Try(eventRequestManager.createClassUnloadRequest(
-      Seq(
-        EnabledProperty(value = true),
-        SuspendPolicyProperty.EventThread
-      ) ++ extraArguments: _*
-    ))
-
-    if (request.isSuccess) {
-      classUnloadRequests.putWithId(requestId, extraArguments, request.get)
-    }
-
-    // If no exception was thrown, assume that we succeeded
-    request.map(_ => requestId)
-  }
+  ): Try[String]
 
   /**
    * Creates a new class unload request.
@@ -62,9 +38,7 @@ class ClassUnloadManager(
    */
   def createClassUnloadRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createClassUnloadRequestWithId(newRequestId(), extraArguments: _*)
-  }
+  ): Try[String]
 
   /**
    * Determines if a class unload request with the specified id.
@@ -73,9 +47,7 @@ class ClassUnloadManager(
    *
    * @return True if a class unload request with the id exists, otherwise false
    */
-  def hasClassUnloadRequest(id: String): Boolean = {
-    classUnloadRequests.hasWithId(id)
-  }
+  def hasClassUnloadRequest(id: String): Boolean
 
   /**
    * Retrieves the class unload request using the specified id.
@@ -84,23 +56,19 @@ class ClassUnloadManager(
    *
    * @return Some class unload request if it exists, otherwise None
    */
-  def getClassUnloadRequest(id: String): Option[ClassUnloadRequest] = {
-    classUnloadRequests.getWithId(id)
-  }
+  def getClassUnloadRequest(id: String): Option[ClassUnloadRequest]
 
   /**
-   * Retrieves the arguments provided to the class unload request with the
+   * Retrieves the information for a class unload request with the
    * specified id.
    *
    * @param id The id of the Class Unload Request
    *
-   * @return Some collection of arguments if it exists, otherwise None
+   * @return Some information about the request if it exists, otherwise None
    */
-  def getClassUnloadRequestArguments(
+  def getClassUnloadRequestInfo(
     id: String
-  ): Option[Seq[JDIRequestArgument]] = {
-    classUnloadRequests.getKeyWithId(id)
-  }
+  ): Option[ClassUnloadRequestInfo]
 
   /**
    * Removes the specified class unload request.
@@ -110,13 +78,7 @@ class ClassUnloadManager(
    * @return True if the class unload request was removed (if it existed),
    *         otherwise false
    */
-  def removeClassUnloadRequest(id: String): Boolean = {
-    val request = classUnloadRequests.removeWithId(id)
-
-    request.foreach(eventRequestManager.deleteEventRequest)
-
-    request.nonEmpty
-  }
+  def removeClassUnloadRequest(id: String): Boolean
 
   /**
    * Generates an id for a new request.

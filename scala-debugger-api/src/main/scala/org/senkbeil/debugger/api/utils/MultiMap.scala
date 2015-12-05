@@ -88,6 +88,28 @@ class MultiMap[Key, Value] {
   }
 
   /**
+   * Removes all values whose key satisfies the specified predicate.
+   *
+   * @param predicate The predicate to use when evaluating keys
+   *
+   * @return The collection of removed values
+   */
+  def removeWithKeyPredicate(predicate: Key => Boolean): Seq[Value] = {
+    this.keys.filter(predicate).flatMap(this.remove).flatten
+  }
+
+  /**
+   * Removes all values that satisfy the specified predicate.
+   *
+   * @param predicate The predicate to use when evaluating values
+   *
+   * @return The collection of removed values
+   */
+  def removeWithValuePredicate(predicate: Value => Boolean): Seq[Value] = {
+    idToValue.filter(t => predicate(t._2)).keys.flatMap(this.removeWithId).toSeq
+  }
+
+  /**
    * Removes the value with the specified id. Also, removes the association
    * between a key and the value via the id.
    *
@@ -119,6 +141,28 @@ class MultiMap[Key, Value] {
   }
 
   /**
+   * Determines if any key satisfies the specified predicate.
+   *
+   * @param predicate The predicate to use when evaluating keys
+   *
+   * @return True if a key satisfies the predicate, otherwise false
+   */
+  def hasWithKeyPredicate(predicate: Key => Boolean): Boolean = {
+    this.keys.exists(predicate)
+  }
+
+  /**
+   * Determines if any value satisfies the specified predicate.
+   *
+   * @param predicate The predicate to use when evaluating values
+   *
+   * @return True if a value satisfies the predicate, otherwise false
+   */
+  def hasWithValuePredicate(predicate: Value => Boolean): Boolean = {
+    this.values.exists(predicate)
+  }
+
+  /**
    * Determines if the specified id exists in the map.
    *
    * @param id The id to check
@@ -141,6 +185,28 @@ class MultiMap[Key, Value] {
   }
 
   /**
+   * Retrieves all values whose key satisfies the specified predicate.
+   *
+   * @param predicate The predicate to use when evaluating keys
+   *
+   * @return The collection of values whose keys satisfied the predicate
+   */
+  def getWithKeyPredicate(predicate: Key => Boolean): Seq[Value] = {
+    this.keys.filter(predicate).flatMap(this.get).flatten
+  }
+
+  /**
+   * Retrieves all values that satisfy the specified predicate.
+   *
+   * @param predicate The predicate to use when evaluating values
+   *
+   * @return The collection of values that satisfied the predicate
+   */
+  def getWithValuePredicate(predicate: Value => Boolean): Seq[Value] = {
+    this.values.filter(predicate)
+  }
+
+  /**
    * Retrieves the value for the specified id.
    *
    * @param id The id of the value to retrieve
@@ -160,6 +226,28 @@ class MultiMap[Key, Value] {
    */
   def getIdsWithKey(key: Key): Option[Seq[Id]] = {
     keyToIds.get(key)
+  }
+
+  /**
+   * Retrieves the collection of ids for all keys that satisfy the predicate.
+   *
+   * @param predicate The predicate to use when evaluating keys
+   *
+   * @return The collection of ids whose keys satisfy the predicate
+   */
+  def getIdsWithKeyPredicate(predicate: Key => Boolean): Seq[Id] = {
+    keyToIds.filter(t => predicate(t._1)).values.flatten.toSeq
+  }
+
+  /**
+   * Retrieves the collection of ids for all values that satisfy the predicate.
+   *
+   * @param predicate The predicate to use when evaluating values
+   *
+   * @return The collection of ids whose values satisfy the predicate
+   */
+  def getIdsWithValuePredicate(predicate: Value => Boolean): Seq[Id] = {
+    idToValue.filter(t => predicate(t._2)).keys.toSeq
   }
 
   /**

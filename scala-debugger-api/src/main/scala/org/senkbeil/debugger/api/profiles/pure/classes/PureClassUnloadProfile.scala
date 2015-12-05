@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import com.sun.jdi.event.ClassUnloadEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.classes.ClassUnloadManager
+import org.senkbeil.debugger.api.lowlevel.classes.{ClassUnloadManager, StandardClassUnloadManager}
 import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument}
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
@@ -83,7 +83,8 @@ trait PureClassUnloadProfile extends ClassUnloadProfile {
         //       which shows up in saved arguments since it is passed in
         //       during the memoization above
         !classUnloadManager.classUnloadRequestList
-          .flatMap(classUnloadManager.getClassUnloadRequestArguments)
+          .flatMap(classUnloadManager.getClassUnloadRequestInfo)
+          .map(_.extraArguments)
           .map(_.filterNot(_.isInstanceOf[UniqueIdProperty]))
           .contains(key)
       }

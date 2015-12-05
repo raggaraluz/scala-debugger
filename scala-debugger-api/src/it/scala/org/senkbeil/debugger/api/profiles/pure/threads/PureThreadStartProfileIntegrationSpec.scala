@@ -25,7 +25,7 @@ class PureThreadStartProfileIntegrationSpec extends FunSpec with Matchers
       val threadStartCount = new AtomicInteger(0)
 
       // Start our Thread and listen for the start event
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         val requestCreated = new AtomicBoolean(false)
 
         // Set a breakpoint first so we can be ready

@@ -9,7 +9,7 @@ import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
-import org.senkbeil.debugger.api.lowlevel.threads.ThreadStartManager
+import org.senkbeil.debugger.api.lowlevel.threads.{ThreadStartManager, StandardThreadStartManager}
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
@@ -83,7 +83,8 @@ trait PureThreadStartProfile extends ThreadStartProfile {
         //       which shows up in saved arguments since it is passed in
         //       during the memoization above
         !threadStartManager.threadStartRequestList
-          .flatMap(threadStartManager.getThreadStartRequestArguments)
+          .flatMap(threadStartManager.getThreadStartRequestInfo)
+          .map(_.extraArguments)
           .map(_.filterNot(_.isInstanceOf[UniqueIdProperty]))
           .contains(key)
       }

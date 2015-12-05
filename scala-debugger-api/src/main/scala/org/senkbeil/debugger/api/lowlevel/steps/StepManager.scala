@@ -2,25 +2,18 @@ package org.senkbeil.debugger.api.lowlevel.steps
 
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.request.{EventRequestManager, StepRequest}
+import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.filters.CountFilter
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{SuspendPolicyProperty, EnabledProperty}
-import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
+import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
 import org.senkbeil.debugger.api.utils.MultiMap
 
 import scala.util.Try
 
 /**
  * Represents the manager for step requests.
- *
- * @param eventRequestManager The manager used to create step requests
  */
-class StepManager(private val eventRequestManager: EventRequestManager) {
-  /** Represents arguments for a step request: thread */
-  type StepArgs = (ThreadReference)
-
-  private val stepRequests = new MultiMap[StepArgs, StepRequest]
-
+trait StepManager {
   /**
    * Creates a new step request to step into the next called method (in other
    * words, enter the next frame created by a function on the current line or
@@ -174,14 +167,14 @@ class StepManager(private val eventRequestManager: EventRequestManager) {
    *
    * @return The collection of steps in the form of thread reference
    */
-  def stepRequestList: Seq[StepArgs] = stepRequests.keys
+  def stepRequestList: Seq[StepRequestInfo]
 
   /**
    * Retrieves the list of steps contained by this manager.
    *
    * @return The collection of steps by id
    */
-  def stepRequestListById: Seq[String] = stepRequests.ids
+  def stepRequestListById: Seq[String]
 
   /**
    * Creates and enables a step request for the given thread using the provided
@@ -207,16 +200,7 @@ class StepManager(private val eventRequestManager: EventRequestManager) {
     size: Int,
     depth: Int,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createStepRequestWithId(
-      requestId = requestId,
-      removeExistingRequests = true,
-      threadReference = threadReference,
-      size = size,
-      depth = depth,
-      extraArguments: _*
-    )
-  }
+  ): Try[String]
 
   /**
    * Creates and enables a step request for the given thread using the provided
@@ -243,29 +227,7 @@ class StepManager(private val eventRequestManager: EventRequestManager) {
     size: Int,
     depth: Int,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    // Remove existing step requests for thread
-    if (removeExistingRequests) removeStepRequest(threadReference)
-
-    val arguments = Seq(
-      CountFilter(count = 1),
-      SuspendPolicyProperty.EventThread,
-      EnabledProperty(value = true)
-    ) ++ extraArguments
-
-    val request = Try(eventRequestManager.createStepRequest(
-      threadReference, size, depth, arguments: _*
-    ))
-
-    if (request.isSuccess) stepRequests.putWithId(
-      requestId,
-      threadReference,
-      request.get
-    )
-
-    // If no exception was thrown, assume that we succeeded
-    request.map(_ => requestId)
-  }
+  ): Try[String]
 
   /**
    * Creates and enables a step request for the given thread using the provided
@@ -289,15 +251,7 @@ class StepManager(private val eventRequestManager: EventRequestManager) {
     size: Int,
     depth: Int,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createStepRequestWithId(
-      newRequestId(),
-      threadReference,
-      size,
-      depth,
-      extraArguments: _*
-    )
-  }
+  ): Try[String]
 
   /**
    * Determines whether or not there is a step request for the specified thread.
@@ -306,9 +260,7 @@ class StepManager(private val eventRequestManager: EventRequestManager) {
    *
    * @return True if a step request for the thread exists, otherwise false
    */
-  def hasStepRequest(threadReference: ThreadReference): Boolean = {
-    stepRequests.has(threadReference)
-  }
+  def hasStepRequest(threadReference: ThreadReference): Boolean
 
   /**
    * Determines whether or not the step request with the specified id exists.
@@ -317,9 +269,7 @@ class StepManager(private val eventRequestManager: EventRequestManager) {
    *
    * @return True if a step request with the id exists, otherwise false
    */
-  def hasStepRequestWithId(requestId: String): Boolean = {
-    stepRequests.hasWithId(requestId)
-  }
+  def hasStepRequestWithId(requestId: String): Boolean
 
   /**
    * Returns the collection of step requests for the specified thread.
@@ -329,11 +279,7 @@ class StepManager(private val eventRequestManager: EventRequestManager) {
    * @return Some collection of steps for the specified thread if it exists,
    *         otherwise None
    */
-  def getStepRequest(
-    threadReference: ThreadReference
-  ): Option[Seq[StepRequest]] = {
-    stepRequests.get(threadReference)
-  }
+  def getStepRequest(threadReference: ThreadReference): Option[Seq[StepRequest]]
 
   /**
    * Returns the collection of steps with the specified id.
@@ -342,11 +288,7 @@ class StepManager(private val eventRequestManager: EventRequestManager) {
    *
    * @return Some step request if the id exists, otherwise None
    */
-  def getStepRequestWithId(
-    requestId: String
-  ): Option[StepRequest] = {
-    stepRequests.getWithId(requestId)
-  }
+  def getStepRequestWithId(requestId: String): Option[StepRequest]
 
   /**
    * Returns the arguments for a step request with the specified id.
@@ -355,9 +297,7 @@ class StepManager(private val eventRequestManager: EventRequestManager) {
    *
    * @return Some step arguments if found, otherwise None
    */
-  def getStepArgsWithId(requestId: String): Option[StepArgs] = {
-    stepRequests.getKeyWithId(requestId)
-  }
+  def getStepRequestInfoWithId(requestId: String): Option[StepRequestInfo]
 
   /**
    * Removes the step on the specified line of the file.
@@ -366,10 +306,7 @@ class StepManager(private val eventRequestManager: EventRequestManager) {
    *
    * @return True if successfully removed the step request, otherwise false
    */
-  def removeStepRequest(threadReference: ThreadReference): Boolean = {
-    stepRequests.getIdsWithKey(threadReference)
-      .exists(_.forall(removeStepRequestWithId))
-  }
+  def removeStepRequest(threadReference: ThreadReference): Boolean
 
   /**
    * Removes the step with the specified id.
@@ -378,15 +315,7 @@ class StepManager(private val eventRequestManager: EventRequestManager) {
    *
    * @return True if successfully removed the step request, otherwise false
    */
-  def removeStepRequestWithId(
-    requestId: String
-  ): Boolean = {
-    val request = stepRequests.removeWithId(requestId)
-
-    request.foreach(eventRequestManager.deleteEventRequest)
-
-    request.nonEmpty
-  }
+  def removeStepRequestWithId(requestId: String): Boolean
 
   /**
    * Generates an id for a new request.

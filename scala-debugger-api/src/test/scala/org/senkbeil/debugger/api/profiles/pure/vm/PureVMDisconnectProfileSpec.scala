@@ -13,13 +13,7 @@ import test.JDIMockHelpers
 class PureVMDisconnectProfileSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureVMDisconnectProfile = new Object with PureVMDisconnectProfile {
     override protected val eventManager: EventManager = mockEventManager

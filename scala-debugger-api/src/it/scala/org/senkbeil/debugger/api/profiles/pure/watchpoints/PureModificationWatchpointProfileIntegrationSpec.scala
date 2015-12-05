@@ -26,7 +26,7 @@ class PureModificationWatchpointProfileIntegrationSpec
 
       val detectedModificationWatchpoint = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         // NOTE: Waiting for class to be ready before setting modification watchpoint
         // TODO: Remove wait for class to be ready once pending functionality added
         s.withProfile(PureDebugProfile.Name)
