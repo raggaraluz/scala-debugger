@@ -1,42 +1,27 @@
 package org.senkbeil.debugger.api.lowlevel.methods
 
-import com.sun.jdi.request.{EventRequestManager, MethodExitRequest}
+import com.sun.jdi.request.MethodExitRequest
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.filters.ClassInclusionFilter
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
-import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
 
 import scala.util.Try
 
 /**
  * Represents the manager for method exit requests.
- *
- * @param eventRequestManager The manager used to create method exit requests
  */
-class MethodExitManager(
-  private val eventRequestManager: EventRequestManager
-) extends Logging {
-  /** The arguments used to lookup method exit requests: (Class, Method) */
-  type MethodExitArgs = (String, String)
-
-  private val methodExitRequests =
-    new MultiMap[MethodExitArgs, MethodExitRequest]
-
+trait MethodExitManager {
   /**
    * Retrieves the list of method exit requests contained by this manager.
    *
-   * @return The collection of method exit requests in the form of
-   *         (class name, method name)
+   * @return The collection of method exit request information
    */
-  def methodExitRequestList: Seq[MethodExitArgs] = methodExitRequests.keys
+  def methodExitRequestList: Seq[MethodExitRequestInfo]
 
   /**
    * Retrieves the list of method exit requests contained by this manager.
    *
    * @return The collection of method exit requests by id
    */
-  def methodExitRequestListById: Seq[String] = methodExitRequests.ids
+  def methodExitRequestListById: Seq[String]
 
   /**
    * Creates a new method exit request for the specified class and method.
@@ -57,24 +42,7 @@ class MethodExitManager(
     className: String,
     methodName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    val request = Try(eventRequestManager.createMethodExitRequest(
-      Seq(
-        ClassInclusionFilter(classPattern = className),
-        EnabledProperty(value = true),
-        SuspendPolicyProperty.EventThread
-      ) ++ extraArguments: _*
-    ))
-
-    if (request.isSuccess) methodExitRequests.putWithId(
-      requestId,
-      (className, methodName),
-      request.get
-    )
-
-    // If no exception was thrown, assume that we succeeded
-    request.map(_ => requestId)
-  }
+  ): Try[String]
 
   /**
    * Creates a new method exit request for the specified class and method.
@@ -93,14 +61,7 @@ class MethodExitManager(
     className: String,
     methodName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createMethodExitRequestWithId(
-      newRequestId(),
-      className,
-      methodName,
-      extraArguments: _*
-    )
-  }
+  ): Try[String]
 
   /**
    * Determines if a method exit request for the specific class and method
@@ -112,9 +73,7 @@ class MethodExitManager(
    *
    * @return True if a method exit request exists, otherwise false
    */
-  def hasMethodExitRequest(className: String, methodName: String): Boolean = {
-    methodExitRequests.has((className, methodName))
-  }
+  def hasMethodExitRequest(className: String, methodName: String): Boolean
 
   /**
    * Determines if a method exit request exists with the specified id.
@@ -123,25 +82,22 @@ class MethodExitManager(
    *
    * @return True if a method exit request exists, otherwise false
    */
-  def hasMethodExitRequestWithId(requestId: String): Boolean = {
-    methodExitRequests.hasWithId(requestId)
-  }
+  def hasMethodExitRequestWithId(requestId: String): Boolean
 
   /**
-   * Retrieves the method exit request for the specific class and method.
+   * Retrieves the method exit requests for the specific class and method.
    *
    * @param className The name of the class targeted by the method exit request
    * @param methodName The name of the method targeted by the method exit
    *                   request
    *
-   * @return Some method exit request if it exists, otherwise None
+   * @return Some collection of method exit requests if they exist,
+   *         otherwise None
    */
   def getMethodExitRequest(
     className: String,
     methodName: String
-  ): Option[Seq[MethodExitRequest]] = {
-    methodExitRequests.get((className, methodName))
-  }
+  ): Option[Seq[MethodExitRequest]]
 
   /**
    * Retrieves the method exit request with the specified id.
@@ -152,9 +108,7 @@ class MethodExitManager(
    */
   def getMethodExitRequestWithId(
     requestId: String
-  ): Option[MethodExitRequest] = {
-    methodExitRequests.getWithId(requestId)
-  }
+  ): Option[MethodExitRequest]
 
   /**
    * Removes the specified method exit request.
@@ -169,10 +123,7 @@ class MethodExitManager(
   def removeMethodExitRequest(
     className: String,
     methodName: String
-  ): Boolean = {
-    methodExitRequests.getIdsWithKey((className, methodName))
-      .exists(_.forall(removeMethodExitRequestWithId))
-  }
+  ): Boolean
 
   /**
    * Removes the specified method exit request.
@@ -184,14 +135,7 @@ class MethodExitManager(
    */
   def removeMethodExitRequestWithId(
     requestId: String
-  ): Boolean = {
-    // Remove request with given id
-    val request = methodExitRequests.removeWithId(requestId)
-
-    request.foreach(eventRequestManager.deleteEventRequest)
-
-    request.nonEmpty
-  }
+  ): Boolean
 
   /**
    * Generates an id for a new request.
@@ -200,3 +144,4 @@ class MethodExitManager(
    */
   protected def newRequestId(): String = java.util.UUID.randomUUID().toString
 }
+

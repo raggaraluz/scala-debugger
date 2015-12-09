@@ -2,16 +2,16 @@ package org.senkbeil.debugger.api.lowlevel
 
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.request.EventRequestManager
-import org.senkbeil.debugger.api.lowlevel.breakpoints.{ExtendedBreakpointManager, BreakpointManager}
-import org.senkbeil.debugger.api.lowlevel.classes.{ClassPrepareManager, ClassUnloadManager, ClassManager}
-import org.senkbeil.debugger.api.lowlevel.events.EventManager
-import org.senkbeil.debugger.api.lowlevel.exceptions.ExceptionManager
-import org.senkbeil.debugger.api.lowlevel.methods.{MethodEntryManager, MethodExitManager}
-import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorWaitManager, MonitorWaitedManager, MonitorContendedEnterManager, MonitorContendedEnteredManager}
-import org.senkbeil.debugger.api.lowlevel.steps.StepManager
-import org.senkbeil.debugger.api.lowlevel.threads.{ThreadStartManager, ThreadDeathManager}
-import org.senkbeil.debugger.api.lowlevel.vm.VMDeathManager
-import org.senkbeil.debugger.api.lowlevel.watchpoints.{ModificationWatchpointManager, AccessWatchpointManager}
+import org.senkbeil.debugger.api.lowlevel.breakpoints.{BreakpointManager, ExtendedBreakpointManager, StandardBreakpointManager}
+import org.senkbeil.debugger.api.lowlevel.classes._
+import org.senkbeil.debugger.api.lowlevel.events.{StandardEventManager, EventManager}
+import org.senkbeil.debugger.api.lowlevel.exceptions.{StandardExceptionManager, ExceptionManager}
+import org.senkbeil.debugger.api.lowlevel.methods.{MethodExitManager, MethodEntryManager, StandardMethodEntryManager, StandardMethodExitManager}
+import org.senkbeil.debugger.api.lowlevel.monitors._
+import org.senkbeil.debugger.api.lowlevel.steps.{StepManager, StandardStepManager}
+import org.senkbeil.debugger.api.lowlevel.threads.{ThreadStartManager, ThreadDeathManager, StandardThreadStartManager, StandardThreadDeathManager}
+import org.senkbeil.debugger.api.lowlevel.vm.{VMDeathManager, StandardVMDeathManager}
+import org.senkbeil.debugger.api.lowlevel.watchpoints.{AccessWatchpointManager, ModificationWatchpointManager, StandardModificationWatchpointManager, StandardAccessWatchpointManager}
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 
 /**
@@ -74,49 +74,49 @@ object ManagerContainer {
     lazy val eventRequestManager = virtualMachine.eventRequestManager()
     lazy val eventQueue = virtualMachine.eventQueue()
     lazy val accessWatchpointManager =
-      new AccessWatchpointManager(eventRequestManager, classManager)
+      new StandardAccessWatchpointManager(eventRequestManager, classManager)
     // TODO: Revert back to normal breakpoint manager and add pending breakpoint
     //       functionality somewhere more separate
-    lazy val breakpointManager =
-      //new BreakpointManager(eventRequestManager, classManager)
-      new ExtendedBreakpointManager(eventRequestManager, classManager)
+    lazy val breakpointManager = new ExtendedBreakpointManager(
+      new StandardBreakpointManager(eventRequestManager, classManager)
+    )
     lazy val classManager =
-      new ClassManager(virtualMachine, loadClasses = true)
+      new StandardClassManager(virtualMachine, loadClasses = true)
     lazy val classPrepareManager =
-      new ClassPrepareManager(eventRequestManager)
+      new StandardClassPrepareManager(eventRequestManager)
     lazy val classUnloadManager =
-      new ClassUnloadManager(eventRequestManager)
-    lazy val eventManager = new EventManager(
+      new StandardClassUnloadManager(eventRequestManager)
+    lazy val eventManager = new StandardEventManager(
       eventQueue,
       loopingTaskRunner,
       autoStart = autoStartEventManager
     )
     lazy val exceptionManager =
-      new ExceptionManager(virtualMachine, eventRequestManager)
+      new StandardExceptionManager(virtualMachine, eventRequestManager)
     lazy val methodEntryManager =
-      new MethodEntryManager(eventRequestManager)
+      new StandardMethodEntryManager(eventRequestManager)
     lazy val methodExitManager =
-      new MethodExitManager(eventRequestManager)
+      new StandardMethodExitManager(eventRequestManager)
     lazy val modificationWatchpointManager =
-      new ModificationWatchpointManager(eventRequestManager, classManager)
+      new StandardModificationWatchpointManager(eventRequestManager, classManager)
     lazy val monitorContendedEnteredManager =
-      new MonitorContendedEnteredManager(eventRequestManager)
+      new StandardMonitorContendedEnteredManager(eventRequestManager)
     lazy val monitorContendedEnterManager =
-      new MonitorContendedEnterManager(eventRequestManager)
+      new StandardMonitorContendedEnterManager(eventRequestManager)
     lazy val monitorWaitedManager =
-      new MonitorWaitedManager(eventRequestManager)
+      new StandardMonitorWaitedManager(eventRequestManager)
     lazy val monitorWaitManager =
-      new MonitorWaitManager(eventRequestManager)
+      new StandardMonitorWaitManager(eventRequestManager)
     lazy val requestManager =
       virtualMachine.eventRequestManager()
     lazy val stepManager =
-      new StepManager(eventRequestManager)
+      new StandardStepManager(eventRequestManager)
     lazy val threadDeathManager =
-      new ThreadDeathManager(eventRequestManager)
+      new StandardThreadDeathManager(eventRequestManager)
     lazy val threadStartManager =
-      new ThreadStartManager(eventRequestManager)
+      new StandardThreadStartManager(eventRequestManager)
     lazy val vmDeathManager =
-      new VMDeathManager(eventRequestManager)
+      new StandardVMDeathManager(eventRequestManager)
 
     ManagerContainer(
       accessWatchpointManager         = accessWatchpointManager,

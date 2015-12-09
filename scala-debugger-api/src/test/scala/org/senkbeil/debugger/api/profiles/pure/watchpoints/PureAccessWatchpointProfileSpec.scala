@@ -12,7 +12,7 @@ import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
-import org.senkbeil.debugger.api.lowlevel.watchpoints.AccessWatchpointManager
+import org.senkbeil.debugger.api.lowlevel.watchpoints.{AccessWatchpointManager, StandardAccessWatchpointManager}
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 import test.JDIMockHelpers
@@ -23,27 +23,9 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgClassManager extends ClassManager(
-    stub[VirtualMachine], loadClasses = false
-  )
-  private val stubClassManager = stub[ZeroArgClassManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgAccessWatchpointManager extends AccessWatchpointManager(
-    stub[EventRequestManager],
-    stubClassManager
-  )
-  private val mockAccessWatchpointManager = mock[ZeroArgAccessWatchpointManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val stubClassManager = stub[ClassManager]
+  private val mockAccessWatchpointManager = mock[AccessWatchpointManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureAccessWatchpointProfile = new Object with PureAccessWatchpointProfile {
     private var requestId: String = _

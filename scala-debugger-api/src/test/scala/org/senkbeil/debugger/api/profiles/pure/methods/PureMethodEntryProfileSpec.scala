@@ -7,7 +7,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.events.filters.{UniqueIdPropertyFilter, MethodNameFilter}
-import org.senkbeil.debugger.api.lowlevel.methods.MethodEntryManager
+import org.senkbeil.debugger.api.lowlevel.methods.{MethodEntryManager, StandardMethodEntryManager}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.pipelines.Pipeline
@@ -21,20 +21,8 @@ class PureMethodEntryProfileSpec extends FunSpec with Matchers
 with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgMethodEntryManager extends MethodEntryManager(
-    stub[EventRequestManager]
-  )
-  private val mockMethodEntryManager = mock[ZeroArgMethodEntryManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val mockMethodEntryManager = mock[MethodEntryManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureMethodEntryProfile = new Object with PureMethodEntryProfile {
     private var requestId: String = _

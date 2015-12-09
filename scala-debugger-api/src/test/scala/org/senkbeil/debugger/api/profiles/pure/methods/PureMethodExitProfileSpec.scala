@@ -7,7 +7,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.events.filters.{UniqueIdPropertyFilter, MethodNameFilter}
-import org.senkbeil.debugger.api.lowlevel.methods.MethodExitManager
+import org.senkbeil.debugger.api.lowlevel.methods.{MethodExitManager, StandardMethodExitManager}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.pipelines.Pipeline
@@ -21,20 +21,8 @@ class PureMethodExitProfileSpec extends FunSpec with Matchers
 with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgMethodExitManager extends MethodExitManager(
-    stub[EventRequestManager]
-  )
-  private val mockMethodExitManager = mock[ZeroArgMethodExitManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val mockMethodExitManager = mock[MethodExitManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureMethodExitProfile = new Object with PureMethodExitProfile {
     private var requestId: String = _

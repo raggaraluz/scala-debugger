@@ -33,7 +33,7 @@ class PureMethodEntryProfileIntegrationSpec extends FunSpec with Matchers
       val reachedExpectedMethod = new AtomicBoolean(false)
       val reachedMethodBeforeFirstLine = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         val methodPipeline = s.withProfile(PureDebugProfile.Name)
           .onUnsafeMethodEntry(expectedClassName, expectedMethodName)
           .map(_.method())

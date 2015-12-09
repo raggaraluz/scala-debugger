@@ -23,7 +23,7 @@ class PureMonitorContendedEnteredProfileIntegrationSpec extends FunSpec with Mat
 
       val detectedEntered = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         // Mark that we want to receive monitor contended entered events and
         // watch for one
         s.withProfile(PureDebugProfile.Name)

@@ -5,12 +5,12 @@ import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
+import org.senkbeil.debugger.api.lowlevel.events.EventType.MonitorContendedEnteredEventType
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
-import org.senkbeil.debugger.api.lowlevel.monitors.MonitorContendedEnteredManager
+import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorContendedEnteredManager, MonitorContendedEnteredRequestInfo, StandardMonitorContendedEnteredManager}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
-import org.senkbeil.debugger.api.lowlevel.events.EventType.MonitorContendedEnteredEventType
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 import test.JDIMockHelpers
@@ -21,20 +21,9 @@ class PureMonitorContendedEnteredProfileSpec extends FunSpec with Matchers
 with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgMonitorContendedEnteredManager extends MonitorContendedEnteredManager(
-    stub[EventRequestManager]
-  )
-  private val mockMonitorContendedEnteredManager = mock[ZeroArgMonitorContendedEnteredManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val mockMonitorContendedEnteredManager =
+    mock[MonitorContendedEnteredManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureMonitorContendedEnteredProfile = new Object with PureMonitorContendedEnteredProfile {
     private var requestId: String = _
@@ -237,9 +226,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           (mockMonitorContendedEnteredManager.monitorContendedEnteredRequestList _)
             .expects()
             .returning(Seq(internalId)).once()
-          (mockMonitorContendedEnteredManager.getMonitorContendedEnteredRequestArguments _)
+          (mockMonitorContendedEnteredManager.getMonitorContendedEnteredRequestInfo _)
             .expects(internalId)
-            .returning(Some(arguments)).once()
+            .returning(Some(MonitorContendedEnteredRequestInfo(arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MonitorContendedEnteredEventType, Seq(uniqueIdPropertyFilter))
@@ -276,9 +265,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
               .expects()
               .returning(Seq(TestRequestId)).once()
 
-            (mockMonitorContendedEnteredManager.getMonitorContendedEnteredRequestArguments _)
+            (mockMonitorContendedEnteredManager.getMonitorContendedEnteredRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(arguments)).once()
+              .returning(Some(MonitorContendedEnteredRequestInfo(arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockMonitorContendedEnteredManager.createMonitorContendedEnteredRequestWithId _)

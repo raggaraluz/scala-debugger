@@ -25,7 +25,7 @@ class PureClassUnloadProfileIntegrationSpec extends FunSpec with Matchers
 
       val detectedUnload = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         // Mark that we want to receive class unload events and watch for one
         s.withProfile(PureDebugProfile.Name)
           .onUnsafeClassUnload()

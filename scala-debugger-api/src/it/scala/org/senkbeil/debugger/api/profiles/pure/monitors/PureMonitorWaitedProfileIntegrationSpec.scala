@@ -23,7 +23,7 @@ class PureMonitorWaitedProfileIntegrationSpec extends FunSpec with Matchers
 
       val detectedWaited = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         // Mark that we want to receive monitor waited events and
         // watch for one
         s.withProfile(PureDebugProfile.Name)

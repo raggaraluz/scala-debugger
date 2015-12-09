@@ -24,7 +24,7 @@ class PureVMDisconnectProfileIntegrationSpec extends FunSpec with Matchers
       val detectedDisconnect = new AtomicBoolean(false)
 
       // Start our VM and listen for the disconnect event
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         s.withProfile(PureDebugProfile.Name)
           .onUnsafeVMDisconnect()
           .foreach(_ => detectedDisconnect.set(true))

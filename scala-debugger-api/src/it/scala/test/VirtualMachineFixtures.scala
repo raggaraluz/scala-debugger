@@ -1,6 +1,7 @@
 package test
 
 import java.io.{InputStreamReader, BufferedReader}
+import java.util.concurrent.atomic.AtomicBoolean
 
 import com.sun.jdi.event.VMStartEvent
 import org.senkbeil.debugger.api.debuggers.LaunchingDebugger
@@ -21,108 +22,51 @@ import scala.util.Try
  * files.
  */
 trait VirtualMachineFixtures extends TestUtilities with Logging {
+  /**
+   * Creates a new virtual machine with the specified class and arguments.
+   *
+   * @param className The name of the main class to use as the JVM entrypoint
+   * @param arguments The arguments to provide to the main class
+   * @param testCode The test code to evaluate when the JVM connects, given the
+   *                 ScalaVirtualMachine as an argument
+   */
   def withVirtualMachine(
     className: String,
-    arguments: Seq[String] = Nil,
-    suspend: Boolean = true,
-    timeout: Long = 1000,
-    echoStandardOut: Boolean = false,
-    echoStandardErr: Boolean = false,
-    preStart: (ScalaVirtualMachine) => Any = (_) => {}
+    arguments: Seq[String] = Nil
   )(
-    testCode: (VirtualMachine, ScalaVirtualMachine) => Any
-  ) = {
+    testCode: (ScalaVirtualMachine) => Any
+  ): Unit = withLazyVirtualMachine(className, arguments) { (s, start) =>
+    start()
+    testCode(s)
+  }
+
+  /**
+   * Creates a new virtual machine with the specified class and arguments.
+   *
+   * @param className The name of the main class to use as the JVM entrypoint
+   * @param arguments The arguments to provide to the main class
+   * @param testCode The test code to evaluate when the JVM connects, given
+   *                 the ScalaVirtualMachine and a function to execute when
+   *                 ready to start the virtual machine
+   */
+  def withLazyVirtualMachine(
+    className: String,
+    arguments: Seq[String] = Nil
+  )(
+    testCode: (ScalaVirtualMachine, () => Unit) => Any
+  ): Unit = {
     val launchingDebugger = LaunchingDebugger(
-      className = className,
-      commandLineArguments = arguments,
-      jvmOptions = Seq("-classpath", jvmClasspath),
-      suspend = true // This should always be true for our tests, using resume
-                     // above to indicate whether should resume after start
+      className             = className,
+      commandLineArguments  = arguments,
+      jvmOptions            = Seq("-classpath", jvmClasspath),
+      suspend               = true // This should always be true for our tests
     )
 
-    launchingDebugger.start(startProcessingEvents = false, { scalaVirtualMachine =>
-      val virtualMachine = scalaVirtualMachine.underlyingVirtualMachine
-
-      // Redirect output of JVM to our logs
-      val process = virtualMachine.process()
-
-      import scala.concurrent.ExecutionContext.Implicits.global
-      Future {
-        if (echoStandardOut) {
-          val outStream = new BufferedReader(
-            new InputStreamReader(process.getInputStream)
-          )
-
-          logger.info("Echoing program output to standard out!")
-          while (!Thread.interrupted()) {
-            val line = outStream.readLine()
-            if (line != null) logger.info(s"Program output: $line")
-          }
-        } else {
-          val path = java.nio.file.Files.createTempFile("jvmfixture", ".out.log")
-          logger.debug(s"Creating JVM Output File: ${path.toString}")
-
-          Try(java.nio.file.Files.copy(process.getInputStream, path,
-            java.nio.file.StandardCopyOption.REPLACE_EXISTING))
-
-          // NOTE: Comment me out to keep around the log file
-          logger.debug(s"Deleting JVM Output File: ${path.toString}")
-          java.nio.file.Files.delete(path)
-        }
-      }
-      Future {
-        if (echoStandardErr) {
-          val errStream = new BufferedReader(
-            new InputStreamReader(process.getErrorStream)
-          )
-
-          logger.info("Echoing program error to standard error!")
-          while (!Thread.interrupted()) {
-            val line = errStream.readLine()
-            if (line != null) logger.error(s"Program error: $line")
-          }
-        } else {
-          val path = java.nio.file.Files.createTempFile("jvmfixture", ".err.log")
-          logger.debug(s"Creating JVM Error File: ${path.toString}")
-
-          Try(java.nio.file.Files.copy(process.getErrorStream, path,
-            java.nio.file.StandardCopyOption.REPLACE_EXISTING))
-
-          // NOTE: Comment me out to keep around the log file
-          logger.debug(s"Deleting JVM Error File: ${path.toString}")
-          java.nio.file.Files.delete(path)
-        }
-      }
-
+    launchingDebugger.start(startProcessingEvents = false, { s =>
       try {
-        import scalaVirtualMachine.lowlevel.eventManager
+        val startFunc = () => s.lowlevel.eventManager.start()
 
-        // Invoke our pre-start function
-        preStart(scalaVirtualMachine)
-
-        // Wait for connection event to run the test code (ensures everything
-        // is ready)
-        logger.trace("Ensuring that VM is ready before starting test")
-        var virtualMachineReady = false
-
-        // NOTE: Using event handler so we can return a boolean to indicate
-        //       whether or not to resume the VM
-        eventManager.addEventHandler(VMStartEventType, _ => {
-          logger.debug("Received start event for test, marking ready!")
-          virtualMachineReady = true
-
-          // Only resume the virtual machine IF we did not request it suspended
-          logger.debug(s"Resuming vm: ${!suspend}")
-          !suspend
-        })
-
-        // Forced to start listening events now so we guarantee that we
-        // receive the start event AFTER adding our handler
-        scalaVirtualMachine.lowlevel.eventManager.start()
-
-        while (!virtualMachineReady) { Thread.sleep(1) }
-
-        testCode(virtualMachine, scalaVirtualMachine)
+        testCode(s, startFunc)
       } finally {
         launchingDebugger.stop()
       }

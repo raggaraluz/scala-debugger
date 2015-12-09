@@ -4,7 +4,7 @@ import com.sun.jdi.event.{Event, EventQueue}
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
-import org.senkbeil.debugger.api.lowlevel.classes.ClassPrepareManager
+import org.senkbeil.debugger.api.lowlevel.classes.{ClassPrepareManager, ClassPrepareRequestInfo, StandardClassPrepareManager}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.EventType.ClassPrepareEventType
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
@@ -21,20 +21,8 @@ class PureClassPrepareProfileSpec extends FunSpec with Matchers
 with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgClassPrepareManager extends ClassPrepareManager(
-    stub[EventRequestManager]
-  )
-  private val mockClassPrepareManager = mock[ZeroArgClassPrepareManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val mockClassPrepareManager = mock[ClassPrepareManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureClassPrepareProfile = new Object with PureClassPrepareProfile {
     private var requestId: String = _
@@ -237,9 +225,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           (mockClassPrepareManager.classPrepareRequestList _)
             .expects()
             .returning(Seq(internalId)).once()
-          (mockClassPrepareManager.getClassPrepareRequestArguments _)
+          (mockClassPrepareManager.getClassPrepareRequestInfo _)
             .expects(internalId)
-            .returning(Some(arguments)).once()
+            .returning(Some(ClassPrepareRequestInfo(arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ClassPrepareEventType, Seq(uniqueIdPropertyFilter))
@@ -276,9 +264,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
               .expects()
               .returning(Seq(TestRequestId)).once()
 
-            (mockClassPrepareManager.getClassPrepareRequestArguments _)
+            (mockClassPrepareManager.getClassPrepareRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(arguments)).once()
+              .returning(Some(ClassPrepareRequestInfo(arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockClassPrepareManager.createClassPrepareRequestWithId _)

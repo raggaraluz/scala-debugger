@@ -1,52 +1,27 @@
 package org.senkbeil.debugger.api.lowlevel.watchpoints
 
-import com.sun.jdi.request.{ModificationWatchpointRequest, EventRequestManager}
-import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
+import com.sun.jdi.request.ModificationWatchpointRequest
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.utils.{Logging, MultiMap}
 
-import scala.collection.JavaConverters._
-import scala.util.{Failure, Try}
+import scala.util.Try
 
 /**
  * Represents the manager for modification watchpoint requests.
- *
- * @param eventRequestManager The manager used to create modification watchpoint
- *                            requests
- * @param classManager The manager used to retrieve information about classes
- *                     and their respective fields
  */
-class ModificationWatchpointManager(
-  private val eventRequestManager: EventRequestManager,
-  private val classManager: ClassManager
-) extends Logging {
-  import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
-
-  /**
-   * The arguments used to lookup modification watchpoint requests:
-   * (Class name, field name)
-   */
-  type ModificationWatchpointArgs = (String, String)
-
-  private val modificationWatchpointRequests =
-    new MultiMap[ModificationWatchpointArgs, ModificationWatchpointRequest]
-
+trait ModificationWatchpointManager {
   /**
    * Retrieves the list of modification watchpoints contained by this manager.
    *
-   * @return The collection of modification watchpoints in the form of fields
+   * @return The collection of modification watchpoint request information
    */
-  def modificationWatchpointRequestList: Seq[ModificationWatchpointArgs] =
-    modificationWatchpointRequests.keys
+  def modificationWatchpointRequestList: Seq[ModificationWatchpointRequestInfo]
 
   /**
    * Retrieves the list of modification watchpoints contained by this manager.
    *
    * @return The collection of modification watchpoints by id
    */
-  def modificationWatchpointRequestListById: Seq[String] =
-    modificationWatchpointRequests.ids
+  def modificationWatchpointRequestListById: Seq[String]
 
   /**
    * Creates a new modification watchpoint request for the specified field
@@ -64,31 +39,7 @@ class ModificationWatchpointManager(
     className: String,
     fieldName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    val classReferenceType = classManager.allClasses.find(_.name() == className)
-    val field = classReferenceType.flatMap(
-      _.allFields().asScala.find(_.name() == fieldName)
-    )
-
-    if (field.isEmpty) return Failure(NoFieldFound(className, fieldName))
-
-    val request = Try(eventRequestManager.createModificationWatchpointRequest(
-      field.get,
-      Seq(
-        EnabledProperty(value = true),
-        SuspendPolicyProperty.EventThread
-      ) ++ extraArguments: _*
-    ))
-
-    if (request.isSuccess) modificationWatchpointRequests.putWithId(
-      requestId,
-      (className, fieldName),
-      request.get
-    )
-
-    // If no exception was thrown, assume that we succeeded
-    request.map(_ => requestId)
-  }
+  ): Try[String]
 
   /**
    * Creates a new modification watchpoint request for the specified field
@@ -104,14 +55,7 @@ class ModificationWatchpointManager(
     className: String,
     fieldName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createModificationWatchpointRequestWithId(
-      newRequestId(),
-      className,
-      fieldName,
-      extraArguments: _*
-    )
-  }
+  ): Try[String]
 
   /**
    * Determines if a modification watchpoint request with the specified field.
@@ -125,9 +69,7 @@ class ModificationWatchpointManager(
   def hasModificationWatchpointRequest(
     className: String,
     fieldName: String
-  ): Boolean = {
-    modificationWatchpointRequests.has((className, fieldName))
-  }
+  ): Boolean
 
   /**
    * Determines if a modification watchpoint request with the specified id.
@@ -137,9 +79,7 @@ class ModificationWatchpointManager(
    * @return True if a modification watchpoint request with the id exists,
    *         otherwise false
    */
-  def hasModificationWatchpointRequestWithId(id: String): Boolean = {
-    modificationWatchpointRequests.hasWithId(id)
-  }
+  def hasModificationWatchpointRequestWithId(id: String): Boolean
 
   /**
    * Returns the collection of modification watchpoint requests representing the
@@ -148,15 +88,13 @@ class ModificationWatchpointManager(
    * @param className The name of the class containing the field
    * @param fieldName The name of the field to watch
    *
-   * @return Some collection of modification watchpoints for the field, or
-   *         None if the specified field has no modification watchpoints
+   * @return Some collection of modification watchpoints for the field,
+   *         or None if the specified field has no modification watchpoints
    */
   def getModificationWatchpointRequest(
     className: String,
     fieldName: String
-  ): Option[Seq[ModificationWatchpointRequest]] = {
-    modificationWatchpointRequests.get((className, fieldName))
-  }
+  ): Option[Seq[ModificationWatchpointRequest]]
 
   /**
    * Retrieves the modification watchpoint request using the specified id.
@@ -167,9 +105,7 @@ class ModificationWatchpointManager(
    */
   def getModificationWatchpointRequestWithId(
     id: String
-  ): Option[ModificationWatchpointRequest] = {
-    modificationWatchpointRequests.getWithId(id)
-  }
+  ): Option[ModificationWatchpointRequest]
 
   /**
    * Removes the modification watchpoint for the specified field.
@@ -183,10 +119,7 @@ class ModificationWatchpointManager(
   def removeModificationWatchpointRequest(
     className: String,
     fieldName: String
-  ): Boolean = {
-    modificationWatchpointRequests.getIdsWithKey((className, fieldName))
-      .exists(_.forall(removeModificationWatchpointRequestWithId))
-  }
+  ): Boolean
 
   /**
    * Removes the modification watchpoint request with the specified id.
@@ -196,13 +129,7 @@ class ModificationWatchpointManager(
    * @return True if the modification watchpoint request was removed
    *         (if it existed), otherwise false
    */
-  def removeModificationWatchpointRequestWithId(id: String): Boolean = {
-    val request = modificationWatchpointRequests.removeWithId(id)
-
-    request.foreach(eventRequestManager.deleteEventRequest)
-
-    request.nonEmpty
-  }
+  def removeModificationWatchpointRequestWithId(id: String): Boolean
 
   /**
    * Generates an id for a new request.

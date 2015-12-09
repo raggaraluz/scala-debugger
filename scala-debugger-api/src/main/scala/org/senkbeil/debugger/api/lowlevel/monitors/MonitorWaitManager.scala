@@ -1,24 +1,14 @@
 package org.senkbeil.debugger.api.lowlevel.monitors
 
-import com.sun.jdi.request.{MonitorWaitRequest, EventRequestManager}
-import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
+import com.sun.jdi.request.MonitorWaitRequest
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
 
 import scala.util.Try
 
 /**
  * Represents the manager for monitor wait requests.
- *
- * @param eventRequestManager The manager used to create monitor wait requests
  */
-class MonitorWaitManager(
-  private val eventRequestManager: EventRequestManager
-) extends Logging {
-  private val monitorWaitRequests =
-    new MultiMap[Seq[JDIRequestArgument], MonitorWaitRequest]
-
+trait MonitorWaitManager {
   /**
    * Retrieves the list of monitor wait requests contained by
    * this manager.
@@ -26,8 +16,7 @@ class MonitorWaitManager(
    * @return The collection of monitor wait requests in the form of
    *         ids
    */
-  def monitorWaitRequestList: Seq[String] =
-    monitorWaitRequests.ids
+  def monitorWaitRequestList: Seq[String]
 
   /**
    * Creates a new monitor wait request.
@@ -40,23 +29,7 @@ class MonitorWaitManager(
   def createMonitorWaitRequestWithId(
     requestId: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    val request = Try(eventRequestManager.createMonitorWaitRequest(
-      Seq(
-        EnabledProperty(value = true),
-        SuspendPolicyProperty.EventThread
-      ) ++ extraArguments: _*
-    ))
-
-    if (request.isSuccess) monitorWaitRequests.putWithId(
-      requestId,
-      extraArguments,
-      request.get
-    )
-
-    // If no exception was thrown, assume that we succeeded
-    request.map(_ => requestId)
-  }
+  ): Try[String]
 
   /**
    * Creates a new monitor wait request.
@@ -67,12 +40,7 @@ class MonitorWaitManager(
    */
   def createMonitorWaitRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createMonitorWaitRequestWithId(
-      newRequestId(),
-      extraArguments: _*
-    )
-  }
+  ): Try[String]
 
   /**
    * Determines if a monitor wait request with the specified id.
@@ -82,11 +50,7 @@ class MonitorWaitManager(
    * @return True if a monitor wait request with the id exists,
    *         otherwise false
    */
-  def hasMonitorWaitRequest(
-    id: String
-  ): Boolean = {
-    monitorWaitRequests.hasWithId(id)
-  }
+  def hasMonitorWaitRequest(id: String): Boolean
 
   /**
    * Retrieves the monitor wait request using the specified id.
@@ -95,25 +59,17 @@ class MonitorWaitManager(
    *
    * @return Some monitor wait request if it exists, otherwise None
    */
-  def getMonitorWaitRequest(
-    id: String
-  ): Option[MonitorWaitRequest] = {
-    monitorWaitRequests.getWithId(id)
-  }
+  def getMonitorWaitRequest(id: String): Option[MonitorWaitRequest]
 
   /**
-   * Retrieves the arguments provided to the monitor wait request
-   * with the specified id.
+   * Retrieves the information for a monitor wait request with the
+   * specified id.
    *
    * @param id The id of the Monitor Wait Request
    *
-   * @return Some collection of arguments if it exists, otherwise None
+   * @return Some information about the request if it exists, otherwise None
    */
-  def getMonitorWaitRequestArguments(
-    id: String
-  ): Option[Seq[JDIRequestArgument]] = {
-    monitorWaitRequests.getKeyWithId(id)
-  }
+  def getMonitorWaitRequestInfo(id: String): Option[MonitorWaitRequestInfo]
 
   /**
    * Removes the specified monitor wait request.
@@ -123,15 +79,7 @@ class MonitorWaitManager(
    * @return True if the monitor wait request was removed
    *         (if it existed), otherwise false
    */
-  def removeMonitorWaitRequest(
-    id: String
-  ): Boolean = {
-    val request = monitorWaitRequests.removeWithId(id)
-
-    request.foreach(eventRequestManager.deleteEventRequest)
-
-    request.nonEmpty
-  }
+  def removeMonitorWaitRequest(id: String): Boolean
 
   /**
    * Generates an id for a new request.
@@ -140,4 +88,3 @@ class MonitorWaitManager(
    */
   protected def newRequestId(): String = java.util.UUID.randomUUID().toString
 }
-

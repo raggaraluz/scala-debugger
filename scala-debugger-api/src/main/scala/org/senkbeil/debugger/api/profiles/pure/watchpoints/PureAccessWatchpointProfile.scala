@@ -10,7 +10,7 @@ import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
-import org.senkbeil.debugger.api.lowlevel.watchpoints.{NoFieldFound, AccessWatchpointManager}
+import org.senkbeil.debugger.api.lowlevel.watchpoints.{AccessWatchpointManager, NoFieldFound, StandardAccessWatchpointManager}
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.watchpoints.AccessWatchpointProfile

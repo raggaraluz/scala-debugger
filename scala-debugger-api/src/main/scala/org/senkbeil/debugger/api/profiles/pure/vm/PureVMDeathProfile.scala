@@ -10,7 +10,7 @@ import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
-import org.senkbeil.debugger.api.lowlevel.vm.VMDeathManager
+import org.senkbeil.debugger.api.lowlevel.vm.{VMDeathManager, StandardVMDeathManager}
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import org.senkbeil.debugger.api.profiles.traits.vm.VMDeathProfile
@@ -82,7 +82,8 @@ trait PureVMDeathProfile extends VMDeathProfile {
         //       which shows up in saved arguments since it is passed in
         //       during the memoization above
         !vmDeathManager.vmDeathRequestList
-          .flatMap(vmDeathManager.getVMDeathRequestArguments)
+          .flatMap(vmDeathManager.getVMDeathRequestInfo)
+          .map(_.extraArguments)
           .map(_.filterNot(_.isInstanceOf[UniqueIdProperty]))
           .contains(key)
       }

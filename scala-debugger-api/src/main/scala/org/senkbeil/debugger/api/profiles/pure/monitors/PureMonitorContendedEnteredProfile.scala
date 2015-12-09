@@ -7,7 +7,7 @@ import com.sun.jdi.event.MonitorContendedEnteredEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument}
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
-import org.senkbeil.debugger.api.lowlevel.monitors.MonitorContendedEnteredManager
+import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorContendedEnteredManager, StandardMonitorContendedEnteredManager}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
@@ -83,7 +83,8 @@ trait PureMonitorContendedEnteredProfile extends MonitorContendedEnteredProfile 
         //       which shows up in saved arguments since it is passed in
         //       during the memoization above
         !monitorContendedEnteredManager.monitorContendedEnteredRequestList
-          .flatMap(monitorContendedEnteredManager.getMonitorContendedEnteredRequestArguments)
+          .flatMap(monitorContendedEnteredManager.getMonitorContendedEnteredRequestInfo)
+          .map(_.extraArguments)
           .map(_.filterNot(_.isInstanceOf[UniqueIdProperty]))
           .contains(key)
       }

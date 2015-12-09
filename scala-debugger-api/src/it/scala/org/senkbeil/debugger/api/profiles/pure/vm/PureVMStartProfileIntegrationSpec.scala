@@ -24,19 +24,14 @@ class PureVMStartProfileIntegrationSpec extends FunSpec with Matchers
 
       val detectedStart = new AtomicBoolean(false)
 
-      def preStart(scalaVirtualMachine: ScalaVirtualMachine) = {
-        scalaVirtualMachine
-          .withProfile(PureDebugProfile.Name)
+      // Start our VM and listen for the start event
+      withLazyVirtualMachine(testClass) { (s, start) =>
+        s.withProfile(PureDebugProfile.Name)
           .onUnsafeVMStart()
           .foreach(_ => detectedStart.set(true))
-      }
 
-      // Start our VM and listen for the start event
-      withVirtualMachine(
-        testClass,
-        suspend = false,
-        preStart = preStart
-      ) { (v, s) =>
+        start()
+
         // Eventually, we should receive the start event
         logTimeTaken(eventually {
           detectedStart.get() should be (true)

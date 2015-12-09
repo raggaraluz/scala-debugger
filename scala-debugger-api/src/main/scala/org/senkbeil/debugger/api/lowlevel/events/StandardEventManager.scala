@@ -1,0 +1,352 @@
+package org.senkbeil.debugger.api.lowlevel.events
+
+import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
+import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
+import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.senkbeil.debugger.api.utils.{MultiMap, LoopingTaskRunner, Logging}
+import com.sun.jdi.event.{EventQueue, EventSet, Event}
+
+import java.util.concurrent.ConcurrentHashMap
+
+import EventType._
+import scala.collection.JavaConverters._
+
+/**
+ * Represents a manager for events coming in from a virtual machine.
+ *
+ * @param eventQueue The event queue whose events to pull off and process
+ * @param loopingTaskRunner The runner used to process events
+ * @param autoStart If true, starts the event processing automatically
+ * @param onExceptionResume If true, any event handler that throws an exception
+ *                          will count towards resuming the event set, otherwise
+ *                          it will cause the event set to not resume
+ */
+class StandardEventManager(
+  private val eventQueue: EventQueue,
+  private val loopingTaskRunner: LoopingTaskRunner,
+  private val autoStart: Boolean = true,
+  private val onExceptionResume: Boolean = true
+) extends EventManager with Logging {
+  /** Contains the events, associated handlers and their ids. */
+  private val eventHandlers = new MultiMap[EventType, EventHandler]
+
+  private var eventTaskId: Option[String] = None
+
+  /**
+   * Indicates whether or not the event manager is processing events.
+   *
+   * @return True if it is running, otherwise false
+   */
+  override def isRunning: Boolean = eventTaskId.nonEmpty
+
+  /**
+   * Begins the processing of events from the virtual machine.
+   */
+  override def start(): Unit = {
+    assert(!isRunning, "Event manager already started!")
+
+    logger.trace("Starting event manager for virtual machine!")
+    eventTaskId = Some(loopingTaskRunner.addTask(eventHandlerTask()))
+
+    eventTaskId.foreach(id =>
+      logger.trace(s"Event process task: $id"))
+  }
+
+  /**
+   * Represents the task to be added per event handler. Can be overridden to
+   * perform different tasks.
+   */
+  protected def eventHandlerTask(): Unit = {
+    val eventSet = eventQueue.remove()
+
+    // Process the set of events, returning whether or not the event
+    // set should resume
+    val eventSetProcessor = newEventSetProcessor(eventSet)
+    eventSetProcessor.process()
+  }
+
+  /**
+   * Creates a new event set processor. Can be overridden.
+   *
+   * @param eventSet The event set to process
+   *
+   * @return The new event set processor instance
+   */
+  protected def newEventSetProcessor(
+    eventSet: EventSet
+  ): EventSetProcessor = new EventSetProcessor(
+    eventSet                = eventSet,
+    eventFunctionRetrieval  = getHandlersForEventType,
+    onExceptionResume       = onExceptionResume
+  )
+
+  /**
+   * Ends the processing of events from the virtual machine.
+   */
+  override def stop(): Unit = {
+    assert(isRunning, "Event manager not started!")
+
+    logger.trace(s"Stopping event manager ($eventTaskId) for virtual machine!")
+    loopingTaskRunner.removeTask(eventTaskId.get)
+    eventTaskId = None
+  }
+
+  /**
+   * Adds a new event stream that tracks incoming JDI events.
+   *
+   * @param eventType The type of JDI event to stream
+   * @param eventArguments The arguments used when determining whether or not
+   *                       to send the event down the stream
+   *
+   * @return The resulting event stream in the form of a pipeline of events
+   */
+  override def addEventStream(
+    eventType: EventType,
+    eventArguments: JDIEventArgument*
+  ): IdentityPipeline[Event] = {
+    addEventDataStream(eventType, eventArguments: _*).map(_._1).noop()
+  }
+
+  /**
+   * Adds a new event data stream that tracks incoming JDI events and data
+   * collected from those events.
+   *
+   * @param eventType The type of JDI event to stream
+   * @param eventArguments The arguments used when determining whether or not
+   *                       to send the event down the stream
+   *
+   * @return The resulting event stream in the form of a pipeline of events
+   *         and collected data
+   */
+  override def addEventDataStream(
+    eventType: EventType,
+    eventArguments: JDIEventArgument*
+  ): IdentityPipeline[EventAndData] = {
+    val eventHandlerId = newEventId()
+
+    val eventPipeline = Pipeline.newPipeline(
+      classOf[EventAndData],
+      () => removeEventHandler(eventHandlerId)
+    )
+
+    // Create a resuming event handler while providing our own id
+    wrapAndAddEventHandler(
+      eventHandlerId,
+      eventType,
+      (e, d) => { eventPipeline.process((e, d)); true },
+      eventArguments: _*
+    )
+
+    eventPipeline
+  }
+
+  /**
+   * Adds the event function to this manager. This event automatically counts
+   * towards resuming the event set after completion.
+   *
+   * @param eventType The type of the event to add a function
+   * @param eventHandler The function to add, taking the occurring event and
+   *                     a collection of retrieved data from the event
+   * @param eventArguments The arguments used when determining whether or not to
+   *                       invoke the event handler
+   *
+   * @return The id associated with the event handler
+   */
+  override def addResumingEventHandler(
+    eventType: EventType,
+    eventHandler: (Event, Seq[JDIEventDataResult]) => Unit,
+    eventArguments: JDIEventArgument*
+  ): String = {
+    // Convert the function to an "always true" event function
+    val fullEventFunction = (event: Event, data: Seq[JDIEventDataResult]) => {
+      eventHandler(event, data)
+      true
+    }
+
+    addEventHandler(eventType, fullEventFunction, eventArguments: _*)
+  }
+
+  /**
+   * Adds the event function to this manager. This event automatically counts
+   * towards resuming the event set after completion.
+   *
+   * @param eventType The type of the event to add a function
+   * @param eventHandler The function to add, taking the occurring event
+   * @param eventArguments The arguments used when determining whether or not to
+   *                       invoke the event handler
+   *
+   * @return The id associated with the event handler
+   */
+  override def addResumingEventHandler(
+    eventType: EventType,
+    eventHandler: (Event) => Unit,
+    eventArguments: JDIEventArgument*
+  ): String = addResumingEventHandler(
+    eventType = eventType,
+    eventHandler = (event: Event, _: Seq[JDIEventDataResult]) => {
+      eventHandler(event)
+    },
+    eventArguments: _*
+  )
+
+  /**
+   * Adds the event function to this manager. The return value of the handler
+   * function contributes towards whether or not to resume the event set.
+   *
+   * @param eventType The type of the event to add a function
+   * @param eventHandler The function to add, taking the occurring event and
+   *                     a collection of retrieved data from the event
+   * @param eventArguments The arguments used when determining whether or not to
+   *                       invoke the event handler
+   *
+   * @return The id associated with the event handler
+   */
+  override def addEventHandler(
+    eventType: EventType,
+    eventHandler: EventHandler,
+    eventArguments: JDIEventArgument*
+  ): String = {
+    // Generate the id for this handler
+    val eventHandlerId = newEventId()
+
+    wrapAndAddEventHandler(
+      eventHandlerId,
+      eventType,
+      eventHandler,
+      eventArguments: _*
+    )
+  }
+
+  /**
+   * Adds the event function to this manager. The return value of the handler
+   * function contributes towards whether or not to resume the event set.
+   *
+   * @param eventType The type of the event to add a function
+   * @param eventHandler The function to add, taking the occurring event
+   * @param eventArguments The arguments used when determining whether or not to
+   *                       invoke the event handler
+   *
+   * @return The id associated with the event handler
+   */
+  override def addEventHandler(
+    eventType: EventType,
+    eventHandler: (Event) => Boolean,
+    eventArguments: JDIEventArgument*
+  ): String = addEventHandler(
+    eventType = eventType,
+    eventHandler = (event: Event, _: Seq[JDIEventDataResult]) => {
+      eventHandler(event)
+    },
+    eventArguments: _*
+  )
+
+  /**
+   * Wraps the provided event handler and adds it to the internal collection.
+   *
+   * @param eventHandlerId The id to associate with the event handler
+   * @param eventType The type of the event to match against the handler
+   * @param eventHandler The event handler function to be wrapped
+   * @param eventArguments The arguments used when determining whether or not to
+   *                       invoke the event handler
+   *
+   * @return The id associated with the wrapped event handler
+   */
+  protected def wrapAndAddEventHandler(
+    eventHandlerId: String,
+    eventType: EventType,
+    eventHandler: EventHandler,
+    eventArguments: JDIEventArgument*
+    ): String = {
+    // Create a wrapper that contains our filtering logic
+    val wrapperEventHandler =
+      newWrapperEventHandler(eventHandler, eventArguments)
+
+    // Store the event handler with the filtering logic
+    eventHandlers.putWithId(eventHandlerId, eventType, wrapperEventHandler)
+
+    eventHandlerId
+  }
+
+  /**
+   * Generates a wrapper function around the event handler, using an argument
+   * processor to evaluate the provided arguments to determine whether or not
+   * to invoke the event handler as well as retrieve any requested data.
+   *
+   * @param eventHandler The event handler to wrap
+   * @param eventArguments The arguments to use when determining if the event
+   *                       handler should be invoked and what data to be
+   *                       retrieved
+   *
+   * @return The wrapper around the event handler
+   */
+  protected def newWrapperEventHandler(
+    eventHandler: EventHandler,
+    eventArguments: Seq[JDIEventArgument]
+  ): EventHandler = {
+    val jdiEventArgumentProcessor =
+      new JDIEventArgumentProcessor(eventArguments: _*)
+
+    // Create a wrapper function that invokes the event handler only if the
+    // filter processor yields a positive result, otherwise skip this handler
+    (event: Event, data: Seq[JDIEventDataResult]) => {
+      val (passesFilters, data, _) = jdiEventArgumentProcessor.processAll(event)
+      if (passesFilters) eventHandler(event, data)
+      else true
+    }
+  }
+
+  /**
+   * Retrieves the collection of event handler functions for the specific
+   * event class.
+   *
+   * @param eventType The type of event whose functions to retrieve
+   *
+   * @return The collection of event functions
+   */
+  override def getHandlersForEventType(
+    eventType: EventType
+  ) : Seq[EventHandler] = {
+    eventHandlers.get(eventType).getOrElse(Nil)
+  }
+
+  /**
+   * Retrieves the collection of event handler functions for the specific
+   * event class.
+   *
+   * @param eventType The type of event whose functions to retrieve
+   *
+   * @return The collection of event functions
+   */
+  override def getHandlerIdsForEventType(eventType: EventType): Seq[String] = {
+    eventHandlers.getIdsWithKey(eventType).getOrElse(Nil)
+  }
+
+  /**
+   * Retrieves the handler with the specified id.
+   *
+   * @param id The id of the handler to retrieve
+   *
+   * @return Some event handler if found, otherwise None
+   */
+  override def getEventHandler(id: String): Option[EventHandler] = {
+    eventHandlers.getWithId(id)
+  }
+
+  /**
+   * Removes the event function from this manager.
+   *
+   * @param id The id of the event handler to remove
+   *
+   * @return Some event handler if removed, otherwise None
+   */
+  override def removeEventHandler(id: String): Option[EventHandler] = {
+    eventHandlers.removeWithId(id)
+  }
+
+  // ==========================================================================
+  // = CONSTRUCTOR
+  // ==========================================================================
+
+  // If marked to start automatically, do so
+  if (autoStart) start()
+}

@@ -10,7 +10,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.requests.filters.ThreadFilter
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
-import org.senkbeil.debugger.api.lowlevel.steps.StepManager
+import org.senkbeil.debugger.api.lowlevel.steps.{StepManager, StandardStepManager}
 import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.pipelines.{Operation, Pipeline}
@@ -31,20 +31,8 @@ class PureStepProfileSpec extends FunSpec with Matchers
 
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockThreadReference = mock[ThreadReference]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgStepManager extends StepManager(
-    stub[EventRequestManager]
-  )
-  private val mockStepManager = mock[ZeroArgStepManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val mockStepManager = mock[StepManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureStepProfile = new Object with PureStepProfile {
     override protected val stepManager = mockStepManager

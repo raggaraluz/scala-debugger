@@ -115,6 +115,50 @@ class MultiMapSpec extends FunSpec with Matchers with OneInstancePerTest {
       }
     }
 
+    describe("#hasWithKeyPredicate") {
+      it("should return true if a key exists that satisfies the predicate") {
+        val expected = true
+
+        multiMap.put(TestKey, TestValue)
+
+        val actual = multiMap.hasWithKeyPredicate(_ == TestKey)
+
+        actual should be (expected)
+      }
+
+      it("should return false if no key satisfies the predicate") {
+        val expected = false
+
+        multiMap.put(TestKey, TestValue)
+
+        val actual = multiMap.hasWithKeyPredicate(_ != TestKey)
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#hasWithValuePredicate") {
+      it("should return true if a value exists that satisfies the predicate") {
+        val expected = true
+
+        multiMap.put(TestKey, TestValue)
+
+        val actual = multiMap.hasWithValuePredicate(_ == TestValue)
+
+        actual should be (expected)
+      }
+
+      it("should return false if no value satisfies the predicate") {
+        val expected = false
+
+        multiMap.put(TestKey, TestValue)
+
+        val actual = multiMap.hasWithValuePredicate(_ != TestValue)
+
+        actual should be (expected)
+      }
+    }
+
     describe("#hasWithId") {
       it("should return true if the id exists") {
         val expected = true
@@ -150,6 +194,56 @@ class MultiMapSpec extends FunSpec with Matchers with OneInstancePerTest {
         val expected = None
 
         val actual = multiMap.get(TestKey)
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#getWithKeyPredicate") {
+      it("should return all values whose key satisfies the predicate") {
+        val expected = Seq(TestValue, TestValue + 1, TestValue + 2)
+
+        expected.foreach(multiMap.put(TestKey, _: String))
+
+        val actual = multiMap.getWithKeyPredicate(_ == TestKey)
+
+        actual should contain theSameElementsAs (expected)
+      }
+
+      it("should return an empty collection if no key satisfies the predicate") {
+        val expected = Nil
+
+        val values = Seq(TestValue, TestValue + 1, TestValue + 2)
+
+        values.foreach(multiMap.put(TestKey, _: String))
+
+        val actual = multiMap.getWithKeyPredicate(_ != TestKey)
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#getWithValuePredicate") {
+      it("should return all values that satisfy the predicate") {
+        val expected = Seq(TestValue + 1, TestValue + 2)
+
+        val values = TestValue +: expected
+
+        values.foreach(multiMap.put(TestKey, _: String))
+
+        val actual = multiMap.getWithValuePredicate(_ != TestValue)
+
+        actual should contain theSameElementsAs (expected)
+      }
+
+      it("should return an empty collection if no value satisfies the predicate") {
+        val expected = Nil
+
+        val values = Seq(TestValue, TestValue + 1, TestValue + 2)
+
+        values.foreach(multiMap.put(TestKey, _: String))
+
+        val actual = multiMap.getWithValuePredicate(_.isEmpty)
 
         actual should be (expected)
       }
@@ -206,6 +300,90 @@ class MultiMapSpec extends FunSpec with Matchers with OneInstancePerTest {
         val expected = None
 
         val actual = multiMap.remove(TestKey)
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeWithKeyPredicate") {
+      it("should remove the key and all associated ids if the predicate is satisfied") {
+        val ids = Seq(TestId, TestId + 1, TestId + 2)
+
+        ids.foreach(multiMap.putWithId(_: String, TestKey, TestValue))
+
+        multiMap.removeWithKeyPredicate(_ == TestKey)
+
+        // Key should no longer exist
+        multiMap.get(TestKey) should be (None)
+
+        // None of the ids should exist
+        ids.foreach { id =>
+          multiMap.getWithId(id) should be (None)
+        }
+      }
+
+      it("should return the collection of removed values whose keys satisfy the predicate") {
+        val expected = Seq(TestValue, TestValue + 1, TestValue + 2)
+
+        expected.foreach(multiMap.put(TestKey, _: String))
+
+        val actual = multiMap.removeWithKeyPredicate(_ == TestKey)
+
+        actual should be (expected)
+      }
+
+      it("should return empty if no key satisfies the predicate") {
+        val expected = Nil
+
+        val actual = multiMap.removeWithKeyPredicate(_ == TestKey)
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeWithValuePredicate") {
+      it("should remove the values and all associated ids if the predicate is satisfied") {
+        val ids = Seq(TestId, TestId + 1, TestId + 2)
+
+        ids.foreach(id => multiMap.putWithId(id, TestKey, TestValue + id))
+
+        multiMap.removeWithValuePredicate(_ == TestValue + TestId)
+
+        // Key should still exist
+        multiMap.get(TestKey) should not be (None)
+
+        // None of the removed ids should exist
+        multiMap.getWithId(TestId) should be (None)
+      }
+
+      it("should remove the key if all values associated with that key are removed") {
+        val ids = Seq(TestId, TestId + 1, TestId + 2)
+
+        ids.foreach(id => multiMap.putWithId(id, TestKey, TestValue))
+
+        val removedIds = multiMap.removeWithValuePredicate(_ == TestValue)
+
+        // Key should not exist
+        multiMap.get(TestKey) should be (None)
+
+        // None of the removed ids should exist
+        removedIds.foreach(id => multiMap.getWithId(id) should be (None))
+      }
+
+      it("should return the collection of removed values that satisfy the predicate") {
+        val expected = Seq(TestValue, TestValue + 1, TestValue + 2)
+
+        expected.foreach(multiMap.put(TestKey, _: String))
+
+        val actual = multiMap.removeWithValuePredicate(_.startsWith(TestValue))
+
+        actual should contain theSameElementsAs (expected)
+      }
+
+      it("should return empty if no value satisfies the predicate") {
+        val expected = Nil
+
+        val actual = multiMap.removeWithValuePredicate(_ == TestValue)
 
         actual should be (expected)
       }
@@ -271,6 +449,54 @@ class MultiMapSpec extends FunSpec with Matchers with OneInstancePerTest {
         val expected = None
 
         val actual = multiMap.getIdsWithKey(TestKey)
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#getIdsWithKeyPredicate") {
+      it("should return ids for all keys that satisfy the predicate") {
+        val expected = Seq(TestId, TestId + 1, TestId + 2)
+
+        expected.foreach(multiMap.putWithId(_: String, TestKey, TestValue))
+
+        val actual = multiMap.getIdsWithKeyPredicate(_ == TestKey)
+
+        actual should be (expected)
+      }
+
+      it("should return empty if no key satisfies the predicate") {
+        val expected = Nil
+
+        val ids = Seq(TestId, TestId + 1, TestId + 2)
+
+        ids.foreach(multiMap.putWithId(_: String, TestKey, TestValue))
+
+        val actual = multiMap.getIdsWithKeyPredicate(_ != TestKey)
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#getIdsWithValuePredicate") {
+      it("should return ids for all values that satisfy the predicate") {
+        val expected = Seq(TestId, TestId + 1, TestId + 2)
+
+        expected.foreach(multiMap.putWithId(_: String, TestKey, TestValue))
+
+        val actual = multiMap.getIdsWithValuePredicate(_ == TestValue)
+
+        actual should contain theSameElementsAs (expected)
+      }
+
+      it("should return empty if no value satisfies the predicate") {
+        val expected = Nil
+
+        val ids = Seq(TestId, TestId + 1, TestId + 2)
+
+        ids.foreach(multiMap.putWithId(_: String, TestKey, TestValue))
+
+        val actual = multiMap.getIdsWithValuePredicate(_ != TestValue)
 
         actual should be (expected)
       }

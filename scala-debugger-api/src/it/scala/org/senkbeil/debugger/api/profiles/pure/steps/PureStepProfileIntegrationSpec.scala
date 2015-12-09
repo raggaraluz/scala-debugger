@@ -35,7 +35,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
         // Should return to higher frame on next line
         val expectedLine = 35
 
-        withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        withVirtualMachine(testClass) { (s) =>
           verifyStepsFromTo(
             testClass = testClass,
             scalaVirtualMachine = s,
@@ -55,7 +55,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
         // Should return to higher frame on next line
         val expectedLine = 41
 
-        withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        withVirtualMachine(testClass) { (s) =>
           verifyStepsFromTo(
             testClass = testClass,
             scalaVirtualMachine = s,
@@ -97,7 +97,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
 
         // NOTE: Have to up the maximum duration due to the delay caused by
         //       the for comprehension
-        withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        withVirtualMachine(testClass) { (s) =>
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
@@ -118,7 +118,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
 
         val expectedReachableLines = Seq(14, 16, 18)
 
-        withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        withVirtualMachine(testClass) { (s) =>
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
@@ -138,7 +138,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
         // Should return to higher frame on next line
         val expectedLine = 39
 
-        withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        withVirtualMachine(testClass) { (s) =>
           verifyStepsFromTo(
             testClass = testClass,
             scalaVirtualMachine = s,
@@ -157,7 +157,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
 
         val expectedReachableLines = Seq(33, 34, 35, 37, 38, 39, 41, 42, 44)
 
-        withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        withVirtualMachine(testClass) { (s) =>
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
@@ -196,7 +196,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
 
         // NOTE: Have to up the maximum duration due to the delay caused by
         //       the for comprehension
-        withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        withVirtualMachine(testClass) { (s) =>
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
@@ -218,7 +218,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
         // invoking line, and finally to the inside of the function
         val expectedReachableLines = Seq(56, 48, 57)
 
-        withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        withVirtualMachine(testClass) { (s) =>
           verifyStepsOnEach(
             testClass = testClass,
             scalaVirtualMachine = s,
@@ -235,7 +235,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
         val startingLine = 42
         val expectedLine = 49
 
-        withVirtualMachine(testClass, suspend = false) { (v, s) =>
+        withVirtualMachine(testClass) { (s) =>
           verifyStepsFromTo(
             testClass = testClass,
             scalaVirtualMachine = s,

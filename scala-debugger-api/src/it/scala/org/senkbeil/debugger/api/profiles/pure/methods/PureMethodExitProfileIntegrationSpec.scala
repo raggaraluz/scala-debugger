@@ -33,7 +33,7 @@ class PureMethodExitProfileIntegrationSpec extends FunSpec with Matchers
       val leftExpectedMethod = new AtomicBoolean(false)
       val leftMethodAfterLastLine = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         val methodPipeline = s.withProfile(PureDebugProfile.Name)
           .onUnsafeMethodExit(expectedClassName, expectedMethodName)
           .map(_.method())

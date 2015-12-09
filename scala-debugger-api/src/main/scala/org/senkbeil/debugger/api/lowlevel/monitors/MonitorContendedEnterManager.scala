@@ -1,25 +1,14 @@
 package org.senkbeil.debugger.api.lowlevel.monitors
 
-import com.sun.jdi.request.{MonitorContendedEnterRequest, EventRequestManager}
-import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
+import com.sun.jdi.request.MonitorContendedEnterRequest
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
 
 import scala.util.Try
 
 /**
  * Represents the manager for monitor contended enter requests.
- *
- * @param eventRequestManager The manager used to create monitor contended
- *                            enter requests
  */
-class MonitorContendedEnterManager(
-  private val eventRequestManager: EventRequestManager
-) extends Logging {
-  private val monitorContendedEnterRequests =
-    new MultiMap[Seq[JDIRequestArgument], MonitorContendedEnterRequest]
-
+trait MonitorContendedEnterManager {
   /**
    * Retrieves the list of monitor contended enter requests contained by
    * this manager.
@@ -27,8 +16,7 @@ class MonitorContendedEnterManager(
    * @return The collection of monitor contended enter requests in the form of
    *         ids
    */
-  def monitorContendedEnterRequestList: Seq[String] =
-    monitorContendedEnterRequests.ids
+  def monitorContendedEnterRequestList: Seq[String]
 
   /**
    * Creates a new monitor contended enter request.
@@ -41,23 +29,7 @@ class MonitorContendedEnterManager(
   def createMonitorContendedEnterRequestWithId(
     requestId: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    val request = Try(eventRequestManager.createMonitorContendedEnterRequest(
-      Seq(
-        EnabledProperty(value = true),
-        SuspendPolicyProperty.EventThread
-      ) ++ extraArguments: _*
-    ))
-
-    if (request.isSuccess) monitorContendedEnterRequests.putWithId(
-      requestId,
-      extraArguments,
-      request.get
-    )
-
-    // If no exception was thrown, assume that we succeeded
-    request.map(_ => requestId)
-  }
+  ): Try[String]
 
   /**
    * Creates a new monitor contended enter request.
@@ -68,12 +40,7 @@ class MonitorContendedEnterManager(
    */
   def createMonitorContendedEnterRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createMonitorContendedEnterRequestWithId(
-      newRequestId(),
-      extraArguments: _*
-    )
-  }
+  ): Try[String]
 
   /**
    * Determines if a monitor contended enter request with the specified id.
@@ -83,11 +50,7 @@ class MonitorContendedEnterManager(
    * @return True if a monitor contended enter request with the id exists,
    *         otherwise false
    */
-  def hasMonitorContendedEnterRequest(
-    id: String
-  ): Boolean = {
-    monitorContendedEnterRequests.hasWithId(id)
-  }
+  def hasMonitorContendedEnterRequest(id: String): Boolean
 
   /**
    * Retrieves the monitor contended enter request using the specified id.
@@ -98,23 +61,19 @@ class MonitorContendedEnterManager(
    */
   def getMonitorContendedEnterRequest(
     id: String
-  ): Option[MonitorContendedEnterRequest] = {
-    monitorContendedEnterRequests.getWithId(id)
-  }
+  ): Option[MonitorContendedEnterRequest]
 
   /**
-   * Retrieves the arguments provided to the monitor contended enter request
-   * with the specified id.
+   * Retrieves the information for a monitor contended enter request with the
+   * specified id.
    *
    * @param id The id of the Monitor Contended Enter Request
    *
-   * @return Some collection of arguments if it exists, otherwise None
+   * @return Some information about the request if it exists, otherwise None
    */
-  def getMonitorContendedEnterRequestArguments(
+  def getMonitorContendedEnterRequestInfo(
     id: String
-  ): Option[Seq[JDIRequestArgument]] = {
-    monitorContendedEnterRequests.getKeyWithId(id)
-  }
+  ): Option[MonitorContendedEnterRequestInfo]
 
   /**
    * Removes the specified monitor contended enter request.
@@ -126,13 +85,7 @@ class MonitorContendedEnterManager(
    */
   def removeMonitorContendedEnterRequest(
     id: String
-  ): Boolean = {
-    val request = monitorContendedEnterRequests.removeWithId(id)
-
-    request.foreach(eventRequestManager.deleteEventRequest)
-
-    request.nonEmpty
-  }
+  ): Boolean
 
   /**
    * Generates an id for a new request.
@@ -141,4 +94,3 @@ class MonitorContendedEnterManager(
    */
   protected def newRequestId(): String = java.util.UUID.randomUUID().toString
 }
-

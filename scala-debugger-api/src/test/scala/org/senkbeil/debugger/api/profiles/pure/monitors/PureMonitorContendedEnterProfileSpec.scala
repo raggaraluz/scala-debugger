@@ -7,7 +7,7 @@ import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
-import org.senkbeil.debugger.api.lowlevel.monitors.MonitorContendedEnterManager
+import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorContendedEnterManager, MonitorContendedEnterRequestInfo, StandardMonitorContendedEnterManager}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.lowlevel.events.EventType.MonitorContendedEnterEventType
@@ -21,20 +21,8 @@ class PureMonitorContendedEnterProfileSpec extends FunSpec with Matchers
 with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgMonitorContendedEnterManager extends MonitorContendedEnterManager(
-    stub[EventRequestManager]
-  )
-  private val mockMonitorContendedEnterManager = mock[ZeroArgMonitorContendedEnterManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val mockMonitorContendedEnterManager = mock[MonitorContendedEnterManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureMonitorContendedEnterProfile = new Object with PureMonitorContendedEnterProfile {
     private var requestId: String = _
@@ -237,9 +225,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _)
             .expects()
             .returning(Seq(internalId)).once()
-          (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestArguments _)
+          (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
             .expects(internalId)
-            .returning(Some(arguments)).once()
+            .returning(Some(MonitorContendedEnterRequestInfo(arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MonitorContendedEnterEventType, Seq(uniqueIdPropertyFilter))
@@ -276,9 +264,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
               .expects()
               .returning(Seq(TestRequestId)).once()
 
-            (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestArguments _)
+            (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(arguments)).once()
+              .returning(Some(MonitorContendedEnterRequestInfo(arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockMonitorContendedEnterManager.createMonitorContendedEnterRequestWithId _)

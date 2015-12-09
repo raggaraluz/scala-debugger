@@ -26,7 +26,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
       val testFile = scalaClassStringToFileString(testClass)
       val lastLine = 30
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         import s.lowlevel._
 
         // Add a breakpoint after all of our variables
@@ -70,7 +70,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
       val testFile = scalaClassStringToFileString(testClass)
       val lastLine = 30
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         import s.lowlevel._
 
         // Add a breakpoint after all of our variables

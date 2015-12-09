@@ -28,7 +28,7 @@ class PureAccessWatchpointProfileIntegrationSpec extends FunSpec with Matchers
 
       val detectedAccessWatchpoint = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         // NOTE: Waiting for class to be ready before setting access watchpoint
         // TODO: Remove wait for class to be ready once pending functionality added
         s.withProfile(PureDebugProfile.Name)

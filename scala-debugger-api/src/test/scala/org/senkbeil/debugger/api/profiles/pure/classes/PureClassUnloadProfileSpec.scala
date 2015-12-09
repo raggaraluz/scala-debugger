@@ -4,7 +4,7 @@ import com.sun.jdi.event.{Event, EventQueue}
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
-import org.senkbeil.debugger.api.lowlevel.classes.ClassUnloadManager
+import org.senkbeil.debugger.api.lowlevel.classes.{ClassUnloadManager, ClassUnloadRequestInfo, StandardClassUnloadManager}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.EventType.ClassUnloadEventType
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
@@ -21,20 +21,8 @@ class PureClassUnloadProfileSpec extends FunSpec with Matchers
 with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgClassUnloadManager extends ClassUnloadManager(
-    stub[EventRequestManager]
-  )
-  private val mockClassUnloadManager = mock[ZeroArgClassUnloadManager]
-
-  // Workaround - see https://github.com/paulbutcher/ScalaMock/issues/33
-  private class ZeroArgEventManager extends EventManager(
-    stub[EventQueue],
-    stub[LoopingTaskRunner],
-    autoStart = false
-  )
-  private val mockEventManager = mock[ZeroArgEventManager]
+  private val mockClassUnloadManager = mock[ClassUnloadManager]
+  private val mockEventManager = mock[EventManager]
 
   private val pureClassUnloadProfile = new Object with PureClassUnloadProfile {
     private var requestId: String = _
@@ -237,9 +225,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
           (mockClassUnloadManager.classUnloadRequestList _)
             .expects()
             .returning(Seq(internalId)).once()
-          (mockClassUnloadManager.getClassUnloadRequestArguments _)
+          (mockClassUnloadManager.getClassUnloadRequestInfo _)
             .expects(internalId)
-            .returning(Some(arguments)).once()
+            .returning(Some(ClassUnloadRequestInfo(arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ClassUnloadEventType, Seq(uniqueIdPropertyFilter))
@@ -276,9 +264,9 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
               .expects()
               .returning(Seq(TestRequestId)).once()
 
-            (mockClassUnloadManager.getClassUnloadRequestArguments _)
+            (mockClassUnloadManager.getClassUnloadRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(arguments)).once()
+              .returning(Some(ClassUnloadRequestInfo(arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockClassUnloadManager.createClassUnloadRequestWithId _)

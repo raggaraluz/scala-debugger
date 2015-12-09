@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import com.sun.jdi.event.ClassPrepareEvent
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.classes.ClassPrepareManager
+import org.senkbeil.debugger.api.lowlevel.classes.{ClassPrepareManager, StandardClassPrepareManager}
 import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument}
 import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
@@ -83,7 +83,8 @@ trait PureClassPrepareProfile extends ClassPrepareProfile {
         //       which shows up in saved arguments since it is passed in
         //       during the memoization above
         !classPrepareManager.classPrepareRequestList
-          .flatMap(classPrepareManager.getClassPrepareRequestArguments)
+          .flatMap(classPrepareManager.getClassPrepareRequestInfo)
+          .map(_.extraArguments)
           .map(_.filterNot(_.isInstanceOf[UniqueIdProperty]))
           .contains(key)
       }

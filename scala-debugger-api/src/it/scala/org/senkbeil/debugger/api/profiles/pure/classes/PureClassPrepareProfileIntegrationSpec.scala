@@ -24,7 +24,7 @@ class PureClassPrepareProfileIntegrationSpec extends FunSpec with Matchers
       val expectedClassName = "org.senkbeil.debugger.test.classes.CustomClass"
       val classPrepareHit = new AtomicInteger(0)
 
-      withVirtualMachine(testClass, suspend = false, echoStandardErr = true, echoStandardOut = true) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         // Mark that we want to receive class prepare events and watch for one
         // NOTE: This is already set within the ScalaVirtualMachine class
         s.withProfile(PureDebugProfile.Name)

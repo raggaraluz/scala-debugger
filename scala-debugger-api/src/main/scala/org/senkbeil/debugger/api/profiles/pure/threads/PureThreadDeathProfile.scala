@@ -9,7 +9,7 @@ import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
-import org.senkbeil.debugger.api.lowlevel.threads.ThreadDeathManager
+import org.senkbeil.debugger.api.lowlevel.threads.{ThreadDeathManager, StandardThreadDeathManager}
 import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
 import org.senkbeil.debugger.api.pipelines.Pipeline
 import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
@@ -83,7 +83,8 @@ trait PureThreadDeathProfile extends ThreadDeathProfile {
         //       which shows up in saved arguments since it is passed in
         //       during the memoization above
         !threadDeathManager.threadDeathRequestList
-          .flatMap(threadDeathManager.getThreadDeathRequestArguments)
+          .flatMap(threadDeathManager.getThreadDeathRequestInfo)
+          .map(_.extraArguments)
           .map(_.filterNot(_.isInstanceOf[UniqueIdProperty]))
           .contains(key)
       }

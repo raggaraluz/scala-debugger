@@ -31,7 +31,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
       val secondBreakpointLine = 17
       val secondBreakpointCount = new AtomicInteger(0)
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         s.withProfile(PureDebugProfile.Name)
           .onBreakpoint(testFile, firstBreakpointLine)
           .get
@@ -67,7 +67,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
       val secondBreakpointLine = 18
       val secondBreakpointCount = new AtomicInteger(0)
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         s.withProfile(PureDebugProfile.Name)
           .onBreakpoint(testFile, firstBreakpointLine)
           .get
@@ -103,7 +103,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
       val secondBreakpointLine = 11
       val secondBreakpoint = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass, suspend = false) { (v, s) =>
+      withVirtualMachine(testClass) { (s) =>
         s.withProfile(PureDebugProfile.Name)
           .onUnsafeBreakpoint(testFile, firstBreakpointLine)
           .map(_.location())

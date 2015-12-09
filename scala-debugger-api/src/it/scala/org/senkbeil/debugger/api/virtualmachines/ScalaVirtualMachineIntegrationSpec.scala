@@ -18,9 +18,9 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
     it("should indicate that it has started upon receiving the start event") {
       val testClass = "org.senkbeil.debugger.test.misc.MainUsingMethod"
 
-      withVirtualMachine(testClass) { (_, scalaVirtualMachine) =>
+      withVirtualMachine(testClass) { (s) =>
         eventually {
-          assert(scalaVirtualMachine.isStarted, "ScalaVirtualMachine not started!")
+          assert(s.isStarted, "ScalaVirtualMachine not started!")
         }
       }
     }
@@ -28,13 +28,13 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
     it("should return the class name of a Scala main method entrypoint") {
       val testClass = "org.senkbeil.debugger.test.misc.MainUsingMethod"
 
-      withVirtualMachine(testClass, suspend = false) { (_, scalaVirtualMachine) =>
+      withVirtualMachine(testClass) { (s) =>
         val expected = testClass
 
         // NOTE: This is not available until AFTER we have resumed from the
         //       start event (as the main method is not yet loaded)
         eventually {
-          val actual = scalaVirtualMachine.mainClassName
+          val actual = s.mainClassName
           actual should be(expected)
         }
       }
@@ -43,13 +43,13 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
     it("should return the class name of a Scala App entrypoint") {
       val testClass = "org.senkbeil.debugger.test.misc.MainUsingApp"
 
-      withVirtualMachine(testClass, suspend = false) { (_, scalaVirtualMachine) =>
+      withVirtualMachine(testClass) { (s) =>
         val expected = testClass
 
         // NOTE: This is not available until AFTER we have resumed from the
         //       start event (as the main method is not yet loaded)
         eventually {
-          val actual = scalaVirtualMachine.mainClassName
+          val actual = s.mainClassName
           actual should be(expected)
         }
       }
@@ -59,14 +59,13 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
       val testClass = "org.senkbeil.debugger.test.misc.MainUsingApp"
       val testArguments = Seq("a", "b", "c")
 
-      withVirtualMachine(testClass, testArguments, suspend = false) { (_, scalaVirtualMachine) =>
-
+      withVirtualMachine(testClass, testArguments) { (s) =>
         val expected = testArguments
 
         // NOTE: This is not available until AFTER we have resumed from the
         //       start event (as the main method is not yet loaded)
         eventually {
-          val actual = scalaVirtualMachine.commandLineArguments
+          val actual = s.commandLineArguments
           actual should contain theSameElementsInOrderAs expected
         }
       }
