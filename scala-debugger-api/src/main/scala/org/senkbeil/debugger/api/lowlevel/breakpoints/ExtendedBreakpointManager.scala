@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.lowlevel.breakpoints
 
 import com.sun.jdi.request.BreakpointRequest
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.utils.PendingActionManager
+import org.senkbeil.debugger.api.utils.PendingActionManager
 
 import scala.util.{Success, Try}
 

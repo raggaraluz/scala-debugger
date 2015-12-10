@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.utils
+package org.senkbeil.debugger.api.utils
 
-import ActionInfo._
+import org.senkbeil.debugger.api.utils.ActionInfo._
 
 /**
  * Represents the information about an action.

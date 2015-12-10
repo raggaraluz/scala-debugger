@@ -5,7 +5,8 @@ import com.sun.jdi.{Location, VirtualMachine}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
-import org.senkbeil.debugger.api.lowlevel.utils.{ActionInfo, PendingActionManager}
+import org.senkbeil.debugger.api.lowlevel.utils.ActionInfo
+import org.senkbeil.debugger.api.utils.{ActionInfo, PendingActionManager}
 import test.JDIMockHelpers
 
 import scala.util.{Failure, Success}
