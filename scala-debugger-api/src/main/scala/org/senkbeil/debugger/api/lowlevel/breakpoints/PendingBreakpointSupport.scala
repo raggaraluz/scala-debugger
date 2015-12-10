@@ -1,25 +1,19 @@
 package org.senkbeil.debugger.api.lowlevel.breakpoints
 
-import com.sun.jdi.request.BreakpointRequest
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.PendingActionManager
 
 import scala.util.{Success, Try}
 
 /**
- * Represents a breakpoint manager that has been extended to support pending
- * breakpoints.
- *
- * @param breakpointManager The breakpoint manager to extend with
- *                          pending breakpoint support
- * @param pendingActionManager The manager used to store pending breakpoints
- *                             and process them later
+ * Provides pending breakpoint capabilities to an existing breakpoint manager.
  */
-class ExtendedBreakpointManager(
-  private val breakpointManager: BreakpointManager,
-  private val pendingActionManager: PendingActionManager[BreakpointRequestInfo] =
-    new PendingActionManager[BreakpointRequestInfo]
-) extends BreakpointManager {
+trait PendingBreakpointSupport extends BreakpointManager {
+  /**
+   * Represents the manager used to store pending breakpoints and process
+   * them later.
+   */
+  protected val pendingActionManager: PendingActionManager[BreakpointRequestInfo]
 
   /**
    * Processes all pending breakpoints.
@@ -50,7 +44,9 @@ class ExtendedBreakpointManager(
    *
    * @return The collection of successfully-processed breakpoints
    */
-  def pendingBreakpointsForFile(fileName: String): Seq[BreakpointRequestInfo] = {
+  def pendingBreakpointsForFile(
+    fileName: String
+  ): Seq[BreakpointRequestInfo] = {
     pendingActionManager.getPendingActionData(_.data.fileName == fileName)
   }
 
@@ -63,11 +59,11 @@ class ExtendedBreakpointManager(
    *
    * @return True if successfully removed breakpoint, otherwise false
    */
-  override def removeBreakpointRequest(
+  abstract override def removeBreakpointRequest(
     fileName: String,
     lineNumber: Int
   ): Boolean = {
-    val result = breakpointManager.removeBreakpointRequest(
+    val result = super.removeBreakpointRequest(
       fileName,
       lineNumber
     )
@@ -88,10 +84,10 @@ class ExtendedBreakpointManager(
    *
    * @return True if successfully removed breakpoint, otherwise false
    */
-  override def removeBreakpointRequestWithId(
+  abstract override def removeBreakpointRequestWithId(
     requestId: String
   ): Boolean = {
-    val result = breakpointManager.removeBreakpointRequestWithId(requestId)
+    val result = super.removeBreakpointRequestWithId(requestId)
 
     val pendingResult = pendingActionManager.removePendingActionsWithId(
       requestId
@@ -110,7 +106,7 @@ class ExtendedBreakpointManager(
    *
    * @return Success(id) if successful or pending, otherwise Failure
    */
-  override def createBreakpointRequest(
+  abstract override def createBreakpointRequest(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIRequestArgument*
@@ -132,13 +128,13 @@ class ExtendedBreakpointManager(
    *
    * @return Success(id) if successful or pending, otherwise Failure
    */
-  override def createBreakpointRequestWithId(
+  abstract override def createBreakpointRequestWithId(
     requestId: String,
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIRequestArgument*
   ): Try[String] = {
-    def createBreakpoint() = breakpointManager.createBreakpointRequestWithId(
+    def createBreakpoint() = super.createBreakpointRequestWithId(
       requestId,
       fileName,
       lineNumber,
@@ -161,84 +157,13 @@ class ExtendedBreakpointManager(
       case _: Throwable => result
     }
   }
+}
 
-  /**
-   * Retrieves the list of breakpoints contained by this manager.
-   *
-   * @return The collection of breakpoints in the form of information
-   */
-  override def breakpointRequestList: Seq[BreakpointRequestInfo] =
-    breakpointManager.breakpointRequestList
-
-  /**
-   * Returns the collection of breakpoints with the specified id.
-   *
-   * @param requestId The id of the request
-   *
-   * @return Some collection of breakpoints for the specified line, or None if
-   *         the specified line has no breakpoints
-   */
-  override def getBreakpointRequestWithId(
-    requestId: String
-  ): Option[Seq[BreakpointRequest]] =
-    breakpointManager.getBreakpointRequestWithId(requestId)
-
-  /**
-   * Retrieves the list of breakpoints contained by this manager.
-   *
-   * @return The collection of breakpoints by id
-   */
-  override def breakpointRequestListById: Seq[String] =
-    breakpointManager.breakpointRequestListById
-
-  /**
-   * Determines whether or not the breakpoint for the specific file's line.
-   *
-   * @param fileName The name of the file whose line to reference
-   * @param lineNumber The number of the line to check for a breakpoint
-   *
-   * @return True if a breakpoint exists, otherwise false
-   */
-  override def hasBreakpointRequest(
-    fileName: String,
-    lineNumber: Int
-  ): Boolean = breakpointManager.hasBreakpointRequest(fileName, lineNumber)
-
-  /**
-   * Returns the arguments for a breakpoint request with the specified id.
-   *
-   * @param requestId The id of the request
-   *
-   * @return Some breakpoint arguments if found, otherwise None
-   */
-  override def getBreakpointRequestInfoWithId(
-    requestId: String
-  ): Option[BreakpointRequestInfo] =
-    breakpointManager.getBreakpointRequestInfoWithId(requestId)
-
-  /**
-   * Returns the collection of breakpoints representing the breakpoint for the
-   * specified line.
-   *
-   * @param fileName The name of the file whose line to reference
-   * @param lineNumber The number of the line to check for breakpoints
-   *
-   * @return Some collection of breakpoints for the specified line, or None if
-   *         the specified line has no breakpoints
-   */
-  override def getBreakpointRequest(
-    fileName: String,
-    lineNumber: Int
-  ): Option[Seq[BreakpointRequest]] =
-    breakpointManager.getBreakpointRequest(fileName, lineNumber)
-
-  /**
-   * Determines whether or not the breakpoint with the specified id exists.
-   *
-   * @param requestId The id of the request
-   *
-   * @return True if a breakpoint exists, otherwise false
-   */
-  override def hasBreakpointRequestWithId(requestId: String): Boolean =
-    breakpointManager.hasBreakpointRequestWithId(requestId)
+/**
+ * Provides pending breakpoint capabilities to an existing breakpoint manager.
+ * Contains an internal pending action manager.
+ */
+trait StandardPendingBreakpointSupport extends PendingBreakpointSupport {
+  override protected val pendingActionManager: PendingActionManager[BreakpointRequestInfo] =
+    new PendingActionManager[BreakpointRequestInfo]
 }

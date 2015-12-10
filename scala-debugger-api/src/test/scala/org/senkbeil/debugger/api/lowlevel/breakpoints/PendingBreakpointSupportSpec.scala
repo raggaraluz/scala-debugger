@@ -1,17 +1,13 @@
 package org.senkbeil.debugger.api.lowlevel.breakpoints
 
-import com.sun.jdi.request.{BreakpointRequest, EventRequest, EventRequestManager}
-import com.sun.jdi.{Location, VirtualMachine}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
-import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
-import org.senkbeil.debugger.api.lowlevel.utils.ActionInfo
 import org.senkbeil.debugger.api.utils.{ActionInfo, PendingActionManager}
-import test.JDIMockHelpers
+import test.{JDIMockHelpers, TestBreakpointManager}
 
 import scala.util.{Failure, Success}
 
-class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
+class PendingBreakpointSupportSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
@@ -22,11 +18,13 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
   private val mockPendingActionManager =
     mock[TestBreakpointInfoPendingActionManager]
 
-  private val extendedBreakpointManager = new ExtendedBreakpointManager(
-    mockBreakpointManager,
-    mockPendingActionManager
-  ) {
+  private val pendingBreakpointSupport = new TestBreakpointManager(
+    mockBreakpointManager
+  ) with PendingBreakpointSupport {
     override protected def newRequestId(): String = TestRequestId
+
+    override protected val pendingActionManager: PendingActionManager[BreakpointRequestInfo] =
+      mockPendingActionManager
   }
 
   describe("ExtendedBreakpointManager") {
@@ -44,7 +42,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .expects(TestRequestId, testFileName, testLineNumber, Nil)
           .returning(Success(TestRequestId)).once()
 
-        extendedBreakpointManager.createBreakpointRequest(
+        pendingBreakpointSupport.createBreakpointRequest(
           testFileName,
           testLineNumber
         )
@@ -54,7 +52,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .returning(Seq(ActionInfo("id", expected.head, () => {})))
           .once()
 
-        val actual = extendedBreakpointManager.processPendingBreakpointsForFile(
+        val actual = pendingBreakpointSupport.processPendingBreakpointsForFile(
           testFileName
         )
 
@@ -74,7 +72,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .expects(TestRequestId, testFileName, testLineNumber, Nil)
           .returning(Success(TestRequestId)).once()
 
-        extendedBreakpointManager.createBreakpointRequest(
+        pendingBreakpointSupport.createBreakpointRequest(
           testFileName,
           testLineNumber
         )
@@ -85,7 +83,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .once()
 
         val actual =
-          extendedBreakpointManager.pendingBreakpointsForFile(testFileName)
+          pendingBreakpointSupport.pendingBreakpointsForFile(testFileName)
 
         actual should be (expected)
       }
@@ -97,7 +95,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
         (mockPendingActionManager.getPendingActionData _).expects(*)
           .returning(Nil).once()
 
-        val actual = extendedBreakpointManager.pendingBreakpointsForFile("file")
+        val actual = pendingBreakpointSupport.pendingBreakpointsForFile("file")
 
         actual should be (expected)
       }
@@ -115,7 +113,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .expects(TestRequestId, testFileName, testLineNumber, Nil)
           .returning(expected).once()
 
-        val actual = extendedBreakpointManager.createBreakpointRequestWithId(
+        val actual = pendingBreakpointSupport.createBreakpointRequestWithId(
           TestRequestId,
           testFileName,
           testLineNumber
@@ -135,7 +133,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .expects(TestRequestId, testFileName, testLineNumber, Nil)
           .returning(expected).once()
 
-        val actual = extendedBreakpointManager.createBreakpointRequestWithId(
+        val actual = pendingBreakpointSupport.createBreakpointRequestWithId(
           TestRequestId,
           testFileName,
           testLineNumber
@@ -163,7 +161,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
-        val actual = extendedBreakpointManager.createBreakpointRequestWithId(
+        val actual = pendingBreakpointSupport.createBreakpointRequestWithId(
           TestRequestId,
           testFileName,
           testLineNumber
@@ -184,7 +182,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .expects(TestRequestId, testFileName, testLineNumber, Nil)
           .returning(expected).once()
 
-        val actual = extendedBreakpointManager.createBreakpointRequest(
+        val actual = pendingBreakpointSupport.createBreakpointRequest(
           testFileName,
           testLineNumber
         )
@@ -202,7 +200,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .expects(TestRequestId, testFileName, testLineNumber, Nil)
           .returning(expected).once()
 
-        val actual = extendedBreakpointManager.createBreakpointRequest(
+        val actual = pendingBreakpointSupport.createBreakpointRequest(
           testFileName,
           testLineNumber
         )
@@ -228,7 +226,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
-        val actual = extendedBreakpointManager.createBreakpointRequest(
+        val actual = pendingBreakpointSupport.createBreakpointRequest(
           testFileName,
           testLineNumber
         )
@@ -249,7 +247,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .returning(Success(TestRequestId)).once()
 
         // Set a breakpoint on a line that is returned by linesAndLocations
-        extendedBreakpointManager.createBreakpointRequest(
+        pendingBreakpointSupport.createBreakpointRequest(
           testFileName,
           testLineNumber
         )
@@ -263,7 +261,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .expects(TestRequestId)
           .returning(None).once()
 
-        val actual = extendedBreakpointManager.removeBreakpointRequestWithId(
+        val actual = pendingBreakpointSupport.removeBreakpointRequestWithId(
           TestRequestId
         )
 
@@ -289,7 +287,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
         ).returning(TestRequestId).once()
 
         // Set a breakpoint on a line that is returned by linesAndLocations
-        extendedBreakpointManager.createBreakpointRequest(
+        pendingBreakpointSupport.createBreakpointRequest(
           testFileName,
           testLineNumber
         )
@@ -309,7 +307,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .expects(TestRequestId)
           .returning(pendingRemovalReturn).once()
 
-        val actual = extendedBreakpointManager.removeBreakpointRequestWithId(
+        val actual = pendingBreakpointSupport.removeBreakpointRequestWithId(
           TestRequestId
         )
 
@@ -328,7 +326,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .expects(TestRequestId)
           .returning(None).once()
 
-        val actual = extendedBreakpointManager.removeBreakpointRequestWithId(
+        val actual = pendingBreakpointSupport.removeBreakpointRequestWithId(
           TestRequestId
         )
 
@@ -348,7 +346,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .returning(Success(TestRequestId)).once()
 
         // Set a breakpoint on a line that is returned by linesAndLocations
-        extendedBreakpointManager.createBreakpointRequest(testFileName, 1)
+        pendingBreakpointSupport.createBreakpointRequest(testFileName, 1)
 
         (mockBreakpointManager.removeBreakpointRequest _)
           .expects(testFileName, testLineNumber)
@@ -359,7 +357,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
         (mockPendingActionManager.removePendingActions _).expects(*)
           .returning(Nil).once()
 
-        val actual = extendedBreakpointManager.removeBreakpointRequest(
+        val actual = pendingBreakpointSupport.removeBreakpointRequest(
           testFileName,
           1
         )
@@ -386,7 +384,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
         ).returning(TestRequestId).once()
 
         // Set a breakpoint on a line that is returned by linesAndLocations
-        extendedBreakpointManager.createBreakpointRequest(
+        pendingBreakpointSupport.createBreakpointRequest(
           testFileName,
           testLineNumber
         )
@@ -406,7 +404,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
           .expects(*)
           .returning(pendingRemovalReturn).once()
 
-        val actual = extendedBreakpointManager.removeBreakpointRequest(
+        val actual = pendingBreakpointSupport.removeBreakpointRequest(
           testFileName,
           testLineNumber
         )
@@ -427,7 +425,7 @@ class ExtendedBreakpointManagerSpec extends FunSpec with Matchers
         (mockPendingActionManager.removePendingActions _).expects(*)
           .returning(Nil).once()
 
-        val actual = extendedBreakpointManager.removeBreakpointRequest(
+        val actual = pendingBreakpointSupport.removeBreakpointRequest(
           testFileName,
           testLineNumber
         )

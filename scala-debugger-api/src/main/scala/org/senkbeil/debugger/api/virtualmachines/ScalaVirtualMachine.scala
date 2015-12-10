@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.virtualmachines
 import java.util.concurrent.atomic.AtomicBoolean
 
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
-import org.senkbeil.debugger.api.lowlevel.breakpoints.ExtendedBreakpointManager
+import org.senkbeil.debugger.api.lowlevel.breakpoints.PendingBreakpointSupport
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
 import org.senkbeil.debugger.api.profiles.ProfileManager
@@ -93,7 +93,7 @@ class ScalaVirtualMachine(
       //       breakpoint functionality somewhere more separate
       logger.trace(vmString("Applying any pending breakpoints for references!"))
       lowlevel.classManager.allFileNames.foreach(
-        lowlevel.breakpointManager.asInstanceOf[ExtendedBreakpointManager]
+        lowlevel.breakpointManager.asInstanceOf[PendingBreakpointSupport]
           .processPendingBreakpointsForFile
       )
     })
@@ -113,7 +113,7 @@ class ScalaVirtualMachine(
       //       breakpoint functionality somewhere more separate
       logger.trace(vmString(
         s"Processing any pending breakpoints for $referenceTypeName!"))
-      lowlevel.breakpointManager.asInstanceOf[ExtendedBreakpointManager]
+      lowlevel.breakpointManager.asInstanceOf[PendingBreakpointSupport]
         .processPendingBreakpointsForFile(fileName)
     })
 
