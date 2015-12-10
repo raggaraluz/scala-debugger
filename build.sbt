@@ -44,6 +44,7 @@ lazy val scalaDebuggerApi = project
     internalDependencyClasspath in IntegrationTest +=
       { Attributed.blank(Build.JavaTools) }
   ): _*)
+  .dependsOn(scalaDebuggerMacro % "compile->compile;test->compile;it->compile")
   .dependsOn(scalaDebuggerTest % "test->compile;it->compile")
 
 //
@@ -54,6 +55,19 @@ lazy val scalaDebuggerTest = project
   .settings(Common.settings: _*)
   .settings(
     // Do not publish the test project
+    publishArtifact := false,
+    publishLocal := {}
+  )
+
+//
+// DEBUGGER MACRO PROJECT CONFIGURATION
+//
+lazy val scalaDebuggerMacro = project
+  .in(file("scala-debugger-macro"))
+  .settings(Common.settings: _*)
+  .settings(Macro.settings: _*)
+  .settings(
+    // Do not publish the macro project
     publishArtifact := false,
     publishLocal := {}
   )
