@@ -28,7 +28,7 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
       mockPendingActionManager
   }
 
-  describe("ExtendedClassPrepareManager") {
+  describe("PendingClassPrepareSupport") {
     describe("#processAllPendingClassPrepareRequests") {
       it("should process all pending class prepare requests") {
         val expected = Seq(

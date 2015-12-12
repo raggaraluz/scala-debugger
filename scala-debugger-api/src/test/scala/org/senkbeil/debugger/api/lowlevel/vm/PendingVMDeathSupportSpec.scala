@@ -1,130 +1,130 @@
-package org.senkbeil.debugger.api.lowlevel.classes
+package org.senkbeil.debugger.api.lowlevel.vm
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.{ActionInfo, PendingActionManager}
-import test.{JDIMockHelpers, TestClassUnloadManager}
+import test.{JDIMockHelpers, TestVMDeathManager}
 
 import scala.util.{Failure, Success}
 
-class PendingClassUnloadSupportSpec extends FunSpec with Matchers
+class PendingVMDeathSupportSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-  private val mockClassUnloadManager = mock[ClassUnloadManager]
+  private val mockVMDeathManager = mock[VMDeathManager]
 
-  private class TestClassUnloadInfoPendingActionManager
-    extends PendingActionManager[ClassUnloadRequestInfo]
+  private class TestVMDeathInfoPendingActionManager
+    extends PendingActionManager[VMDeathRequestInfo]
   private val mockPendingActionManager =
-    mock[TestClassUnloadInfoPendingActionManager]
+    mock[TestVMDeathInfoPendingActionManager]
 
-  private val pendingClassUnloadSupport = new TestClassUnloadManager(
-    mockClassUnloadManager
-  ) with PendingClassUnloadSupport {
+  private val pendingVMDeathSupport = new TestVMDeathManager(
+    mockVMDeathManager
+  ) with PendingVMDeathSupport {
     override protected def newRequestId(): String = TestRequestId
 
-    override protected val pendingActionManager: PendingActionManager[ClassUnloadRequestInfo] =
+    override protected val pendingActionManager: PendingActionManager[VMDeathRequestInfo] =
       mockPendingActionManager
   }
 
-  describe("PendingClassUnloadSupport") {
-    describe("#processAllPendingClassUnloadRequests") {
-      it("should process all pending class unload requests") {
+  describe("ExtendedVMDeathManager") {
+    describe("#processAllPendingVMDeathRequests") {
+      it("should process all pending vm death requests") {
         val expected = Seq(
-          ClassUnloadRequestInfo(),
-          ClassUnloadRequestInfo(),
-          ClassUnloadRequestInfo()
+          VMDeathRequestInfo(),
+          VMDeathRequestInfo(),
+          VMDeathRequestInfo()
         )
 
-        // Create class unload requests to use for testing
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
+        // Create vm death requests to use for testing
+        (mockVMDeathManager.createVMDeathRequestWithId _)
           .expects(*, *)
           .returning(Success(java.util.UUID.randomUUID().toString))
           .repeated(3).times()
 
-        expected.foreach(c => pendingClassUnloadSupport.createClassUnloadRequest(
+        expected.foreach(c => pendingVMDeathSupport.createVMDeathRequest(
           c.extraArguments: _*
         ))
 
         (mockPendingActionManager.processAllActions _).expects()
           .returning(expected.map(c => ActionInfo("id", c, () => {}))).once()
 
-        val actual = pendingClassUnloadSupport.processAllPendingClassUnloadRequests()
+        val actual = pendingVMDeathSupport.processAllPendingVMDeathRequests()
         actual should be (expected)
       }
     }
 
-    describe("#pendingClassUnloadRequests") {
-      it("should return a collection of pending class unload requests") {
+    describe("#pendingVMDeathRequests") {
+      it("should return a collection of pending vm death requests") {
         val expected = Seq(
-          ClassUnloadRequestInfo(),
-          ClassUnloadRequestInfo(Seq(stub[JDIRequestArgument])),
-          ClassUnloadRequestInfo()
+          VMDeathRequestInfo(),
+          VMDeathRequestInfo(Seq(stub[JDIRequestArgument])),
+          VMDeathRequestInfo()
         )
 
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
+        (mockVMDeathManager.createVMDeathRequestWithId _)
           .expects(*, *)
           .returning(Success(java.util.UUID.randomUUID().toString))
           .repeated(3).times()
 
-        expected.foreach(c => pendingClassUnloadSupport.createClassUnloadRequest(
+        expected.foreach(c => pendingVMDeathSupport.createVMDeathRequest(
           c.extraArguments: _*
         ))
 
         (mockPendingActionManager.getPendingActionData _).expects(*)
           .returning(expected).once()
 
-        val actual = pendingClassUnloadSupport.pendingClassUnloadRequests
+        val actual = pendingVMDeathSupport.pendingVMDeathRequests
 
         actual should be (expected)
       }
 
-      it("should be empty if there are no pending class unload requests") {
+      it("should be empty if there are no pending vm death requests") {
         val expected = Nil
 
-        // No pending class unload requests
+        // No pending vm death requests
         (mockPendingActionManager.getPendingActionData _).expects(*)
           .returning(Nil).once()
 
-        val actual = pendingClassUnloadSupport.pendingClassUnloadRequests
+        val actual = pendingVMDeathSupport.pendingVMDeathRequests
 
         actual should be (expected)
       }
     }
 
-    describe("#createClassUnloadRequestWithId") {
-      it("should return Success(id) if the class unload was created") {
+    describe("#createVMDeathRequestWithId") {
+      it("should return Success(id) if the vm death was created") {
         val expected = Success(TestRequestId)
 
-        // Create a class unload to use for testing
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
+        // Create a vm death to use for testing
+        (mockVMDeathManager.createVMDeathRequestWithId _)
           .expects(TestRequestId, Nil)
           .returning(expected).once()
 
-        val actual = pendingClassUnloadSupport.createClassUnloadRequestWithId(
+        val actual = pendingVMDeathSupport.createVMDeathRequestWithId(
           TestRequestId
         )
 
         actual should be (expected)
       }
 
-      it("should add a pending class unload if exception thrown") {
+      it("should add a pending vm death if exception thrown") {
         val expected = Success(TestRequestId)
         val extraArguments = Seq(stub[JDIRequestArgument])
 
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
+        (mockVMDeathManager.createVMDeathRequestWithId _)
           .expects(*, *)
           .returning(Failure(new Throwable)).once()
 
-        // Pending class unload should be set
+        // Pending vm death should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ClassUnloadRequestInfo(extraArguments),
+          VMDeathRequestInfo(extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
-        val actual = pendingClassUnloadSupport.createClassUnloadRequestWithId(
+        val actual = pendingVMDeathSupport.createVMDeathRequestWithId(
           TestRequestId, extraArguments: _*
         )
 
@@ -135,12 +135,12 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
         val expected = Failure(new Throwable)
         val extraArguments = Seq(stub[JDIRequestArgument])
 
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
+        (mockVMDeathManager.createVMDeathRequestWithId _)
           .expects(*, *)
           .returning(expected).once()
 
-        pendingClassUnloadSupport.enablePending = false
-        val actual = pendingClassUnloadSupport.createClassUnloadRequestWithId(
+        pendingVMDeathSupport.enablePending = false
+        val actual = pendingVMDeathSupport.createVMDeathRequestWithId(
           TestRequestId, extraArguments: _*
         )
 
@@ -148,36 +148,36 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createClassUnloadRequest") {
-      it("should return Success(id) if the class unload was created") {
+    describe("#createVMDeathRequest") {
+      it("should return Success(id) if the vm death was created") {
         val expected = Success(TestRequestId)
 
-        // Create a class unload to use for testing
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
+        // Create a vm death to use for testing
+        (mockVMDeathManager.createVMDeathRequestWithId _)
           .expects(TestRequestId, Nil)
           .returning(expected).once()
 
-        val actual = pendingClassUnloadSupport.createClassUnloadRequest()
+        val actual = pendingVMDeathSupport.createVMDeathRequest()
 
         actual should be (expected)
       }
 
-      it("should add a pending class unload if exception thrown") {
+      it("should add a pending vm death if exception thrown") {
         val expected = Success(TestRequestId)
         val extraArguments = Seq(stub[JDIRequestArgument])
 
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
+        (mockVMDeathManager.createVMDeathRequestWithId _)
           .expects(*, *)
           .returning(Failure(new Throwable)).once()
 
-        // Pending class unload should be set
+        // Pending vm death should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ClassUnloadRequestInfo(extraArguments),
+          VMDeathRequestInfo(extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
-        val actual = pendingClassUnloadSupport.createClassUnloadRequest(
+        val actual = pendingVMDeathSupport.createVMDeathRequest(
           extraArguments: _*
         )
 
@@ -188,12 +188,12 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
         val expected = Failure(new Throwable)
         val extraArguments = Seq(stub[JDIRequestArgument])
 
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
+        (mockVMDeathManager.createVMDeathRequestWithId _)
           .expects(*, *)
           .returning(expected).once()
 
-        pendingClassUnloadSupport.enablePending = false
-        val actual = pendingClassUnloadSupport.createClassUnloadRequest(
+        pendingVMDeathSupport.enablePending = false
+        val actual = pendingVMDeathSupport.createVMDeathRequest(
           extraArguments: _*
         )
 
@@ -201,84 +201,84 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#removeClassUnloadRequest") {
-      it("should return true if the class unload was successfully deleted") {
+    describe("#removeVMDeathRequest") {
+      it("should return true if the vm death was successfully deleted") {
         val expected = true
 
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
+        (mockVMDeathManager.createVMDeathRequestWithId _)
           .expects(*, *)
           .returning(Success(TestRequestId)).once()
 
-        pendingClassUnloadSupport.createClassUnloadRequestWithId(TestRequestId)
+        pendingVMDeathSupport.createVMDeathRequestWithId(TestRequestId)
 
-        (mockClassUnloadManager.removeClassUnloadRequest _).expects(*)
+        (mockVMDeathManager.removeVMDeathRequest _).expects(*)
           .returning(true).once()
 
-        // Return "no removals" for pending class unload requests
-        // (performed by standard removeClassUnloadRequest call)
+        // Return "no removals" for pending vm death requests
+        // (performed by standard removeVMDeathRequest call)
         (mockPendingActionManager.removePendingActionsWithId _).expects(*)
           .returning(None).once()
 
-        val actual = pendingClassUnloadSupport.removeClassUnloadRequest(
+        val actual = pendingVMDeathSupport.removeVMDeathRequest(
           TestRequestId
         )
 
         actual should be (expected)
       }
 
-      it("should return true if the pending class unload request was successfully deleted") {
+      it("should return true if the pending vm death request was successfully deleted") {
         val expected = true
         val extraArguments = Seq(stub[JDIRequestArgument])
 
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
+        (mockVMDeathManager.createVMDeathRequestWithId _)
           .expects(*, *)
           .returning(Failure(new Throwable)).once()
 
-        // Pending class unload request should be set
+        // Pending vm death request should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ClassUnloadRequestInfo(extraArguments),
+          VMDeathRequestInfo(extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
-        pendingClassUnloadSupport.createClassUnloadRequestWithId(
+        pendingVMDeathSupport.createVMDeathRequestWithId(
           TestRequestId,
           extraArguments: _*
         )
 
-        // Return removals for pending class unload requests
+        // Return removals for pending vm death requests
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            ClassUnloadRequestInfo(extraArguments),
+            VMDeathRequestInfo(extraArguments),
             () => {}
           )
         )
-        (mockClassUnloadManager.removeClassUnloadRequest _)
+        (mockVMDeathManager.removeVMDeathRequest _)
           .expects(TestRequestId)
           .returning(false).once()
         (mockPendingActionManager.removePendingActionsWithId _).expects(*)
           .returning(Some(pendingRemovalReturn)).once()
 
-        val actual = pendingClassUnloadSupport.removeClassUnloadRequest(
+        val actual = pendingVMDeathSupport.removeVMDeathRequest(
           TestRequestId
         )
 
         actual should be (expected)
       }
 
-      it("should return false if the class unload request was not found") {
+      it("should return false if the vm death request was not found") {
         val expected = false
 
-        (mockClassUnloadManager.removeClassUnloadRequest _)
+        (mockVMDeathManager.removeVMDeathRequest _)
           .expects(*)
           .returning(false).once()
 
-        // Return "no removals" for pending class unload requests
+        // Return "no removals" for pending vm death requests
         (mockPendingActionManager.removePendingActionsWithId _).expects(*)
           .returning(None).once()
 
-        val actual = pendingClassUnloadSupport.removeClassUnloadRequest(
+        val actual = pendingVMDeathSupport.removeVMDeathRequest(
           TestRequestId
         )
 

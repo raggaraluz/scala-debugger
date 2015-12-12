@@ -27,7 +27,7 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
       mockPendingActionManager
   }
 
-  describe("ExtendedBreakpointManager") {
+  describe("PendingBreakpointSupport") {
     describe("#processAllPendingBreakpointRequests") {
       it("should process all pending breakpoints") {
         val testFileName = "some/file/name"
