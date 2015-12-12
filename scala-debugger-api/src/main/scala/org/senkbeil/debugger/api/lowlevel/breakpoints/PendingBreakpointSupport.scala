@@ -20,7 +20,7 @@ trait PendingBreakpointSupport extends BreakpointManager {
    *
    * @return The collection of successfully-processed breakpoints
    */
-  def processAllPendingBreakpoints(): Seq[BreakpointRequestInfo] = {
+  def processAllPendingBreakpointRequests(): Seq[BreakpointRequestInfo] = {
     pendingActionManager.processAllActions().map(_.data)
   }
 
@@ -31,7 +31,7 @@ trait PendingBreakpointSupport extends BreakpointManager {
    *
    * @return The collection of successfully-processed breakpoints
    */
-  def processPendingBreakpointsForFile(
+  def processPendingBreakpointRequestsForFile(
     fileName: String
   ): Seq[BreakpointRequestInfo] = {
     pendingActionManager.processActions(_.data.fileName == fileName).map(_.data)
@@ -44,7 +44,7 @@ trait PendingBreakpointSupport extends BreakpointManager {
    *
    * @return The collection of successfully-processed breakpoints
    */
-  def pendingBreakpointsForFile(
+  def pendingBreakpointRequestsForFile(
     fileName: String
   ): Seq[BreakpointRequestInfo] = {
     pendingActionManager.getPendingActionData(_.data.fileName == fileName)

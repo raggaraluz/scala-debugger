@@ -94,7 +94,7 @@ class ScalaVirtualMachine(
       logger.trace(vmString("Applying any pending breakpoints for references!"))
       lowlevel.classManager.allFileNames.foreach(
         lowlevel.breakpointManager.asInstanceOf[PendingBreakpointSupport]
-          .processPendingBreakpointsForFile
+          .processPendingBreakpointRequestsForFile
       )
     })
 
@@ -114,7 +114,7 @@ class ScalaVirtualMachine(
       logger.trace(vmString(
         s"Processing any pending breakpoints for $referenceTypeName!"))
       lowlevel.breakpointManager.asInstanceOf[PendingBreakpointSupport]
-        .processPendingBreakpointsForFile(fileName)
+        .processPendingBreakpointRequestsForFile(fileName)
     })
 
     // Try to start the event manager if indicated

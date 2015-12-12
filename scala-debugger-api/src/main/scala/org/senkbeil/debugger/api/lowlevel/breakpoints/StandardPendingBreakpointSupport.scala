@@ -10,4 +10,3 @@ trait StandardPendingBreakpointSupport extends PendingBreakpointSupport {
   override protected val pendingActionManager: PendingActionManager[BreakpointRequestInfo] =
     new PendingActionManager[BreakpointRequestInfo]
 }
-

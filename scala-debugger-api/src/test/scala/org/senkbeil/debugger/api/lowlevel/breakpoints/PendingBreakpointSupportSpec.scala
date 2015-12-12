@@ -28,7 +28,36 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
   }
 
   describe("ExtendedBreakpointManager") {
-    describe("#processPendingBreakpointsForFile") {
+    describe("#processAllPendingBreakpointRequests") {
+      it("should process all pending breakpoints") {
+        val testFileName = "some/file/name"
+        val testLineNumber = 1
+
+        val expected = Seq(
+          BreakpointRequestInfo(testFileName, testLineNumber),
+          BreakpointRequestInfo(testFileName + 1, testLineNumber),
+          BreakpointRequestInfo(testFileName, testLineNumber + 1)
+        )
+
+        // Create breakpoints to use for testing
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(*, *, *, *)
+          .returning(Success(java.util.UUID.randomUUID().toString))
+          .repeated(3).times()
+
+        expected.foreach(b => pendingBreakpointSupport.createBreakpointRequest(
+          b.fileName, b.lineNumber, b.extraArguments: _*
+        ))
+
+        (mockPendingActionManager.processAllActions _).expects()
+          .returning(expected.map(b => ActionInfo("id", b, () => {}))).once()
+
+        val actual = pendingBreakpointSupport.processAllPendingBreakpointRequests()
+        actual should be (expected)
+      }
+    }
+
+    describe("#processPendingBreakpointRequestsForFile") {
       it("should process pending breakpoints for the specified file") {
         val testFileName = "some/file/name"
         val testLineNumber = 1
@@ -52,7 +81,7 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
           .returning(Seq(ActionInfo("id", expected.head, () => {})))
           .once()
 
-        val actual = pendingBreakpointSupport.processPendingBreakpointsForFile(
+        val actual = pendingBreakpointSupport.processPendingBreakpointRequestsForFile(
           testFileName
         )
 
@@ -60,7 +89,7 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#pendingBreakpointsForFile") {
+    describe("#pendingBreakpointRequestsForFile") {
       it("should return a collection of pending breakpoints") {
         val testFileName = "some/file/name"
         val testLineNumber = 1
@@ -83,7 +112,7 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
           .once()
 
         val actual =
-          pendingBreakpointSupport.pendingBreakpointsForFile(testFileName)
+          pendingBreakpointSupport.pendingBreakpointRequestsForFile(testFileName)
 
         actual should be (expected)
       }
@@ -95,7 +124,7 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         (mockPendingActionManager.getPendingActionData _).expects(*)
           .returning(Nil).once()
 
-        val actual = pendingBreakpointSupport.pendingBreakpointsForFile("file")
+        val actual = pendingBreakpointSupport.pendingBreakpointRequestsForFile("file")
 
         actual should be (expected)
       }
