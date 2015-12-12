@@ -9,8 +9,8 @@ import org.senkbeil.debugger.api.lowlevel.exceptions.{StandardExceptionManager, 
 import org.senkbeil.debugger.api.lowlevel.methods.{MethodExitManager, MethodEntryManager, StandardMethodEntryManager, StandardMethodExitManager}
 import org.senkbeil.debugger.api.lowlevel.monitors._
 import org.senkbeil.debugger.api.lowlevel.steps.{StepManager, StandardStepManager}
-import org.senkbeil.debugger.api.lowlevel.threads.{ThreadStartManager, ThreadDeathManager, StandardThreadStartManager, StandardThreadDeathManager}
-import org.senkbeil.debugger.api.lowlevel.vm.{VMDeathManager, StandardVMDeathManager}
+import org.senkbeil.debugger.api.lowlevel.threads._
+import org.senkbeil.debugger.api.lowlevel.vm.{StandardPendingVMDeathSupport, VMDeathManager, StandardVMDeathManager}
 import org.senkbeil.debugger.api.lowlevel.watchpoints.{AccessWatchpointManager, ModificationWatchpointManager, StandardModificationWatchpointManager, StandardAccessWatchpointManager}
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 
@@ -75,18 +75,17 @@ object ManagerContainer {
     lazy val eventQueue = virtualMachine.eventQueue()
     lazy val accessWatchpointManager =
       new StandardAccessWatchpointManager(eventRequestManager, classManager)
-    // TODO: Revert back to normal breakpoint manager and add pending breakpoint
-    //       functionality somewhere more separate
-    lazy val breakpointManager = new StandardBreakpointManager(
-      eventRequestManager,
-      classManager
-    ) with StandardPendingBreakpointSupport
+    lazy val breakpointManager =
+      new StandardBreakpointManager(eventRequestManager, classManager)
+        with StandardPendingBreakpointSupport
     lazy val classManager =
       new StandardClassManager(virtualMachine, loadClasses = true)
     lazy val classPrepareManager =
       new StandardClassPrepareManager(eventRequestManager)
+        with StandardPendingClassPrepareSupport
     lazy val classUnloadManager =
       new StandardClassUnloadManager(eventRequestManager)
+        with StandardPendingClassUnloadSupport
     lazy val eventManager = new StandardEventManager(
       eventQueue,
       loopingTaskRunner,
@@ -102,22 +101,29 @@ object ManagerContainer {
       new StandardModificationWatchpointManager(eventRequestManager, classManager)
     lazy val monitorContendedEnteredManager =
       new StandardMonitorContendedEnteredManager(eventRequestManager)
+        with StandardPendingMonitorContendedEnteredSupport
     lazy val monitorContendedEnterManager =
       new StandardMonitorContendedEnterManager(eventRequestManager)
+        with StandardPendingMonitorContendedEnterSupport
     lazy val monitorWaitedManager =
       new StandardMonitorWaitedManager(eventRequestManager)
+        with StandardPendingMonitorWaitedSupport
     lazy val monitorWaitManager =
       new StandardMonitorWaitManager(eventRequestManager)
+        with StandardPendingMonitorWaitSupport
     lazy val requestManager =
       virtualMachine.eventRequestManager()
     lazy val stepManager =
       new StandardStepManager(eventRequestManager)
     lazy val threadDeathManager =
       new StandardThreadDeathManager(eventRequestManager)
+        with StandardPendingThreadDeathSupport
     lazy val threadStartManager =
       new StandardThreadStartManager(eventRequestManager)
+        with StandardPendingThreadStartSupport
     lazy val vmDeathManager =
       new StandardVMDeathManager(eventRequestManager)
+        with StandardPendingVMDeathSupport
 
     ManagerContainer(
       accessWatchpointManager         = accessWatchpointManager,

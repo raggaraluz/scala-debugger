@@ -28,7 +28,7 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
       mockPendingActionManager
   }
 
-  describe("ExtendedThreadDeathManager") {
+  describe("PendingThreadDeathSupport") {
     describe("#processAllPendingThreadDeathRequests") {
       it("should process all pending thread death requests") {
         val expected = Seq(

@@ -28,7 +28,7 @@ class PendingThreadStartSupportSpec extends FunSpec with Matchers
       mockPendingActionManager
   }
 
-  describe("ExtendedThreadStartManager") {
+  describe("PendingThreadStartSupport") {
     describe("#processAllPendingThreadStartRequests") {
       it("should process all pending thread start requests") {
         val expected = Seq(

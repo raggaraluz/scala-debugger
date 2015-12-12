@@ -1,130 +1,130 @@
-package org.senkbeil.debugger.api.lowlevel.vm
+package org.senkbeil.debugger.api.lowlevel.monitors
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.{ActionInfo, PendingActionManager}
-import test.{JDIMockHelpers, TestVMDeathManager}
+import test.{JDIMockHelpers, TestMonitorWaitManager}
 
 import scala.util.{Failure, Success}
 
-class PendingVMDeathSupportSpec extends FunSpec with Matchers
+class PendingMonitorWaitSupportSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
-  private val mockVMDeathManager = mock[VMDeathManager]
+  private val mockMonitorWaitManager = mock[MonitorWaitManager]
 
-  private class TestVMDeathInfoPendingActionManager
-    extends PendingActionManager[VMDeathRequestInfo]
+  private class TestMonitorWaitInfoPendingActionManager
+    extends PendingActionManager[MonitorWaitRequestInfo]
   private val mockPendingActionManager =
-    mock[TestVMDeathInfoPendingActionManager]
+    mock[TestMonitorWaitInfoPendingActionManager]
 
-  private val pendingVMDeathSupport = new TestVMDeathManager(
-    mockVMDeathManager
-  ) with PendingVMDeathSupport {
+  private val pendingMonitorWaitSupport = new TestMonitorWaitManager(
+    mockMonitorWaitManager
+  ) with PendingMonitorWaitSupport {
     override protected def newRequestId(): String = TestRequestId
 
-    override protected val pendingActionManager: PendingActionManager[VMDeathRequestInfo] =
+    override protected val pendingActionManager: PendingActionManager[MonitorWaitRequestInfo] =
       mockPendingActionManager
   }
 
-  describe("PendingVMDeathSupport") {
-    describe("#processAllPendingVMDeathRequests") {
-      it("should process all pending vm death requests") {
+  describe("PendingMonitorWaitSupport") {
+    describe("#processAllPendingMonitorWaitRequests") {
+      it("should process all pending monitor wait requests") {
         val expected = Seq(
-          VMDeathRequestInfo(),
-          VMDeathRequestInfo(),
-          VMDeathRequestInfo()
+          MonitorWaitRequestInfo(),
+          MonitorWaitRequestInfo(),
+          MonitorWaitRequestInfo()
         )
 
-        // Create vm death requests to use for testing
-        (mockVMDeathManager.createVMDeathRequestWithId _)
+        // Create monitor wait requests to use for testing
+        (mockMonitorWaitManager.createMonitorWaitRequestWithId _)
           .expects(*, *)
           .returning(Success(java.util.UUID.randomUUID().toString))
           .repeated(3).times()
 
-        expected.foreach(c => pendingVMDeathSupport.createVMDeathRequest(
+        expected.foreach(c => pendingMonitorWaitSupport.createMonitorWaitRequest(
           c.extraArguments: _*
         ))
 
         (mockPendingActionManager.processAllActions _).expects()
           .returning(expected.map(c => ActionInfo("id", c, () => {}))).once()
 
-        val actual = pendingVMDeathSupport.processAllPendingVMDeathRequests()
+        val actual = pendingMonitorWaitSupport.processAllPendingMonitorWaitRequests()
         actual should be (expected)
       }
     }
 
-    describe("#pendingVMDeathRequests") {
-      it("should return a collection of pending vm death requests") {
+    describe("#pendingMonitorWaitRequests") {
+      it("should return a collection of pending monitor wait requests") {
         val expected = Seq(
-          VMDeathRequestInfo(),
-          VMDeathRequestInfo(Seq(stub[JDIRequestArgument])),
-          VMDeathRequestInfo()
+          MonitorWaitRequestInfo(),
+          MonitorWaitRequestInfo(Seq(stub[JDIRequestArgument])),
+          MonitorWaitRequestInfo()
         )
 
-        (mockVMDeathManager.createVMDeathRequestWithId _)
+        (mockMonitorWaitManager.createMonitorWaitRequestWithId _)
           .expects(*, *)
           .returning(Success(java.util.UUID.randomUUID().toString))
           .repeated(3).times()
 
-        expected.foreach(c => pendingVMDeathSupport.createVMDeathRequest(
+        expected.foreach(c => pendingMonitorWaitSupport.createMonitorWaitRequest(
           c.extraArguments: _*
         ))
 
         (mockPendingActionManager.getPendingActionData _).expects(*)
           .returning(expected).once()
 
-        val actual = pendingVMDeathSupport.pendingVMDeathRequests
+        val actual = pendingMonitorWaitSupport.pendingMonitorWaitRequests
 
         actual should be (expected)
       }
 
-      it("should be empty if there are no pending vm death requests") {
+      it("should be empty if there are no pending monitor wait requests") {
         val expected = Nil
 
-        // No pending vm death requests
+        // No pending monitor wait requests
         (mockPendingActionManager.getPendingActionData _).expects(*)
           .returning(Nil).once()
 
-        val actual = pendingVMDeathSupport.pendingVMDeathRequests
+        val actual = pendingMonitorWaitSupport.pendingMonitorWaitRequests
 
         actual should be (expected)
       }
     }
 
-    describe("#createVMDeathRequestWithId") {
-      it("should return Success(id) if the vm death was created") {
+    describe("#createMonitorWaitRequestWithId") {
+      it("should return Success(id) if the monitor wait was created") {
         val expected = Success(TestRequestId)
 
-        // Create a vm death to use for testing
-        (mockVMDeathManager.createVMDeathRequestWithId _)
+        // Create a monitor wait to use for testing
+        (mockMonitorWaitManager.createMonitorWaitRequestWithId _)
           .expects(TestRequestId, Nil)
           .returning(expected).once()
 
-        val actual = pendingVMDeathSupport.createVMDeathRequestWithId(
+        val actual = pendingMonitorWaitSupport.createMonitorWaitRequestWithId(
           TestRequestId
         )
 
         actual should be (expected)
       }
 
-      it("should add a pending vm death if exception thrown") {
+      it("should add a pending monitor wait if exception thrown") {
         val expected = Success(TestRequestId)
         val extraArguments = Seq(stub[JDIRequestArgument])
 
-        (mockVMDeathManager.createVMDeathRequestWithId _)
+        (mockMonitorWaitManager.createMonitorWaitRequestWithId _)
           .expects(*, *)
           .returning(Failure(new Throwable)).once()
 
-        // Pending vm death should be set
+        // Pending monitor wait should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          VMDeathRequestInfo(extraArguments),
+          MonitorWaitRequestInfo(extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
-        val actual = pendingVMDeathSupport.createVMDeathRequestWithId(
+        val actual = pendingMonitorWaitSupport.createMonitorWaitRequestWithId(
           TestRequestId, extraArguments: _*
         )
 
@@ -135,12 +135,12 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
         val expected = Failure(new Throwable)
         val extraArguments = Seq(stub[JDIRequestArgument])
 
-        (mockVMDeathManager.createVMDeathRequestWithId _)
+        (mockMonitorWaitManager.createMonitorWaitRequestWithId _)
           .expects(*, *)
           .returning(expected).once()
 
-        pendingVMDeathSupport.enablePending = false
-        val actual = pendingVMDeathSupport.createVMDeathRequestWithId(
+        pendingMonitorWaitSupport.enablePending = false
+        val actual = pendingMonitorWaitSupport.createMonitorWaitRequestWithId(
           TestRequestId, extraArguments: _*
         )
 
@@ -148,36 +148,36 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createVMDeathRequest") {
-      it("should return Success(id) if the vm death was created") {
+    describe("#createMonitorWaitRequest") {
+      it("should return Success(id) if the monitor wait was created") {
         val expected = Success(TestRequestId)
 
-        // Create a vm death to use for testing
-        (mockVMDeathManager.createVMDeathRequestWithId _)
+        // Create a monitor wait to use for testing
+        (mockMonitorWaitManager.createMonitorWaitRequestWithId _)
           .expects(TestRequestId, Nil)
           .returning(expected).once()
 
-        val actual = pendingVMDeathSupport.createVMDeathRequest()
+        val actual = pendingMonitorWaitSupport.createMonitorWaitRequest()
 
         actual should be (expected)
       }
 
-      it("should add a pending vm death if exception thrown") {
+      it("should add a pending monitor wait if exception thrown") {
         val expected = Success(TestRequestId)
         val extraArguments = Seq(stub[JDIRequestArgument])
 
-        (mockVMDeathManager.createVMDeathRequestWithId _)
+        (mockMonitorWaitManager.createMonitorWaitRequestWithId _)
           .expects(*, *)
           .returning(Failure(new Throwable)).once()
 
-        // Pending vm death should be set
+        // Pending monitor wait should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          VMDeathRequestInfo(extraArguments),
+          MonitorWaitRequestInfo(extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
-        val actual = pendingVMDeathSupport.createVMDeathRequest(
+        val actual = pendingMonitorWaitSupport.createMonitorWaitRequest(
           extraArguments: _*
         )
 
@@ -188,12 +188,12 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
         val expected = Failure(new Throwable)
         val extraArguments = Seq(stub[JDIRequestArgument])
 
-        (mockVMDeathManager.createVMDeathRequestWithId _)
+        (mockMonitorWaitManager.createMonitorWaitRequestWithId _)
           .expects(*, *)
           .returning(expected).once()
 
-        pendingVMDeathSupport.enablePending = false
-        val actual = pendingVMDeathSupport.createVMDeathRequest(
+        pendingMonitorWaitSupport.enablePending = false
+        val actual = pendingMonitorWaitSupport.createMonitorWaitRequest(
           extraArguments: _*
         )
 
@@ -201,84 +201,84 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#removeVMDeathRequest") {
-      it("should return true if the vm death was successfully deleted") {
+    describe("#removeMonitorWaitRequest") {
+      it("should return true if the monitor wait was successfully deleted") {
         val expected = true
 
-        (mockVMDeathManager.createVMDeathRequestWithId _)
+        (mockMonitorWaitManager.createMonitorWaitRequestWithId _)
           .expects(*, *)
           .returning(Success(TestRequestId)).once()
 
-        pendingVMDeathSupport.createVMDeathRequestWithId(TestRequestId)
+        pendingMonitorWaitSupport.createMonitorWaitRequestWithId(TestRequestId)
 
-        (mockVMDeathManager.removeVMDeathRequest _).expects(*)
+        (mockMonitorWaitManager.removeMonitorWaitRequest _).expects(*)
           .returning(true).once()
 
-        // Return "no removals" for pending vm death requests
-        // (performed by standard removeVMDeathRequest call)
+        // Return "no removals" for pending monitor wait requests
+        // (performed by standard removeMonitorWaitRequest call)
         (mockPendingActionManager.removePendingActionsWithId _).expects(*)
           .returning(None).once()
 
-        val actual = pendingVMDeathSupport.removeVMDeathRequest(
+        val actual = pendingMonitorWaitSupport.removeMonitorWaitRequest(
           TestRequestId
         )
 
         actual should be (expected)
       }
 
-      it("should return true if the pending vm death request was successfully deleted") {
+      it("should return true if the pending monitor wait request was successfully deleted") {
         val expected = true
         val extraArguments = Seq(stub[JDIRequestArgument])
 
-        (mockVMDeathManager.createVMDeathRequestWithId _)
+        (mockMonitorWaitManager.createMonitorWaitRequestWithId _)
           .expects(*, *)
           .returning(Failure(new Throwable)).once()
 
-        // Pending vm death request should be set
+        // Pending monitor wait request should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          VMDeathRequestInfo(extraArguments),
+          MonitorWaitRequestInfo(extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
-        pendingVMDeathSupport.createVMDeathRequestWithId(
+        pendingMonitorWaitSupport.createMonitorWaitRequestWithId(
           TestRequestId,
           extraArguments: _*
         )
 
-        // Return removals for pending vm death requests
+        // Return removals for pending monitor wait requests
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            VMDeathRequestInfo(extraArguments),
+            MonitorWaitRequestInfo(extraArguments),
             () => {}
           )
         )
-        (mockVMDeathManager.removeVMDeathRequest _)
+        (mockMonitorWaitManager.removeMonitorWaitRequest _)
           .expects(TestRequestId)
           .returning(false).once()
         (mockPendingActionManager.removePendingActionsWithId _).expects(*)
           .returning(Some(pendingRemovalReturn)).once()
 
-        val actual = pendingVMDeathSupport.removeVMDeathRequest(
+        val actual = pendingMonitorWaitSupport.removeMonitorWaitRequest(
           TestRequestId
         )
 
         actual should be (expected)
       }
 
-      it("should return false if the vm death request was not found") {
+      it("should return false if the monitor wait request was not found") {
         val expected = false
 
-        (mockVMDeathManager.removeVMDeathRequest _)
+        (mockMonitorWaitManager.removeMonitorWaitRequest _)
           .expects(*)
           .returning(false).once()
 
-        // Return "no removals" for pending vm death requests
+        // Return "no removals" for pending monitor wait requests
         (mockPendingActionManager.removePendingActionsWithId _).expects(*)
           .returning(None).once()
 
-        val actual = pendingVMDeathSupport.removeVMDeathRequest(
+        val actual = pendingMonitorWaitSupport.removeMonitorWaitRequest(
           TestRequestId
         )
 
