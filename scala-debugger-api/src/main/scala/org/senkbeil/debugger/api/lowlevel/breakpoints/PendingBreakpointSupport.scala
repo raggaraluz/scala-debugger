@@ -1,5 +1,6 @@
 package org.senkbeil.debugger.api.lowlevel.breakpoints
 
+import org.senkbeil.debugger.api.lowlevel.PendingRequestSupport
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.PendingActionManager
 
@@ -8,15 +9,15 @@ import scala.util.{Success, Try}
 /**
  * Provides pending breakpoint capabilities to an existing breakpoint manager.
  */
-trait PendingBreakpointSupport extends BreakpointManager {
+trait PendingBreakpointSupport
+  extends BreakpointManager
+  with PendingRequestSupport
+{
   /**
    * Represents the manager used to store pending breakpoints and process
    * them later.
    */
   protected val pendingActionManager: PendingActionManager[BreakpointRequestInfo]
-
-  /** When enabled, results in adding any failed request as pending. */
-  @volatile var enablePending: Boolean = true
 
   /**
    * Processes all pending breakpoints.
@@ -147,7 +148,7 @@ trait PendingBreakpointSupport extends BreakpointManager {
     val result = createBreakpoint()
 
     result.recoverWith {
-      case _: Throwable if enablePending =>
+      case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
           BreakpointRequestInfo(fileName, lineNumber, extraArguments),

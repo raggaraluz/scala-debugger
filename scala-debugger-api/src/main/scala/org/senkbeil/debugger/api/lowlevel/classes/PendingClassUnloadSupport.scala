@@ -1,5 +1,6 @@
 package org.senkbeil.debugger.api.lowlevel.classes
 
+import org.senkbeil.debugger.api.lowlevel.PendingRequestSupport
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.PendingActionManager
 
@@ -9,15 +10,15 @@ import scala.util.{Failure, Success, Try}
  * Provides pending class unload capabilities to an existing
  * class unload manager.
  */
-trait PendingClassUnloadSupport extends ClassUnloadManager {
+trait PendingClassUnloadSupport
+  extends ClassUnloadManager
+  with PendingRequestSupport
+{
   /**
    * Represents the manager used to store pending class unload requests and
    * process them later.
    */
   protected val pendingActionManager: PendingActionManager[ClassUnloadRequestInfo]
-
-  /** When enabled, results in adding any failed request as pending. */
-  @volatile var enablePending: Boolean = true
 
   /**
    * Processes all pending class unload requests.
@@ -72,14 +73,14 @@ trait PendingClassUnloadSupport extends ClassUnloadManager {
 
     // If failed, add as pending
     result.recoverWith {
-      case _: Throwable if enablePending =>
+      case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
           ClassUnloadRequestInfo(extraArguments),
           () => createClassUnloadRequest().get
         )
         Success(requestId)
-      case throwable: Throwable if !enablePending =>
+      case throwable: Throwable if !isPendingSupportEnabled =>
         Failure(throwable)
     }
   }

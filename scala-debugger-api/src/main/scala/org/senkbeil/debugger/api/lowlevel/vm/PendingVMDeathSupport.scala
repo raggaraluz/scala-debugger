@@ -1,5 +1,6 @@
 package org.senkbeil.debugger.api.lowlevel.vm
 
+import org.senkbeil.debugger.api.lowlevel.PendingRequestSupport
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.PendingActionManager
 
@@ -9,15 +10,12 @@ import scala.util.{Failure, Success, Try}
  * Provides pending vm death capabilities to an existing
  * vm death manager.
  */
-trait PendingVMDeathSupport extends VMDeathManager {
+trait PendingVMDeathSupport extends VMDeathManager with PendingRequestSupport {
   /**
    * Represents the manager used to store pending vm death requests and
    * process them later.
    */
   protected val pendingActionManager: PendingActionManager[VMDeathRequestInfo]
-
-  /** When enabled, results in adding any failed request as pending. */
-  @volatile var enablePending: Boolean = true
 
   /**
    * Processes all pending vm death requests.
@@ -72,14 +70,14 @@ trait PendingVMDeathSupport extends VMDeathManager {
 
     // If failed, add as pending
     result.recoverWith {
-      case _: Throwable if enablePending =>
+      case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
           VMDeathRequestInfo(extraArguments),
           () => createVMDeathRequest().get
         )
         Success(requestId)
-      case throwable: Throwable if !enablePending =>
+      case throwable: Throwable if !isPendingSupportEnabled =>
         Failure(throwable)
     }
   }

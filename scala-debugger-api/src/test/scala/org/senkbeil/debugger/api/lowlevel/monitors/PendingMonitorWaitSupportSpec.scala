@@ -139,7 +139,7 @@ class PendingMonitorWaitSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingMonitorWaitSupport.enablePending = false
+        pendingMonitorWaitSupport.disablePendingSupport()
         val actual = pendingMonitorWaitSupport.createMonitorWaitRequestWithId(
           TestRequestId, extraArguments: _*
         )
@@ -192,7 +192,7 @@ class PendingMonitorWaitSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingMonitorWaitSupport.enablePending = false
+        pendingMonitorWaitSupport.disablePendingSupport()
         val actual = pendingMonitorWaitSupport.createMonitorWaitRequest(
           extraArguments: _*
         )

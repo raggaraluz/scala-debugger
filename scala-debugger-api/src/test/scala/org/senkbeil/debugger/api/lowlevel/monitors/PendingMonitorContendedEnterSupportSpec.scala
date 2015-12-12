@@ -139,7 +139,7 @@ class PendingMonitorContendedEnterSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingMonitorContendedEnterSupport.enablePending = false
+        pendingMonitorContendedEnterSupport.disablePendingSupport()
         val actual = pendingMonitorContendedEnterSupport.createMonitorContendedEnterRequestWithId(
           TestRequestId, extraArguments: _*
         )
@@ -192,7 +192,7 @@ class PendingMonitorContendedEnterSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingMonitorContendedEnterSupport.enablePending = false
+        pendingMonitorContendedEnterSupport.disablePendingSupport()
         val actual = pendingMonitorContendedEnterSupport.createMonitorContendedEnterRequest(
           extraArguments: _*
         )

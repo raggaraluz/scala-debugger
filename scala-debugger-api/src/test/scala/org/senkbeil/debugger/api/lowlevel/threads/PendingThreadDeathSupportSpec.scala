@@ -139,7 +139,7 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingThreadDeathSupport.enablePending = false
+        pendingThreadDeathSupport.disablePendingSupport()
         val actual = pendingThreadDeathSupport.createThreadDeathRequestWithId(
           TestRequestId, extraArguments: _*
         )
@@ -192,7 +192,7 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingThreadDeathSupport.enablePending = false
+        pendingThreadDeathSupport.disablePendingSupport()
         val actual = pendingThreadDeathSupport.createThreadDeathRequest(
           extraArguments: _*
         )

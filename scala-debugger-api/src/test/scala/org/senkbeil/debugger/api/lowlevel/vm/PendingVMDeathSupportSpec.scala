@@ -139,7 +139,7 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingVMDeathSupport.enablePending = false
+        pendingVMDeathSupport.disablePendingSupport()
         val actual = pendingVMDeathSupport.createVMDeathRequestWithId(
           TestRequestId, extraArguments: _*
         )
@@ -192,7 +192,7 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingVMDeathSupport.enablePending = false
+        pendingVMDeathSupport.disablePendingSupport()
         val actual = pendingVMDeathSupport.createVMDeathRequest(
           extraArguments: _*
         )

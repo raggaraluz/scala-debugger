@@ -1,5 +1,6 @@
 package org.senkbeil.debugger.api.lowlevel.threads
 
+import org.senkbeil.debugger.api.lowlevel.PendingRequestSupport
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.PendingActionManager
 
@@ -9,15 +10,15 @@ import scala.util.{Failure, Success, Try}
  * Provides pending thread death capabilities to an existing
  * thread death manager.
  */
-trait PendingThreadDeathSupport extends ThreadDeathManager {
+trait PendingThreadDeathSupport
+  extends ThreadDeathManager
+  with PendingRequestSupport
+{
   /**
    * Represents the manager used to store pending thread death requests and
    * process them later.
    */
   protected val pendingActionManager: PendingActionManager[ThreadDeathRequestInfo]
-
-  /** When enabled, results in adding any failed request as pending. */
-  @volatile var enablePending: Boolean = true
 
   /**
    * Processes all pending thread death requests.
@@ -72,14 +73,14 @@ trait PendingThreadDeathSupport extends ThreadDeathManager {
 
     // If failed, add as pending
     result.recoverWith {
-      case _: Throwable if enablePending =>
+      case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
           ThreadDeathRequestInfo(extraArguments),
           () => createThreadDeathRequest().get
         )
         Success(requestId)
-      case throwable: Throwable if !enablePending =>
+      case throwable: Throwable if !isPendingSupportEnabled =>
         Failure(throwable)
     }
   }

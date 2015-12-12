@@ -190,7 +190,7 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
           .expects(*, *, *, *)
           .returning(expected).once()
 
-        pendingBreakpointSupport.enablePending = false
+        pendingBreakpointSupport.disablePendingSupport()
         val actual = pendingBreakpointSupport.createBreakpointRequestWithId(
           TestRequestId, testFileName, testLineNumber, extraArguments: _*
         )
@@ -253,7 +253,7 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
           .expects(*, *, *, *)
           .returning(expected).once()
 
-        pendingBreakpointSupport.enablePending = false
+        pendingBreakpointSupport.disablePendingSupport()
         val actual = pendingBreakpointSupport.createBreakpointRequest(
           testFileName, testLineNumber, extraArguments: _*
         )

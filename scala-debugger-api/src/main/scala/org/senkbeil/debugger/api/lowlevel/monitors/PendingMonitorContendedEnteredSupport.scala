@@ -1,5 +1,6 @@
 package org.senkbeil.debugger.api.lowlevel.monitors
 
+import org.senkbeil.debugger.api.lowlevel.PendingRequestSupport
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.PendingActionManager
 
@@ -9,15 +10,15 @@ import scala.util.{Failure, Success, Try}
  * Provides pending monitor contended entered capabilities to an existing
  * monitor contended entered manager.
  */
-trait PendingMonitorContendedEnteredSupport extends MonitorContendedEnteredManager {
+trait PendingMonitorContendedEnteredSupport
+  extends MonitorContendedEnteredManager
+  with PendingRequestSupport
+{
   /**
    * Represents the manager used to store pending monitor contended entered requests and
    * process them later.
    */
   protected val pendingActionManager: PendingActionManager[MonitorContendedEnteredRequestInfo]
-
-  /** When enabled, results in adding any failed request as pending. */
-  @volatile var enablePending: Boolean = true
 
   /**
    * Processes all pending monitor contended entered requests.
@@ -72,14 +73,14 @@ trait PendingMonitorContendedEnteredSupport extends MonitorContendedEnteredManag
 
     // If failed, add as pending
     result.recoverWith {
-      case _: Throwable if enablePending =>
+      case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
           MonitorContendedEnteredRequestInfo(extraArguments),
           () => createMonitorContendedEnteredRequest().get
         )
         Success(requestId)
-      case throwable: Throwable if !enablePending =>
+      case throwable: Throwable if !isPendingSupportEnabled =>
         Failure(throwable)
     }
   }

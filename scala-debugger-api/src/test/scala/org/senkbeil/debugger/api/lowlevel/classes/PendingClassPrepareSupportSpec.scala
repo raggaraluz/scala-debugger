@@ -139,7 +139,7 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingClassPrepareSupport.enablePending = false
+        pendingClassPrepareSupport.disablePendingSupport()
         val actual = pendingClassPrepareSupport.createClassPrepareRequestWithId(
           TestRequestId, extraArguments: _*
         )
@@ -192,7 +192,7 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingClassPrepareSupport.enablePending = false
+        pendingClassPrepareSupport.disablePendingSupport()
         val actual = pendingClassPrepareSupport.createClassPrepareRequest(
           extraArguments: _*
         )

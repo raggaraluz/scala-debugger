@@ -139,7 +139,7 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingClassUnloadSupport.enablePending = false
+        pendingClassUnloadSupport.disablePendingSupport()
         val actual = pendingClassUnloadSupport.createClassUnloadRequestWithId(
           TestRequestId, extraArguments: _*
         )
@@ -192,7 +192,7 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingClassUnloadSupport.enablePending = false
+        pendingClassUnloadSupport.disablePendingSupport()
         val actual = pendingClassUnloadSupport.createClassUnloadRequest(
           extraArguments: _*
         )

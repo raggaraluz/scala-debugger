@@ -1,5 +1,6 @@
 package org.senkbeil.debugger.api.lowlevel.classes
 
+import org.senkbeil.debugger.api.lowlevel.PendingRequestSupport
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.PendingActionManager
 
@@ -9,15 +10,15 @@ import scala.util.{Failure, Success, Try}
  * Provides pending class prepare capabilities to an existing
  * class prepare manager.
  */
-trait PendingClassPrepareSupport extends ClassPrepareManager {
+trait PendingClassPrepareSupport
+  extends ClassPrepareManager
+  with PendingRequestSupport
+{
   /**
    * Represents the manager used to store pending class prepare requests and
    * process them later.
    */
   protected val pendingActionManager: PendingActionManager[ClassPrepareRequestInfo]
-
-  /** When enabled, results in adding any failed request as pending. */
-  @volatile var enablePending: Boolean = true
 
   /**
    * Processes all pending class prepare requests.
@@ -72,14 +73,14 @@ trait PendingClassPrepareSupport extends ClassPrepareManager {
 
     // If failed, add as pending
     result.recoverWith {
-      case _: Throwable if enablePending =>
+      case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
           ClassPrepareRequestInfo(extraArguments),
           () => createClassPrepareRequest().get
         )
         Success(requestId)
-      case throwable: Throwable if !enablePending =>
+      case throwable: Throwable if !isPendingSupportEnabled =>
         Failure(throwable)
     }
   }

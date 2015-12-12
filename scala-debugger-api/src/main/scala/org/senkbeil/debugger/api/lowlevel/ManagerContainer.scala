@@ -37,7 +37,25 @@ case class ManagerContainer(
   threadDeathManager: ThreadDeathManager,
   threadStartManager: ThreadStartManager,
   vmDeathManager: VMDeathManager
-)
+) {
+  /** Enables pending support for all managers supporting pending requests. */
+  def enablePendingSupport(): Unit = setPendingSupportForAll(true)
+
+  /** Disables pending support for all managers supporting pending requests. */
+  def disablePendingSupport(): Unit = setPendingSupportForAll(false)
+
+  /**
+   * Sets the pending support enablement to the specified value.
+   *
+   * @param value True if enabling pending support on managers, otherwise false
+   */
+  private def setPendingSupportForAll(value: Boolean): Unit = {
+    this.productIterator.foreach {
+      case p: PendingRequestSupport => p.setPendingSupport(value)
+      case _                        => // Do nothing in this case
+    }
+  }
+}
 
 object ManagerContainer {
   /**

@@ -1,5 +1,6 @@
 package org.senkbeil.debugger.api.lowlevel.threads
 
+import org.senkbeil.debugger.api.lowlevel.PendingRequestSupport
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.PendingActionManager
 
@@ -9,15 +10,15 @@ import scala.util.{Failure, Success, Try}
  * Provides pending thread start capabilities to an existing
  * thread start manager.
  */
-trait PendingThreadStartSupport extends ThreadStartManager {
+trait PendingThreadStartSupport
+  extends ThreadStartManager
+  with PendingRequestSupport
+{
   /**
    * Represents the manager used to store pending thread start requests and
    * process them later.
    */
   protected val pendingActionManager: PendingActionManager[ThreadStartRequestInfo]
-
-  /** When enabled, results in adding any failed request as pending. */
-  @volatile var enablePending: Boolean = true
 
   /**
    * Processes all pending thread start requests.
@@ -72,14 +73,14 @@ trait PendingThreadStartSupport extends ThreadStartManager {
 
     // If failed, add as pending
     result.recoverWith {
-      case _: Throwable if enablePending =>
+      case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
           ThreadStartRequestInfo(extraArguments),
           () => createThreadStartRequest().get
         )
         Success(requestId)
-      case throwable: Throwable if !enablePending =>
+      case throwable: Throwable if !isPendingSupportEnabled =>
         Failure(throwable)
     }
   }

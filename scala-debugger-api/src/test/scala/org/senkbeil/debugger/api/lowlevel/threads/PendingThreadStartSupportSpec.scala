@@ -139,7 +139,7 @@ class PendingThreadStartSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingThreadStartSupport.enablePending = false
+        pendingThreadStartSupport.disablePendingSupport()
         val actual = pendingThreadStartSupport.createThreadStartRequestWithId(
           TestRequestId, extraArguments: _*
         )
@@ -192,7 +192,7 @@ class PendingThreadStartSupportSpec extends FunSpec with Matchers
           .expects(*, *)
           .returning(expected).once()
 
-        pendingThreadStartSupport.enablePending = false
+        pendingThreadStartSupport.disablePendingSupport()
         val actual = pendingThreadStartSupport.createThreadStartRequest(
           extraArguments: _*
         )

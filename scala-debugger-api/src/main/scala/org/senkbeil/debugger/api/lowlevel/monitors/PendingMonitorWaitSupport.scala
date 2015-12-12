@@ -1,5 +1,6 @@
 package org.senkbeil.debugger.api.lowlevel.monitors
 
+import org.senkbeil.debugger.api.lowlevel.PendingRequestSupport
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.PendingActionManager
 
@@ -9,15 +10,15 @@ import scala.util.{Failure, Success, Try}
  * Provides pending monitor wait capabilities to an existing
  * monitor wait manager.
  */
-trait PendingMonitorWaitSupport extends MonitorWaitManager {
+trait PendingMonitorWaitSupport
+  extends MonitorWaitManager
+  with PendingRequestSupport
+{
   /**
    * Represents the manager used to store pending monitor wait requests and
    * process them later.
    */
   protected val pendingActionManager: PendingActionManager[MonitorWaitRequestInfo]
-
-  /** When enabled, results in adding any failed request as pending. */
-  @volatile var enablePending: Boolean = true
 
   /**
    * Processes all pending monitor wait requests.
@@ -72,14 +73,14 @@ trait PendingMonitorWaitSupport extends MonitorWaitManager {
 
     // If failed, add as pending
     result.recoverWith {
-      case _: Throwable if enablePending =>
+      case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
           MonitorWaitRequestInfo(extraArguments),
           () => createMonitorWaitRequest().get
         )
         Success(requestId)
-      case throwable: Throwable if !enablePending =>
+      case throwable: Throwable if !isPendingSupportEnabled =>
         Failure(throwable)
     }
   }
