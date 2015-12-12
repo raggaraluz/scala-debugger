@@ -15,6 +15,9 @@ trait PendingBreakpointSupport extends BreakpointManager {
    */
   protected val pendingActionManager: PendingActionManager[BreakpointRequestInfo]
 
+  /** When enabled, results in adding any failed request as pending. */
+  @volatile var enablePending: Boolean = true
+
   /**
    * Processes all pending breakpoints.
    *
@@ -143,11 +146,8 @@ trait PendingBreakpointSupport extends BreakpointManager {
 
     val result = createBreakpoint()
 
-    // If succeeded in adding the breakpoint, exit early
-    if (result.isSuccess) return result
-
     result.recoverWith {
-      case _: NoBreakpointLocationFound =>
+      case _: Throwable if enablePending =>
         pendingActionManager.addPendingActionWithId(
           requestId,
           BreakpointRequestInfo(fileName, lineNumber, extraArguments),

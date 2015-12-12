@@ -2,6 +2,7 @@ package org.senkbeil.debugger.api.lowlevel.breakpoints
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.{ActionInfo, PendingActionManager}
 import test.{JDIMockHelpers, TestBreakpointManager}
 
@@ -151,26 +152,6 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         actual should be (expected)
       }
 
-      it("should return Failure(ex) if an error was thrown") {
-        val testFileName = "some/file/name"
-        val testLineNumber = 1
-
-        val expected = Failure(new Throwable)
-
-        // Create a breakpoint to use for testing
-        (mockBreakpointManager.createBreakpointRequestWithId _)
-          .expects(TestRequestId, testFileName, testLineNumber, Nil)
-          .returning(expected).once()
-
-        val actual = pendingBreakpointSupport.createBreakpointRequestWithId(
-          TestRequestId,
-          testFileName,
-          testLineNumber
-        )
-
-        actual should be (expected)
-      }
-
       it("should add a pending breakpoint if NoBreakpointLocationFound thrown") {
         val testFileName = "some/file/name"
         val testLineNumber = 1
@@ -194,6 +175,24 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
           TestRequestId,
           testFileName,
           testLineNumber
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return a failure if pending disabled and failed to create request") {
+        val expected = Failure(new Throwable)
+        val testFileName = "some/file/name"
+        val testLineNumber = 1
+        val extraArguments = Seq(stub[JDIRequestArgument])
+
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(*, *, *, *)
+          .returning(expected).once()
+
+        pendingBreakpointSupport.enablePending = false
+        val actual = pendingBreakpointSupport.createBreakpointRequestWithId(
+          TestRequestId, testFileName, testLineNumber, extraArguments: _*
         )
 
         actual should be (expected)
@@ -219,34 +218,15 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         actual should be (expected)
       }
 
-      it("should return Failure(ex) if an error was thrown") {
+      it("should add a pending breakpoint if excpetion thrown") {
         val testFileName = "some/file/name"
         val testLineNumber = 1
-
-        val expected = Failure(new Throwable)
-
-        (mockBreakpointManager.createBreakpointRequestWithId _)
-          .expects(TestRequestId, testFileName, testLineNumber, Nil)
-          .returning(expected).once()
-
-        val actual = pendingBreakpointSupport.createBreakpointRequest(
-          testFileName,
-          testLineNumber
-        )
-
-        actual should be (expected)
-      }
-
-      it("should add a pending breakpoint if NoBreakpointLocationFound thrown") {
-        val testFileName = "some/file/name"
-        val testLineNumber = 1
-        val error = NoBreakpointLocationFound(testFileName, testLineNumber)
 
         val expected = Success(TestRequestId)
 
         (mockBreakpointManager.createBreakpointRequestWithId _)
           .expects(TestRequestId, testFileName, testLineNumber, Nil)
-          .returning(Failure(error)).once()
+          .returning(Failure(new Throwable)).once()
 
         // Pending breakpoint should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
@@ -258,6 +238,24 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         val actual = pendingBreakpointSupport.createBreakpointRequest(
           testFileName,
           testLineNumber
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return a failure if pending disabled and failed to create request") {
+        val expected = Failure(new Throwable)
+        val testFileName = "some/file/name"
+        val testLineNumber = 1
+        val extraArguments = Seq(stub[JDIRequestArgument])
+
+        (mockBreakpointManager.createBreakpointRequestWithId _)
+          .expects(*, *, *, *)
+          .returning(expected).once()
+
+        pendingBreakpointSupport.enablePending = false
+        val actual = pendingBreakpointSupport.createBreakpointRequest(
+          testFileName, testLineNumber, extraArguments: _*
         )
 
         actual should be (expected)
