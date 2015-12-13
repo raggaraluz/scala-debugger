@@ -119,6 +119,7 @@ object ManagerContainer {
         with StandardPendingMethodEntrySupport
     lazy val methodExitManager =
       new StandardMethodExitManager(eventRequestManager)
+        with StandardPendingMethodExitSupport
     lazy val modificationWatchpointManager =
       new StandardModificationWatchpointManager(eventRequestManager, classManager)
         with StandardPendingModificationWatchpointSupport
