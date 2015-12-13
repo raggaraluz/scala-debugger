@@ -6,7 +6,7 @@ import org.senkbeil.debugger.api.lowlevel.breakpoints.{StandardPendingBreakpoint
 import org.senkbeil.debugger.api.lowlevel.classes._
 import org.senkbeil.debugger.api.lowlevel.events.{StandardEventManager, EventManager}
 import org.senkbeil.debugger.api.lowlevel.exceptions.{StandardPendingExceptionSupport, StandardExceptionManager, ExceptionManager}
-import org.senkbeil.debugger.api.lowlevel.methods.{MethodExitManager, MethodEntryManager, StandardMethodEntryManager, StandardMethodExitManager}
+import org.senkbeil.debugger.api.lowlevel.methods._
 import org.senkbeil.debugger.api.lowlevel.monitors._
 import org.senkbeil.debugger.api.lowlevel.steps.{StandardPendingStepSupport, StepManager, StandardStepManager}
 import org.senkbeil.debugger.api.lowlevel.threads._
@@ -116,6 +116,7 @@ object ManagerContainer {
         with StandardPendingExceptionSupport
     lazy val methodEntryManager =
       new StandardMethodEntryManager(eventRequestManager)
+        with StandardPendingMethodEntrySupport
     lazy val methodExitManager =
       new StandardMethodExitManager(eventRequestManager)
     lazy val modificationWatchpointManager =

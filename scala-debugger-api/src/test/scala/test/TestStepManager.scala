@@ -7,6 +7,12 @@ import org.senkbeil.debugger.api.lowlevel.steps.{StepRequestInfo, StepManager}
 
 import scala.util.Try
 
+/**
+ * Test step manager that merely invokes the provided step manager
+ * underneath to make it easier to mock.
+ *
+ * @param stepManager The underlying step manager used to execute all methods
+ */
 class TestStepManager(
   private val stepManager: StepManager
 ) extends StepManager {
