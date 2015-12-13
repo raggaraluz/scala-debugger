@@ -225,7 +225,7 @@ class PendingExceptionSupportSpec extends FunSpec with Matchers
         actual should be (expected)
       }
 
-      it("should add a pending exception if NoExceptionLocationFound thrown") {
+      it("should add a pending exception request if exception thrown") {
         val testClassName = "some.class.name"
 
         val expected = Success(TestRequestId)

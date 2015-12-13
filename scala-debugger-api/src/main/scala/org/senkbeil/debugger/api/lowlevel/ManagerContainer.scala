@@ -11,7 +11,7 @@ import org.senkbeil.debugger.api.lowlevel.monitors._
 import org.senkbeil.debugger.api.lowlevel.steps.{StepManager, StandardStepManager}
 import org.senkbeil.debugger.api.lowlevel.threads._
 import org.senkbeil.debugger.api.lowlevel.vm.{StandardPendingVMDeathSupport, VMDeathManager, StandardVMDeathManager}
-import org.senkbeil.debugger.api.lowlevel.watchpoints.{AccessWatchpointManager, ModificationWatchpointManager, StandardModificationWatchpointManager, StandardAccessWatchpointManager}
+import org.senkbeil.debugger.api.lowlevel.watchpoints._
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 
 /**
@@ -94,6 +94,7 @@ object ManagerContainer {
     lazy val eventQueue = virtualMachine.eventQueue()
     lazy val accessWatchpointManager =
       new StandardAccessWatchpointManager(eventRequestManager, classManager)
+        with StandardPendingAccessWatchpointSupport
     lazy val breakpointManager =
       new StandardBreakpointManager(eventRequestManager, classManager)
         with StandardPendingBreakpointSupport
