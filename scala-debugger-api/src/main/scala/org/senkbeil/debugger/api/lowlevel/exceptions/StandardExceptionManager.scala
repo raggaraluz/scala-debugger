@@ -193,6 +193,7 @@ class StandardExceptionManager(
     notifyUncaught: Boolean,
     extraArguments: JDIRequestArgument*
   ): Try[String] = {
+    require(exceptionName != null, "Exception name cannot be null!")
     val exceptionReferenceTypes = virtualMachine.classesByName(exceptionName)
 
     // If no classes match the requested exception type, exit early

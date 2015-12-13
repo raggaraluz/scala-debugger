@@ -205,12 +205,6 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
       it("should return true if the thread death was successfully deleted") {
         val expected = true
 
-        (mockThreadDeathManager.createThreadDeathRequestWithId _)
-          .expects(*, *)
-          .returning(Success(TestRequestId)).once()
-
-        pendingThreadDeathSupport.createThreadDeathRequestWithId(TestRequestId)
-
         (mockThreadDeathManager.removeThreadDeathRequest _).expects(*)
           .returning(true).once()
 
@@ -229,22 +223,6 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
       it("should return true if the pending thread death request was successfully deleted") {
         val expected = true
         val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockThreadDeathManager.createThreadDeathRequestWithId _)
-          .expects(*, *)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending thread death request should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          ThreadDeathRequestInfo(extraArguments),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        pendingThreadDeathSupport.createThreadDeathRequestWithId(
-          TestRequestId,
-          extraArguments: _*
-        )
 
         // Return removals for pending thread death requests
         val pendingRemovalReturn = Seq(

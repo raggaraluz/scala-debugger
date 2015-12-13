@@ -205,12 +205,6 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
       it("should return true if the class prepare was successfully deleted") {
         val expected = true
 
-        (mockClassPrepareManager.createClassPrepareRequestWithId _)
-          .expects(*, *)
-          .returning(Success(TestRequestId)).once()
-
-        pendingClassPrepareSupport.createClassPrepareRequestWithId(TestRequestId)
-
         (mockClassPrepareManager.removeClassPrepareRequest _).expects(*)
           .returning(true).once()
 
@@ -229,22 +223,6 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
       it("should return true if the pending class prepare request was successfully deleted") {
         val expected = true
         val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockClassPrepareManager.createClassPrepareRequestWithId _)
-          .expects(*, *)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending class prepare request should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          ClassPrepareRequestInfo(extraArguments),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        pendingClassPrepareSupport.createClassPrepareRequestWithId(
-          TestRequestId,
-          extraArguments: _*
-        )
 
         // Return removals for pending class prepare requests
         val pendingRemovalReturn = Seq(

@@ -205,12 +205,6 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
       it("should return true if the vm death was successfully deleted") {
         val expected = true
 
-        (mockVMDeathManager.createVMDeathRequestWithId _)
-          .expects(*, *)
-          .returning(Success(TestRequestId)).once()
-
-        pendingVMDeathSupport.createVMDeathRequestWithId(TestRequestId)
-
         (mockVMDeathManager.removeVMDeathRequest _).expects(*)
           .returning(true).once()
 
@@ -229,22 +223,6 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
       it("should return true if the pending vm death request was successfully deleted") {
         val expected = true
         val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockVMDeathManager.createVMDeathRequestWithId _)
-          .expects(*, *)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending vm death request should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          VMDeathRequestInfo(extraArguments),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        pendingVMDeathSupport.createVMDeathRequestWithId(
-          TestRequestId,
-          extraArguments: _*
-        )
 
         // Return removals for pending vm death requests
         val pendingRemovalReturn = Seq(

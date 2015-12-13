@@ -205,12 +205,6 @@ class PendingThreadStartSupportSpec extends FunSpec with Matchers
       it("should return true if the thread start was successfully deleted") {
         val expected = true
 
-        (mockThreadStartManager.createThreadStartRequestWithId _)
-          .expects(*, *)
-          .returning(Success(TestRequestId)).once()
-
-        pendingThreadStartSupport.createThreadStartRequestWithId(TestRequestId)
-
         (mockThreadStartManager.removeThreadStartRequest _).expects(*)
           .returning(true).once()
 
@@ -229,22 +223,6 @@ class PendingThreadStartSupportSpec extends FunSpec with Matchers
       it("should return true if the pending thread start request was successfully deleted") {
         val expected = true
         val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockThreadStartManager.createThreadStartRequestWithId _)
-          .expects(*, *)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending thread start request should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          ThreadStartRequestInfo(extraArguments),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        pendingThreadStartSupport.createThreadStartRequestWithId(
-          TestRequestId,
-          extraArguments: _*
-        )
 
         // Return removals for pending thread start requests
         val pendingRemovalReturn = Seq(

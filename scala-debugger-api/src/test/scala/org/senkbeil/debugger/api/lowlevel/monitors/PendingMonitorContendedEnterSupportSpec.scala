@@ -205,12 +205,6 @@ class PendingMonitorContendedEnterSupportSpec extends FunSpec with Matchers
       it("should return true if the monitor contended enter was successfully deleted") {
         val expected = true
 
-        (mockMonitorContendedEnterManager.createMonitorContendedEnterRequestWithId _)
-          .expects(*, *)
-          .returning(Success(TestRequestId)).once()
-
-        pendingMonitorContendedEnterSupport.createMonitorContendedEnterRequestWithId(TestRequestId)
-
         (mockMonitorContendedEnterManager.removeMonitorContendedEnterRequest _).expects(*)
           .returning(true).once()
 
@@ -229,22 +223,6 @@ class PendingMonitorContendedEnterSupportSpec extends FunSpec with Matchers
       it("should return true if the pending monitor contended enter request was successfully deleted") {
         val expected = true
         val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockMonitorContendedEnterManager.createMonitorContendedEnterRequestWithId _)
-          .expects(*, *)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending monitor contended enter request should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          MonitorContendedEnterRequestInfo(extraArguments),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        pendingMonitorContendedEnterSupport.createMonitorContendedEnterRequestWithId(
-          TestRequestId,
-          extraArguments: _*
-        )
 
         // Return removals for pending monitor contended enter requests
         val pendingRemovalReturn = Seq(

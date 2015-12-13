@@ -205,12 +205,6 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
       it("should return true if the class unload was successfully deleted") {
         val expected = true
 
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
-          .expects(*, *)
-          .returning(Success(TestRequestId)).once()
-
-        pendingClassUnloadSupport.createClassUnloadRequestWithId(TestRequestId)
-
         (mockClassUnloadManager.removeClassUnloadRequest _).expects(*)
           .returning(true).once()
 
@@ -229,22 +223,6 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
       it("should return true if the pending class unload request was successfully deleted") {
         val expected = true
         val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
-          .expects(*, *)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending class unload request should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          ClassUnloadRequestInfo(extraArguments),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        pendingClassUnloadSupport.createClassUnloadRequestWithId(
-          TestRequestId,
-          extraArguments: _*
-        )
 
         // Return removals for pending class unload requests
         val pendingRemovalReturn = Seq(

@@ -40,16 +40,6 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
           BreakpointRequestInfo(testFileName, testLineNumber + 1)
         )
 
-        // Create breakpoints to use for testing
-        (mockBreakpointManager.createBreakpointRequestWithId _)
-          .expects(*, *, *, *)
-          .returning(Success(java.util.UUID.randomUUID().toString))
-          .repeated(3).times()
-
-        expected.foreach(b => pendingBreakpointSupport.createBreakpointRequest(
-          b.fileName, b.lineNumber, b.extraArguments: _*
-        ))
-
         (mockPendingActionManager.processAllActions _).expects()
           .returning(expected.map(b => ActionInfo("id", b, () => {}))).once()
 
@@ -60,30 +50,20 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
 
     describe("#processPendingBreakpointRequestsForFile") {
       it("should process pending breakpoints for the specified file") {
-        val testFileName = "some/file/name"
-        val testLineNumber = 1
-
         val expected = Seq(
-          BreakpointRequestInfo(testFileName, testLineNumber, Nil)
+          BreakpointRequestInfo("file1", 1),
+          BreakpointRequestInfo("file1", 999)
         )
+        val actions = (expected :+ BreakpointRequestInfo("file2", 1))
+          .map(ActionInfo.apply("", _: BreakpointRequestInfo, () => {}))
 
-        // Create a breakpoint to use for testing
-        (mockBreakpointManager.createBreakpointRequestWithId _)
-          .expects(TestRequestId, testFileName, testLineNumber, Nil)
-          .returning(Success(TestRequestId)).once()
-
-        pendingBreakpointSupport.createBreakpointRequest(
-          testFileName,
-          testLineNumber
-        )
-
-        // Return our data that represents the expected file and line
-        (mockPendingActionManager.processActions _).expects(*)
-          .returning(Seq(ActionInfo("id", expected.head, () => {})))
-          .once()
+        // Return our data that represents the processed actions
+        (mockPendingActionManager.processActions _).expects(*).onCall(
+          (f: ActionInfo[BreakpointRequestInfo] => Boolean) => actions.filter(f)
+        ).once()
 
         val actual = pendingBreakpointSupport.processPendingBreakpointRequestsForFile(
-          testFileName
+          "file1"
         )
 
         actual should be (expected)
@@ -175,7 +155,7 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         actual should be (expected)
       }
 
-      it("should add a pending breakpoint if NoBreakpointLocationFound thrown") {
+      it("should add a pending breakpoint if exception thrown") {
         val testFileName = "some/file/name"
         val testLineNumber = 1
         val error = NoBreakpointLocationFound(testFileName, testLineNumber)
@@ -292,16 +272,6 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         val testFileName = "some/file/name"
         val testLineNumber = 1
 
-        (mockBreakpointManager.createBreakpointRequestWithId _)
-          .expects(TestRequestId, testFileName, testLineNumber, Nil)
-          .returning(Success(TestRequestId)).once()
-
-        // Set a breakpoint on a line that is returned by linesAndLocations
-        pendingBreakpointSupport.createBreakpointRequest(
-          testFileName,
-          testLineNumber
-        )
-
         (mockBreakpointManager.removeBreakpointRequestWithId _)
           .expects(TestRequestId)
           .returning(true).once()
@@ -324,23 +294,6 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         val testFileName = "some/file/name"
         val testLineNumber = 1
         val error = NoBreakpointLocationFound(testFileName, testLineNumber)
-
-        (mockBreakpointManager.createBreakpointRequestWithId _)
-          .expects(TestRequestId, testFileName, testLineNumber, Nil)
-          .returning(Failure(error)).once()
-
-        // Pending breakpoint should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          BreakpointRequestInfo(testFileName, testLineNumber, Nil),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        // Set a breakpoint on a line that is returned by linesAndLocations
-        pendingBreakpointSupport.createBreakpointRequest(
-          testFileName,
-          testLineNumber
-        )
 
         // Return removals for pending breakpoints
         val pendingRemovalReturn = Some(Seq(
@@ -391,13 +344,6 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         val testFileName = "some/file/name"
         val testLineNumber = 1
 
-        (mockBreakpointManager.createBreakpointRequestWithId _)
-          .expects(TestRequestId, testFileName, testLineNumber, Nil)
-          .returning(Success(TestRequestId)).once()
-
-        // Set a breakpoint on a line that is returned by linesAndLocations
-        pendingBreakpointSupport.createBreakpointRequest(testFileName, 1)
-
         (mockBreakpointManager.removeBreakpointRequest _)
           .expects(testFileName, testLineNumber)
           .returning(true).once()
@@ -422,25 +368,7 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         val testLineNumber = 1
         val error = NoBreakpointLocationFound(testFileName, testLineNumber)
 
-        (mockBreakpointManager.createBreakpointRequestWithId _)
-          .expects(TestRequestId, testFileName, testLineNumber, Nil)
-          .returning(Failure(error)).once()
-
-        // Pending breakpoint should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          BreakpointRequestInfo(testFileName, testLineNumber, Nil),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        // Set a breakpoint on a line that is returned by linesAndLocations
-        pendingBreakpointSupport.createBreakpointRequest(
-          testFileName,
-          testLineNumber
-        )
-
-        // Return removals for pending breakpoints
-        val pendingRemovalReturn = Seq(
+        val actions = Seq(
           ActionInfo(
             TestRequestId,
             BreakpointRequestInfo(testFileName, testLineNumber, Nil),
@@ -450,9 +378,10 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         (mockBreakpointManager.removeBreakpointRequest _)
           .expects(testFileName, testLineNumber)
           .returning(false).once()
-        (mockPendingActionManager.removePendingActions _)
-          .expects(*)
-          .returning(pendingRemovalReturn).once()
+        (mockPendingActionManager.removePendingActions _).expects(*).onCall(
+          (f: ActionInfo[BreakpointRequestInfo] => Boolean) =>
+            actions.filter(f)
+        ).once()
 
         val actual = pendingBreakpointSupport.removeBreakpointRequest(
           testFileName,

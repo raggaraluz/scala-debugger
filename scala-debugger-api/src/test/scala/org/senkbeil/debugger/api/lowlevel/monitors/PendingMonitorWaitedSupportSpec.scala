@@ -205,12 +205,6 @@ class PendingMonitorWaitedSupportSpec extends FunSpec with Matchers
       it("should return true if the monitor waited was successfully deleted") {
         val expected = true
 
-        (mockMonitorWaitedManager.createMonitorWaitedRequestWithId _)
-          .expects(*, *)
-          .returning(Success(TestRequestId)).once()
-
-        pendingMonitorWaitedSupport.createMonitorWaitedRequestWithId(TestRequestId)
-
         (mockMonitorWaitedManager.removeMonitorWaitedRequest _).expects(*)
           .returning(true).once()
 
@@ -229,22 +223,6 @@ class PendingMonitorWaitedSupportSpec extends FunSpec with Matchers
       it("should return true if the pending monitor waited request was successfully deleted") {
         val expected = true
         val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockMonitorWaitedManager.createMonitorWaitedRequestWithId _)
-          .expects(*, *)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending monitor waited request should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          MonitorWaitedRequestInfo(extraArguments),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        pendingMonitorWaitedSupport.createMonitorWaitedRequestWithId(
-          TestRequestId,
-          extraArguments: _*
-        )
 
         // Return removals for pending monitor waited requests
         val pendingRemovalReturn = Seq(

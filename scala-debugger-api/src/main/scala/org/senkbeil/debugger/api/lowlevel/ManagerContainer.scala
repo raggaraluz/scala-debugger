@@ -5,7 +5,7 @@ import com.sun.jdi.request.EventRequestManager
 import org.senkbeil.debugger.api.lowlevel.breakpoints.{StandardPendingBreakpointSupport, BreakpointManager, PendingBreakpointSupport, StandardBreakpointManager}
 import org.senkbeil.debugger.api.lowlevel.classes._
 import org.senkbeil.debugger.api.lowlevel.events.{StandardEventManager, EventManager}
-import org.senkbeil.debugger.api.lowlevel.exceptions.{StandardExceptionManager, ExceptionManager}
+import org.senkbeil.debugger.api.lowlevel.exceptions.{StandardPendingExceptionSupport, StandardExceptionManager, ExceptionManager}
 import org.senkbeil.debugger.api.lowlevel.methods.{MethodExitManager, MethodEntryManager, StandardMethodEntryManager, StandardMethodExitManager}
 import org.senkbeil.debugger.api.lowlevel.monitors._
 import org.senkbeil.debugger.api.lowlevel.steps.{StepManager, StandardStepManager}
@@ -57,6 +57,7 @@ case class ManagerContainer(
   }
 }
 
+/** Containers helper methods for initializing a manager container. */
 object ManagerContainer {
   /**
    * Initializes all managers for the specified virtual machine. Uses the
@@ -111,6 +112,7 @@ object ManagerContainer {
     )
     lazy val exceptionManager =
       new StandardExceptionManager(virtualMachine, eventRequestManager)
+        with StandardPendingExceptionSupport
     lazy val methodEntryManager =
       new StandardMethodEntryManager(eventRequestManager)
     lazy val methodExitManager =

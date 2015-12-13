@@ -80,8 +80,7 @@ trait PendingClassUnloadSupport
           () => createClassUnloadRequest().get
         )
         Success(requestId)
-      case throwable: Throwable if !isPendingSupportEnabled =>
-        Failure(throwable)
+      case _: Throwable => result
     }
   }
 

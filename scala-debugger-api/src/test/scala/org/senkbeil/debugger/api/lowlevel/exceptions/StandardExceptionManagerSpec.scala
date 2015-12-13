@@ -271,6 +271,12 @@ class StandardExceptionManagerSpec extends FunSpec with Matchers with MockFactor
     }
 
     describe("#createExceptionRequestWithId") {
+      it("should throw an exception if the exception name is null") {
+        intercept[IllegalArgumentException] {
+          exceptionManager.createExceptionRequestWithId("id", null, true, false)
+        }
+      }
+
       it("should create the exception request using the provided id") {
         val expected = Success(java.util.UUID.randomUUID().toString)
         val testExceptionName = "some.exception.name"
@@ -297,6 +303,12 @@ class StandardExceptionManagerSpec extends FunSpec with Matchers with MockFactor
     }
 
     describe("#createExceptionRequest") {
+      it("should throw an exception if the exception name is null") {
+        intercept[IllegalArgumentException] {
+          exceptionManager.createExceptionRequest(null, true, false)
+        }
+      }
+
       it("should create the exception request and return Success(id)") {
         val expected = Success(TestRequestId)
         val testExceptionName = "some.exception.name"
