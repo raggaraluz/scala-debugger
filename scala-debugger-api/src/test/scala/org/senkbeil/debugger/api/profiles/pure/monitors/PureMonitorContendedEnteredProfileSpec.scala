@@ -228,7 +228,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockMonitorContendedEnteredManager.getMonitorContendedEnteredRequestInfo _)
             .expects(internalId)
-            .returning(Some(MonitorContendedEnteredRequestInfo(arguments))).once()
+            .returning(Some(MonitorContendedEnteredRequestInfo(TestRequestId, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MonitorContendedEnteredEventType, Seq(uniqueIdPropertyFilter))
@@ -267,7 +267,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
 
             (mockMonitorContendedEnteredManager.getMonitorContendedEnteredRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(MonitorContendedEnteredRequestInfo(arguments))).once()
+              .returning(Some(MonitorContendedEnteredRequestInfo(TestRequestId, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockMonitorContendedEnteredManager.createMonitorContendedEnteredRequestWithId _)

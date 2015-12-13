@@ -67,9 +67,9 @@ class PendingStepSupportSpec extends FunSpec with Matchers
         val testDepth = 1
 
         val expected = Seq(
-          StepRequestInfo(mockThreadReference, testSize, testDepth),
-          StepRequestInfo(mock[ThreadReference], testSize, testDepth),
-          StepRequestInfo(mockThreadReference, testSize, testDepth + 1)
+          StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth),
+          StepRequestInfo(TestRequestId + 1, mock[ThreadReference], testSize, testDepth),
+          StepRequestInfo(TestRequestId + 2, mockThreadReference, testSize, testDepth + 1)
         )
 
         (mockPendingActionManager.processAllActions _).expects()
@@ -87,10 +87,10 @@ class PendingStepSupportSpec extends FunSpec with Matchers
         val testDepth = 1
 
         val expected = Seq(
-          StepRequestInfo(mockThreadReference, testSize, testDepth),
-          StepRequestInfo(mockThreadReference, testSize, testDepth + 1)
+          StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth),
+          StepRequestInfo(TestRequestId + 1, mockThreadReference, testSize, testDepth + 1)
         )
-        val actions = (expected :+ StepRequestInfo(mock[ThreadReference], testSize, testDepth))
+        val actions = (expected :+ StepRequestInfo(TestRequestId + 2, mock[ThreadReference], testSize, testDepth))
           .map(ActionInfo.apply("", _: StepRequestInfo, () => {}))
 
         // Return our data that represents the processed actions
@@ -112,9 +112,9 @@ class PendingStepSupportSpec extends FunSpec with Matchers
         val testSize = 0
         val testDepth = 1
         val expected = Seq(
-          StepRequestInfo(mockThreadReference, testSize, testDepth),
-          StepRequestInfo(mockThreadReference, testSize, testDepth + 1),
-          StepRequestInfo(mock[ThreadReference], testSize, testDepth)
+          StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth),
+          StepRequestInfo(TestRequestId + 1, mockThreadReference, testSize, testDepth + 1),
+          StepRequestInfo(TestRequestId + 2, mock[ThreadReference], testSize, testDepth)
         )
 
         val actions = expected.map(ActionInfo.apply("", _: StepRequestInfo, () => {}))
@@ -147,10 +147,10 @@ class PendingStepSupportSpec extends FunSpec with Matchers
         val testSize = 0
         val testDepth = 1
         val expected = Seq(
-          StepRequestInfo(mockThreadReference, testSize, testDepth),
-          StepRequestInfo(mockThreadReference, testSize, testDepth + 1)
+          StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth),
+          StepRequestInfo(TestRequestId + 1, mockThreadReference, testSize, testDepth + 1)
         )
-        val actions = (expected :+ StepRequestInfo(mock[ThreadReference], testSize, testDepth))
+        val actions = (expected :+ StepRequestInfo(TestRequestId + 2, mock[ThreadReference], testSize, testDepth))
           .map(ActionInfo.apply("", _: StepRequestInfo, () => {}))
 
         (mockPendingActionManager.getPendingActionData _).expects(*).onCall(
@@ -215,7 +215,7 @@ class PendingStepSupportSpec extends FunSpec with Matchers
         // Pending step request should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          StepRequestInfo(mockThreadReference, testSize, testDepth, Nil),
+          StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth, Nil),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -281,7 +281,7 @@ class PendingStepSupportSpec extends FunSpec with Matchers
         // Pending step request should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          StepRequestInfo(mockThreadReference, testSize, testDepth, Nil),
+          StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth, Nil),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -343,7 +343,7 @@ class PendingStepSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Some(Seq(
           ActionInfo(
             TestRequestId,
-            StepRequestInfo(mockThreadReference, testSize, testDepth, Nil),
+            StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth, Nil),
             () => {}
           )
         ))
@@ -416,7 +416,7 @@ class PendingStepSupportSpec extends FunSpec with Matchers
         val actions = Seq(
           ActionInfo(
             TestRequestId,
-            StepRequestInfo(mockThreadReference, testSize, testDepth, Nil),
+            StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth, Nil),
             () => {}
           )
         )

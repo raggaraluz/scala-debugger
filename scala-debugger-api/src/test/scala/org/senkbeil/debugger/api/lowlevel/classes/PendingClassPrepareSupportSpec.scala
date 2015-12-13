@@ -32,9 +32,9 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
     describe("#processAllPendingClassPrepareRequests") {
       it("should process all pending class prepare requests") {
         val expected = Seq(
-          ClassPrepareRequestInfo(),
-          ClassPrepareRequestInfo(),
-          ClassPrepareRequestInfo()
+          ClassPrepareRequestInfo(TestRequestId),
+          ClassPrepareRequestInfo(TestRequestId + 1),
+          ClassPrepareRequestInfo(TestRequestId + 2)
         )
 
         // Create class prepare requests to use for testing
@@ -58,9 +58,9 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
     describe("#pendingClassPrepareRequests") {
       it("should return a collection of pending class prepare requests") {
         val expected = Seq(
-          ClassPrepareRequestInfo(),
-          ClassPrepareRequestInfo(Seq(stub[JDIRequestArgument])),
-          ClassPrepareRequestInfo()
+          ClassPrepareRequestInfo(TestRequestId),
+          ClassPrepareRequestInfo(TestRequestId + 1, Seq(stub[JDIRequestArgument])),
+          ClassPrepareRequestInfo(TestRequestId + 2)
         )
 
         (mockClassPrepareManager.createClassPrepareRequestWithId _)
@@ -120,7 +120,7 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
         // Pending class prepare should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ClassPrepareRequestInfo(extraArguments),
+          ClassPrepareRequestInfo(TestRequestId, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -173,7 +173,7 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
         // Pending class prepare should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ClassPrepareRequestInfo(extraArguments),
+          ClassPrepareRequestInfo(TestRequestId, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -228,7 +228,7 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            ClassPrepareRequestInfo(extraArguments),
+            ClassPrepareRequestInfo(TestRequestId, extraArguments),
             () => {}
           )
         )

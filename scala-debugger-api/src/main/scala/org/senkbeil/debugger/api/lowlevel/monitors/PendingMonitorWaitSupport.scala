@@ -76,7 +76,7 @@ trait PendingMonitorWaitSupport
       case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
-          MonitorWaitRequestInfo(extraArguments),
+          MonitorWaitRequestInfo(requestId, extraArguments),
           () => createMonitorWaitRequest().get
         )
         Success(requestId)

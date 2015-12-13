@@ -35,9 +35,9 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         val testLineNumber = 1
 
         val expected = Seq(
-          BreakpointRequestInfo(testFileName, testLineNumber),
-          BreakpointRequestInfo(testFileName + 1, testLineNumber),
-          BreakpointRequestInfo(testFileName, testLineNumber + 1)
+          BreakpointRequestInfo("", testFileName, testLineNumber),
+          BreakpointRequestInfo("", testFileName + 1, testLineNumber),
+          BreakpointRequestInfo("", testFileName, testLineNumber + 1)
         )
 
         (mockPendingActionManager.processAllActions _).expects()
@@ -51,10 +51,10 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
     describe("#processPendingBreakpointRequestsForFile") {
       it("should process pending breakpoints for the specified file") {
         val expected = Seq(
-          BreakpointRequestInfo("file1", 1),
-          BreakpointRequestInfo("file1", 999)
+          BreakpointRequestInfo("", "file1", 1),
+          BreakpointRequestInfo("", "file1", 999)
         )
-        val actions = (expected :+ BreakpointRequestInfo("file2", 1))
+        val actions = (expected :+ BreakpointRequestInfo("", "file2", 1))
           .map(ActionInfo.apply("", _: BreakpointRequestInfo, () => {}))
 
         // Return our data that represents the processed actions
@@ -73,9 +73,9 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
     describe("#pendingBreakpointRequests") {
       it("should return a collection of all pending breakpoints") {
         val expected = Seq(
-          BreakpointRequestInfo("file1", 1),
-          BreakpointRequestInfo("file1", 999),
-          BreakpointRequestInfo("file2", 1)
+          BreakpointRequestInfo("", "file1", 1),
+          BreakpointRequestInfo("", "file1", 999),
+          BreakpointRequestInfo("", "file2", 1)
         )
 
         val actions = expected.map(ActionInfo.apply("", _: BreakpointRequestInfo, () => {}))
@@ -105,10 +105,10 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
     describe("#pendingBreakpointRequestsForFile") {
       it("should return a collection of pending breakpoints") {
         val expected = Seq(
-          BreakpointRequestInfo("file1", 1),
-          BreakpointRequestInfo("file1", 999)
+          BreakpointRequestInfo("", "file1", 1),
+          BreakpointRequestInfo("", "file1", 999)
         )
-        val actions = (expected :+ BreakpointRequestInfo("file2", 1))
+        val actions = (expected :+ BreakpointRequestInfo("", "file2", 1))
           .map(ActionInfo.apply("", _: BreakpointRequestInfo, () => {}))
 
         (mockPendingActionManager.getPendingActionData _).expects(*).onCall(
@@ -170,7 +170,7 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         // Pending breakpoint should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          BreakpointRequestInfo(testFileName, testLineNumber, Nil),
+          BreakpointRequestInfo(TestRequestId, testFileName, testLineNumber, Nil),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -234,7 +234,7 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         // Pending breakpoint should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          BreakpointRequestInfo(testFileName, testLineNumber, Nil),
+          BreakpointRequestInfo(TestRequestId, testFileName, testLineNumber, Nil),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -299,7 +299,7 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Some(Seq(
           ActionInfo(
             TestRequestId,
-            BreakpointRequestInfo(testFileName, testLineNumber, Nil),
+            BreakpointRequestInfo(TestRequestId, testFileName, testLineNumber, Nil),
             () => {}
           )
         ))
@@ -371,7 +371,7 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
         val actions = Seq(
           ActionInfo(
             TestRequestId,
-            BreakpointRequestInfo(testFileName, testLineNumber, Nil),
+            BreakpointRequestInfo(TestRequestId, testFileName, testLineNumber, Nil),
             () => {}
           )
         )

@@ -227,7 +227,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockClassUnloadManager.getClassUnloadRequestInfo _)
             .expects(internalId)
-            .returning(Some(ClassUnloadRequestInfo(arguments))).once()
+            .returning(Some(ClassUnloadRequestInfo(TestRequestId, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ClassUnloadEventType, Seq(uniqueIdPropertyFilter))
@@ -266,7 +266,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
 
             (mockClassUnloadManager.getClassUnloadRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(ClassUnloadRequestInfo(arguments))).once()
+              .returning(Some(ClassUnloadRequestInfo(TestRequestId, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockClassUnloadManager.createClassUnloadRequestWithId _)

@@ -174,6 +174,7 @@ trait PendingStepSupport
         pendingActionManager.addPendingActionWithId(
           requestId,
           StepRequestInfo(
+            requestId,
             threadReference,
             size,
             depth,

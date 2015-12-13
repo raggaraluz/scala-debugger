@@ -242,8 +242,8 @@ class StandardExceptionManagerSpec extends FunSpec with Matchers with MockFactor
         val testNotifyCaught = true
         val testNotifyUncaught = false
         val exceptionRequests = Seq(
-          ExceptionRequestInfo("class1", testNotifyCaught, testNotifyUncaught),
-          ExceptionRequestInfo("class2", testNotifyCaught, testNotifyUncaught)
+          ExceptionRequestInfo(TestRequestId, "class1", testNotifyCaught, testNotifyUncaught),
+          ExceptionRequestInfo(TestRequestId + 1, "class2", testNotifyCaught, testNotifyUncaught)
         )
 
         // NOTE: Must create a new exception manager that does NOT override the
@@ -258,7 +258,8 @@ class StandardExceptionManagerSpec extends FunSpec with Matchers with MockFactor
           (mockEventRequestManager.createExceptionRequest _)
             .expects(mockReferenceType, testNotifyCaught, testNotifyUncaught)
             .returning(stub[ExceptionRequest]).once()
-          exceptionManager.createExceptionRequest(
+          exceptionManager.createExceptionRequestWithId(
+            exceptionInfo.requestId,
             exceptionInfo.className,
             exceptionInfo.notifyCaught,
             exceptionInfo.notifyUncaught

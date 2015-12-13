@@ -32,9 +32,9 @@ class PendingThreadStartSupportSpec extends FunSpec with Matchers
     describe("#processAllPendingThreadStartRequests") {
       it("should process all pending thread start requests") {
         val expected = Seq(
-          ThreadStartRequestInfo(),
-          ThreadStartRequestInfo(),
-          ThreadStartRequestInfo()
+          ThreadStartRequestInfo(TestRequestId),
+          ThreadStartRequestInfo(TestRequestId + 1),
+          ThreadStartRequestInfo(TestRequestId + 2)
         )
 
         // Create thread start requests to use for testing
@@ -58,9 +58,9 @@ class PendingThreadStartSupportSpec extends FunSpec with Matchers
     describe("#pendingThreadStartRequests") {
       it("should return a collection of pending thread start requests") {
         val expected = Seq(
-          ThreadStartRequestInfo(),
-          ThreadStartRequestInfo(Seq(stub[JDIRequestArgument])),
-          ThreadStartRequestInfo()
+          ThreadStartRequestInfo(TestRequestId),
+          ThreadStartRequestInfo(TestRequestId + 1, Seq(stub[JDIRequestArgument])),
+          ThreadStartRequestInfo(TestRequestId + 2)
         )
 
         (mockThreadStartManager.createThreadStartRequestWithId _)
@@ -120,7 +120,7 @@ class PendingThreadStartSupportSpec extends FunSpec with Matchers
         // Pending thread start should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ThreadStartRequestInfo(extraArguments),
+          ThreadStartRequestInfo(TestRequestId, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -173,7 +173,7 @@ class PendingThreadStartSupportSpec extends FunSpec with Matchers
         // Pending thread start should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ThreadStartRequestInfo(extraArguments),
+          ThreadStartRequestInfo(TestRequestId, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -228,7 +228,7 @@ class PendingThreadStartSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            ThreadStartRequestInfo(extraArguments),
+            ThreadStartRequestInfo(TestRequestId, extraArguments),
             () => {}
           )
         )
@@ -265,3 +265,4 @@ class PendingThreadStartSupportSpec extends FunSpec with Matchers
     }
   }
 }
+

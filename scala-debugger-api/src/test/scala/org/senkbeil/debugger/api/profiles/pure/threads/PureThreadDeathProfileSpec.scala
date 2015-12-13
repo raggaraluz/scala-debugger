@@ -227,7 +227,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockThreadDeathManager.getThreadDeathRequestInfo _)
             .expects(internalId)
-            .returning(Some(ThreadDeathRequestInfo(arguments))).once()
+            .returning(Some(ThreadDeathRequestInfo(TestRequestId, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ThreadDeathEventType, Seq(uniqueIdPropertyFilter))
@@ -266,7 +266,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
 
             (mockThreadDeathManager.getThreadDeathRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(ThreadDeathRequestInfo(arguments))).once()
+              .returning(Some(ThreadDeathRequestInfo(TestRequestId, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockThreadDeathManager.createThreadDeathRequestWithId _)

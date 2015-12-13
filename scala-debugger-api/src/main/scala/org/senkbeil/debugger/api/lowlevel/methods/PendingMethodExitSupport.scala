@@ -119,6 +119,7 @@ trait PendingMethodExitSupport
         pendingActionManager.addPendingActionWithId(
           requestId,
           MethodExitRequestInfo(
+            requestId,
             className,
             methodName,
             extraArguments

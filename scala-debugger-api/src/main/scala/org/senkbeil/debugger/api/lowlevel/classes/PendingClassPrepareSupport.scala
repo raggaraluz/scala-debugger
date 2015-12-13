@@ -76,7 +76,7 @@ trait PendingClassPrepareSupport
       case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
-          ClassPrepareRequestInfo(extraArguments),
+          ClassPrepareRequestInfo(requestId, extraArguments),
           () => createClassPrepareRequest().get
         )
         Success(requestId)

@@ -47,7 +47,7 @@ class StandardThreadDeathManager(
 
     if (request.isSuccess) threadDeathRequests.putWithId(
       requestId,
-      ThreadDeathRequestInfo(extraArguments),
+      ThreadDeathRequestInfo(requestId, extraArguments),
       request.get
     )
 

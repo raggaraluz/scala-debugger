@@ -227,7 +227,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockClassPrepareManager.getClassPrepareRequestInfo _)
             .expects(internalId)
-            .returning(Some(ClassPrepareRequestInfo(arguments))).once()
+            .returning(Some(ClassPrepareRequestInfo(TestRequestId, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ClassPrepareEventType, Seq(uniqueIdPropertyFilter))
@@ -266,7 +266,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
 
             (mockClassPrepareManager.getClassPrepareRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(ClassPrepareRequestInfo(arguments))).once()
+              .returning(Some(ClassPrepareRequestInfo(TestRequestId, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockClassPrepareManager.createClassPrepareRequestWithId _)

@@ -12,11 +12,11 @@ import scala.util.{Failure, Success}
 class StandardMonitorWaitManagerSpec extends FunSpec with Matchers with MockFactory
   with OneInstancePerTest with org.scalamock.matchers.Matchers
 {
-  private val TestId = java.util.UUID.randomUUID().toString
+  private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]
 
   private val monitorWaitManager = new StandardMonitorWaitManager(mockEventRequestManager) {
-    override protected def newRequestId(): String = TestId
+    override protected def newRequestId(): String = TestRequestId
   }
 
   describe("StandardMonitorWaitManager") {
@@ -69,7 +69,7 @@ class StandardMonitorWaitManagerSpec extends FunSpec with Matchers with MockFact
 
     describe("#createMonitorWaitRequest") {
       it("should create the monitor wait request and return Success(id)") {
-        val expected = Success(TestId)
+        val expected = Success(TestRequestId)
 
         val mockMonitorWaitRequest = mock[MonitorWaitRequest]
         (mockEventRequestManager.createMonitorWaitRequest _).expects()
@@ -112,7 +112,7 @@ class StandardMonitorWaitManagerSpec extends FunSpec with Matchers with MockFact
       it("should return false if it does not exist") {
         val expected = false
 
-        val actual = monitorWaitManager.hasMonitorWaitRequest(TestId)
+        val actual = monitorWaitManager.hasMonitorWaitRequest(TestRequestId)
         actual should be (expected)
       }
     }
@@ -133,7 +133,7 @@ class StandardMonitorWaitManagerSpec extends FunSpec with Matchers with MockFact
       it("should return None if not found") {
         val expected = None
 
-        val actual = monitorWaitManager.getMonitorWaitRequest(TestId)
+        val actual = monitorWaitManager.getMonitorWaitRequest(TestRequestId)
         actual should be (expected)
       }
     }
@@ -141,6 +141,7 @@ class StandardMonitorWaitManagerSpec extends FunSpec with Matchers with MockFact
     describe("#getMonitorWaitRequestInfo") {
       it("should return Some(info) if found") {
         val expected = MonitorWaitRequestInfo(
+          TestRequestId,
           Seq(mock[JDIRequestArgument], mock[JDIRequestArgument])
         )
         expected.extraArguments.foreach(a => {
@@ -164,7 +165,7 @@ class StandardMonitorWaitManagerSpec extends FunSpec with Matchers with MockFact
       it("should return None if not found") {
         val expected = None
 
-        val actual = monitorWaitManager.getMonitorWaitRequestInfo(TestId)
+        val actual = monitorWaitManager.getMonitorWaitRequestInfo(TestRequestId)
         actual should be (expected)
       }
     }
@@ -189,7 +190,7 @@ class StandardMonitorWaitManagerSpec extends FunSpec with Matchers with MockFact
       it("should return false if the monitor wait request was not removed") {
         val expected = false
 
-        val actual = monitorWaitManager.removeMonitorWaitRequest(TestId)
+        val actual = monitorWaitManager.removeMonitorWaitRequest(TestRequestId)
         actual should be (expected)
       }
     }

@@ -32,9 +32,9 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
     describe("#processAllPendingClassUnloadRequests") {
       it("should process all pending class unload requests") {
         val expected = Seq(
-          ClassUnloadRequestInfo(),
-          ClassUnloadRequestInfo(),
-          ClassUnloadRequestInfo()
+          ClassUnloadRequestInfo(TestRequestId),
+          ClassUnloadRequestInfo(TestRequestId + 1),
+          ClassUnloadRequestInfo(TestRequestId + 2)
         )
 
         // Create class unload requests to use for testing
@@ -58,9 +58,9 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
     describe("#pendingClassUnloadRequests") {
       it("should return a collection of pending class unload requests") {
         val expected = Seq(
-          ClassUnloadRequestInfo(),
-          ClassUnloadRequestInfo(Seq(stub[JDIRequestArgument])),
-          ClassUnloadRequestInfo()
+          ClassUnloadRequestInfo(TestRequestId),
+          ClassUnloadRequestInfo(TestRequestId + 1, Seq(stub[JDIRequestArgument])),
+          ClassUnloadRequestInfo(TestRequestId + 2)
         )
 
         (mockClassUnloadManager.createClassUnloadRequestWithId _)
@@ -120,7 +120,7 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
         // Pending class unload should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ClassUnloadRequestInfo(extraArguments),
+          ClassUnloadRequestInfo(TestRequestId, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -173,7 +173,7 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
         // Pending class unload should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ClassUnloadRequestInfo(extraArguments),
+          ClassUnloadRequestInfo(TestRequestId, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -228,7 +228,7 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            ClassUnloadRequestInfo(extraArguments),
+            ClassUnloadRequestInfo(TestRequestId, extraArguments),
             () => {}
           )
         )

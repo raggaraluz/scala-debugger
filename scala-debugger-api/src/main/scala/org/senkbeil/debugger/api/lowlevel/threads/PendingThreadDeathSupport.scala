@@ -76,7 +76,7 @@ trait PendingThreadDeathSupport
       case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
-          ThreadDeathRequestInfo(extraArguments),
+          ThreadDeathRequestInfo(requestId, extraArguments),
           () => createThreadDeathRequest().get
         )
         Success(requestId)

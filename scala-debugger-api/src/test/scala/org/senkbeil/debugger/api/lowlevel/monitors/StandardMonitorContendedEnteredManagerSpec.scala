@@ -12,11 +12,11 @@ import scala.util.{Failure, Success}
 class StandardMonitorContendedEnteredManagerSpec extends FunSpec with Matchers with MockFactory
   with OneInstancePerTest with org.scalamock.matchers.Matchers
 {
-  private val TestId = java.util.UUID.randomUUID().toString
+  private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]
 
   private val monitorContendedEnteredManager = new StandardMonitorContendedEnteredManager(mockEventRequestManager) {
-    override protected def newRequestId(): String = TestId
+    override protected def newRequestId(): String = TestRequestId
   }
 
   describe("StandardMonitorContendedEnteredManager") {
@@ -68,7 +68,7 @@ class StandardMonitorContendedEnteredManagerSpec extends FunSpec with Matchers w
 
     describe("#createMonitorContendedEnteredRequest") {
       it("should create the monitor contended entered request and return Success(id)") {
-        val expected = Success(TestId)
+        val expected = Success(TestRequestId)
 
         val mockMonitorContendedEnteredRequest = mock[MonitorContendedEnteredRequest]
         (mockEventRequestManager.createMonitorContendedEnteredRequest _).expects()
@@ -111,7 +111,7 @@ class StandardMonitorContendedEnteredManagerSpec extends FunSpec with Matchers w
       it("should return false if it does not exist") {
         val expected = false
 
-        val actual = monitorContendedEnteredManager.hasMonitorContendedEnteredRequest(TestId)
+        val actual = monitorContendedEnteredManager.hasMonitorContendedEnteredRequest(TestRequestId)
         actual should be (expected)
       }
     }
@@ -132,7 +132,7 @@ class StandardMonitorContendedEnteredManagerSpec extends FunSpec with Matchers w
       it("should return None if not found") {
         val expected = None
 
-        val actual = monitorContendedEnteredManager.getMonitorContendedEnteredRequest(TestId)
+        val actual = monitorContendedEnteredManager.getMonitorContendedEnteredRequest(TestRequestId)
         actual should be (expected)
       }
     }
@@ -140,6 +140,7 @@ class StandardMonitorContendedEnteredManagerSpec extends FunSpec with Matchers w
     describe("#getMonitorContendedEnteredRequestInfo") {
       it("should return Some(info) if found") {
         val expected = MonitorContendedEnteredRequestInfo(
+          TestRequestId,
           Seq(mock[JDIRequestArgument], mock[JDIRequestArgument])
         )
         expected.extraArguments.foreach(a => {
@@ -163,7 +164,7 @@ class StandardMonitorContendedEnteredManagerSpec extends FunSpec with Matchers w
       it("should return None if not found") {
         val expected = None
 
-        val actual = monitorContendedEnteredManager.getMonitorContendedEnteredRequestInfo(TestId)
+        val actual = monitorContendedEnteredManager.getMonitorContendedEnteredRequestInfo(TestRequestId)
         actual should be (expected)
       }
     }
@@ -188,7 +189,7 @@ class StandardMonitorContendedEnteredManagerSpec extends FunSpec with Matchers w
       it("should return false if the monitor contended entered request was not removed") {
         val expected = false
 
-        val actual = monitorContendedEnteredManager.removeMonitorContendedEnteredRequest(TestId)
+        val actual = monitorContendedEnteredManager.removeMonitorContendedEnteredRequest(TestRequestId)
         actual should be (expected)
       }
     }

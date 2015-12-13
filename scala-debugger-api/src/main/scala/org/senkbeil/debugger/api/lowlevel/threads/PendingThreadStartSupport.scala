@@ -76,7 +76,7 @@ trait PendingThreadStartSupport
       case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
-          ThreadStartRequestInfo(extraArguments),
+          ThreadStartRequestInfo(requestId, extraArguments),
           () => createThreadStartRequest().get
         )
         Success(requestId)

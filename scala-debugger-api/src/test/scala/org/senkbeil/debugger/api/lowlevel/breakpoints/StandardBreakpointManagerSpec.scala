@@ -67,9 +67,9 @@ class StandardBreakpointManagerSpec extends FunSpec with Matchers
       it("should return a collection of breakpoint file names and lines") {
         val mockRequestArgument = mock[JDIRequestArgument]
         val expected = Seq(
-          BreakpointRequestInfo("file1", 1),
-          BreakpointRequestInfo("file1", 2, Seq(mockRequestArgument)),
-          BreakpointRequestInfo("file2", 999)
+          BreakpointRequestInfo(TestRequestId, "file1", 1),
+          BreakpointRequestInfo(TestRequestId + 1, "file1", 2, Seq(mockRequestArgument)),
+          BreakpointRequestInfo(TestRequestId + 2, "file2", 999)
         )
 
         // NOTE: Must create a new breakpoint manager that does NOT override the
@@ -100,8 +100,8 @@ class StandardBreakpointManagerSpec extends FunSpec with Matchers
         (mockEventRequestManager.createBreakpointRequest _).expects(*)
           .returning(stub[BreakpointRequest]).repeated(expected.length).times()
 
-        expected.foreach(b => breakpointManager.createBreakpointRequest(
-          b.fileName, b.lineNumber, b.extraArguments: _*
+        expected.foreach(b => breakpointManager.createBreakpointRequestWithId(
+          b.requestId, b.fileName, b.lineNumber, b.extraArguments: _*
         ))
 
         val actual = breakpointManager.breakpointRequestList
@@ -352,8 +352,8 @@ class StandardBreakpointManagerSpec extends FunSpec with Matchers
     }
 
     describe("#getBreakpointRequestInfoWithId") {
-      it("should return Some(BreakpointInfo(class name, line number)) if the id exists") {
-        val expected = Some(BreakpointRequestInfo("file", 1))
+      it("should return Some(BreakpointInfo(id, class name, line number)) if the id exists") {
+        val expected = Some(BreakpointRequestInfo(TestRequestId, "file", 1))
 
         // a line number that will be the one picked
         (mockClassManager.linesAndLocationsForFile _).expects(*).returning(

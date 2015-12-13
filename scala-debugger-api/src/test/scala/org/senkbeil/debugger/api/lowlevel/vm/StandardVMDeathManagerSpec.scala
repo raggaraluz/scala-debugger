@@ -13,11 +13,11 @@ import scala.util.{Failure, Success}
 class StandardVMDeathManagerSpec extends FunSpec with Matchers with MockFactory
   with OneInstancePerTest with org.scalamock.matchers.Matchers
 {
-  private val TestId = java.util.UUID.randomUUID().toString
+  private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]
 
   private val vmDeathManager = new StandardVMDeathManager(mockEventRequestManager) {
-    override protected def newRequestId(): String = TestId
+    override protected def newRequestId(): String = TestRequestId
   }
 
   describe("StandardVMDeathManager") {
@@ -50,7 +50,7 @@ class StandardVMDeathManagerSpec extends FunSpec with Matchers with MockFactory
 
     describe("#createVMDeathRequest") {
       it("should create the vm death request and return Success(id)") {
-        val expected = Success(TestId)
+        val expected = Success(TestRequestId)
 
         val mockVMDeathRequest = mock[VMDeathRequest]
         (mockEventRequestManager.createVMDeathRequest _).expects()
@@ -112,7 +112,7 @@ class StandardVMDeathManagerSpec extends FunSpec with Matchers with MockFactory
       it("should return false if it does not exist") {
         val expected = false
 
-        val actual = vmDeathManager.hasVMDeathRequest(TestId)
+        val actual = vmDeathManager.hasVMDeathRequest(TestRequestId)
         actual should be (expected)
       }
     }
@@ -133,14 +133,15 @@ class StandardVMDeathManagerSpec extends FunSpec with Matchers with MockFactory
       it("should return None if not found") {
         val expected = None
 
-        val actual = vmDeathManager.getVMDeathRequest(TestId)
+        val actual = vmDeathManager.getVMDeathRequest(TestRequestId)
         actual should be (expected)
       }
     }
 
     describe("#getVMDeathRequestInfo") {
-      it("should return Some(Seq(input args)) if found") {
+      it("should return Some(info) if found") {
         val expected = VMDeathRequestInfo(
+          TestRequestId,
           Seq(mock[JDIRequestArgument], mock[JDIRequestArgument])
         )
         expected.extraArguments.foreach(a => {
@@ -164,7 +165,7 @@ class StandardVMDeathManagerSpec extends FunSpec with Matchers with MockFactory
       it("should return None if not found") {
         val expected = None
 
-        val actual = vmDeathManager.getVMDeathRequestInfo(TestId)
+        val actual = vmDeathManager.getVMDeathRequestInfo(TestRequestId)
         actual should be (expected)
       }
     }
@@ -189,7 +190,7 @@ class StandardVMDeathManagerSpec extends FunSpec with Matchers with MockFactory
       it("should return false if the vm death request was not removed") {
         val expected = false
 
-        val actual = vmDeathManager.removeVMDeathRequest(TestId)
+        val actual = vmDeathManager.removeVMDeathRequest(TestRequestId)
         actual should be (expected)
       }
     }

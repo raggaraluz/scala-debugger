@@ -119,6 +119,7 @@ trait PendingAccessWatchpointSupport
         pendingActionManager.addPendingActionWithId(
           requestId,
           AccessWatchpointRequestInfo(
+            requestId,
             className,
             fieldName,
             extraArguments

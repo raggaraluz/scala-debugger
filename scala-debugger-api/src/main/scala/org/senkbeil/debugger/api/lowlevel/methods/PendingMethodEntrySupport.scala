@@ -119,6 +119,7 @@ trait PendingMethodEntrySupport
         pendingActionManager.addPendingActionWithId(
           requestId,
           MethodEntryRequestInfo(
+            requestId,
             className,
             methodName,
             extraArguments

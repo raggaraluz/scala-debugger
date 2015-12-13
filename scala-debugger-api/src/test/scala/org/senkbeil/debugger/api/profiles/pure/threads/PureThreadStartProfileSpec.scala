@@ -227,7 +227,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockThreadStartManager.getThreadStartRequestInfo _)
             .expects(internalId)
-            .returning(Some(ThreadStartRequestInfo(arguments))).once()
+            .returning(Some(ThreadStartRequestInfo(TestRequestId, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ThreadStartEventType, Seq(uniqueIdPropertyFilter))
@@ -266,7 +266,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
 
             (mockThreadStartManager.getThreadStartRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(ThreadStartRequestInfo(arguments))).once()
+              .returning(Some(ThreadStartRequestInfo(TestRequestId, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockThreadStartManager.createThreadStartRequestWithId _)

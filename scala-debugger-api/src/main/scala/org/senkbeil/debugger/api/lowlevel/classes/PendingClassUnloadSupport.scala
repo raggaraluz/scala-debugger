@@ -76,7 +76,7 @@ trait PendingClassUnloadSupport
       case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
-          ClassUnloadRequestInfo(extraArguments),
+          ClassUnloadRequestInfo(requestId, extraArguments),
           () => createClassUnloadRequest().get
         )
         Success(requestId)

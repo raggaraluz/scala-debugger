@@ -32,9 +32,9 @@ class PendingMonitorWaitSupportSpec extends FunSpec with Matchers
     describe("#processAllPendingMonitorWaitRequests") {
       it("should process all pending monitor wait requests") {
         val expected = Seq(
-          MonitorWaitRequestInfo(),
-          MonitorWaitRequestInfo(),
-          MonitorWaitRequestInfo()
+          MonitorWaitRequestInfo(TestRequestId),
+          MonitorWaitRequestInfo(TestRequestId + 1),
+          MonitorWaitRequestInfo(TestRequestId + 2)
         )
 
         // Create monitor wait requests to use for testing
@@ -58,9 +58,9 @@ class PendingMonitorWaitSupportSpec extends FunSpec with Matchers
     describe("#pendingMonitorWaitRequests") {
       it("should return a collection of pending monitor wait requests") {
         val expected = Seq(
-          MonitorWaitRequestInfo(),
-          MonitorWaitRequestInfo(Seq(stub[JDIRequestArgument])),
-          MonitorWaitRequestInfo()
+          MonitorWaitRequestInfo(TestRequestId),
+          MonitorWaitRequestInfo(TestRequestId + 1, Seq(stub[JDIRequestArgument])),
+          MonitorWaitRequestInfo(TestRequestId + 2)
         )
 
         (mockMonitorWaitManager.createMonitorWaitRequestWithId _)
@@ -120,7 +120,7 @@ class PendingMonitorWaitSupportSpec extends FunSpec with Matchers
         // Pending monitor wait should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          MonitorWaitRequestInfo(extraArguments),
+          MonitorWaitRequestInfo(TestRequestId, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -173,7 +173,7 @@ class PendingMonitorWaitSupportSpec extends FunSpec with Matchers
         // Pending monitor wait should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          MonitorWaitRequestInfo(extraArguments),
+          MonitorWaitRequestInfo(TestRequestId, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -228,7 +228,7 @@ class PendingMonitorWaitSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            MonitorWaitRequestInfo(extraArguments),
+            MonitorWaitRequestInfo(TestRequestId, extraArguments),
             () => {}
           )
         )
@@ -265,3 +265,4 @@ class PendingMonitorWaitSupportSpec extends FunSpec with Matchers
     }
   }
 }
+

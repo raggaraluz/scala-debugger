@@ -79,7 +79,7 @@ class StandardBreakpointManager(
 
     if (requests.isSuccess) breakpointRequests.putWithId(
       requestId,
-      BreakpointRequestInfo(fileName, lineNumber, extraArguments),
+      BreakpointRequestInfo(requestId, fileName, lineNumber, extraArguments),
       requests.get
     )
 

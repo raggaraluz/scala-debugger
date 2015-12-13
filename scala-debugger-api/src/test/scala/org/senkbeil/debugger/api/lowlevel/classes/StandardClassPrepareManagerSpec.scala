@@ -12,11 +12,11 @@ import scala.util.{Failure, Success}
 class StandardClassPrepareManagerSpec extends FunSpec with Matchers with MockFactory
   with OneInstancePerTest with org.scalamock.matchers.Matchers
 {
-  private val TestId = java.util.UUID.randomUUID().toString
+  private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]
 
   private val classPrepareManager = new StandardClassPrepareManager(mockEventRequestManager) {
-    override protected def newRequestId(): String = TestId
+    override protected def newRequestId(): String = TestRequestId
   }
 
   describe("StandardClassPrepareManager") {
@@ -68,7 +68,7 @@ class StandardClassPrepareManagerSpec extends FunSpec with Matchers with MockFac
 
     describe("#createClassPrepareRequest") {
       it("should create the class prepare request and return Success(id)") {
-        val expected = Success(TestId)
+        val expected = Success(TestRequestId)
 
         val mockClassPrepareRequest = mock[ClassPrepareRequest]
         (mockEventRequestManager.createClassPrepareRequest _).expects()
@@ -111,7 +111,7 @@ class StandardClassPrepareManagerSpec extends FunSpec with Matchers with MockFac
       it("should return false if it does not exist") {
         val expected = false
 
-        val actual = classPrepareManager.hasClassPrepareRequest(TestId)
+        val actual = classPrepareManager.hasClassPrepareRequest(TestRequestId)
         actual should be (expected)
       }
     }
@@ -132,14 +132,14 @@ class StandardClassPrepareManagerSpec extends FunSpec with Matchers with MockFac
       it("should return None if not found") {
         val expected = None
 
-        val actual = classPrepareManager.getClassPrepareRequest(TestId)
+        val actual = classPrepareManager.getClassPrepareRequest(TestRequestId)
         actual should be (expected)
       }
     }
 
     describe("#getClassPrepareRequestInfo") {
       it("should return Some(info) if found") {
-        val expected = ClassPrepareRequestInfo(Seq(
+        val expected = ClassPrepareRequestInfo(TestRequestId, Seq(
           mock[JDIRequestArgument],
           mock[JDIRequestArgument]
         ))
@@ -164,7 +164,7 @@ class StandardClassPrepareManagerSpec extends FunSpec with Matchers with MockFac
       it("should return None if not found") {
         val expected = None
 
-        val actual = classPrepareManager.getClassPrepareRequestInfo(TestId)
+        val actual = classPrepareManager.getClassPrepareRequestInfo(TestRequestId)
         actual should be (expected)
       }
     }
@@ -189,7 +189,7 @@ class StandardClassPrepareManagerSpec extends FunSpec with Matchers with MockFac
       it("should return false if the class prepare request was not removed") {
         val expected = false
 
-        val actual = classPrepareManager.removeClassPrepareRequest(TestId)
+        val actual = classPrepareManager.removeClassPrepareRequest(TestRequestId)
         actual should be (expected)
       }
     }

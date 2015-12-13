@@ -110,7 +110,7 @@ class StandardStepManager(
 
     if (request.isSuccess) stepRequests.putWithId(
       requestId,
-      StepRequestInfo(threadReference, size, depth, extraArguments),
+      StepRequestInfo(requestId, threadReference, size, depth, extraArguments),
       request.get
     )
 

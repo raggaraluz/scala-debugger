@@ -84,6 +84,7 @@ class StandardExceptionManager(
       exceptionRequests.putWithId(
         requestId,
         ExceptionRequestInfo(
+          requestId = requestId,
           className = DefaultCatchallExceptionName,
           notifyCaught = notifyCaught,
           notifyUncaught = notifyUncaught,
@@ -215,6 +216,7 @@ class StandardExceptionManager(
     if (requests.isSuccess) exceptionRequests.putWithId(
       requestId,
       ExceptionRequestInfo(
+        requestId = requestId,
         className = exceptionName,
         notifyCaught = notifyCaught,
         notifyUncaught = notifyUncaught,

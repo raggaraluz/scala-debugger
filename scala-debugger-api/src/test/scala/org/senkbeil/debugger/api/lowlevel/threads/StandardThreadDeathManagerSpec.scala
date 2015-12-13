@@ -12,11 +12,11 @@ import scala.util.{Failure, Success}
 class StandardThreadDeathManagerSpec extends FunSpec with Matchers with MockFactory
   with OneInstancePerTest with org.scalamock.matchers.Matchers
 {
-  private val TestId = java.util.UUID.randomUUID().toString
+  private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]
 
   private val threadDeathManager = new StandardThreadDeathManager(mockEventRequestManager) {
-    override protected def newRequestId(): String = TestId
+    override protected def newRequestId(): String = TestRequestId
   }
 
   describe("StandardThreadDeathManager") {
@@ -69,7 +69,7 @@ class StandardThreadDeathManagerSpec extends FunSpec with Matchers with MockFact
 
     describe("#createThreadDeathRequest") {
       it("should create the thread death request and return Success(id)") {
-        val expected = Success(TestId)
+        val expected = Success(TestRequestId)
 
         val mockThreadDeathRequest = mock[ThreadDeathRequest]
         (mockEventRequestManager.createThreadDeathRequest _).expects()
@@ -112,7 +112,7 @@ class StandardThreadDeathManagerSpec extends FunSpec with Matchers with MockFact
       it("should return false if it does not exist") {
         val expected = false
 
-        val actual = threadDeathManager.hasThreadDeathRequest(TestId)
+        val actual = threadDeathManager.hasThreadDeathRequest(TestRequestId)
         actual should be (expected)
       }
     }
@@ -133,7 +133,7 @@ class StandardThreadDeathManagerSpec extends FunSpec with Matchers with MockFact
       it("should return None if not found") {
         val expected = None
 
-        val actual = threadDeathManager.getThreadDeathRequest(TestId)
+        val actual = threadDeathManager.getThreadDeathRequest(TestRequestId)
         actual should be (expected)
       }
     }
@@ -141,6 +141,7 @@ class StandardThreadDeathManagerSpec extends FunSpec with Matchers with MockFact
     describe("#getThreadDeathRequestInfo") {
       it("should return Some(info) if found") {
         val expected = ThreadDeathRequestInfo(
+          TestRequestId,
           Seq(mock[JDIRequestArgument], mock[JDIRequestArgument])
         )
         expected.extraArguments.foreach(a => {
@@ -164,7 +165,7 @@ class StandardThreadDeathManagerSpec extends FunSpec with Matchers with MockFact
       it("should return None if not found") {
         val expected = None
 
-        val actual = threadDeathManager.getThreadDeathRequestInfo(TestId)
+        val actual = threadDeathManager.getThreadDeathRequestInfo(TestRequestId)
         actual should be (expected)
       }
     }
@@ -189,7 +190,7 @@ class StandardThreadDeathManagerSpec extends FunSpec with Matchers with MockFact
       it("should return false if the thread death request was not removed") {
         val expected = false
 
-        val actual = threadDeathManager.removeThreadDeathRequest(TestId)
+        val actual = threadDeathManager.removeThreadDeathRequest(TestRequestId)
         actual should be (expected)
       }
     }

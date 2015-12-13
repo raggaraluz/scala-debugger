@@ -123,6 +123,7 @@ trait PendingModificationWatchpointSupport
         pendingActionManager.addPendingActionWithId(
           requestId,
           ModificationWatchpointRequestInfo(
+            requestId,
             className,
             fieldName,
             extraArguments

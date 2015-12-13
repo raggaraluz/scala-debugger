@@ -32,9 +32,9 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
     describe("#processAllPendingThreadDeathRequests") {
       it("should process all pending thread death requests") {
         val expected = Seq(
-          ThreadDeathRequestInfo(),
-          ThreadDeathRequestInfo(),
-          ThreadDeathRequestInfo()
+          ThreadDeathRequestInfo(TestRequestId),
+          ThreadDeathRequestInfo(TestRequestId + 1),
+          ThreadDeathRequestInfo(TestRequestId + 2)
         )
 
         // Create thread death requests to use for testing
@@ -58,9 +58,9 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
     describe("#pendingThreadDeathRequests") {
       it("should return a collection of pending thread death requests") {
         val expected = Seq(
-          ThreadDeathRequestInfo(),
-          ThreadDeathRequestInfo(Seq(stub[JDIRequestArgument])),
-          ThreadDeathRequestInfo()
+          ThreadDeathRequestInfo(TestRequestId),
+          ThreadDeathRequestInfo(TestRequestId + 1, Seq(stub[JDIRequestArgument])),
+          ThreadDeathRequestInfo(TestRequestId + 2)
         )
 
         (mockThreadDeathManager.createThreadDeathRequestWithId _)
@@ -120,7 +120,7 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
         // Pending thread death should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ThreadDeathRequestInfo(extraArguments),
+          ThreadDeathRequestInfo(TestRequestId, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -173,7 +173,7 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
         // Pending thread death should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ThreadDeathRequestInfo(extraArguments),
+          ThreadDeathRequestInfo(TestRequestId, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -228,7 +228,7 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            ThreadDeathRequestInfo(extraArguments),
+            ThreadDeathRequestInfo(TestRequestId, extraArguments),
             () => {}
           )
         )
@@ -265,3 +265,4 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
     }
   }
 }
+

@@ -162,7 +162,7 @@ trait PendingBreakpointSupport
       case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
-          BreakpointRequestInfo(fileName, lineNumber, extraArguments),
+          BreakpointRequestInfo(requestId, fileName, lineNumber, extraArguments),
           () => createBreakpoint().get
         )
         Success(requestId)

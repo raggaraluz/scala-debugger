@@ -47,7 +47,7 @@ class StandardClassPrepareManager(
 
     if (request.isSuccess) classPrepareRequests.putWithId(
       requestId,
-      ClassPrepareRequestInfo(extraArguments),
+      ClassPrepareRequestInfo(requestId, extraArguments),
       request.get
     )
 

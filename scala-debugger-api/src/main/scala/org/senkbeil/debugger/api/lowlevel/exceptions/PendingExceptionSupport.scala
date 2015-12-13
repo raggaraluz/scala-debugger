@@ -126,6 +126,7 @@ trait PendingExceptionSupport
         pendingActionManager.addPendingActionWithId(
           requestId,
           ExceptionRequestInfo(
+            requestId,
             null,
             notifyCaught,
             notifyUncaught,
@@ -203,6 +204,7 @@ trait PendingExceptionSupport
         pendingActionManager.addPendingActionWithId(
           requestId,
           ExceptionRequestInfo(
+            requestId,
             exceptionName,
             notifyCaught,
             notifyUncaught,

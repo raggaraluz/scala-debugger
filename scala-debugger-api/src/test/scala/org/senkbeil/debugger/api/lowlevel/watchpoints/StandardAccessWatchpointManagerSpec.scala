@@ -60,9 +60,9 @@ class StandardAccessWatchpointManagerSpec extends FunSpec with Matchers
         val testClassName = "full.class.name"
         val testFieldName = "fieldName"
         val expected = Seq(
-          AccessWatchpointRequestInfo(testClassName, testFieldName),
-          AccessWatchpointRequestInfo(testClassName, testFieldName + 1),
-          AccessWatchpointRequestInfo(testClassName, testFieldName + 2)
+          AccessWatchpointRequestInfo(TestRequestId, testClassName, testFieldName),
+          AccessWatchpointRequestInfo(TestRequestId + 1, testClassName, testFieldName + 1),
+          AccessWatchpointRequestInfo(TestRequestId + 2, testClassName, testFieldName + 2)
         )
 
         // NOTE: Must create a new accessWatchpoint manager that does NOT override the
@@ -73,7 +73,7 @@ class StandardAccessWatchpointManagerSpec extends FunSpec with Matchers
           mockClassManager
         )
 
-        expected.foreach { case AccessWatchpointRequestInfo(className, fieldName, _) =>
+        expected.foreach { case AccessWatchpointRequestInfo(requestId, className, fieldName, _) =>
           val stubField = createFieldStub(fieldName)
           val mockReferenceType = mock[ReferenceType]
           (mockClassManager.allClasses _).expects()
@@ -85,7 +85,8 @@ class StandardAccessWatchpointManagerSpec extends FunSpec with Matchers
           (mockEventRequestManager.createAccessWatchpointRequest _)
             .expects(stubField)
             .returning(stub[AccessWatchpointRequest]).once()
-          accessWatchpointManager.createAccessWatchpointRequest(
+          accessWatchpointManager.createAccessWatchpointRequestWithId(
+            requestId,
             className,
             fieldName
           )

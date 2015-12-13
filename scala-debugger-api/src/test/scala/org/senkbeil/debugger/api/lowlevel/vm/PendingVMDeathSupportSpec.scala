@@ -32,9 +32,9 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
     describe("#processAllPendingVMDeathRequests") {
       it("should process all pending vm death requests") {
         val expected = Seq(
-          VMDeathRequestInfo(),
-          VMDeathRequestInfo(),
-          VMDeathRequestInfo()
+          VMDeathRequestInfo(TestRequestId),
+          VMDeathRequestInfo(TestRequestId + 1),
+          VMDeathRequestInfo(TestRequestId + 2)
         )
 
         // Create vm death requests to use for testing
@@ -58,9 +58,9 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
     describe("#pendingVMDeathRequests") {
       it("should return a collection of pending vm death requests") {
         val expected = Seq(
-          VMDeathRequestInfo(),
-          VMDeathRequestInfo(Seq(stub[JDIRequestArgument])),
-          VMDeathRequestInfo()
+          VMDeathRequestInfo(TestRequestId),
+          VMDeathRequestInfo(TestRequestId + 1, Seq(stub[JDIRequestArgument])),
+          VMDeathRequestInfo(TestRequestId + 2)
         )
 
         (mockVMDeathManager.createVMDeathRequestWithId _)
@@ -120,7 +120,7 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
         // Pending vm death should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          VMDeathRequestInfo(extraArguments),
+          VMDeathRequestInfo(TestRequestId, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -173,7 +173,7 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
         // Pending vm death should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          VMDeathRequestInfo(extraArguments),
+          VMDeathRequestInfo(TestRequestId, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -228,7 +228,7 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            VMDeathRequestInfo(extraArguments),
+            VMDeathRequestInfo(TestRequestId, extraArguments),
             () => {}
           )
         )
@@ -265,3 +265,4 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
     }
   }
 }
+

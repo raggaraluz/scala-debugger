@@ -73,7 +73,7 @@ trait PendingVMDeathSupport extends VMDeathManager with PendingRequestSupport {
       case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
-          VMDeathRequestInfo(extraArguments),
+          VMDeathRequestInfo(requestId, extraArguments),
           () => createVMDeathRequest().get
         )
         Success(requestId)

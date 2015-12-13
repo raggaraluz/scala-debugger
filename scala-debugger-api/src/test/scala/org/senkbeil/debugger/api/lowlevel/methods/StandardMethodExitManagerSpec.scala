@@ -20,8 +20,8 @@ class StandardMethodExitManagerSpec extends FunSpec with Matchers with MockFacto
     describe("#methodExitRequestList") {
       it("should contain all method exit requests in the form of (class, method) stored in the manager") {
         val methodExitRequests = Seq(
-          MethodExitRequestInfo("class1", "method1"),
-          MethodExitRequestInfo("class2", "method2")
+          MethodExitRequestInfo(TestRequestId, "class1", "method1"),
+          MethodExitRequestInfo(TestRequestId + 1, "class2", "method2")
         )
 
         // NOTE: Must create a new method exit manager that does NOT override
@@ -29,10 +29,10 @@ class StandardMethodExitManagerSpec extends FunSpec with Matchers with MockFacto
         //       duplicates of the test id when storing it
         val methodExitManager = new StandardMethodExitManager(mockEventRequestManager)
 
-        methodExitRequests.foreach { case MethodExitRequestInfo(className, methodName, _) =>
+        methodExitRequests.foreach { case MethodExitRequestInfo(requestId, className, methodName, _) =>
           (mockEventRequestManager.createMethodExitRequest _).expects()
             .returning(stub[MethodExitRequest]).once()
-          methodExitManager.createMethodExitRequest(className, methodName)
+          methodExitManager.createMethodExitRequestWithId(requestId, className, methodName)
         }
 
         methodExitManager.methodExitRequestList should

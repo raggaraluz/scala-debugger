@@ -227,7 +227,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockVMDeathManager.getVMDeathRequestInfo _)
             .expects(internalId)
-            .returning(Some(VMDeathRequestInfo(arguments))).once()
+            .returning(Some(VMDeathRequestInfo(TestRequestId, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(VMDeathEventType, Seq(uniqueIdPropertyFilter))
@@ -266,7 +266,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
 
             (mockVMDeathManager.getVMDeathRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(VMDeathRequestInfo(arguments))).once()
+              .returning(Some(VMDeathRequestInfo(TestRequestId, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockVMDeathManager.createVMDeathRequestWithId _)
