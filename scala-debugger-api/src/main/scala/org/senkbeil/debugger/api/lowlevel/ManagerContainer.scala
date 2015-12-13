@@ -120,6 +120,7 @@ object ManagerContainer {
       new StandardMethodExitManager(eventRequestManager)
     lazy val modificationWatchpointManager =
       new StandardModificationWatchpointManager(eventRequestManager, classManager)
+        with StandardPendingModificationWatchpointSupport
     lazy val monitorContendedEnteredManager =
       new StandardMonitorContendedEnteredManager(eventRequestManager)
         with StandardPendingMonitorContendedEnteredSupport
