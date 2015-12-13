@@ -14,26 +14,36 @@ trait PendingBreakpointSupport
   with PendingRequestSupport
 {
   /**
-   * Represents the manager used to store pending breakpoints and process
-   * them later.
+   * Represents the manager used to store pending breakpoint requests and
+   * process them later.
    */
   protected val pendingActionManager: PendingActionManager[BreakpointRequestInfo]
 
   /**
-   * Processes all pending breakpoints.
+   * Processes all pending breakpoint requests.
    *
-   * @return The collection of successfully-processed breakpoints
+   * @return The collection of successfully-processed breakpoint requests
    */
   def processAllPendingBreakpointRequests(): Seq[BreakpointRequestInfo] = {
     pendingActionManager.processAllActions().map(_.data)
   }
 
   /**
-   * Processes all pending breakpoints for the specified file.
+   * Retrieves a list of all pending breakpoint requests.
    *
-   * @param fileName The name of the file whose pending breakpoints to process
+   * @return The collection of breakpoint request information
+   */
+  def pendingBreakpointRequests: Seq[BreakpointRequestInfo] = {
+    pendingActionManager.getPendingActionData(_ => true)
+  }
+
+  /**
+   * Processes all pending breakpoint requests for the specified file.
    *
-   * @return The collection of successfully-processed breakpoints
+   * @param fileName The name of the file whose pending breakpoint requests to
+   *                 process
+   *
+   * @return The collection of successfully-processed breakpoint requests
    */
   def processPendingBreakpointRequestsForFile(
     fileName: String
@@ -42,11 +52,12 @@ trait PendingBreakpointSupport
   }
 
   /**
-   * Retrieves a list of pending breakpoints for the specified file.
+   * Retrieves a list of pending breakpoint requests for the specified file.
    *
-   * @param fileName The name of the file whose pending breakpoints to retrieve
+   * @param fileName The name of the file whose pending breakpoint requests to
+   *                 retrieve
    *
-   * @return The collection of successfully-processed breakpoints
+   * @return The collection of breakpoint request information
    */
   def pendingBreakpointRequestsForFile(
     fileName: String

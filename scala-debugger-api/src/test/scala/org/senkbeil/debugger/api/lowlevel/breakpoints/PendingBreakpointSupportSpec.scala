@@ -90,30 +90,53 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#pendingBreakpointRequestsForFile") {
-      it("should return a collection of pending breakpoints") {
-        val testFileName = "some/file/name"
-        val testLineNumber = 1
-
-        val expected = Seq(BreakpointRequestInfo(testFileName, testLineNumber))
-
-        // Create a breakpoint to use for testing
-        (mockBreakpointManager.createBreakpointRequestWithId _)
-          .expects(TestRequestId, testFileName, testLineNumber, Nil)
-          .returning(Success(TestRequestId)).once()
-
-        pendingBreakpointSupport.createBreakpointRequest(
-          testFileName,
-          testLineNumber
+    describe("#pendingBreakpointRequests") {
+      it("should return a collection of all pending breakpoints") {
+        val expected = Seq(
+          BreakpointRequestInfo("file1", 1),
+          BreakpointRequestInfo("file1", 999),
+          BreakpointRequestInfo("file2", 1)
         )
 
-        // Return our data that represents the expected file and line
-        (mockPendingActionManager.getPendingActionData _).expects(*)
-          .returning(Seq(BreakpointRequestInfo(testFileName, testLineNumber, Nil)))
-          .once()
+        val actions = expected.map(ActionInfo.apply("", _: BreakpointRequestInfo, () => {}))
+        (mockPendingActionManager.getPendingActionData _).expects(*).onCall(
+          (f: ActionInfo[BreakpointRequestInfo] => Boolean) =>
+            actions.filter(f).map(_.data)
+        )
 
-        val actual =
-          pendingBreakpointSupport.pendingBreakpointRequestsForFile(testFileName)
+        val actual = pendingBreakpointSupport.pendingBreakpointRequests
+
+        actual should be (expected)
+      }
+
+      it("should be empty if there are no pending breakpoints") {
+        val expected = Nil
+
+        // No pending breakpoints
+        (mockPendingActionManager.getPendingActionData _).expects(*)
+          .returning(Nil).once()
+
+        val actual = pendingBreakpointSupport.pendingBreakpointRequests
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#pendingBreakpointRequestsForFile") {
+      it("should return a collection of pending breakpoints") {
+        val expected = Seq(
+          BreakpointRequestInfo("file1", 1),
+          BreakpointRequestInfo("file1", 999)
+        )
+        val actions = (expected :+ BreakpointRequestInfo("file2", 1))
+          .map(ActionInfo.apply("", _: BreakpointRequestInfo, () => {}))
+
+        (mockPendingActionManager.getPendingActionData _).expects(*).onCall(
+          (f: ActionInfo[BreakpointRequestInfo] => Boolean) =>
+            actions.filter(f).map(_.data)
+        )
+
+        val actual = pendingBreakpointSupport.pendingBreakpointRequestsForFile("file1")
 
         actual should be (expected)
       }
