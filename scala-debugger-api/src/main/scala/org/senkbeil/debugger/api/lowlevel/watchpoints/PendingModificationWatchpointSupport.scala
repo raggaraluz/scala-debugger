@@ -40,7 +40,8 @@ trait PendingModificationWatchpointSupport
   }
 
   /**
-   * Processes all pending modification watchpoint requests for the specified file.
+   * Processes all pending modification watchpoint requests for the specified
+   * class.
    *
    * @param className The full name of the class whose pending
    *                  modification watchpoint requests to process
@@ -57,7 +58,7 @@ trait PendingModificationWatchpointSupport
 
   /**
    * Retrieves a list of pending modification watchpoint requests for the
-   * specified file.
+   * specified class.
    *
    * @param className The full name of the class whose pending
    *                  modification watchpoint requests to retrieve

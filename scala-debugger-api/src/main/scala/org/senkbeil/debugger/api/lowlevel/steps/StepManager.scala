@@ -300,7 +300,7 @@ trait StepManager {
   def getStepRequestInfoWithId(requestId: String): Option[StepRequestInfo]
 
   /**
-   * Removes the step on the specified line of the file.
+   * Removes the step requests for the specified thread.
    *
    * @param threadReference The thread with which the step is associated
    *
@@ -309,7 +309,7 @@ trait StepManager {
   def removeStepRequest(threadReference: ThreadReference): Boolean
 
   /**
-   * Removes the step with the specified id.
+   * Removes the step request with the specified id.
    *
    * @param requestId The id of the request
    *

@@ -39,7 +39,7 @@ trait PendingAccessWatchpointSupport
   }
 
   /**
-   * Processes all pending access watchpoint requests for the specified file.
+   * Processes all pending access watchpoint requests for the specified class.
    *
    * @param className The full name of the class whose pending
    *                  access watchpoint requests to process
@@ -54,7 +54,8 @@ trait PendingAccessWatchpointSupport
   }
 
   /**
-   * Retrieves a list of pending access watchpoint requests for the specified file.
+   * Retrieves a list of pending access watchpoint requests for the specified
+   * class.
    *
    * @param className The full name of the class whose pending
    *                  access watchpoint requests to retrieve

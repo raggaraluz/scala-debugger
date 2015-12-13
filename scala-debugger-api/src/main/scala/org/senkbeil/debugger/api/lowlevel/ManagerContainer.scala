@@ -8,7 +8,7 @@ import org.senkbeil.debugger.api.lowlevel.events.{StandardEventManager, EventMan
 import org.senkbeil.debugger.api.lowlevel.exceptions.{StandardPendingExceptionSupport, StandardExceptionManager, ExceptionManager}
 import org.senkbeil.debugger.api.lowlevel.methods.{MethodExitManager, MethodEntryManager, StandardMethodEntryManager, StandardMethodExitManager}
 import org.senkbeil.debugger.api.lowlevel.monitors._
-import org.senkbeil.debugger.api.lowlevel.steps.{StepManager, StandardStepManager}
+import org.senkbeil.debugger.api.lowlevel.steps.{StandardPendingStepSupport, StepManager, StandardStepManager}
 import org.senkbeil.debugger.api.lowlevel.threads._
 import org.senkbeil.debugger.api.lowlevel.vm.{StandardPendingVMDeathSupport, VMDeathManager, StandardVMDeathManager}
 import org.senkbeil.debugger.api.lowlevel.watchpoints._
@@ -137,6 +137,7 @@ object ManagerContainer {
       virtualMachine.eventRequestManager()
     lazy val stepManager =
       new StandardStepManager(eventRequestManager)
+        with StandardPendingStepSupport
     lazy val threadDeathManager =
       new StandardThreadDeathManager(eventRequestManager)
         with StandardPendingThreadDeathSupport
