@@ -208,69 +208,6 @@ class PendingAccessWatchpointSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createAccessWatchpointRequest") {
-      it("should return Success(id) if the access watchpoint request was created") {
-        val testClassName = "some.class.name"
-        val testFieldName = "someFieldName"
-
-        val expected = Success(TestRequestId)
-
-        (mockAccessWatchpointManager.createAccessWatchpointRequestWithId _)
-          .expects(TestRequestId, testClassName, testFieldName, Nil)
-          .returning(expected).once()
-
-        val actual = pendingAccessWatchpointSupport.createAccessWatchpointRequest(
-          testClassName,
-          testFieldName
-        )
-
-        actual should be (expected)
-      }
-
-      it("should add a pending access watchpoint request if access watchpoint request thrown") {
-        val testClassName = "some.class.name"
-        val testFieldName = "someFieldName"
-
-        val expected = Success(TestRequestId)
-
-        (mockAccessWatchpointManager.createAccessWatchpointRequestWithId _)
-          .expects(TestRequestId, testClassName, testFieldName, Nil)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending access watchpoint request should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          AccessWatchpointRequestInfo(TestRequestId, testClassName, testFieldName, Nil),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        val actual = pendingAccessWatchpointSupport.createAccessWatchpointRequest(
-          testClassName,
-          testFieldName
-        )
-
-        actual should be (expected)
-      }
-
-      it("should return a failure if pending disabled and failed to create request") {
-        val expected = Failure(new Throwable)
-        val testClassName = "some.class.name"
-        val testFieldName = "someFieldName"
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockAccessWatchpointManager.createAccessWatchpointRequestWithId _)
-          .expects(*, *, *, *)
-          .returning(expected).once()
-
-        pendingAccessWatchpointSupport.disablePendingSupport()
-        val actual = pendingAccessWatchpointSupport.createAccessWatchpointRequest(
-          testClassName, testFieldName, extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-    }
-
     describe("#removeAccessWatchpointRequestWithId") {
       it("should return true if the access watchpoint request was successfully deleted") {
         val expected = true

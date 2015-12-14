@@ -38,7 +38,25 @@ trait ClassUnloadManager {
    */
   def createClassUnloadRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createClassUnloadRequestWithId(
+    newRequestId(),
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new class unload request based on the specified information.
+   *
+   * @param classUnloadRequestInfo The information used to create the
+   *                                class unload request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createClassUnloadRequestFromInfo(
+    classUnloadRequestInfo: ClassUnloadRequestInfo
+  ): Try[String] = createClassUnloadRequestWithId(
+    classUnloadRequestInfo.requestId,
+    classUnloadRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a class unload request with the specified id.

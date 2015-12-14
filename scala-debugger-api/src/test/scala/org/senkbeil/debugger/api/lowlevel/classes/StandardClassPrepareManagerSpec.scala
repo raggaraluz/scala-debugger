@@ -64,9 +64,7 @@ class StandardClassPrepareManagerSpec extends FunSpec with Matchers with MockFac
         val actual = classPrepareManager.createClassPrepareRequestWithId(expected.get)
         actual should be(expected)
       }
-    }
 
-    describe("#createClassPrepareRequest") {
       it("should create the class prepare request and return Success(id)") {
         val expected = Success(TestRequestId)
 
@@ -80,7 +78,9 @@ class StandardClassPrepareManagerSpec extends FunSpec with Matchers with MockFac
           .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
         (mockClassPrepareRequest.setEnabled _).expects(true).once()
 
-        val actual = classPrepareManager.createClassPrepareRequest()
+        val actual = classPrepareManager.createClassPrepareRequestWithId(
+          expected.get
+        )
         actual should be (expected)
       }
 
@@ -90,7 +90,9 @@ class StandardClassPrepareManagerSpec extends FunSpec with Matchers with MockFac
         (mockEventRequestManager.createClassPrepareRequest _).expects()
           .throwing(expected.failed.get).once()
 
-        val actual = classPrepareManager.createClassPrepareRequest()
+        val actual = classPrepareManager.createClassPrepareRequestWithId(
+          TestRequestId
+        )
         actual should be (expected)
       }
     }

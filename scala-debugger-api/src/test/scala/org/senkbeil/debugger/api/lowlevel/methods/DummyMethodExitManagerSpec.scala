@@ -39,21 +39,6 @@ class DummyMethodExitManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
-    describe("#createMethodExitRequest") {
-      it("should return a failure of dummy operation") {
-        val testClassName = "some.class.name"
-        val testMethodName = "someMethodName"
-
-        val result = methodExitManager.createMethodExitRequest(
-          testClassName,
-          testMethodName
-        )
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
     describe("#hasMethodExitRequestWithId") {
       it("should return false") {
         val expected = false

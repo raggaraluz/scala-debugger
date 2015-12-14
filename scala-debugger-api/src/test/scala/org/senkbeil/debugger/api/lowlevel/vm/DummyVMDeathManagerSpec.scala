@@ -28,15 +28,6 @@ class DummyVMDeathManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
-    describe("#createVMDeathRequest") {
-      it("should return a failure of dummy operation") {
-        val result = vmDeathManager.createVMDeathRequest()
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
     describe("#hasVMDeathRequest") {
       it("should return false") {
         val expected = false

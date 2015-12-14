@@ -41,20 +41,6 @@ trait PendingThreadDeathSupport
   /**
    * Creates a new thread death request.
    *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  abstract override def createThreadDeathRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = createThreadDeathRequestWithId(
-    newRequestId(),
-    extraArguments: _*
-  )
-
-  /**
-   * Creates a new thread death request.
-   *
    * @param requestId The id of the request used to retrieve and delete it
    * @param extraArguments Any additional arguments to provide to the request
    *

@@ -32,8 +32,6 @@ class TestBreakpointManager(
     breakpointManager.createBreakpointRequestWithId(requestId, fileName, lineNumber, extraArguments: _*)
   override def getBreakpointRequest(fileName: String, lineNumber: Int): Option[Seq[BreakpointRequest]] =
     breakpointManager.getBreakpointRequest(fileName, lineNumber)
-  override def createBreakpointRequest(fileName: String, lineNumber: Int, extraArguments: JDIRequestArgument*): Try[String] =
-    breakpointManager.createBreakpointRequest(fileName, lineNumber, extraArguments: _*)
   override def getBreakpointRequestInfoWithId(requestId: String): Option[BreakpointRequestInfo] =
     breakpointManager.getBreakpointRequestInfoWithId(requestId)
   override def hasBreakpointRequestWithId(requestId: String): Boolean =

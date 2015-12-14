@@ -11,17 +11,6 @@ import scala.util.{Failure, Try}
  */
 class DummyClassUnloadManager extends ClassUnloadManager {
   /**
-   * Creates a new class unload request.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createClassUnloadRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = Failure(new DummyOperationException)
-
-  /**
    * Determines if a class unload request with the specified id.
    *
    * @param requestId The id of the Class Unload Request

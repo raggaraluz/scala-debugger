@@ -113,26 +113,6 @@ trait PendingBreakpointSupport
   }
 
   /**
-   * Creates and enables a breakpoint on the specified line of the class.
-   *
-   * @param fileName The name of the file to set a breakpoint
-   * @param lineNumber The number of the line to break
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful or pending, otherwise Failure
-   */
-  abstract override def createBreakpointRequest(
-    fileName: String,
-    lineNumber: Int,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = createBreakpointRequestWithId(
-    newRequestId(),
-    fileName,
-    lineNumber,
-    extraArguments: _*
-  )
-
-  /**
    * Creates and enables a breakpoint on the specified line of the class. Will
    * also remove any pending breakpoints.
    *

@@ -60,22 +60,6 @@ class StandardMonitorContendedEnteredManager(
   }
 
   /**
-   * Creates a new monitor contended entered request.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createMonitorContendedEnteredRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createMonitorContendedEnteredRequestWithId(
-      newRequestId(),
-      extraArguments: _*
-    )
-  }
-
-  /**
    * Determines if a monitor contended entered request with the specified id.
    *
    * @param id The id of the Monitor Contended Entered Request

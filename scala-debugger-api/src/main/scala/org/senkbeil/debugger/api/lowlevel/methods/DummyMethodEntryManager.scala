@@ -11,25 +11,6 @@ import scala.util.{Failure, Try}
  */
 class DummyMethodEntryManager extends MethodEntryManager {
   /**
-   * Creates a new method entry request for the specified class and method.
-   *
-   * @note The method name is purely used for indexing the request in the
-   *       internal list. You should set a method name filter on the event
-   *       handler for the method entry event.
-   *
-   * @param className The name of the class whose method entry events to watch
-   * @param methodName The name of the method whose entry to watch
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createMethodEntryRequest(
-    className: String,
-    methodName: String,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = Failure(new DummyOperationException)
-
-  /**
    * Retrieves the list of method entry requests contained by this manager.
    *
    * @return The collection of method entry requests by id

@@ -40,21 +40,6 @@ class DummyBreakpointManagerSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createBreakpointRequest") {
-      it("should return a failure of dummy operation") {
-        val testFileName = "some/file/name"
-        val testLineNumber = 1
-
-        val result = breakpointManager.createBreakpointRequest(
-          testFileName,
-          testLineNumber
-        )
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
     describe("#hasBreakpointRequestWithId") {
       it("should return false") {
         val expected = false

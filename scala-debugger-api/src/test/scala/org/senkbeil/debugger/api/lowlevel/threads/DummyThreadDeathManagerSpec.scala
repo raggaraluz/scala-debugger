@@ -28,15 +28,6 @@ class DummyThreadDeathManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
-    describe("#createThreadDeathRequest") {
-      it("should return a failure of dummy operation") {
-        val result = threadDeathManager.createThreadDeathRequest()
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
     describe("#hasThreadDeathRequest") {
       it("should return false") {
         val expected = false

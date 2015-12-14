@@ -18,8 +18,6 @@ class TestThreadDeathManager(
 ) extends ThreadDeathManager {
   override def threadDeathRequestList: Seq[String] =
     threadDeathManager.threadDeathRequestList
-  override def createThreadDeathRequest(extraArguments: JDIRequestArgument*): Try[String] =
-    threadDeathManager.createThreadDeathRequest(extraArguments: _*)
   override def hasThreadDeathRequest(id: String): Boolean =
     threadDeathManager.hasThreadDeathRequest(id)
   override def getThreadDeathRequest(id: String): Option[ThreadDeathRequest] =

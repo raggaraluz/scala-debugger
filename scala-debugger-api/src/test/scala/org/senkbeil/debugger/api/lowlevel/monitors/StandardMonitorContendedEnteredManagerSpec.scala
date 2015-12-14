@@ -64,25 +64,6 @@ class StandardMonitorContendedEnteredManagerSpec extends FunSpec with Matchers w
         val actual = monitorContendedEnteredManager.createMonitorContendedEnteredRequestWithId(expected.get)
         actual should be(expected)
       }
-    }
-
-    describe("#createMonitorContendedEnteredRequest") {
-      it("should create the monitor contended entered request and return Success(id)") {
-        val expected = Success(TestRequestId)
-
-        val mockMonitorContendedEnteredRequest = mock[MonitorContendedEnteredRequest]
-        (mockEventRequestManager.createMonitorContendedEnteredRequest _).expects()
-          .returning(mockMonitorContendedEnteredRequest).once()
-
-        // Should set enabled to true by default, and
-        // set the suspend policy to vm level by default
-        (mockMonitorContendedEnteredRequest.setSuspendPolicy _)
-          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
-        (mockMonitorContendedEnteredRequest.setEnabled _).expects(true).once()
-
-        val actual = monitorContendedEnteredManager.createMonitorContendedEnteredRequest()
-        actual should be (expected)
-      }
 
       it("should return the exception if unable to create the request") {
         val expected = Failure(new Throwable)
@@ -90,7 +71,9 @@ class StandardMonitorContendedEnteredManagerSpec extends FunSpec with Matchers w
         (mockEventRequestManager.createMonitorContendedEnteredRequest _).expects()
           .throwing(expected.failed.get).once()
 
-        val actual = monitorContendedEnteredManager.createMonitorContendedEnteredRequest()
+        val actual = monitorContendedEnteredManager.createMonitorContendedEnteredRequestWithId(
+          TestRequestId
+        )
         actual should be (expected)
       }
     }

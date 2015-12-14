@@ -45,5 +45,19 @@ trait ScalaVirtualMachine extends SwappableDebugProfile {
    * @return The JDI VirtualMachine instance
    */
   def underlyingVirtualMachine: VirtualMachine
+
+  /**
+   * Processes any pending requests contained by the provided Scala virtual
+   * machine by applying them using this Scala virtual machine.
+   *
+   * @note This will not remove the pending requests from the managers
+   *       contained in the provided Scala virtual machine!
+   *
+   * @param scalaVirtualMachine The virtual machine whose pending requests to
+   *                            process using this virtual machine
+   */
+  def processPendingRequests(scalaVirtualMachine: ScalaVirtualMachine): Unit = {
+    this.lowlevel.processPendingRequests(scalaVirtualMachine.lowlevel)
+  }
 }
 

@@ -42,21 +42,6 @@ class DummyMethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
-    describe("#createMethodEntryRequest") {
-      it("should return a failure of dummy operation") {
-        val testClassName = "some.class.name"
-        val testMethodName = "someMethodName"
-
-        val result = methodEntryManager.createMethodEntryRequest(
-          testClassName,
-          testMethodName
-        )
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
     describe("#hasMethodEntryRequestWithId") {
       it("should return false") {
         val expected = false

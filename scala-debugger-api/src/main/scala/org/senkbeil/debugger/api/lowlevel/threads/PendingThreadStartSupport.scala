@@ -41,20 +41,6 @@ trait PendingThreadStartSupport
   /**
    * Creates a new thread start request.
    *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  abstract override def createThreadStartRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = createThreadStartRequestWithId(
-    newRequestId(),
-    extraArguments: _*
-  )
-
-  /**
-   * Creates a new thread start request.
-   *
    * @param requestId The id of the request used to retrieve and delete it
    * @param extraArguments Any additional arguments to provide to the request
    *

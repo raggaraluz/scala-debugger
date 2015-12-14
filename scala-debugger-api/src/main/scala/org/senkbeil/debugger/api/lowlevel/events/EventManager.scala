@@ -341,6 +341,22 @@ trait EventManager {
   )
 
   /**
+   * Adds an event handler based on the specified information.
+   *
+   * @param eventHandlerInfo The information used to add the event hander
+   *
+   * @return The id associated with the event handler
+   */
+  def addEventHandlerFromInfo(
+    eventHandlerInfo: EventHandlerInfo
+  ): String = addEventHandlerWithId(
+    eventHandlerInfo.eventHandlerId,
+    eventHandlerInfo.eventType,
+    eventHandlerInfo.eventHandler,
+    eventHandlerInfo.extraArguments: _*
+  )
+
+  /**
    * Retrieves the collection of event handler functions for the specific
    * event class.
    *

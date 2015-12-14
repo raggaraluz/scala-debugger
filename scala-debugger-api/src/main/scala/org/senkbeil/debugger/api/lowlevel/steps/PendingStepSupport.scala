@@ -74,69 +74,6 @@ trait PendingStepSupport
    * size (next valid location or next location on a new line) and depth (into,
    * over, or out of the current frame).
    *
-   * Removes any existing step requests for the specified thread.
-   *
-   * @note Includes a default count filter of 1. This can be overridden by
-   *       providing a CountFilter(count = ???) as an extra argument.
-   *
-   * @param threadReference The thread with which to perform the step
-   * @param size The size of the step request (LINE/MIN)
-   * @param depth The depth of the step request (INTO/OVER/OUT)
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  abstract override def createStepRequest(
-    threadReference: ThreadReference,
-    size: Int,
-    depth: Int,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = createStepRequestWithId(
-    newRequestId(),
-    threadReference,
-    size,
-    depth,
-    extraArguments: _*
-  )
-
-  /**
-   * Creates and enables a step request for the given thread using the provided
-   * size (next valid location or next location on a new line) and depth (into,
-   * over, or out of the current frame).
-   *
-   * Removes any existing step requests for the specified thread.
-   *
-   * @note Includes a default count filter of 1. This can be overridden by
-   *       providing a CountFilter(count = ???) as an extra argument.
-   *
-   * @param requestId The id of the request used for lookup and removal
-   * @param threadReference The thread with which to perform the step
-   * @param size The size of the step request (LINE/MIN)
-   * @param depth The depth of the step request (INTO/OVER/OUT)
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  abstract override def createStepRequestWithId(
-    requestId: String,
-    threadReference: ThreadReference,
-    size: Int,
-    depth: Int,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = createStepRequestWithId(
-    requestId = requestId,
-    removeExistingRequests = true,
-    threadReference = threadReference,
-    size = size,
-    depth = depth,
-    extraArguments: _*
-  )
-
-  /**
-   * Creates and enables a step request for the given thread using the provided
-   * size (next valid location or next location on a new line) and depth (into,
-   * over, or out of the current frame).
-   *
    * @note Includes a default count filter of 1. This can be overridden by
    *       providing a CountFilter(count = ???) as an extra argument.
    *
@@ -175,6 +112,7 @@ trait PendingStepSupport
           requestId,
           StepRequestInfo(
             requestId,
+            removeExistingRequests,
             threadReference,
             size,
             depth,

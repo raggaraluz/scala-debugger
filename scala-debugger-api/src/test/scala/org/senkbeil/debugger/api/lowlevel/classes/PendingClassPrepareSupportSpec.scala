@@ -147,60 +147,6 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
         actual should be (expected)
       }
     }
-
-    describe("#createClassPrepareRequest") {
-      it("should return Success(id) if the class prepare was created") {
-        val expected = Success(TestRequestId)
-
-        // Create a class prepare to use for testing
-        (mockClassPrepareManager.createClassPrepareRequestWithId _)
-          .expects(TestRequestId, Nil)
-          .returning(expected).once()
-
-        val actual = pendingClassPrepareSupport.createClassPrepareRequest()
-
-        actual should be (expected)
-      }
-
-      it("should add a pending class prepare if exception thrown") {
-        val expected = Success(TestRequestId)
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockClassPrepareManager.createClassPrepareRequestWithId _)
-          .expects(*, *)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending class prepare should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          ClassPrepareRequestInfo(TestRequestId, extraArguments),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        val actual = pendingClassPrepareSupport.createClassPrepareRequest(
-          extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-
-      it("should return a failure if pending disabled and failed to create request") {
-        val expected = Failure(new Throwable)
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockClassPrepareManager.createClassPrepareRequestWithId _)
-          .expects(*, *)
-          .returning(expected).once()
-
-        pendingClassPrepareSupport.disablePendingSupport()
-        val actual = pendingClassPrepareSupport.createClassPrepareRequest(
-          extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-    }
-
     describe("#removeClassPrepareRequest") {
       it("should return true if the class prepare was successfully deleted") {
         val expected = true

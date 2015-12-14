@@ -19,8 +19,6 @@ class TestMonitorContendedEnterManager(
 ) extends MonitorContendedEnterManager {
   override def monitorContendedEnterRequestList: Seq[String] =
     monitorContendedEnterManager.monitorContendedEnterRequestList
-  override def createMonitorContendedEnterRequest(extraArguments: JDIRequestArgument*): Try[String] =
-    monitorContendedEnterManager.createMonitorContendedEnterRequest(extraArguments: _*)
   override def hasMonitorContendedEnterRequest(id: String): Boolean =
     monitorContendedEnterManager.hasMonitorContendedEnterRequest(id)
   override def getMonitorContendedEnterRequest(id: String): Option[MonitorContendedEnterRequest] =

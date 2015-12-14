@@ -148,59 +148,6 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createThreadDeathRequest") {
-      it("should return Success(id) if the thread death was created") {
-        val expected = Success(TestRequestId)
-
-        // Create a thread death to use for testing
-        (mockThreadDeathManager.createThreadDeathRequestWithId _)
-          .expects(TestRequestId, Nil)
-          .returning(expected).once()
-
-        val actual = pendingThreadDeathSupport.createThreadDeathRequest()
-
-        actual should be (expected)
-      }
-
-      it("should add a pending thread death if exception thrown") {
-        val expected = Success(TestRequestId)
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockThreadDeathManager.createThreadDeathRequestWithId _)
-          .expects(*, *)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending thread death should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          ThreadDeathRequestInfo(TestRequestId, extraArguments),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        val actual = pendingThreadDeathSupport.createThreadDeathRequest(
-          extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-
-      it("should return a failure if pending disabled and failed to create request") {
-        val expected = Failure(new Throwable)
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockThreadDeathManager.createThreadDeathRequestWithId _)
-          .expects(*, *)
-          .returning(expected).once()
-
-        pendingThreadDeathSupport.disablePendingSupport()
-        val actual = pendingThreadDeathSupport.createThreadDeathRequest(
-          extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-    }
-
     describe("#removeThreadDeathRequest") {
       it("should return true if the thread death was successfully deleted") {
         val expected = true

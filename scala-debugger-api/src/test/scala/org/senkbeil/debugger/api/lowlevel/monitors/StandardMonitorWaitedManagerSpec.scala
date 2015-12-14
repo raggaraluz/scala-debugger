@@ -65,25 +65,6 @@ class StandardMonitorWaitedManagerSpec extends FunSpec with Matchers with MockFa
           monitorWaitedManager.createMonitorWaitedRequestWithId(expected.get)
         actual should be(expected)
       }
-    }
-
-    describe("#createMonitorWaitedRequest") {
-      it("should create the monitor waited request and return Success(id)") {
-        val expected = Success(TestRequestId)
-
-        val mockMonitorWaitedRequest = mock[MonitorWaitedRequest]
-        (mockEventRequestManager.createMonitorWaitedRequest _).expects()
-          .returning(mockMonitorWaitedRequest).once()
-
-        // Should set enabled to true by default, and
-        // set the suspend policy to vm level by default
-        (mockMonitorWaitedRequest.setSuspendPolicy _)
-          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
-        (mockMonitorWaitedRequest.setEnabled _).expects(true).once()
-
-        val actual = monitorWaitedManager.createMonitorWaitedRequest()
-        actual should be (expected)
-      }
 
       it("should return the exception if unable to create the request") {
         val expected = Failure(new Throwable)
@@ -91,7 +72,9 @@ class StandardMonitorWaitedManagerSpec extends FunSpec with Matchers with MockFa
         (mockEventRequestManager.createMonitorWaitedRequest _).expects()
           .throwing(expected.failed.get).once()
 
-        val actual = monitorWaitedManager.createMonitorWaitedRequest()
+        val actual = monitorWaitedManager.createMonitorWaitedRequestWithId(
+          TestRequestId
+        )
         actual should be (expected)
       }
     }

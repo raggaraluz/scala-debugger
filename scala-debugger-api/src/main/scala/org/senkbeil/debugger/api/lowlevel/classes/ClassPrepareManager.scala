@@ -41,7 +41,25 @@ trait ClassPrepareManager {
    */
   def createClassPrepareRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createClassPrepareRequestWithId(
+    newRequestId(),
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new class prepare request based on the specified information.
+   *
+   * @param classPrepareRequestInfo The information used to create the
+   *                                class prepare request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createClassPrepareRequestFromInfo(
+    classPrepareRequestInfo: ClassPrepareRequestInfo
+  ): Try[String] = createClassPrepareRequestWithId(
+    classPrepareRequestInfo.requestId,
+    classPrepareRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a class prepare request with the specified id.

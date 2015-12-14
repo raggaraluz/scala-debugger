@@ -16,8 +16,6 @@ import scala.util.Try
 class TestMethodEntryManager(
   private val methodEntryManager: MethodEntryManager
 ) extends MethodEntryManager {
-  override def createMethodEntryRequest(className: String, methodName: String, extraArguments: JDIRequestArgument*): Try[String] =
-    methodEntryManager.createMethodEntryRequest(className, methodName, extraArguments: _*)
   override def methodEntryRequestListById: Seq[String] =
     methodEntryManager.methodEntryRequestListById
   override def createMethodEntryRequestWithId(requestId: String, className: String, methodName: String, extraArguments: JDIRequestArgument*): Try[String] =

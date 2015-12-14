@@ -16,8 +16,6 @@ import scala.util.Try
 class TestMethodExitManager(
   private val methodExitManager: MethodExitManager
 ) extends MethodExitManager {
-  override def createMethodExitRequest(className: String, methodName: String, extraArguments: JDIRequestArgument*): Try[String] =
-    methodExitManager.createMethodExitRequest(className, methodName, extraArguments: _*)
   override def methodExitRequestListById: Seq[String] =
     methodExitManager.methodExitRequestListById
   override def createMethodExitRequestWithId(requestId: String, className: String, methodName: String, extraArguments: JDIRequestArgument*): Try[String] =

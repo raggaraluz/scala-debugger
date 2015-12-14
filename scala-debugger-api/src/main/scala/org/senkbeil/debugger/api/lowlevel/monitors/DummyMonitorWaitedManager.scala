@@ -11,17 +11,6 @@ import scala.util.{Failure, Try}
  */
 class DummyMonitorWaitedManager extends MonitorWaitedManager {
   /**
-   * Creates a new monitor waited request.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createMonitorWaitedRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = Failure(new DummyOperationException)
-
-  /**
    * Determines if a monitor waited request with the specified id.
    *
    * @param requestId The id of the Monitor Waited Request

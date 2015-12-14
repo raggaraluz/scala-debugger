@@ -39,7 +39,27 @@ trait VMDeathManager {
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createVMDeathRequest(extraArguments: JDIRequestArgument*): Try[String]
+  def createVMDeathRequest(
+    extraArguments: JDIRequestArgument*
+  ): Try[String] = createVMDeathRequestWithId(
+    newRequestId(),
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new vm death request based on the specified information.
+   *
+   * @param vmDeathRequestInfo The information used to create the
+   *                                vm death request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createVMDeathRequestFromInfo(
+    vmDeathRequestInfo: VMDeathRequestInfo
+  ): Try[String] = createVMDeathRequestWithId(
+    vmDeathRequestInfo.requestId,
+    vmDeathRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a vm death request with the specified id.

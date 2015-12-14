@@ -61,7 +61,29 @@ trait MethodExitManager {
     className: String,
     methodName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createMethodExitRequestWithId(
+    newRequestId(),
+    className,
+    methodName,
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a method exit request based on the specified information.
+   *
+   * @param methodExitRequestInfo The information used to create the
+   *                              method exit request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createMethodExitRequestFromInfo(
+    methodExitRequestInfo: MethodExitRequestInfo
+  ): Try[String] = createMethodExitRequestWithId(
+    methodExitRequestInfo.requestId,
+    methodExitRequestInfo.className,
+    methodExitRequestInfo.methodName,
+    methodExitRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a method exit request for the specific class and method

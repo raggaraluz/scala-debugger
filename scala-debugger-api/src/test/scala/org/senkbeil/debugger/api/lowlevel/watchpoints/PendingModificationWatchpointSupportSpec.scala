@@ -208,69 +208,6 @@ class PendingModificationWatchpointSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createModificationWatchpointRequest") {
-      it("should return Success(id) if the modification watchpoint request was created") {
-        val testClassName = "some.class.name"
-        val testFieldName = "someFieldName"
-
-        val expected = Success(TestRequestId)
-
-        (mockModificationWatchpointManager.createModificationWatchpointRequestWithId _)
-          .expects(TestRequestId, testClassName, testFieldName, Nil)
-          .returning(expected).once()
-
-        val actual = pendingModificationWatchpointSupport.createModificationWatchpointRequest(
-          testClassName,
-          testFieldName
-        )
-
-        actual should be (expected)
-      }
-
-      it("should add a pending modification watchpoint request if modification watchpoint request thrown") {
-        val testClassName = "some.class.name"
-        val testFieldName = "someFieldName"
-
-        val expected = Success(TestRequestId)
-
-        (mockModificationWatchpointManager.createModificationWatchpointRequestWithId _)
-          .expects(TestRequestId, testClassName, testFieldName, Nil)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending modification watchpoint request should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          ModificationWatchpointRequestInfo(TestRequestId, testClassName, testFieldName, Nil),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        val actual = pendingModificationWatchpointSupport.createModificationWatchpointRequest(
-          testClassName,
-          testFieldName
-        )
-
-        actual should be (expected)
-      }
-
-      it("should return a failure if pending disabled and failed to create request") {
-        val expected = Failure(new Throwable)
-        val testClassName = "some.class.name"
-        val testFieldName = "someFieldName"
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockModificationWatchpointManager.createModificationWatchpointRequestWithId _)
-          .expects(*, *, *, *)
-          .returning(expected).once()
-
-        pendingModificationWatchpointSupport.disablePendingSupport()
-        val actual = pendingModificationWatchpointSupport.createModificationWatchpointRequest(
-          testClassName, testFieldName, extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-    }
-
     describe("#removeModificationWatchpointRequestWithId") {
       it("should return true if the modification watchpoint request was successfully deleted") {
         val expected = true

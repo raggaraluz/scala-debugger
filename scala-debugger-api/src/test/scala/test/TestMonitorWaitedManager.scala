@@ -18,8 +18,6 @@ class TestMonitorWaitedManager(
 ) extends MonitorWaitedManager {
   override def monitorWaitedRequestList: Seq[String] =
     monitorWaitedManager.monitorWaitedRequestList
-  override def createMonitorWaitedRequest(extraArguments: JDIRequestArgument*): Try[String] =
-    monitorWaitedManager.createMonitorWaitedRequest(extraArguments: _*)
   override def hasMonitorWaitedRequest(id: String): Boolean =
     monitorWaitedManager.hasMonitorWaitedRequest(id)
   override def getMonitorWaitedRequest(id: String): Option[MonitorWaitedRequest] =

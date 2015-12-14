@@ -200,7 +200,14 @@ trait StepManager {
     size: Int,
     depth: Int,
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createStepRequestWithId(
+    requestId = requestId,
+    removeExistingRequests = true,
+    threadReference = threadReference,
+    size = size,
+    depth = depth,
+    extraArguments: _*
+  )
 
   /**
    * Creates and enables a step request for the given thread using the provided
@@ -251,7 +258,31 @@ trait StepManager {
     size: Int,
     depth: Int,
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createStepRequestWithId(
+    newRequestId(),
+    threadReference,
+    size,
+    depth,
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a step request based on the specified information.
+   *
+   * @param stepRequestInfo The information used to create the step request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createStepRequestFromInfo(
+    stepRequestInfo: StepRequestInfo
+  ): Try[String] = createStepRequestWithId(
+    stepRequestInfo.requestId,
+    stepRequestInfo.removeExistingRequests,
+    stepRequestInfo.threadReference,
+    stepRequestInfo.size,
+    stepRequestInfo.depth,
+    stepRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines whether or not there is a step request for the specified thread.

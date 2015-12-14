@@ -40,7 +40,25 @@ trait MonitorWaitedManager {
    */
   def createMonitorWaitedRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createMonitorWaitedRequestWithId(
+    newRequestId(),
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new monitor waited request based on the specified information.
+   *
+   * @param monitorWaitedRequestInfo The information used to create the
+   *                                 monitor waited request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createMonitorWaitedRequestFromInfo(
+    monitorWaitedRequestInfo: MonitorWaitedRequestInfo
+  ): Try[String] = createMonitorWaitedRequestWithId(
+    monitorWaitedRequestInfo.requestId,
+    monitorWaitedRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a monitor waited request with the specified id.

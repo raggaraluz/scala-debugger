@@ -31,7 +31,7 @@ trait BreakpointManager {
    * @param lineNumber The number of the line to break
    * @param extraArguments Any additional arguments to provide to the request
    *
-   * @return Success(id) if successful or pending, otherwise Failure
+   * @return Success(id) if successful, otherwise Failure
    */
   def createBreakpointRequestWithId(
     requestId: String,
@@ -40,6 +40,7 @@ trait BreakpointManager {
     extraArguments: JDIRequestArgument*
   ): Try[String]
 
+
   /**
    * Creates and enables a breakpoint on the specified line of the class.
    *
@@ -47,13 +48,35 @@ trait BreakpointManager {
    * @param lineNumber The number of the line to break
    * @param extraArguments Any additional arguments to provide to the request
    *
-   * @return Success(id) if successful or pending, otherwise Failure
+   * @return Success(id) if successful, otherwise Failure
    */
   def createBreakpointRequest(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createBreakpointRequestWithId(
+    newRequestId(),
+    fileName,
+    lineNumber,
+    extraArguments: _*
+  )
+
+  /**
+   * Creates and enables a breakpoint based on the specified information.
+   *
+   * @param breakpointRequestInfo The information used to create the breakpoint
+   *                              request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createBreakpointRequestFromInfo(
+    breakpointRequestInfo: BreakpointRequestInfo
+  ): Try[String] = createBreakpointRequestWithId(
+    breakpointRequestInfo.requestId,
+    breakpointRequestInfo.fileName,
+    breakpointRequestInfo.lineNumber,
+    breakpointRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines whether or not the breakpoint for the specific file's line.

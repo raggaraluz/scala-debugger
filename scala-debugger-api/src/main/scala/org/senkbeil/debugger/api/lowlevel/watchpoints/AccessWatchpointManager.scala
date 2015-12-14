@@ -59,7 +59,29 @@ trait AccessWatchpointManager {
     className: String,
     fieldName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createAccessWatchpointRequestWithId(
+    newRequestId(),
+    className,
+    fieldName,
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a access watchpoint request based on the specified information.
+   *
+   * @param accessWatchpointRequestInfo The information used to create the
+   *                                    access watchpoint request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createAccessWatchpointRequestFromInfo(
+    accessWatchpointRequestInfo: AccessWatchpointRequestInfo
+  ): Try[String] = createAccessWatchpointRequestWithId(
+    accessWatchpointRequestInfo.requestId,
+    accessWatchpointRequestInfo.className,
+    accessWatchpointRequestInfo.fieldName,
+    accessWatchpointRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a access watchpoint request with the specified field.

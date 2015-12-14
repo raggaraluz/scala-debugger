@@ -11,17 +11,6 @@ import scala.util.{Failure, Try}
  */
 class DummyClassPrepareManager extends ClassPrepareManager {
   /**
-   * Creates a new class prepare request.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createClassPrepareRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = Failure(new DummyOperationException)
-
-  /**
    * Determines if a class prepare request with the specified id.
    *
    * @param requestId The id of the Class Prepare Request

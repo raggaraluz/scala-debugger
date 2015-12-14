@@ -18,8 +18,6 @@ class TestVMDeathManager(
 ) extends VMDeathManager {
   override def vmDeathRequestList: Seq[String] =
     vmDeathManager.vmDeathRequestList
-  override def createVMDeathRequest(extraArguments: JDIRequestArgument*): Try[String] =
-    vmDeathManager.createVMDeathRequest(extraArguments: _*)
   override def hasVMDeathRequest(id: String): Boolean =
     vmDeathManager.hasVMDeathRequest(id)
   override def getVMDeathRequest(id: String): Option[VMDeathRequest] =

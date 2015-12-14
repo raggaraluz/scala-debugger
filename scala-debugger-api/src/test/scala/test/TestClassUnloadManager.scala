@@ -18,8 +18,6 @@ class TestClassUnloadManager(
 ) extends ClassUnloadManager {
   override def classUnloadRequestList: Seq[String] =
     classUnloadManager.classUnloadRequestList
-  override def createClassUnloadRequest(extraArguments: JDIRequestArgument*): Try[String] =
-    classUnloadManager.createClassUnloadRequest(extraArguments: _*)
   override def hasClassUnloadRequest(id: String): Boolean =
     classUnloadManager.hasClassUnloadRequest(id)
   override def getClassUnloadRequest(id: String): Option[ClassUnloadRequest] =

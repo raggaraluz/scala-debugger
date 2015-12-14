@@ -8,6 +8,8 @@ import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
  * Represents information about a step request.
  *
  * @param requestId The id of the request
+ * @param removeExistingRequests If true, will first remove any existing
+ *                               step requests for the specified thread
  * @param threadReference The thread monitored for steps
  * @param size The size of the step (LINE/MIN)
  * @param depth The depth of the step (INTO/OVER/OUT)
@@ -15,6 +17,7 @@ import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
  */
 case class StepRequestInfo(
   requestId: String,
+  removeExistingRequests: Boolean,
   threadReference: ThreadReference,
   size: Int,
   depth: Int,

@@ -32,21 +32,6 @@ class DummyExceptionManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
-    describe("#createCatchallExceptionRequest") {
-      it("should return a failure of dummy operation") {
-        val testNotifyCaught = true
-        val testNotifyUncaught = false
-
-        val result = exceptionManager.createCatchallExceptionRequest(
-          testNotifyCaught,
-          testNotifyUncaught
-        )
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
     describe("#hasCatchallExceptionRequest") {
       it("should return false") {
         val expected = false
@@ -107,23 +92,6 @@ class DummyExceptionManagerSpec extends FunSpec with Matchers with MockFactory
 
         val result = exceptionManager.createExceptionRequestWithId(
           TestRequestId,
-          testClassName,
-          testNotifyCaught,
-          testNotifyUncaught
-        )
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
-    describe("#createExceptionRequest") {
-      it("should return a failure of dummy operation") {
-        val testClassName = "some.class.name"
-        val testNotifyCaught = true
-        val testNotifyUncaught = false
-
-        val result = exceptionManager.createExceptionRequest(
           testClassName,
           testNotifyCaught,
           testNotifyUncaught

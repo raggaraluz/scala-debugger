@@ -208,69 +208,6 @@ class PendingMethodEntrySupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createMethodEntryRequest") {
-      it("should return Success(id) if the method entry request was created") {
-        val testClassName = "some.class.name"
-        val testMethodName = "someMethodName"
-
-        val expected = Success(TestRequestId)
-
-        (mockMethodEntryManager.createMethodEntryRequestWithId _)
-          .expects(TestRequestId, testClassName, testMethodName, Nil)
-          .returning(expected).once()
-
-        val actual = pendingMethodEntrySupport.createMethodEntryRequest(
-          testClassName,
-          testMethodName
-        )
-
-        actual should be (expected)
-      }
-
-      it("should add a pending method entry request if method entry request thrown") {
-        val testClassName = "some.class.name"
-        val testMethodName = "someMethodName"
-
-        val expected = Success(TestRequestId)
-
-        (mockMethodEntryManager.createMethodEntryRequestWithId _)
-          .expects(TestRequestId, testClassName, testMethodName, Nil)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending method entry request should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          MethodEntryRequestInfo(TestRequestId, testClassName, testMethodName, Nil),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        val actual = pendingMethodEntrySupport.createMethodEntryRequest(
-          testClassName,
-          testMethodName
-        )
-
-        actual should be (expected)
-      }
-
-      it("should return a failure if pending disabled and failed to create request") {
-        val expected = Failure(new Throwable)
-        val testClassName = "some.class.name"
-        val testMethodName = "someMethodName"
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockMethodEntryManager.createMethodEntryRequestWithId _)
-          .expects(*, *, *, *)
-          .returning(expected).once()
-
-        pendingMethodEntrySupport.disablePendingSupport()
-        val actual = pendingMethodEntrySupport.createMethodEntryRequest(
-          testClassName, testMethodName, extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-    }
-
     describe("#removeMethodEntryRequestWithId") {
       it("should return true if the method entry request was successfully deleted") {
         val expected = true

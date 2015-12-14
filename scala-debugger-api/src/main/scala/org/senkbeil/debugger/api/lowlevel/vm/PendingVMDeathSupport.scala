@@ -38,20 +38,6 @@ trait PendingVMDeathSupport extends VMDeathManager with PendingRequestSupport {
   /**
    * Creates a new vm death request.
    *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  abstract override def createVMDeathRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = createVMDeathRequestWithId(
-    newRequestId(),
-    extraArguments: _*
-  )
-
-  /**
-   * Creates a new vm death request.
-   *
    * @param requestId The id of the request used to retrieve and delete it
    * @param extraArguments Any additional arguments to provide to the request
    *

@@ -72,26 +72,6 @@ trait PendingMethodExitSupport
    * Creates a new method exit request for the specified method using the
    * method's name.
    *
-   * @param className The name of the class containing the method
-   * @param methodName The name of the method to watch
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  abstract override def createMethodExitRequest(
-    className: String,
-    methodName: String,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = createMethodExitRequestWithId(
-    newRequestId(),
-    className,
-    methodName
-  )
-
-  /**
-   * Creates a new method exit request for the specified method using the
-   * method's name.
-   *
    * @param requestId The id of the request used to retrieve and delete it
    * @param className The name of the class containing the method
    * @param methodName The name of the method to watch

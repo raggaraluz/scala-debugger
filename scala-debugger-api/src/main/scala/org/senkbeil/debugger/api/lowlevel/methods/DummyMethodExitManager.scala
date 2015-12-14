@@ -11,25 +11,6 @@ import scala.util.{Failure, Try}
  */
 class DummyMethodExitManager extends MethodExitManager {
   /**
-   * Creates a new method exit request for the specified class and method.
-   *
-   * @note The method name is purely used for indexing the request in the
-   *       internal list. You should set a method name filter on the event
-   *       handler for the method exit event.
-   *
-   * @param className The name of the class whose method exit events to watch
-   * @param methodName The name of the method whose exit to watch
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createMethodExitRequest(
-    className: String,
-    methodName: String,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = Failure(new DummyOperationException)
-
-  /**
    * Retrieves the list of method exit requests contained by this manager.
    *
    * @return The collection of method exit requests by id

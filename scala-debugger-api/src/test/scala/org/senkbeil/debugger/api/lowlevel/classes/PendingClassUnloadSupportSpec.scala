@@ -148,59 +148,6 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createClassUnloadRequest") {
-      it("should return Success(id) if the class unload was created") {
-        val expected = Success(TestRequestId)
-
-        // Create a class unload to use for testing
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
-          .expects(TestRequestId, Nil)
-          .returning(expected).once()
-
-        val actual = pendingClassUnloadSupport.createClassUnloadRequest()
-
-        actual should be (expected)
-      }
-
-      it("should add a pending class unload if exception thrown") {
-        val expected = Success(TestRequestId)
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
-          .expects(*, *)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending class unload should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          ClassUnloadRequestInfo(TestRequestId, extraArguments),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        val actual = pendingClassUnloadSupport.createClassUnloadRequest(
-          extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-
-      it("should return a failure if pending disabled and failed to create request") {
-        val expected = Failure(new Throwable)
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockClassUnloadManager.createClassUnloadRequestWithId _)
-          .expects(*, *)
-          .returning(expected).once()
-
-        pendingClassUnloadSupport.disablePendingSupport()
-        val actual = pendingClassUnloadSupport.createClassUnloadRequest(
-          extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-    }
-
     describe("#removeClassUnloadRequest") {
       it("should return true if the class unload was successfully deleted") {
         val expected = true

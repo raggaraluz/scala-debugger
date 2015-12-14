@@ -38,7 +38,25 @@ trait ThreadStartManager {
    */
   def createThreadStartRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createThreadStartRequestWithId(
+    newRequestId(),
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new thread start request based on the specified information.
+   *
+   * @param threadStartRequestInfo The information used to create the
+   *                                thread start request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createThreadStartRequestFromInfo(
+    threadStartRequestInfo: ThreadStartRequestInfo
+  ): Try[String] = createThreadStartRequestWithId(
+    threadStartRequestInfo.requestId,
+    threadStartRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a thread start request with the specified id.

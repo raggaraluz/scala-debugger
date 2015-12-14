@@ -148,59 +148,6 @@ class PendingMonitorWaitedSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createMonitorWaitedRequest") {
-      it("should return Success(id) if the monitor waited was created") {
-        val expected = Success(TestRequestId)
-
-        // Create a monitor waited to use for testing
-        (mockMonitorWaitedManager.createMonitorWaitedRequestWithId _)
-          .expects(TestRequestId, Nil)
-          .returning(expected).once()
-
-        val actual = pendingMonitorWaitedSupport.createMonitorWaitedRequest()
-
-        actual should be (expected)
-      }
-
-      it("should add a pending monitor waited if exception thrown") {
-        val expected = Success(TestRequestId)
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockMonitorWaitedManager.createMonitorWaitedRequestWithId _)
-          .expects(*, *)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending monitor waited should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          MonitorWaitedRequestInfo(TestRequestId, extraArguments),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        val actual = pendingMonitorWaitedSupport.createMonitorWaitedRequest(
-          extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-
-      it("should return a failure if pending disabled and failed to create request") {
-        val expected = Failure(new Throwable)
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockMonitorWaitedManager.createMonitorWaitedRequestWithId _)
-          .expects(*, *)
-          .returning(expected).once()
-
-        pendingMonitorWaitedSupport.disablePendingSupport()
-        val actual = pendingMonitorWaitedSupport.createMonitorWaitedRequest(
-          extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-    }
-
     describe("#removeMonitorWaitedRequest") {
       it("should return true if the monitor waited was successfully deleted") {
         val expected = true

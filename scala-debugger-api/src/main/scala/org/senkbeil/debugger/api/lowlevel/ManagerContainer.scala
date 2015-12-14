@@ -14,6 +14,8 @@ import org.senkbeil.debugger.api.lowlevel.vm._
 import org.senkbeil.debugger.api.lowlevel.watchpoints._
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 
+import scala.util.Try
+
 /**
  * Represents a container for low-level managers.
  */
@@ -51,153 +53,76 @@ case class ManagerContainer(
    */
   def processPendingRequests(
     managerContainer: ManagerContainer
-  ): Unit = managerContainer.productIterator.foreach {
+  ): Unit = managerContainer.productIterator.foreach(m => Try(m match {
     case accessWatchpointManager: PendingAccessWatchpointSupport =>
-      accessWatchpointManager.pendingAccessWatchpointRequests.foreach(i =>
-        managerContainer.accessWatchpointManager.createAccessWatchpointRequestWithId(
-          i.requestId,
-          i.className,
-          i.fieldName,
-          i.extraArguments: _*
-        )
+      accessWatchpointManager.pendingAccessWatchpointRequests.foreach(
+        this.accessWatchpointManager.createAccessWatchpointRequestFromInfo
       )
     case breakpointManager: PendingBreakpointSupport =>
-      breakpointManager.pendingBreakpointRequests.foreach(i =>
-        managerContainer.breakpointManager.createBreakpointRequestWithId(
-          i.requestId,
-          i.fileName,
-          i.lineNumber,
-          i.extraArguments: _*
-        )
+      breakpointManager.pendingBreakpointRequests.foreach(
+        this.breakpointManager.createBreakpointRequestFromInfo
       )
     case classPrepareManager: PendingClassPrepareSupport =>
-      classPrepareManager.pendingClassPrepareRequests.foreach(i =>
-        managerContainer.classPrepareManager.createClassPrepareRequestWithId(
-          i.requestId,
-          i.extraArguments: _*
-        )
+      classPrepareManager.pendingClassPrepareRequests.foreach(
+        this.classPrepareManager.createClassPrepareRequestFromInfo
       )
     case classUnloadManager: PendingClassUnloadSupport =>
-      classUnloadManager.pendingClassUnloadRequests.foreach(i =>
-        managerContainer.classUnloadManager.createClassUnloadRequestWithId(
-          i.requestId,
-          i.extraArguments: _*
-        )
+      classUnloadManager.pendingClassUnloadRequests.foreach(
+        this.classUnloadManager.createClassUnloadRequestFromInfo
       )
     case eventManager: PendingEventHandlerSupport =>
-      eventManager.pendingEventHandlers.foreach(i =>
-        managerContainer.eventManager.addEventHandlerWithId(
-          i.eventHandlerId,
-          i.eventType,
-          i.eventHandler,
-          i.extraArguments: _*
-        )
+      eventManager.pendingEventHandlers.foreach(
+        this.eventManager.addEventHandlerFromInfo
       )
     case exceptionManager: PendingExceptionSupport =>
-      exceptionManager.pendingExceptionRequests.filter(_.className == null).foreach(i =>
-        managerContainer.exceptionManager.createCatchallExceptionRequestWithId(
-          i.requestId,
-          i.notifyCaught,
-          i.notifyUncaught,
-          i.extraArguments: _*
-        )
-      )
-      exceptionManager.pendingExceptionRequests.filter(_.className != null).foreach(i =>
-        managerContainer.exceptionManager.createExceptionRequestWithId(
-          i.requestId,
-          i.className,
-          i.notifyCaught,
-          i.notifyUncaught,
-          i.extraArguments: _*
-        )
+      exceptionManager.pendingExceptionRequests.foreach(
+        this.exceptionManager.createExceptionRequestFromInfo
       )
     case methodEntryManager: PendingMethodEntrySupport =>
-      methodEntryManager.pendingMethodEntryRequests.foreach(i =>
-        managerContainer.methodEntryManager.createMethodEntryRequestWithId(
-          i.requestId,
-          i.className,
-          i.methodName,
-          i.extraArguments: _*
-        )
+      methodEntryManager.pendingMethodEntryRequests.foreach(
+        this.methodEntryManager.createMethodEntryRequestFromInfo
       )
     case methodExitManager: PendingMethodExitSupport =>
-      methodExitManager.pendingMethodExitRequests.foreach(i =>
-        managerContainer.methodExitManager.createMethodExitRequestWithId(
-          i.requestId,
-          i.className,
-          i.methodName,
-          i.extraArguments: _*
-        )
+      methodExitManager.pendingMethodExitRequests.foreach(
+        this.methodExitManager.createMethodExitRequestFromInfo
       )
     case modificationWatchpointManager: PendingModificationWatchpointSupport =>
-      modificationWatchpointManager.pendingModificationWatchpointRequests.foreach(i =>
-        managerContainer.modificationWatchpointManager.createModificationWatchpointRequestWithId(
-          i.requestId,
-          i.className,
-          i.fieldName,
-          i.extraArguments: _*
-        )
+      modificationWatchpointManager.pendingModificationWatchpointRequests.foreach(
+        this.modificationWatchpointManager.createModificationWatchpointRequestFromInfo
       )
     case monitorContendedEnteredManager: PendingMonitorContendedEnteredSupport =>
-      monitorContendedEnteredManager.pendingMonitorContendedEnteredRequests.foreach(i =>
-        managerContainer.monitorContendedEnteredManager.createMonitorContendedEnteredRequestWithId(
-          i.requestId,
-          i.extraArguments: _*
-        )
+      monitorContendedEnteredManager.pendingMonitorContendedEnteredRequests.foreach(
+        this.monitorContendedEnteredManager.createMonitorContendedEnteredRequestFromInfo
       )
     case monitorContendedEnterManager: PendingMonitorContendedEnterSupport =>
-      monitorContendedEnterManager.pendingMonitorContendedEnterRequests.foreach(i =>
-        managerContainer.monitorContendedEnterManager.createMonitorContendedEnterRequestWithId(
-          i.requestId,
-          i.extraArguments: _*
-        )
+      monitorContendedEnterManager.pendingMonitorContendedEnterRequests.foreach(
+        this.monitorContendedEnterManager.createMonitorContendedEnterRequestFromInfo
       )
     case monitorWaitedManager: PendingMonitorWaitedSupport =>
-      monitorWaitedManager.pendingMonitorWaitedRequests.foreach(i =>
-        managerContainer.monitorWaitedManager.createMonitorWaitedRequestWithId(
-          i.requestId,
-          i.extraArguments: _*
-        )
+      monitorWaitedManager.pendingMonitorWaitedRequests.foreach(
+        this.monitorWaitedManager.createMonitorWaitedRequestFromInfo
       )
     case monitorWaitManager: PendingMonitorWaitSupport =>
-      monitorWaitManager.pendingMonitorWaitRequests.foreach(i =>
-        managerContainer.monitorWaitManager.createMonitorWaitRequestWithId(
-          i.requestId,
-          i.extraArguments: _*
-        )
+      monitorWaitManager.pendingMonitorWaitRequests.foreach(
+        this.monitorWaitManager.createMonitorWaitRequestFromInfo
       )
     case stepManager: PendingStepSupport =>
-      stepManager.pendingStepRequests.foreach(i =>
-        managerContainer.stepManager.createStepRequestWithId(
-          i.requestId,
-          i.threadReference,
-          i.size,
-          i.depth,
-          i.extraArguments: _*
-        )
+      stepManager.pendingStepRequests.foreach(
+        this.stepManager.createStepRequestFromInfo
       )
     case threadDeathManager: PendingThreadDeathSupport =>
-      threadDeathManager.pendingThreadDeathRequests.foreach(i =>
-        managerContainer.threadDeathManager.createThreadDeathRequestWithId(
-          i.requestId,
-          i.extraArguments: _*
-        )
+      threadDeathManager.pendingThreadDeathRequests.foreach(
+        this.threadDeathManager.createThreadDeathRequestFromInfo
       )
     case threadStartManager: PendingThreadStartSupport =>
-      threadStartManager.pendingThreadStartRequests.foreach(i =>
-        managerContainer.threadStartManager.createThreadStartRequestWithId(
-          i.requestId,
-          i.extraArguments: _*
-        )
+      threadStartManager.pendingThreadStartRequests.foreach(
+        this.threadStartManager.createThreadStartRequestFromInfo
       )
     case vmDeathManager: PendingVMDeathSupport =>
-      vmDeathManager.pendingVMDeathRequests.foreach(i =>
-        managerContainer.vmDeathManager.createVMDeathRequestWithId(
-          i.requestId,
-          i.extraArguments: _*
-        )
+      vmDeathManager.pendingVMDeathRequests.foreach(
+        this.vmDeathManager.createVMDeathRequestFromInfo
       )
-  }
+  }))
 
   /** Enables pending support for all managers supporting pending requests. */
   def enablePendingSupport(): Unit = setPendingSupportForAll(true)

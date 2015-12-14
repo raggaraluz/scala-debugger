@@ -55,7 +55,30 @@ trait ModificationWatchpointManager {
     className: String,
     fieldName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createModificationWatchpointRequestWithId(
+    newRequestId(),
+    className,
+    fieldName,
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a modification watchpoint request based on the specified
+   * information.
+   *
+   * @param modificationWatchpointRequestInfo The information used to create the
+   *                                          modification watchpoint request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createModificationWatchpointRequestFromInfo(
+    modificationWatchpointRequestInfo: ModificationWatchpointRequestInfo
+  ): Try[String] = createModificationWatchpointRequestWithId(
+    modificationWatchpointRequestInfo.requestId,
+    modificationWatchpointRequestInfo.className,
+    modificationWatchpointRequestInfo.fieldName,
+    modificationWatchpointRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a modification watchpoint request with the specified field.

@@ -137,9 +137,7 @@ class StandardBreakpointManagerSpec extends FunSpec with Matchers
 
         actual should be(expected)
       }
-    }
 
-    describe("#createBreakpointRequest") {
       it("should return NoBreakpointLocationFound if the file is not available") {
         val testFileName = "some/file/name"
         val testLineNumber = 999
@@ -151,7 +149,8 @@ class StandardBreakpointManagerSpec extends FunSpec with Matchers
         (mockClassManager.linesAndLocationsForFile _).expects(*)
           .returning(None)
 
-        val actual = breakpointManager.createBreakpointRequest(
+        val actual = breakpointManager.createBreakpointRequestWithId(
+          TestRequestId,
           testFileName,
           testLineNumber
         )
@@ -172,7 +171,8 @@ class StandardBreakpointManagerSpec extends FunSpec with Matchers
           .returning(Some(Map(1 -> (Nil: Seq[Location]))))
 
         // Set a breakpoint on a line that is NOT returned by linesAndLocations
-        val actual = breakpointManager.createBreakpointRequest(
+        val actual = breakpointManager.createBreakpointRequestWithId(
+          TestRequestId,
           testFileName,
           testLineNumber
         )
@@ -193,7 +193,11 @@ class StandardBreakpointManagerSpec extends FunSpec with Matchers
           .returning(stub[BreakpointRequest])
 
         // Set a breakpoint on a line that is returned by linesAndLocations
-        val actual = breakpointManager.createBreakpointRequest("", 1)
+        val actual = breakpointManager.createBreakpointRequestWithId(
+          expected.get,
+          "",
+          1
+        )
 
         actual should be (expected)
       }
@@ -216,7 +220,7 @@ class StandardBreakpointManagerSpec extends FunSpec with Matchers
           .repeated(locationsPerLine).times()
 
         // Set a breakpoint on a line that is returned by linesAndLocations
-        breakpointManager.createBreakpointRequest("", 1)
+        breakpointManager.createBreakpointRequestWithId(TestRequestId, "", 1)
       }
 
       it("should return the failure if unable to create one of the underlying breakpoint requests") {
@@ -244,7 +248,11 @@ class StandardBreakpointManagerSpec extends FunSpec with Matchers
           .throwing(expected.failed.get).once()
 
         // Set a breakpoint on a line that is returned by linesAndLocations
-        val actual = breakpointManager.createBreakpointRequest("", 1)
+        val actual = breakpointManager.createBreakpointRequestWithId(
+          TestRequestId,
+          "",
+          1
+        )
 
         actual should be (expected)
       }

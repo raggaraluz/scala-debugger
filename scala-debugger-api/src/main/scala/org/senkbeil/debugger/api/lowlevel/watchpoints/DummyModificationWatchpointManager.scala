@@ -11,22 +11,6 @@ import scala.util.{Failure, Try}
  */
 class DummyModificationWatchpointManager extends ModificationWatchpointManager {
   /**
-   * Creates a new modification watchpoint request for the specified field
-   * using the field's name.
-   *
-   * @param className The name of the class containing the field
-   * @param fieldName The name of the field to watch
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createModificationWatchpointRequest(
-    className: String,
-    fieldName: String,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = Failure(new DummyOperationException)
-
-  /**
    * Determines if a modification watchpoint request with the specified field.
    *
    * @param className The name of the class containing the field

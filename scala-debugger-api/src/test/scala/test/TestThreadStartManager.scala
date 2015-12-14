@@ -18,8 +18,6 @@ class TestThreadStartManager(
 ) extends ThreadStartManager {
   override def threadStartRequestList: Seq[String] =
     threadStartManager.threadStartRequestList
-  override def createThreadStartRequest(extraArguments: JDIRequestArgument*): Try[String] =
-    threadStartManager.createThreadStartRequest(extraArguments: _*)
   override def hasThreadStartRequest(id: String): Boolean =
     threadStartManager.hasThreadStartRequest(id)
   override def getThreadStartRequest(id: String): Option[ThreadStartRequest] =

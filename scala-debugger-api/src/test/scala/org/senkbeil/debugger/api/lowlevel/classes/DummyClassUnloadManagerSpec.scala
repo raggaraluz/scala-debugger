@@ -28,15 +28,6 @@ class DummyClassUnloadManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
-    describe("#createClassUnloadRequest") {
-      it("should return a failure of dummy operation") {
-        val result = classUnloadManager.createClassUnloadRequest()
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
     describe("#hasClassUnloadRequest") {
       it("should return false") {
         val expected = false

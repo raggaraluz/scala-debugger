@@ -11,17 +11,6 @@ import scala.util.{Failure, Try}
  */
 class DummyVMDeathManager extends VMDeathManager {
   /**
-   * Creates a new vm death request.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createVMDeathRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = Failure(new DummyOperationException)
-
-  /**
    * Determines if a vm death request with the specified id.
    *
    * @param requestId The id of the VM Death Request

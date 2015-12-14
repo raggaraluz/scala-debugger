@@ -87,9 +87,7 @@ class StandardMethodExitManagerSpec extends FunSpec with Matchers with MockFacto
         )
         actual should be(expected)
       }
-    }
 
-    describe("#createMethodExitRequest") {
       it("should create the method exit request with a class inclusion filter for the class name") {
         val expected = Success(TestRequestId)
         val testClassName = "some class name"
@@ -107,7 +105,11 @@ class StandardMethodExitManagerSpec extends FunSpec with Matchers with MockFacto
           .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
         (mockMethodExitRequest.setEnabled _).expects(true).once()
 
-        val actual = methodExitManager.createMethodExitRequest(testClassName, testMethodName)
+        val actual = methodExitManager.createMethodExitRequestWithId(
+          expected.get,
+          testClassName,
+          testMethodName
+        )
         actual should be (expected)
       }
 
@@ -119,7 +121,11 @@ class StandardMethodExitManagerSpec extends FunSpec with Matchers with MockFacto
         (mockEventRequestManager.createMethodExitRequest _).expects()
           .throwing(expected.failed.get).once()
 
-        val actual = methodExitManager.createMethodExitRequest(testClassName, testMethodName)
+        val actual = methodExitManager.createMethodExitRequestWithId(
+          TestRequestId,
+          testClassName,
+          testMethodName
+        )
         actual should be (expected)
       }
     }

@@ -56,19 +56,6 @@ class StandardThreadDeathManager(
   }
 
   /**
-   * Creates a new thread death request for the specified class and method.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createThreadDeathRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createThreadDeathRequestWithId(newRequestId(), extraArguments: _*)
-  }
-
-  /**
    * Determines if a thread death request with the specified id.
    *
    * @param id The id of the Thread Death Request

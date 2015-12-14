@@ -28,15 +28,6 @@ class DummyThreadStartManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
-    describe("#createThreadStartRequest") {
-      it("should return a failure of dummy operation") {
-        val result = threadStartManager.createThreadStartRequest()
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
     describe("#hasThreadStartRequest") {
       it("should return false") {
         val expected = false

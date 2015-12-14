@@ -11,17 +11,6 @@ import scala.util.{Failure, Try}
  */
 class DummyThreadStartManager extends ThreadStartManager {
   /**
-   * Creates a new thread start request.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createThreadStartRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = Failure(new DummyOperationException)
-
-  /**
    * Determines if a thread start request with the specified id.
    *
    * @param requestId The id of the Thread Start Request

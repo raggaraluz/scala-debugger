@@ -208,69 +208,6 @@ class PendingMethodExitSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createMethodExitRequest") {
-      it("should return Success(id) if the method exit request was created") {
-        val testClassName = "some.class.name"
-        val testMethodName = "someMethodName"
-
-        val expected = Success(TestRequestId)
-
-        (mockMethodExitManager.createMethodExitRequestWithId _)
-          .expects(TestRequestId, testClassName, testMethodName, Nil)
-          .returning(expected).once()
-
-        val actual = pendingMethodExitSupport.createMethodExitRequest(
-          testClassName,
-          testMethodName
-        )
-
-        actual should be (expected)
-      }
-
-      it("should add a pending method exit request if method exit request thrown") {
-        val testClassName = "some.class.name"
-        val testMethodName = "someMethodName"
-
-        val expected = Success(TestRequestId)
-
-        (mockMethodExitManager.createMethodExitRequestWithId _)
-          .expects(TestRequestId, testClassName, testMethodName, Nil)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending method exit request should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          MethodExitRequestInfo(TestRequestId, testClassName, testMethodName, Nil),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        val actual = pendingMethodExitSupport.createMethodExitRequest(
-          testClassName,
-          testMethodName
-        )
-
-        actual should be (expected)
-      }
-
-      it("should return a failure if pending disabled and failed to create request") {
-        val expected = Failure(new Throwable)
-        val testClassName = "some.class.name"
-        val testMethodName = "someMethodName"
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockMethodExitManager.createMethodExitRequestWithId _)
-          .expects(*, *, *, *)
-          .returning(expected).once()
-
-        pendingMethodExitSupport.disablePendingSupport()
-        val actual = pendingMethodExitSupport.createMethodExitRequest(
-          testClassName, testMethodName, extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-    }
-
     describe("#removeMethodExitRequestWithId") {
       it("should return true if the method exit request was successfully deleted") {
         val expected = true

@@ -41,20 +41,6 @@ trait PendingMonitorContendedEnteredSupport
   /**
    * Creates a new monitor contended entered request.
    *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  abstract override def createMonitorContendedEnteredRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = createMonitorContendedEnteredRequestWithId(
-    newRequestId(),
-    extraArguments: _*
-  )
-
-  /**
-   * Creates a new monitor contended entered request.
-   *
    * @param requestId The id of the request used to retrieve and delete it
    * @param extraArguments Any additional arguments to provide to the request
    *

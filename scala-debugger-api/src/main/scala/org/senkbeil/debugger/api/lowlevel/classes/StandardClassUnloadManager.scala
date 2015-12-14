@@ -56,19 +56,6 @@ class StandardClassUnloadManager(
   }
 
   /**
-   * Creates a new class unload request.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createClassUnloadRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createClassUnloadRequestWithId(newRequestId(), extraArguments: _*)
-  }
-
-  /**
    * Determines if a class unload request with the specified id.
    *
    * @param id The id of the Class Unload Request

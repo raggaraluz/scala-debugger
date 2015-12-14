@@ -18,8 +18,6 @@ class TestClassPrepareManager(
 ) extends ClassPrepareManager {
   override def classPrepareRequestList: Seq[String] =
     classPrepareManager.classPrepareRequestList
-  override def createClassPrepareRequest(extraArguments: JDIRequestArgument*): Try[String] =
-    classPrepareManager.createClassPrepareRequest(extraArguments: _*)
   override def hasClassPrepareRequest(id: String): Boolean =
     classPrepareManager.hasClassPrepareRequest(id)
   override def getClassPrepareRequest(id: String): Option[ClassPrepareRequest] =

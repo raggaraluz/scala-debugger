@@ -148,59 +148,6 @@ class PendingMonitorContendedEnteredSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createMonitorContendedEnteredRequest") {
-      it("should return Success(id) if the monitor contended entered was created") {
-        val expected = Success(TestRequestId)
-
-        // Create a monitor contended entered to use for testing
-        (mockMonitorContendedEnteredManager.createMonitorContendedEnteredRequestWithId _)
-          .expects(TestRequestId, Nil)
-          .returning(expected).once()
-
-        val actual = pendingMonitorContendedEnteredSupport.createMonitorContendedEnteredRequest()
-
-        actual should be (expected)
-      }
-
-      it("should add a pending monitor contended entered if exception thrown") {
-        val expected = Success(TestRequestId)
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockMonitorContendedEnteredManager.createMonitorContendedEnteredRequestWithId _)
-          .expects(*, *)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending monitor contended entered should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          MonitorContendedEnteredRequestInfo(TestRequestId, extraArguments),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        val actual = pendingMonitorContendedEnteredSupport.createMonitorContendedEnteredRequest(
-          extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-
-      it("should return a failure if pending disabled and failed to create request") {
-        val expected = Failure(new Throwable)
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockMonitorContendedEnteredManager.createMonitorContendedEnteredRequestWithId _)
-          .expects(*, *)
-          .returning(expected).once()
-
-        pendingMonitorContendedEnteredSupport.disablePendingSupport()
-        val actual = pendingMonitorContendedEnteredSupport.createMonitorContendedEnteredRequest(
-          extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-    }
-
     describe("#removeMonitorContendedEnteredRequest") {
       it("should return true if the monitor contended entered was successfully deleted") {
         val expected = true

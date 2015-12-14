@@ -87,9 +87,7 @@ class StandardMethodEntryManagerSpec extends FunSpec with Matchers with MockFact
         )
         actual should be(expected)
       }
-    }
 
-    describe("#createMethodEntryRequest") {
       it("should create the method entry request with a class inclusion filter for the class name") {
         val expected = Success(TestRequestId)
         val testClassName = "some class name"
@@ -107,7 +105,11 @@ class StandardMethodEntryManagerSpec extends FunSpec with Matchers with MockFact
           .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
         (mockMethodEntryRequest.setEnabled _).expects(true).once()
 
-        val actual = methodEntryManager.createMethodEntryRequest(testClassName, testMethodName)
+        val actual = methodEntryManager.createMethodEntryRequestWithId(
+          expected.get,
+          testClassName,
+          testMethodName
+        )
         actual should be (expected)
       }
 
@@ -119,7 +121,11 @@ class StandardMethodEntryManagerSpec extends FunSpec with Matchers with MockFact
         (mockEventRequestManager.createMethodEntryRequest _).expects()
           .throwing(expected.failed.get).once()
 
-        val actual = methodEntryManager.createMethodEntryRequest(testClassName, testMethodName)
+        val actual = methodEntryManager.createMethodEntryRequestWithId(
+          TestRequestId,
+          testClassName,
+          testMethodName
+        )
         actual should be (expected)
       }
     }

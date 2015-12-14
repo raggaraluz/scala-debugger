@@ -12,30 +12,6 @@ import scala.util.{Failure, Try}
  */
 class DummyStepManager extends StepManager {
   /**
-   * Creates and enables a step request for the given thread using the provided
-   * size (next valid location or next location on a new line) and depth (into,
-   * over, or out of the current frame).
-   *
-   * Removes any existing step requests for the specified thread.
-   *
-   * @note Includes a default count filter of 1. This can be overridden by
-   *       providing a CountFilter(count = ???) as an extra argument.
-   *
-   * @param threadReference The thread with which to perform the step
-   * @param size The size of the step request (LINE/MIN)
-   * @param depth The depth of the step request (INTO/OVER/OUT)
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createStepRequest(
-    threadReference: ThreadReference,
-    size: Int,
-    depth: Int,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = Failure(new DummyOperationException)
-
-  /**
    * Returns the arguments for a step request with the specified id.
    *
    * @param requestId The id of the request
@@ -82,32 +58,6 @@ class DummyStepManager extends StepManager {
   override def getStepRequest(
     threadReference: ThreadReference
   ): Option[Seq[StepRequest]] = None
-
-  /**
-   * Creates and enables a step request for the given thread using the provided
-   * size (next valid location or next location on a new line) and depth (into,
-   * over, or out of the current frame).
-   *
-   * Removes any existing step requests for the specified thread.
-   *
-   * @note Includes a default count filter of 1. This can be overridden by
-   *       providing a CountFilter(count = ???) as an extra argument.
-   *
-   * @param requestId The id of the request used for lookup and removal
-   * @param threadReference The thread with which to perform the step
-   * @param size The size of the step request (LINE/MIN)
-   * @param depth The depth of the step request (INTO/OVER/OUT)
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createStepRequestWithId(
-    requestId: String,
-    threadReference: ThreadReference,
-    size: Int,
-    depth: Int,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = Failure(new DummyOperationException)
 
   /**
    * Creates and enables a step request for the given thread using the provided

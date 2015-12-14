@@ -28,15 +28,6 @@ class DummyMonitorContendedEnteredManagerSpec extends FunSpec with Matchers with
       }
     }
 
-    describe("#createMonitorContendedEnteredRequest") {
-      it("should return a failure of dummy operation") {
-        val result = monitorContendedEnteredManager.createMonitorContendedEnteredRequest()
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
     describe("#hasMonitorContendedEnteredRequest") {
       it("should return false") {
         val expected = false

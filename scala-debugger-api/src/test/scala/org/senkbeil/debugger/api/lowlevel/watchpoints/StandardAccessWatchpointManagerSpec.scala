@@ -127,9 +127,7 @@ class StandardAccessWatchpointManagerSpec extends FunSpec with Matchers
         )
         actual should be(expected)
       }
-    }
 
-    describe("#createAccessWatchpointRequest") {
       it("should create the access watchpoint request and return Success(id)") {
         val expected = Success(TestRequestId)
         val testClassName = "full.class.name"
@@ -152,7 +150,8 @@ class StandardAccessWatchpointManagerSpec extends FunSpec with Matchers
           .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
         (mockAccessWatchpointRequest.setEnabled _).expects(true).once()
 
-        val actual = accessWatchpointManager.createAccessWatchpointRequest(
+        val actual = accessWatchpointManager.createAccessWatchpointRequestWithId(
+          expected.get,
           testClassName,
           testFieldName
         )
@@ -176,7 +175,8 @@ class StandardAccessWatchpointManagerSpec extends FunSpec with Matchers
           .expects(stubField)
           .throwing(expected.failed.get).once()
 
-        val actual = accessWatchpointManager.createAccessWatchpointRequest(
+        val actual = accessWatchpointManager.createAccessWatchpointRequestWithId(
+          TestRequestId,
           testClassName,
           testFieldName
         )
@@ -195,7 +195,8 @@ class StandardAccessWatchpointManagerSpec extends FunSpec with Matchers
         // Provide reference types with different names so there is no match
         (mockReferenceType.name _).expects().returning(testClassName + 1).once()
 
-        val actual = accessWatchpointManager.createAccessWatchpointRequest(
+        val actual = accessWatchpointManager.createAccessWatchpointRequestWithId(
+          TestRequestId,
           testClassName,
           testFieldName
         )
@@ -217,7 +218,8 @@ class StandardAccessWatchpointManagerSpec extends FunSpec with Matchers
         (mockReferenceType.allFields _).expects()
           .returning(Seq(stubField).asJava).once()
 
-        val actual = accessWatchpointManager.createAccessWatchpointRequest(
+        val actual = accessWatchpointManager.createAccessWatchpointRequestWithId(
+          TestRequestId,
           testClassName,
           testFieldName
         )

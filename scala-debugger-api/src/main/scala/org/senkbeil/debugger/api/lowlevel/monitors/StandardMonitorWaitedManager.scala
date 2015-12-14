@@ -59,22 +59,6 @@ class StandardMonitorWaitedManager(
   }
 
   /**
-   * Creates a new monitor waited request.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createMonitorWaitedRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createMonitorWaitedRequestWithId(
-      newRequestId(),
-      extraArguments: _*
-    )
-  }
-
-  /**
    * Determines if a monitor waited request with the specified id.
    *
    * @param id The id of the Monitor Waited Request

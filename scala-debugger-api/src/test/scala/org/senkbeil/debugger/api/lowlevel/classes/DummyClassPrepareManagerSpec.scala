@@ -28,15 +28,6 @@ class DummyClassPrepareManagerSpec extends FunSpec with Matchers with MockFactor
       }
     }
 
-    describe("#createClassPrepareRequest") {
-      it("should return a failure of dummy operation") {
-        val result = classPrepareManager.createClassPrepareRequest()
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
     describe("#hasClassPrepareRequest") {
       it("should return false") {
         val expected = false

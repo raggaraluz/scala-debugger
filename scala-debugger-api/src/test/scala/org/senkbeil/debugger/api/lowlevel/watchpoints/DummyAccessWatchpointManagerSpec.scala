@@ -40,21 +40,6 @@ class DummyAccessWatchpointManagerSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createAccessWatchpointRequest") {
-      it("should return a failure of dummy operation") {
-        val testClassName = "some.class.name"
-        val testFieldName = "someFieldName"
-
-        val result = accessWatchpointManager.createAccessWatchpointRequest(
-          testClassName,
-          testFieldName
-        )
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
     describe("#hasAccessWatchpointRequestWithId") {
       it("should return false") {
         val expected = false

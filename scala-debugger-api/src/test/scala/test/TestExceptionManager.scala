@@ -16,16 +16,12 @@ import scala.util.Try
 class TestExceptionManager(
   private val exceptionManager: ExceptionManager
 ) extends ExceptionManager {
-  override def createCatchallExceptionRequest(notifyCaught: Boolean, notifyUncaught: Boolean, extraArguments: JDIRequestArgument*): Try[String] =
-    exceptionManager.createCatchallExceptionRequest(notifyCaught, notifyUncaught, extraArguments: _*)
   override def removeCatchallExceptionRequest(): Boolean =
     exceptionManager.removeCatchallExceptionRequest()
   override def createExceptionRequestWithId(requestId: String, exceptionName: String, notifyCaught: Boolean, notifyUncaught: Boolean, extraArguments: JDIRequestArgument*): Try[String] =
     exceptionManager.createExceptionRequestWithId(requestId, exceptionName, notifyCaught, notifyUncaught, extraArguments: _*)
   override def hasCatchallExceptionRequest: Boolean =
     exceptionManager.hasCatchallExceptionRequest
-  override def createExceptionRequest(exceptionName: String, notifyCaught: Boolean, notifyUncaught: Boolean, extraArguments: JDIRequestArgument*): Try[String] =
-    exceptionManager.createExceptionRequest(exceptionName, notifyCaught, notifyUncaught, extraArguments: _*)
   override def exceptionRequestList: Seq[ExceptionRequestInfo] =
     exceptionManager.exceptionRequestList
   override def createCatchallExceptionRequestWithId(requestId: String, notifyCaught: Boolean, notifyUncaught: Boolean, extraArguments: JDIRequestArgument*): Try[String] =

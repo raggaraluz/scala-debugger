@@ -201,69 +201,6 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createBreakpointRequest") {
-      it("should return Success(id) if the breakpoint was created") {
-        val testFileName = "some/file/name"
-        val testLineNumber = 1
-
-        val expected = Success(TestRequestId)
-
-        (mockBreakpointManager.createBreakpointRequestWithId _)
-          .expects(TestRequestId, testFileName, testLineNumber, Nil)
-          .returning(expected).once()
-
-        val actual = pendingBreakpointSupport.createBreakpointRequest(
-          testFileName,
-          testLineNumber
-        )
-
-        actual should be (expected)
-      }
-
-      it("should add a pending breakpoint if excpetion thrown") {
-        val testFileName = "some/file/name"
-        val testLineNumber = 1
-
-        val expected = Success(TestRequestId)
-
-        (mockBreakpointManager.createBreakpointRequestWithId _)
-          .expects(TestRequestId, testFileName, testLineNumber, Nil)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending breakpoint should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          BreakpointRequestInfo(TestRequestId, testFileName, testLineNumber, Nil),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        val actual = pendingBreakpointSupport.createBreakpointRequest(
-          testFileName,
-          testLineNumber
-        )
-
-        actual should be (expected)
-      }
-
-      it("should return a failure if pending disabled and failed to create request") {
-        val expected = Failure(new Throwable)
-        val testFileName = "some/file/name"
-        val testLineNumber = 1
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockBreakpointManager.createBreakpointRequestWithId _)
-          .expects(*, *, *, *)
-          .returning(expected).once()
-
-        pendingBreakpointSupport.disablePendingSupport()
-        val actual = pendingBreakpointSupport.createBreakpointRequest(
-          testFileName, testLineNumber, extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-    }
-
     describe("#removeBreakpointRequestWithId") {
       it("should return true if the breakpoint was successfully deleted") {
         val expected = true

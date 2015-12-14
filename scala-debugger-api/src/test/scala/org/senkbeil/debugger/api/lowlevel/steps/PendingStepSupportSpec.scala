@@ -63,13 +63,14 @@ class PendingStepSupportSpec extends FunSpec with Matchers
     describe("#processAllPendingStepRequests") {
       it("should process all pending step requests") {
         val mockThreadReference = mock[ThreadReference]
+        val testRemoveExistingRequests = true
         val testSize = 0
         val testDepth = 1
 
         val expected = Seq(
-          StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth),
-          StepRequestInfo(TestRequestId + 1, mock[ThreadReference], testSize, testDepth),
-          StepRequestInfo(TestRequestId + 2, mockThreadReference, testSize, testDepth + 1)
+          StepRequestInfo(TestRequestId, testRemoveExistingRequests, mockThreadReference, testSize, testDepth),
+          StepRequestInfo(TestRequestId + 1, testRemoveExistingRequests, mock[ThreadReference], testSize, testDepth),
+          StepRequestInfo(TestRequestId + 2, testRemoveExistingRequests, mockThreadReference, testSize, testDepth + 1)
         )
 
         (mockPendingActionManager.processAllActions _).expects()
@@ -83,14 +84,15 @@ class PendingStepSupportSpec extends FunSpec with Matchers
     describe("#processPendingStepRequestsForThread") {
       it("should process pending step requests for the specified class") {
         val mockThreadReference = mock[ThreadReference]
+        val testRemoveExistingRequests = true
         val testSize = 0
         val testDepth = 1
 
         val expected = Seq(
-          StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth),
-          StepRequestInfo(TestRequestId + 1, mockThreadReference, testSize, testDepth + 1)
+          StepRequestInfo(TestRequestId, testRemoveExistingRequests, mockThreadReference, testSize, testDepth),
+          StepRequestInfo(TestRequestId + 1, testRemoveExistingRequests, mockThreadReference, testSize, testDepth + 1)
         )
-        val actions = (expected :+ StepRequestInfo(TestRequestId + 2, mock[ThreadReference], testSize, testDepth))
+        val actions = (expected :+ StepRequestInfo(TestRequestId + 2, testRemoveExistingRequests, mock[ThreadReference], testSize, testDepth))
           .map(ActionInfo.apply("", _: StepRequestInfo, () => {}))
 
         // Return our data that represents the processed actions
@@ -108,13 +110,14 @@ class PendingStepSupportSpec extends FunSpec with Matchers
 
     describe("#pendingStepRequests") {
       it("should return a collection of all pending step requests") {
+        val testRemoveExistingRequests = true
         val mockThreadReference = mock[ThreadReference]
         val testSize = 0
         val testDepth = 1
         val expected = Seq(
-          StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth),
-          StepRequestInfo(TestRequestId + 1, mockThreadReference, testSize, testDepth + 1),
-          StepRequestInfo(TestRequestId + 2, mock[ThreadReference], testSize, testDepth)
+          StepRequestInfo(TestRequestId, testRemoveExistingRequests, mockThreadReference, testSize, testDepth),
+          StepRequestInfo(TestRequestId + 1, testRemoveExistingRequests, mockThreadReference, testSize, testDepth + 1),
+          StepRequestInfo(TestRequestId + 2, testRemoveExistingRequests, mock[ThreadReference], testSize, testDepth)
         )
 
         val actions = expected.map(ActionInfo.apply("", _: StepRequestInfo, () => {}))
@@ -143,14 +146,15 @@ class PendingStepSupportSpec extends FunSpec with Matchers
 
     describe("#pendingStepRequestsForThread") {
       it("should return a collection of pending step requests") {
+        val testRemoveExistingRequests = true
         val mockThreadReference = mock[ThreadReference]
         val testSize = 0
         val testDepth = 1
         val expected = Seq(
-          StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth),
-          StepRequestInfo(TestRequestId + 1, mockThreadReference, testSize, testDepth + 1)
+          StepRequestInfo(TestRequestId, testRemoveExistingRequests, mockThreadReference, testSize, testDepth),
+          StepRequestInfo(TestRequestId + 1, testRemoveExistingRequests, mockThreadReference, testSize, testDepth + 1)
         )
-        val actions = (expected :+ StepRequestInfo(TestRequestId + 2, mock[ThreadReference], testSize, testDepth))
+        val actions = (expected :+ StepRequestInfo(TestRequestId + 2, testRemoveExistingRequests, mock[ThreadReference], testSize, testDepth))
           .map(ActionInfo.apply("", _: StepRequestInfo, () => {}))
 
         (mockPendingActionManager.getPendingActionData _).expects(*).onCall(
@@ -201,6 +205,7 @@ class PendingStepSupportSpec extends FunSpec with Matchers
       }
 
       it("should add a pending step request if exception thrown") {
+        val testRemoveExistingRequests = true
         val mockThreadReference = mock[ThreadReference]
         val testSize = 0
         val testDepth = 1
@@ -215,7 +220,7 @@ class PendingStepSupportSpec extends FunSpec with Matchers
         // Pending step request should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth, Nil),
+          StepRequestInfo(TestRequestId, testRemoveExistingRequests, mockThreadReference, testSize, testDepth, Nil),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -247,71 +252,6 @@ class PendingStepSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createStepRequest") {
-      it("should return Success(id) if the step request was created") {
-        val mockThreadReference = mock[ThreadReference]
-        val testSize = 0
-        val testDepth = 1
-
-        val expected = Success(TestRequestId)
-
-        mockCreateStepRequestWithId
-          .expects(TestRequestId, true, mockThreadReference, testSize, testDepth, Nil)
-          .returning(expected).once()
-
-        val actual = pendingStepSupportWithMockedCreate.createStepRequest(
-          mockThreadReference,
-          testSize, testDepth
-        )
-
-        actual should be (expected)
-      }
-
-      it("should add a pending step request if step request thrown") {
-        val mockThreadReference = mock[ThreadReference]
-        val testSize = 0
-        val testDepth = 1
-
-        val expected = Success(TestRequestId)
-
-        mockCreateStepRequestWithId
-          .expects(TestRequestId, true, mockThreadReference, testSize, testDepth, Nil)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending step request should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth, Nil),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        val actual = pendingStepSupportWithMockedCreate.createStepRequest(
-          mockThreadReference,
-          testSize, testDepth
-        )
-
-        actual should be (expected)
-      }
-
-      it("should return a failure if pending disabled and failed to create request") {
-        val expected = Failure(new Throwable)
-        val mockThreadReference = mock[ThreadReference]
-        val testSize = 0
-        val testDepth = 1
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        mockCreateStepRequestWithId.expects(*, *, *, *, *, *)
-          .returning(expected).once()
-
-        pendingStepSupportWithMockedCreate.disablePendingSupport()
-        val actual = pendingStepSupportWithMockedCreate.createStepRequest(
-          mockThreadReference, testSize, testDepth, extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-    }
-
     describe("#removeStepRequestWithId") {
       it("should return true if the step request was successfully deleted") {
         val expected = true
@@ -335,6 +275,7 @@ class PendingStepSupportSpec extends FunSpec with Matchers
       it("should return true if the pending step request was successfully deleted") {
         val expected = true
 
+        val testRemoveExistingRequests = true
         val mockThreadReference = mock[ThreadReference]
         val testSize = 0
         val testDepth = 1
@@ -343,7 +284,7 @@ class PendingStepSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Some(Seq(
           ActionInfo(
             TestRequestId,
-            StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth, Nil),
+            StepRequestInfo(TestRequestId, testRemoveExistingRequests, mockThreadReference, testSize, testDepth, Nil),
             () => {}
           )
         ))
@@ -408,6 +349,7 @@ class PendingStepSupportSpec extends FunSpec with Matchers
       it("should return true if the pending step request was successfully deleted") {
         val expected = true
 
+        val testRemoveExistingRequests = true
         val mockThreadReference = mock[ThreadReference]
         val testSize = 0
         val testDepth = 1
@@ -416,7 +358,7 @@ class PendingStepSupportSpec extends FunSpec with Matchers
         val actions = Seq(
           ActionInfo(
             TestRequestId,
-            StepRequestInfo(TestRequestId, mockThreadReference, testSize, testDepth, Nil),
+            StepRequestInfo(TestRequestId, testRemoveExistingRequests, mockThreadReference, testSize, testDepth, Nil),
             () => {}
           )
         )

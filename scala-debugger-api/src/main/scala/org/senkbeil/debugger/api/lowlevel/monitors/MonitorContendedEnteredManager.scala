@@ -43,7 +43,27 @@ trait MonitorContendedEnteredManager {
    */
   def createMonitorContendedEnteredRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createMonitorContendedEnteredRequestWithId(
+    newRequestId(),
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new monitor contended entered request based on the specified
+   * information.
+   *
+   * @param monitorContendedEnteredRequestInfo The information used to create
+   *                                           the monitor contended entered
+   *                                           request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createMonitorContendedEnteredRequestFromInfo(
+    monitorContendedEnteredRequestInfo: MonitorContendedEnteredRequestInfo
+  ): Try[String] = createMonitorContendedEnteredRequestWithId(
+    monitorContendedEnteredRequestInfo.requestId,
+    monitorContendedEnteredRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a monitor contended entered request with the specified id.

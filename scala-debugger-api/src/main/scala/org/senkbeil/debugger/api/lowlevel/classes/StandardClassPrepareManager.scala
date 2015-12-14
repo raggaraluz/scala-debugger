@@ -56,19 +56,6 @@ class StandardClassPrepareManager(
   }
 
   /**
-   * Creates a new class prepare request.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createClassPrepareRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createClassPrepareRequestWithId(newRequestId(), extraArguments: _*)
-  }
-
-  /**
    * Determines if a class prepare request with the specified id.
    *
    * @param id The id of the Class Prepare Request

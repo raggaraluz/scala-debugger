@@ -41,20 +41,6 @@ trait PendingClassPrepareSupport
   /**
    * Creates a new class prepare request.
    *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  abstract override def createClassPrepareRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = createClassPrepareRequestWithId(
-    newRequestId(),
-    extraArguments: _*
-  )
-
-  /**
-   * Creates a new class prepare request.
-   *
    * @param requestId The id of the request used to retrieve and delete it
    * @param extraArguments Any additional arguments to provide to the request
    *

@@ -1,23 +1,304 @@
 package org.senkbeil.debugger.api.lowlevel
 
+import com.sun.jdi.ThreadReference
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
-import org.senkbeil.debugger.api.lowlevel.breakpoints.{PendingBreakpointSupport, DummyBreakpointManager, BreakpointManager}
+import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.senkbeil.debugger.api.lowlevel.breakpoints.{BreakpointManager, BreakpointRequestInfo, DummyBreakpointManager, PendingBreakpointSupport}
 import org.senkbeil.debugger.api.lowlevel.classes._
-import org.senkbeil.debugger.api.lowlevel.events.{PendingEventHandlerSupport, DummyEventManager, EventManager}
-import org.senkbeil.debugger.api.lowlevel.exceptions.{PendingExceptionSupport, DummyExceptionManager, ExceptionManager}
+import org.senkbeil.debugger.api.lowlevel.events.EventManager.EventHandler
+import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
+import org.senkbeil.debugger.api.lowlevel.events._
+import org.senkbeil.debugger.api.lowlevel.exceptions.{DummyExceptionManager, ExceptionManager, ExceptionRequestInfo, PendingExceptionSupport}
 import org.senkbeil.debugger.api.lowlevel.methods._
 import org.senkbeil.debugger.api.lowlevel.monitors._
-import org.senkbeil.debugger.api.lowlevel.steps.{PendingStepSupport, DummyStepManager, StepManager}
+import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.senkbeil.debugger.api.lowlevel.steps.{DummyStepManager, PendingStepSupport, StepManager, StepRequestInfo}
 import org.senkbeil.debugger.api.lowlevel.threads._
-import org.senkbeil.debugger.api.lowlevel.vm.{PendingVMDeathSupport, DummyVMDeathManager, VMDeathManager}
+import org.senkbeil.debugger.api.lowlevel.vm.{DummyVMDeathManager, PendingVMDeathSupport, VMDeathManager, VMDeathRequestInfo}
 import org.senkbeil.debugger.api.lowlevel.watchpoints._
 
 class ManagerContainerSpec extends FunSpec with Matchers
   with MockFactory with OneInstancePerTest
 {
+  
   describe("ManagerContainer") {
+    describe("#processPendingRequests") {
+      it("should create breakpoint requests if some are pending") {
+        val info = BreakpointRequestInfo(
+          requestId = java.util.UUID.randomUUID().toString,
+          fileName = "some/file/name",
+          lineNumber = 999,
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.breakpointManager
+          .createBreakpointRequestFromInfo(info)
+
+        (managerContainerWithMocks.breakpointManager.createBreakpointRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+
+      it("should create class prepare requests if some are pending") {
+        val info = ClassPrepareRequestInfo(
+          java.util.UUID.randomUUID().toString,
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.classPrepareManager
+          .createClassPrepareRequestFromInfo(info)
+
+        (managerContainerWithMocks.classPrepareManager.createClassPrepareRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+
+      it("should create class unload requests if some are pending") {
+        val info = ClassUnloadRequestInfo(
+          java.util.UUID.randomUUID().toString,
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.classUnloadManager
+          .createClassUnloadRequestFromInfo(info)
+
+        (managerContainerWithMocks.classUnloadManager.createClassUnloadRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+      
+      it("should add event handlers if some are pending") {
+        val info = EventHandlerInfo(
+          eventHandlerId = java.util.UUID.randomUUID().toString,
+          eventType = stub[EventType],
+          eventHandler = stub[EventHandler],
+          Seq(mock[JDIEventArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.eventManager
+          .addEventHandlerFromInfo(info)
+
+        (managerContainerWithMocks.eventManager.addEventHandlerFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+      
+      it("should create exception requests if some are pending") {
+        val info = ExceptionRequestInfo(
+          requestId = java.util.UUID.randomUUID().toString,
+          className = "some.class.name",
+          notifyCaught = true,
+          notifyUncaught = false,
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.exceptionManager
+          .createExceptionRequestFromInfo(info)
+
+        (managerContainerWithMocks.exceptionManager.createExceptionRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+      
+      it("should create method entry requests if some are pending") {
+        val info = MethodEntryRequestInfo(
+          java.util.UUID.randomUUID().toString,
+          "some.class.name",
+          "someMethodName",
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.methodEntryManager
+          .createMethodEntryRequestFromInfo(info)
+
+        (managerContainerWithMocks.methodEntryManager.createMethodEntryRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+      
+      it("should create method exit requests if some are pending") {
+        val info = MethodExitRequestInfo(
+          java.util.UUID.randomUUID().toString,
+          "some.class.name",
+          "someMethodName",
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.methodExitManager
+          .createMethodExitRequestFromInfo(info)
+
+        (managerContainerWithMocks.methodExitManager.createMethodExitRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+      
+      it("should create monitor contended entered requests if some are pending") {
+        val info = MonitorContendedEnteredRequestInfo(
+          java.util.UUID.randomUUID().toString,
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.monitorContendedEnteredManager
+          .createMonitorContendedEnteredRequestFromInfo(info)
+
+        (managerContainerWithMocks.monitorContendedEnteredManager.createMonitorContendedEnteredRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+      
+      it("should create monitor contended enter requests if some are pending") {
+        val info = MonitorContendedEnterRequestInfo(
+          java.util.UUID.randomUUID().toString,
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.monitorContendedEnterManager
+          .createMonitorContendedEnterRequestFromInfo(info)
+
+        (managerContainerWithMocks.monitorContendedEnterManager.createMonitorContendedEnterRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+
+      it("should create monitor waited requests if some are pending") {
+        val info = MonitorWaitedRequestInfo(
+          java.util.UUID.randomUUID().toString,
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.monitorWaitedManager
+          .createMonitorWaitedRequestFromInfo(info)
+
+        (managerContainerWithMocks.monitorWaitedManager.createMonitorWaitedRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+
+      it("should create monitor wait requests if some are pending") {
+        val info = MonitorWaitRequestInfo(
+          java.util.UUID.randomUUID().toString,
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.monitorWaitManager
+          .createMonitorWaitRequestFromInfo(info)
+
+        (managerContainerWithMocks.monitorWaitManager.createMonitorWaitRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+      
+      it("should create step requests if some are pending") {
+        val info = StepRequestInfo(
+          requestId = java.util.UUID.randomUUID().toString,
+          removeExistingRequests = false,
+          threadReference = mock[ThreadReference],
+          size = 0,
+          depth = 1,
+          extraArguments = Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.stepManager
+          .createStepRequestFromInfo(info)
+
+        (managerContainerWithMocks.stepManager.createStepRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+
+      it("should create thread death requests if some are pending") {
+        val info = ThreadDeathRequestInfo(
+          java.util.UUID.randomUUID().toString,
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.threadDeathManager
+          .createThreadDeathRequestFromInfo(info)
+
+        (managerContainerWithMocks.threadDeathManager.createThreadDeathRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+
+      it("should create thread start requests if some are pending") {
+        val info = ThreadStartRequestInfo(
+          java.util.UUID.randomUUID().toString,
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.threadStartManager
+          .createThreadStartRequestFromInfo(info)
+
+        (managerContainerWithMocks.threadStartManager.createThreadStartRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+
+      it("should create vm death requests if some are pending") {
+        val info = VMDeathRequestInfo(
+          java.util.UUID.randomUUID().toString,
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.vmDeathManager
+          .createVMDeathRequestFromInfo(info)
+
+        (managerContainerWithMocks.vmDeathManager.createVMDeathRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+
+      it("should create access watchpoint requests if some are pending") {
+        val info = AccessWatchpointRequestInfo(
+          java.util.UUID.randomUUID().toString,
+          "some.class.name",
+          "someFieldName",
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.accessWatchpointManager
+          .createAccessWatchpointRequestFromInfo(info)
+
+        (managerContainerWithMocks.accessWatchpointManager.createAccessWatchpointRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+
+      it("should create modification watchpoint requests if some are pending") {
+        val info = ModificationWatchpointRequestInfo(
+          java.util.UUID.randomUUID().toString,
+          "some.class.name",
+          "someFieldName",
+          Seq(mock[JDIRequestArgument])
+        )
+        val dummyManagerContainer = ManagerContainer.usingDummyManagers()
+        dummyManagerContainer.modificationWatchpointManager
+          .createModificationWatchpointRequestFromInfo(info)
+
+        (managerContainerWithMocks.modificationWatchpointManager.createModificationWatchpointRequestFromInfo _)
+          .expects(info).once()
+
+        managerContainerWithMocks.processPendingRequests(dummyManagerContainer)
+      }
+    }
+
     describe("#usingDummyManagers") {
       it("should create dummy managers supporting pending requests") {
         val managerContainer = ManagerContainer.usingDummyManagers()
@@ -289,6 +570,28 @@ class ManagerContainerSpec extends FunSpec with Matchers
       }
     }
   }
+  
+  private val managerContainerWithMocks = ManagerContainer(
+    mock[AccessWatchpointManager],
+    mock[BreakpointManager],
+    mock[ClassManager],
+    mock[ClassPrepareManager],
+    mock[ClassUnloadManager],
+    mock[EventManager],
+    mock[ExceptionManager],
+    mock[MethodEntryManager],
+    mock[MethodExitManager],
+    mock[ModificationWatchpointManager],
+    mock[MonitorContendedEnteredManager],
+    mock[MonitorContendedEnterManager],
+    mock[MonitorWaitedManager],
+    mock[MonitorWaitManager],
+    mock[EventRequestManager],
+    mock[StepManager],
+    mock[ThreadDeathManager],
+    mock[ThreadStartManager],
+    mock[VMDeathManager]
+  )
 
   //
   // NOTE: The following classes are explicitly created due to a limitation

@@ -11,17 +11,6 @@ import scala.util.{Failure, Try}
  */
 class DummyMonitorContendedEnterManager extends MonitorContendedEnterManager {
   /**
-   * Creates a new monitor contended enter request.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createMonitorContendedEnterRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = Failure(new DummyOperationException)
-
-  /**
    * Determines if a monitor contended enter request with the specified id.
    *
    * @param requestId The id of the Monitor Contended Enter Request

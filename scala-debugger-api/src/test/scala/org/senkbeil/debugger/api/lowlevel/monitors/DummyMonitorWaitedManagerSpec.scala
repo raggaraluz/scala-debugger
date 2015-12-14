@@ -28,15 +28,6 @@ class DummyMonitorWaitedManagerSpec extends FunSpec with Matchers with MockFacto
       }
     }
 
-    describe("#createMonitorWaitedRequest") {
-      it("should return a failure of dummy operation") {
-        val result = monitorWaitedManager.createMonitorWaitedRequest()
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
     describe("#hasMonitorWaitedRequest") {
       it("should return false") {
         val expected = false

@@ -148,59 +148,6 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createVMDeathRequest") {
-      it("should return Success(id) if the vm death was created") {
-        val expected = Success(TestRequestId)
-
-        // Create a vm death to use for testing
-        (mockVMDeathManager.createVMDeathRequestWithId _)
-          .expects(TestRequestId, Nil)
-          .returning(expected).once()
-
-        val actual = pendingVMDeathSupport.createVMDeathRequest()
-
-        actual should be (expected)
-      }
-
-      it("should add a pending vm death if exception thrown") {
-        val expected = Success(TestRequestId)
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockVMDeathManager.createVMDeathRequestWithId _)
-          .expects(*, *)
-          .returning(Failure(new Throwable)).once()
-
-        // Pending vm death should be set
-        (mockPendingActionManager.addPendingActionWithId _).expects(
-          TestRequestId,
-          VMDeathRequestInfo(TestRequestId, extraArguments),
-          * // Don't care about checking action
-        ).returning(TestRequestId).once()
-
-        val actual = pendingVMDeathSupport.createVMDeathRequest(
-          extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-
-      it("should return a failure if pending disabled and failed to create request") {
-        val expected = Failure(new Throwable)
-        val extraArguments = Seq(stub[JDIRequestArgument])
-
-        (mockVMDeathManager.createVMDeathRequestWithId _)
-          .expects(*, *)
-          .returning(expected).once()
-
-        pendingVMDeathSupport.disablePendingSupport()
-        val actual = pendingVMDeathSupport.createVMDeathRequest(
-          extraArguments: _*
-        )
-
-        actual should be (expected)
-      }
-    }
-
     describe("#removeVMDeathRequest") {
       it("should return true if the vm death was successfully deleted") {
         val expected = true

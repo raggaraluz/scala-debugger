@@ -16,8 +16,6 @@ import scala.util.Try
 class TestStepManager(
   private val stepManager: StepManager
 ) extends StepManager {
-  override def createStepRequest(threadReference: ThreadReference, size: Int, depth: Int, extraArguments: JDIRequestArgument*): Try[String] =
-    stepManager.createStepRequest(threadReference, size, depth, extraArguments: _*)
   override def getStepRequestInfoWithId(requestId: String): Option[StepRequestInfo] =
     stepManager.getStepRequestInfoWithId(requestId)
   override def hasStepRequestWithId(requestId: String): Boolean =
@@ -28,8 +26,6 @@ class TestStepManager(
     stepManager.stepRequestListById
   override def getStepRequest(threadReference: ThreadReference): Option[Seq[StepRequest]] =
     stepManager.getStepRequest(threadReference)
-  override def createStepRequestWithId(requestId: String, threadReference: ThreadReference, size: Int, depth: Int, extraArguments: JDIRequestArgument*): Try[String] =
-    stepManager.createStepRequestWithId(requestId, threadReference, size, depth, extraArguments: _*)
   override def createStepRequestWithId(requestId: String, removeExistingRequests: Boolean, threadReference: ThreadReference, size: Int, depth: Int, extraArguments: JDIRequestArgument*): Try[String] =
     stepManager.createStepRequestWithId(requestId, removeExistingRequests, threadReference, size, depth, extraArguments: _*)
   override def getStepRequestWithId(requestId: String): Option[StepRequest] =

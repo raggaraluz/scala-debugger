@@ -56,19 +56,6 @@ class StandardThreadStartManager(
   }
 
   /**
-   * Creates a new thread start request for the specified class and method.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createThreadStartRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createThreadStartRequestWithId(newRequestId(), extraArguments: _*)
-  }
-
-  /**
    * Determines if a thread start request with the specified id.
    *
    * @param id The id of the Thread Start Request

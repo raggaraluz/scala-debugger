@@ -28,25 +28,7 @@ class DummyStepManagerSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#createStepRequestWithId without removeExistingRequests") {
-      it("should return a failure of dummy operation") {
-        val testThreadReference = mock[ThreadReference]
-        val testSize = 0
-        val testDepth = 1
-
-        val result = stepManager.createStepRequestWithId(
-          TestRequestId,
-          testThreadReference,
-          testSize,
-          testDepth
-        )
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
-    describe("#createStepRequestWithId with removeExistingRequests") {
+    describe("#createStepRequestWithId") {
       it("should return a failure of dummy operation") {
         val testThreadReference = mock[ThreadReference]
         val testRemoveExistingRequests = false
@@ -56,23 +38,6 @@ class DummyStepManagerSpec extends FunSpec with Matchers
         val result = stepManager.createStepRequestWithId(
           TestRequestId,
           testRemoveExistingRequests,
-          testThreadReference,
-          testSize,
-          testDepth
-        )
-
-        result.isFailure should be (true)
-        result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
-    describe("#createStepRequest") {
-      it("should return a failure of dummy operation") {
-        val testThreadReference = mock[ThreadReference]
-        val testSize = 0
-        val testDepth = 1
-
-        val result = stepManager.createStepRequest(
           testThreadReference,
           testSize,
           testDepth

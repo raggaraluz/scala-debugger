@@ -38,7 +38,25 @@ trait ThreadDeathManager {
    */
   def createThreadDeathRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createThreadDeathRequestWithId(
+    newRequestId(),
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new thread death request based on the specified information.
+   *
+   * @param threadDeathRequestInfo The information used to create the
+   *                                thread death request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createThreadDeathRequestFromInfo(
+    threadDeathRequestInfo: ThreadDeathRequestInfo
+  ): Try[String] = createThreadDeathRequestWithId(
+    threadDeathRequestInfo.requestId,
+    threadDeathRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a thread death request with the specified id.

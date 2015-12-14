@@ -28,8 +28,6 @@ class TestModificationWatchpointManager(
     modificationWatchpointManager.getModificationWatchpointRequest(className, fieldName)
   override def getModificationWatchpointRequestWithId(id: String): Option[ModificationWatchpointRequest] =
     modificationWatchpointManager.getModificationWatchpointRequestWithId(id)
-  override def createModificationWatchpointRequest(className: String, fieldName: String, extraArguments: JDIRequestArgument*): Try[String] =
-    modificationWatchpointManager.createModificationWatchpointRequest(className, fieldName, extraArguments: _*)
   override def modificationWatchpointRequestListById: Seq[String] =
     modificationWatchpointManager.modificationWatchpointRequestListById
   override def removeModificationWatchpointRequestWithId(id: String): Boolean =
