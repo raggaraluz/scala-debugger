@@ -24,51 +24,5 @@ class StandardScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
         }
       }
     }
-
-    it("should return the class name of a Scala main method entrypoint") {
-      val testClass = "org.senkbeil.debugger.test.misc.MainUsingMethod"
-
-      withVirtualMachine(testClass) { (s) =>
-        val expected = testClass
-
-        // NOTE: This is not available until AFTER we have resumed from the
-        //       start event (as the main method is not yet loaded)
-        eventually {
-          val actual = s.mainClassName
-          actual should be(expected)
-        }
-      }
-    }
-
-    it("should return the class name of a Scala App entrypoint") {
-      val testClass = "org.senkbeil.debugger.test.misc.MainUsingApp"
-
-      withVirtualMachine(testClass) { (s) =>
-        val expected = testClass
-
-        // NOTE: This is not available until AFTER we have resumed from the
-        //       start event (as the main method is not yet loaded)
-        eventually {
-          val actual = s.mainClassName
-          actual should be(expected)
-        }
-      }
-    }
-
-    it("should return the arguments provided to the virtual machine") {
-      val testClass = "org.senkbeil.debugger.test.misc.MainUsingApp"
-      val testArguments = Seq("a", "b", "c")
-
-      withVirtualMachine(testClass, testArguments) { (s) =>
-        val expected = testArguments
-
-        // NOTE: This is not available until AFTER we have resumed from the
-        //       start event (as the main method is not yet loaded)
-        eventually {
-          val actual = s.commandLineArguments
-          actual should contain theSameElementsInOrderAs expected
-        }
-      }
-    }
   }
 }
