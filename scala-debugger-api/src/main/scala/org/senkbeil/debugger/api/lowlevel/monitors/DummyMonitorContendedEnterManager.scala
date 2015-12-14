@@ -1,36 +1,15 @@
 package org.senkbeil.debugger.api.lowlevel.monitors
 
 import com.sun.jdi.request.MonitorContendedEnterRequest
+import org.senkbeil.debugger.api.lowlevel.DummyOperationException
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 
-import scala.util.Try
+import scala.util.{Failure, Try}
 
 /**
- * Represents the manager for monitor contended enter requests.
+ * Represents a monitor contended enter manager whose operations do nothing.
  */
-trait MonitorContendedEnterManager {
-  /**
-   * Retrieves the list of monitor contended enter requests contained by
-   * this manager.
-   *
-   * @return The collection of monitor contended enter requests in the form of
-   *         ids
-   */
-  def monitorContendedEnterRequestList: Seq[String]
-
-  /**
-   * Creates a new monitor contended enter request.
-   *
-   * @param requestId The id of the request used to retrieve and delete it
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  def createMonitorContendedEnterRequestWithId(
-    requestId: String,
-    extraArguments: JDIRequestArgument*
-  ): Try[String]
-
+class DummyMonitorContendedEnterManager extends MonitorContendedEnterManager {
   /**
    * Creates a new monitor contended enter request.
    *
@@ -38,9 +17,9 @@ trait MonitorContendedEnterManager {
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createMonitorContendedEnterRequest(
+  override def createMonitorContendedEnterRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = Failure(new DummyOperationException)
 
   /**
    * Determines if a monitor contended enter request with the specified id.
@@ -50,7 +29,9 @@ trait MonitorContendedEnterManager {
    * @return True if a monitor contended enter request with the id exists,
    *         otherwise false
    */
-  def hasMonitorContendedEnterRequest(requestId: String): Boolean
+  override def hasMonitorContendedEnterRequest(
+    requestId: String
+  ): Boolean = false
 
   /**
    * Retrieves the monitor contended enter request using the specified id.
@@ -59,9 +40,9 @@ trait MonitorContendedEnterManager {
    *
    * @return Some monitor contended enter request if it exists, otherwise None
    */
-  def getMonitorContendedEnterRequest(
+  override def getMonitorContendedEnterRequest(
     requestId: String
-  ): Option[MonitorContendedEnterRequest]
+  ): Option[MonitorContendedEnterRequest] = None
 
   /**
    * Retrieves the information for a monitor contended enter request with the
@@ -71,9 +52,18 @@ trait MonitorContendedEnterManager {
    *
    * @return Some information about the request if it exists, otherwise None
    */
-  def getMonitorContendedEnterRequestInfo(
+  override def getMonitorContendedEnterRequestInfo(
     requestId: String
-  ): Option[MonitorContendedEnterRequestInfo]
+  ): Option[MonitorContendedEnterRequestInfo] = None
+
+  /**
+   * Retrieves the list of monitor contended enter requests contained by
+   * this manager.
+   *
+   * @return The collection of monitor contended enter requests in the form of
+   *         ids
+   */
+  override def monitorContendedEnterRequestList: Seq[String] = Nil
 
   /**
    * Removes the specified monitor contended enter request.
@@ -83,14 +73,20 @@ trait MonitorContendedEnterManager {
    * @return True if the monitor contended enter request was removed
    *         (if it existed), otherwise false
    */
-  def removeMonitorContendedEnterRequest(
+  override def removeMonitorContendedEnterRequest(
     requestId: String
-  ): Boolean
+  ): Boolean = false
 
   /**
-   * Generates an id for a new request.
+   * Creates a new monitor contended enter request.
    *
-   * @return The id as a string
+   * @param requestId The id of the request used to retrieve and delete it
+   * @param extraArguments Any additional arguments to provide to the request
+   *
+   * @return Success(id) if successful, otherwise Failure
    */
-  protected def newRequestId(): String = java.util.UUID.randomUUID().toString
+  override def createMonitorContendedEnterRequestWithId(
+    requestId: String,
+    extraArguments: JDIRequestArgument*
+  ): Try[String] = Failure(new DummyOperationException)
 }

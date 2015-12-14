@@ -43,40 +43,42 @@ trait ThreadDeathManager {
   /**
    * Determines if a thread death request with the specified id.
    *
-   * @param id The id of the Thread Death Request
+   * @param requestId The id of the Thread Death Request
    *
    * @return True if a thread death request with the id exists, otherwise false
    */
-  def hasThreadDeathRequest(id: String): Boolean
+  def hasThreadDeathRequest(requestId: String): Boolean
 
   /**
    * Retrieves the thread death request using the specified id.
    *
-   * @param id The id of the Thread Death Request
+   * @param requestId The id of the Thread Death Request
    *
    * @return Some thread death request if it exists, otherwise None
    */
-  def getThreadDeathRequest(id: String): Option[ThreadDeathRequest]
+  def getThreadDeathRequest(requestId: String): Option[ThreadDeathRequest]
 
   /**
    * Retrieves the information for a thread death request with the
    * specified id.
    *
-   * @param id The id of the Thread Death Request
+   * @param requestId The id of the Thread Death Request
    *
    * @return Some information about the request if it exists, otherwise None
    */
-  def getThreadDeathRequestInfo(id: String): Option[ThreadDeathRequestInfo]
+  def getThreadDeathRequestInfo(
+    requestId: String
+  ): Option[ThreadDeathRequestInfo]
 
   /**
    * Removes the specified thread death request.
    *
-   * @param id The id of the Thread Death Request
+   * @param requestId The id of the Thread Death Request
    *
    * @return True if the thread death request was removed (if it existed),
    *         otherwise false
    */
-  def removeThreadDeathRequest(id: String): Boolean
+  def removeThreadDeathRequest(requestId: String): Boolean
 
   /**
    * Generates an id for a new request.

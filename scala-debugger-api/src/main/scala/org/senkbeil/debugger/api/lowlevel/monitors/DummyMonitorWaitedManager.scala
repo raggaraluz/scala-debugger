@@ -1,36 +1,15 @@
 package org.senkbeil.debugger.api.lowlevel.monitors
 
 import com.sun.jdi.request.MonitorWaitedRequest
+import org.senkbeil.debugger.api.lowlevel.DummyOperationException
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 
-import scala.util.Try
+import scala.util.{Failure, Try}
 
 /**
- * Represents the manager for monitor waited requests.
+ * Represents a monitor waited manager whose operations do nothing.
  */
-trait MonitorWaitedManager {
-  /**
-   * Retrieves the list of monitor waited requests contained by
-   * this manager.
-   *
-   * @return The collection of monitor waited requests in the form of
-   *         ids
-   */
-  def monitorWaitedRequestList: Seq[String]
-
-  /**
-   * Creates a new monitor waited request.
-   *
-   * @param requestId The id of the request used to retrieve and delete it
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  def createMonitorWaitedRequestWithId(
-    requestId: String,
-    extraArguments: JDIRequestArgument*
-  ): Try[String]
-
+class DummyMonitorWaitedManager extends MonitorWaitedManager {
   /**
    * Creates a new monitor waited request.
    *
@@ -38,9 +17,9 @@ trait MonitorWaitedManager {
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createMonitorWaitedRequest(
+  override def createMonitorWaitedRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = Failure(new DummyOperationException)
 
   /**
    * Determines if a monitor waited request with the specified id.
@@ -50,7 +29,9 @@ trait MonitorWaitedManager {
    * @return True if a monitor waited request with the id exists,
    *         otherwise false
    */
-  def hasMonitorWaitedRequest(requestId: String): Boolean
+  override def hasMonitorWaitedRequest(
+    requestId: String
+  ): Boolean = false
 
   /**
    * Retrieves the monitor waited request using the specified id.
@@ -59,7 +40,9 @@ trait MonitorWaitedManager {
    *
    * @return Some monitor waited request if it exists, otherwise None
    */
-  def getMonitorWaitedRequest(requestId: String): Option[MonitorWaitedRequest]
+  override def getMonitorWaitedRequest(
+    requestId: String
+  ): Option[MonitorWaitedRequest] = None
 
   /**
    * Retrieves the information for a monitor waited request with the
@@ -69,9 +52,18 @@ trait MonitorWaitedManager {
    *
    * @return Some information about the request if it exists, otherwise None
    */
-  def getMonitorWaitedRequestInfo(
+  override def getMonitorWaitedRequestInfo(
     requestId: String
-  ): Option[MonitorWaitedRequestInfo]
+  ): Option[MonitorWaitedRequestInfo] = None
+
+  /**
+   * Retrieves the list of monitor waited requests contained by
+   * this manager.
+   *
+   * @return The collection of monitor waited requests in the form of
+   *         ids
+   */
+  override def monitorWaitedRequestList: Seq[String] = Nil
 
   /**
    * Removes the specified monitor waited request.
@@ -81,12 +73,20 @@ trait MonitorWaitedManager {
    * @return True if the monitor waited request was removed
    *         (if it existed), otherwise false
    */
-  def removeMonitorWaitedRequest(requestId: String): Boolean
+  override def removeMonitorWaitedRequest(
+    requestId: String
+  ): Boolean = false
 
   /**
-   * Generates an id for a new request.
+   * Creates a new monitor waited request.
    *
-   * @return The id as a string
+   * @param requestId The id of the request used to retrieve and delete it
+   * @param extraArguments Any additional arguments to provide to the request
+   *
+   * @return Success(id) if successful, otherwise Failure
    */
-  protected def newRequestId(): String = java.util.UUID.randomUUID().toString
+  override def createMonitorWaitedRequestWithId(
+    requestId: String,
+    extraArguments: JDIRequestArgument*
+  ): Try[String] = Failure(new DummyOperationException)
 }

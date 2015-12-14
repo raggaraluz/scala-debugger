@@ -158,14 +158,13 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
       it("should add a pending breakpoint if exception thrown") {
         val testFileName = "some/file/name"
         val testLineNumber = 1
-        val error = NoBreakpointLocationFound(testFileName, testLineNumber)
 
         val expected = Success(TestRequestId)
 
         // Create a breakpoint to use for testing
         (mockBreakpointManager.createBreakpointRequestWithId _)
           .expects(TestRequestId, testFileName, testLineNumber, Nil)
-          .returning(Failure(error)).once()
+          .returning(Failure(new Throwable)).once()
 
         // Pending breakpoint should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
@@ -269,9 +268,6 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
       it("should return true if the breakpoint was successfully deleted") {
         val expected = true
 
-        val testFileName = "some/file/name"
-        val testLineNumber = 1
-
         (mockBreakpointManager.removeBreakpointRequestWithId _)
           .expects(TestRequestId)
           .returning(true).once()
@@ -293,7 +289,6 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
 
         val testFileName = "some/file/name"
         val testLineNumber = 1
-        val error = NoBreakpointLocationFound(testFileName, testLineNumber)
 
         // Return removals for pending breakpoints
         val pendingRemovalReturn = Some(Seq(
@@ -366,7 +361,6 @@ class PendingBreakpointSupportSpec extends FunSpec with Matchers
 
         val testFileName = "some/file/name"
         val testLineNumber = 1
-        val error = NoBreakpointLocationFound(testFileName, testLineNumber)
 
         val actions = Seq(
           ActionInfo(

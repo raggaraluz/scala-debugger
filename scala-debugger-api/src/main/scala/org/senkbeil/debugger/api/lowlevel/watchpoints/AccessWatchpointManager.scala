@@ -78,12 +78,12 @@ trait AccessWatchpointManager {
   /**
    * Determines if a access watchpoint request with the specified id.
    *
-   * @param id The id of the Access Watchpoint Request
+   * @param requestId The id of the Access Watchpoint Request
    *
    * @return True if a access watchpoint request with the id exists,
    *         otherwise false
    */
-  def hasAccessWatchpointRequestWithId(id: String): Boolean
+  def hasAccessWatchpointRequestWithId(requestId: String): Boolean
 
   /**
    * Returns the collection of access watchpoint requests representing the
@@ -103,12 +103,12 @@ trait AccessWatchpointManager {
   /**
    * Retrieves the access watchpoint request using the specified id.
    *
-   * @param id The id of the Access Watchpoint Request
+   * @param requestId The id of the Access Watchpoint Request
    *
    * @return Some access watchpoint request if it exists, otherwise None
    */
   def getAccessWatchpointRequestWithId(
-    id: String
+    requestId: String
   ): Option[AccessWatchpointRequest]
 
   /**
@@ -127,12 +127,12 @@ trait AccessWatchpointManager {
   /**
    * Removes the access watchpoint request with the specified id.
    *
-   * @param id The id of the Access Watchpoint Request
+   * @param requestId The id of the Access Watchpoint Request
    *
    * @return True if the access watchpoint request was removed (if it existed),
    *         otherwise false
    */
-  def removeAccessWatchpointRequestWithId(id: String): Boolean
+  def removeAccessWatchpointRequestWithId(requestId: String): Boolean
 
   /**
    * Generates an id for a new request.
