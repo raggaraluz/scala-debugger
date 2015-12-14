@@ -3,21 +3,64 @@ package org.senkbeil.debugger.api.lowlevel
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
-import org.senkbeil.debugger.api.lowlevel.breakpoints.BreakpointManager
-import org.senkbeil.debugger.api.lowlevel.classes.{ClassUnloadManager, ClassPrepareManager, ClassManager}
-import org.senkbeil.debugger.api.lowlevel.events.EventManager
-import org.senkbeil.debugger.api.lowlevel.exceptions.ExceptionManager
-import org.senkbeil.debugger.api.lowlevel.methods.{MethodExitManager, MethodEntryManager}
-import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorWaitManager, MonitorWaitedManager, MonitorContendedEnterManager, MonitorContendedEnteredManager}
-import org.senkbeil.debugger.api.lowlevel.steps.StepManager
-import org.senkbeil.debugger.api.lowlevel.threads.{ThreadStartManager, ThreadDeathManager}
-import org.senkbeil.debugger.api.lowlevel.vm.VMDeathManager
-import org.senkbeil.debugger.api.lowlevel.watchpoints.{ModificationWatchpointManager, AccessWatchpointManager}
+import org.senkbeil.debugger.api.lowlevel.breakpoints.{PendingBreakpointSupport, DummyBreakpointManager, BreakpointManager}
+import org.senkbeil.debugger.api.lowlevel.classes._
+import org.senkbeil.debugger.api.lowlevel.events.{PendingEventHandlerSupport, DummyEventManager, EventManager}
+import org.senkbeil.debugger.api.lowlevel.exceptions.{PendingExceptionSupport, DummyExceptionManager, ExceptionManager}
+import org.senkbeil.debugger.api.lowlevel.methods._
+import org.senkbeil.debugger.api.lowlevel.monitors._
+import org.senkbeil.debugger.api.lowlevel.steps.{PendingStepSupport, DummyStepManager, StepManager}
+import org.senkbeil.debugger.api.lowlevel.threads._
+import org.senkbeil.debugger.api.lowlevel.vm.{PendingVMDeathSupport, DummyVMDeathManager, VMDeathManager}
+import org.senkbeil.debugger.api.lowlevel.watchpoints._
 
 class ManagerContainerSpec extends FunSpec with Matchers
   with MockFactory with OneInstancePerTest
 {
   describe("ManagerContainer") {
+    describe("#usingDummyManagers") {
+      it("should create dummy managers supporting pending requests") {
+        val managerContainer = ManagerContainer.usingDummyManagers()
+
+        managerContainer.accessWatchpointManager shouldBe a [DummyAccessWatchpointManager]
+        managerContainer.accessWatchpointManager shouldBe a [PendingAccessWatchpointSupport]
+        managerContainer.breakpointManager shouldBe a [DummyBreakpointManager]
+        managerContainer.breakpointManager shouldBe a [PendingBreakpointSupport]
+        managerContainer.classManager should be (null)
+        managerContainer.classPrepareManager shouldBe a [DummyClassPrepareManager]
+        managerContainer.classPrepareManager shouldBe a [PendingClassPrepareSupport]
+        managerContainer.classUnloadManager shouldBe a [DummyClassUnloadManager]
+        managerContainer.classUnloadManager shouldBe a [PendingClassUnloadSupport]
+        managerContainer.eventManager shouldBe a [DummyEventManager]
+        managerContainer.eventManager shouldBe a [PendingEventHandlerSupport]
+        managerContainer.exceptionManager shouldBe a [DummyExceptionManager]
+        managerContainer.exceptionManager shouldBe a [PendingExceptionSupport]
+        managerContainer.methodEntryManager shouldBe a [DummyMethodEntryManager]
+        managerContainer.methodEntryManager shouldBe a [PendingMethodEntrySupport]
+        managerContainer.methodExitManager shouldBe a [DummyMethodExitManager]
+        managerContainer.methodExitManager shouldBe a [PendingMethodExitSupport]
+        managerContainer.modificationWatchpointManager shouldBe a [DummyModificationWatchpointManager]
+        managerContainer.modificationWatchpointManager shouldBe a [PendingModificationWatchpointSupport]
+        managerContainer.monitorContendedEnteredManager shouldBe a [DummyMonitorContendedEnteredManager]
+        managerContainer.monitorContendedEnteredManager shouldBe a [PendingMonitorContendedEnteredSupport]
+        managerContainer.monitorContendedEnterManager shouldBe a [DummyMonitorContendedEnterManager]
+        managerContainer.monitorContendedEnterManager shouldBe a [PendingMonitorContendedEnterSupport]
+        managerContainer.monitorWaitedManager shouldBe a [DummyMonitorWaitedManager]
+        managerContainer.monitorWaitedManager shouldBe a [PendingMonitorWaitedSupport]
+        managerContainer.monitorWaitManager shouldBe a [DummyMonitorWaitManager]
+        managerContainer.monitorWaitManager shouldBe a [PendingMonitorWaitSupport]
+        managerContainer.requestManager should be (null)
+        managerContainer.stepManager shouldBe a [DummyStepManager]
+        managerContainer.stepManager shouldBe a [PendingStepSupport]
+        managerContainer.threadDeathManager shouldBe a [DummyThreadDeathManager]
+        managerContainer.threadDeathManager shouldBe a [PendingThreadDeathSupport]
+        managerContainer.threadStartManager shouldBe a [DummyThreadStartManager]
+        managerContainer.threadStartManager shouldBe a [PendingThreadStartSupport]
+        managerContainer.vmDeathManager shouldBe a [DummyVMDeathManager]
+        managerContainer.vmDeathManager shouldBe a [PendingVMDeathSupport]
+      }
+    }
+    
     describe("#enablePendingSupport") {
       it("should enable pending support for any manager supporting pending requests") {
         val mockAccessWatchpointManager = mock[TestPendingAccessWatchpointManager]
