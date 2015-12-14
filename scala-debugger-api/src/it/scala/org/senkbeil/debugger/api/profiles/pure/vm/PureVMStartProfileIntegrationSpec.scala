@@ -6,7 +6,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureVMStartProfileIntegrationSpec extends FunSpec with Matchers

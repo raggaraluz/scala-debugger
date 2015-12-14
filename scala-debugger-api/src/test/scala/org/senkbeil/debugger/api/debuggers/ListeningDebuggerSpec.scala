@@ -9,7 +9,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
-import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
 
 import scala.collection.JavaConverters._
 
@@ -35,7 +35,7 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
   private val mockProfileManager = mock[ProfileManager]
   private val mockLoopingTaskRunner = mock[LoopingTaskRunner]
   private val mockNewScalaVirtualMachineFunc = mockFunction[
-    VirtualMachine, ProfileManager, LoopingTaskRunner, ScalaVirtualMachine
+    VirtualMachine, ProfileManager, LoopingTaskRunner, StandardScalaVirtualMachine
   ]
 
   private class TestListeningDebugger(
@@ -54,7 +54,7 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
       connector: ListeningConnector,
       arguments: util.Map[String, Argument],
       startProcessingEvents: Boolean,
-      newVirtualMachineFunc: (ScalaVirtualMachine) => T
+      newVirtualMachineFunc: (StandardScalaVirtualMachine) => T
     ): Unit = super.listenTask(
       connector,
       arguments,
@@ -69,7 +69,7 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
       virtualMachine: VirtualMachine,
       profileManager: ProfileManager,
       loopingTaskRunner: LoopingTaskRunner
-    ): ScalaVirtualMachine = mockNewScalaVirtualMachineFunc(
+    ): StandardScalaVirtualMachine = mockNewScalaVirtualMachineFunc(
       virtualMachine,
       profileManager,
       loopingTaskRunner
@@ -255,7 +255,7 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
       it("should listen for a new connection") {
         val mockListeningConnector = mock[ListeningConnector]
         val mockArguments = mock[java.util.Map[String, Connector.Argument]]
-        val mockCallback = mockFunction[ScalaVirtualMachine, Unit]
+        val mockCallback = mockFunction[StandardScalaVirtualMachine, Unit]
 
         // Expect accept call (and throw exception to do nothing)
         (mockListeningConnector.accept _).expects(mockArguments)
@@ -272,7 +272,7 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
       it("should create a new ScalaVirtualMachine and pass it to the callback") {
         val mockListeningConnector = mock[ListeningConnector]
         val mockArguments = mock[java.util.Map[String, Connector.Argument]]
-        val mockCallback = mockFunction[ScalaVirtualMachine, Unit]
+        val mockCallback = mockFunction[StandardScalaVirtualMachine, Unit]
 
         val mockVirtualMachine = mock[VirtualMachine]
 
@@ -280,7 +280,7 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
         (mockListeningConnector.accept _).expects(mockArguments)
           .returning(mockVirtualMachine).once()
 
-        class TestScalaVirtualMachine extends ScalaVirtualMachine(
+        class TestScalaVirtualMachine extends StandardScalaVirtualMachine(
           mockVirtualMachine, null, null
         )
         val stubScalaVirtualMachine = stub[TestScalaVirtualMachine]
@@ -306,7 +306,7 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
         (mockListeningConnector.accept _).expects(mockArguments)
           .returning(mockVirtualMachine).once()
 
-        class TestScalaVirtualMachine extends ScalaVirtualMachine(
+        class TestScalaVirtualMachine extends StandardScalaVirtualMachine(
           mockVirtualMachine, null, null
         )
         val mockScalaVirtualMachine = mock[TestScalaVirtualMachine]

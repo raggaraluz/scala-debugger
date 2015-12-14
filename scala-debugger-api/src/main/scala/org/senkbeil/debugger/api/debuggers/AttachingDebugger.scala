@@ -4,7 +4,7 @@ import com.sun.jdi._
 import com.sun.jdi.connect.AttachingConnector
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
-import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
 
 import scala.collection.JavaConverters._
 
@@ -83,7 +83,7 @@ class AttachingDebugger private[debugger] (
    */
   def start[T](
     startProcessingEvents: Boolean,
-    newVirtualMachineFunc: ScalaVirtualMachine => T
+    newVirtualMachineFunc: StandardScalaVirtualMachine => T
   ): Unit = {
     assert(!isRunning, "Debugger already started!")
     assertJdiLoaded()
@@ -132,7 +132,7 @@ class AttachingDebugger private[debugger] (
    *                              has been attached
    * @tparam T The return type of the callback function
    */
-  def start[T](newVirtualMachineFunc: ScalaVirtualMachine => T): Unit = {
+  def start[T](newVirtualMachineFunc: StandardScalaVirtualMachine => T): Unit = {
     start(startProcessingEvents = true, newVirtualMachineFunc)
   }
 
@@ -167,7 +167,7 @@ class AttachingDebugger private[debugger] (
     virtualMachine: VirtualMachine,
     profileManager: ProfileManager,
     loopingTaskRunner: LoopingTaskRunner
-  ): ScalaVirtualMachine = new ScalaVirtualMachine(
+  ): StandardScalaVirtualMachine = new StandardScalaVirtualMachine(
     virtualMachine,
     profileManager,
     loopingTaskRunner

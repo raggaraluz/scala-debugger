@@ -4,7 +4,7 @@ import com.sun.jdi._
 import com.sun.jdi.connect.{Connector, ListeningConnector}
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
-import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -106,7 +106,7 @@ class ListeningDebugger private[debugger] (
    */
   def start[T](
     startProcessingEvents: Boolean,
-    newVirtualMachineFunc: ScalaVirtualMachine => T
+    newVirtualMachineFunc: StandardScalaVirtualMachine => T
   ): Unit = {
     assert(!isRunning, "Debugger already started!")
     assertJdiLoaded()
@@ -154,7 +154,7 @@ class ListeningDebugger private[debugger] (
    *                              connects to this debugger
    * @tparam T The return type of the callback function
    */
-  def start[T](newVirtualMachineFunc: ScalaVirtualMachine => T): Unit = {
+  def start[T](newVirtualMachineFunc: StandardScalaVirtualMachine => T): Unit = {
     start(startProcessingEvents = true, newVirtualMachineFunc)
   }
 
@@ -204,7 +204,7 @@ class ListeningDebugger private[debugger] (
     connector: ListeningConnector,
     arguments: java.util.Map[String, Connector.Argument],
     startProcessingEvents: Boolean,
-    newVirtualMachineFunc: ScalaVirtualMachine => T
+    newVirtualMachineFunc: StandardScalaVirtualMachine => T
   ): Unit = {
     val newVirtualMachine = Try(connector.accept(arguments))
 
@@ -238,7 +238,7 @@ class ListeningDebugger private[debugger] (
     virtualMachine: VirtualMachine,
     profileManager: ProfileManager,
     loopingTaskRunner: LoopingTaskRunner
-  ): ScalaVirtualMachine = new ScalaVirtualMachine(
+  ): StandardScalaVirtualMachine = new StandardScalaVirtualMachine(
     virtualMachine,
     profileManager,
     loopingTaskRunner

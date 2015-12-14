@@ -6,7 +6,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
-import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
 
 import scala.collection.JavaConverters._
 
@@ -33,10 +33,10 @@ class LaunchingDebuggerSpec extends FunSpec with Matchers
   private val mockProfileManager = mock[ProfileManager]
   private val mockLoopingTaskRunner = mock[LoopingTaskRunner]
   private val mockNewScalaVirtualMachineFunc = mockFunction[
-    VirtualMachine, ProfileManager, LoopingTaskRunner, ScalaVirtualMachine
+    VirtualMachine, ProfileManager, LoopingTaskRunner, StandardScalaVirtualMachine
   ]
 
-  private class TestScalaVirtualMachine extends ScalaVirtualMachine(
+  private class TestScalaVirtualMachine extends StandardScalaVirtualMachine(
     mockVirtualMachine, mockProfileManager, mockLoopingTaskRunner
   )
   private val mockScalaVirtualMachine = mock[TestScalaVirtualMachine]
@@ -57,7 +57,7 @@ class LaunchingDebuggerSpec extends FunSpec with Matchers
       virtualMachine: VirtualMachine,
       profileManager: ProfileManager,
       loopingTaskRunner: LoopingTaskRunner
-    ): ScalaVirtualMachine = mockNewScalaVirtualMachineFunc(
+    ): StandardScalaVirtualMachine = mockNewScalaVirtualMachineFunc(
       virtualMachine,
       profileManager,
       loopingTaskRunner
@@ -151,7 +151,7 @@ class LaunchingDebuggerSpec extends FunSpec with Matchers
           .returning(expected).once()
         // MOCK ===============================================================
 
-        var actual: ScalaVirtualMachine = null
+        var actual: StandardScalaVirtualMachine = null
         launchingDebugger.start(actual = _)
 
         actual should be (expected)

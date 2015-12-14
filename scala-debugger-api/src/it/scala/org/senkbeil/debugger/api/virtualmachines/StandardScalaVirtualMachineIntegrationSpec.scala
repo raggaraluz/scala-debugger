@@ -5,7 +5,7 @@ import org.scalatest.time.{Seconds, Span, Milliseconds}
 import org.scalatest.{ParallelTestExecution, FunSpec, Matchers}
 import test.{TestUtilities, VirtualMachineFixtures}
 
-class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
+class StandardScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
   with ParallelTestExecution with VirtualMachineFixtures
   with TestUtilities with Eventually
 {
@@ -14,7 +14,7 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
     interval = scaled(test.Constants.EventuallyInterval)
   )
 
-  describe("ScalaVirtualMachine") {
+  describe("StandardScalaVirtualMachine") {
     it("should indicate that it has started upon receiving the start event") {
       val testClass = "org.senkbeil.debugger.test.misc.MainUsingMethod"
 

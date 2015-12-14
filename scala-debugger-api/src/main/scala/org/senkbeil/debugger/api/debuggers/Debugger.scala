@@ -1,7 +1,7 @@
 package org.senkbeil.debugger.api.debuggers
 
 import org.senkbeil.debugger.api.utils.JDILoader
-import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
 
 /**
  * Represents the generic interface that all debugger instances implement.
@@ -41,7 +41,7 @@ trait Debugger {
    *                              result of this debugger
    * @tparam T The type of return
    */
-  def start[T](newVirtualMachineFunc: ScalaVirtualMachine => T): Unit
+  def start[T](newVirtualMachineFunc: StandardScalaVirtualMachine => T): Unit
 
   /**
    * Shuts down the debugger, releasing any connected virtual machines.

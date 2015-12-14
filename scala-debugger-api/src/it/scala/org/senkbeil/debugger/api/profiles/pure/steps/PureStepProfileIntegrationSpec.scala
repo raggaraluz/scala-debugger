@@ -11,7 +11,7 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
 import test.Constants._
 import test.{TestUtilities, VirtualMachineFixtures}
 
@@ -261,7 +261,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
    */
   private def verifyStepsFromTo[T](
     testClass: String,
-    scalaVirtualMachine: ScalaVirtualMachine,
+    scalaVirtualMachine: StandardScalaVirtualMachine,
     stepMethod: (ThreadReference) => T,
     startingLine: Int,
     expectedLine: Int
@@ -317,7 +317,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
    */
   private def verifyStepsOnEach[T](
     testClass: String,
-    scalaVirtualMachine: ScalaVirtualMachine,
+    scalaVirtualMachine: StandardScalaVirtualMachine,
     stepMethod: (ThreadReference) => T,
     startingLine: Int,
     expectedReachableLines: Seq[Int],
