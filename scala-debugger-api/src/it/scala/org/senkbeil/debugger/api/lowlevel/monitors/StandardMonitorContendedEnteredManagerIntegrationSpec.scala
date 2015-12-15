@@ -7,6 +7,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardMonitorContendedEnteredManagerIntegrationSpec extends FunSpec with Matchers
@@ -24,24 +25,25 @@ class StandardMonitorContendedEnteredManagerIntegrationSpec extends FunSpec with
 
       val detectedEntered = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
+      import s.lowlevel._
 
-        // Mark that we want to receive monitor contended entered events and
-        // watch for one
-        monitorContendedEnteredManager.createMonitorContendedEnteredRequest()
-        eventManager.addResumingEventHandler(MonitorContendedEnteredEventType, e => {
-          val monitorContendedEnteredEvent =
-            e.asInstanceOf[MonitorContendedEnteredEvent]
+      // Mark that we want to receive monitor contended entered events and
+      // watch for one
+      monitorContendedEnteredManager.createMonitorContendedEnteredRequest()
+      eventManager.addResumingEventHandler(MonitorContendedEnteredEventType, e => {
+        val monitorContendedEnteredEvent =
+          e.asInstanceOf[MonitorContendedEnteredEvent]
 
-          val threadName = monitorContendedEnteredEvent.thread().name()
-          val monitorTypeName =
-            monitorContendedEnteredEvent.monitor().referenceType().name()
+        val threadName = monitorContendedEnteredEvent.thread().name()
+        val monitorTypeName =
+          monitorContendedEnteredEvent.monitor().referenceType().name()
 
-          logger.debug(s"Detected monitor entered in thread $threadName for monitor of type $monitorTypeName")
-          detectedEntered.set(true)
-        })
+        logger.debug(s"Detected monitor entered in thread $threadName for monitor of type $monitorTypeName")
+        detectedEntered.set(true)
+      })
 
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         // Eventually, we should receive the monitor contended entered event
         logTimeTaken(eventually {
           // NOTE: Using asserts to provide more helpful failure messages

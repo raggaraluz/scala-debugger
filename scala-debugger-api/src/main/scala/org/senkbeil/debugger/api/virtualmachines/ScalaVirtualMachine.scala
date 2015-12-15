@@ -60,4 +60,3 @@ trait ScalaVirtualMachine extends SwappableDebugProfile {
     this.lowlevel.processPendingRequests(scalaVirtualMachine.lowlevel)
   }
 }
-

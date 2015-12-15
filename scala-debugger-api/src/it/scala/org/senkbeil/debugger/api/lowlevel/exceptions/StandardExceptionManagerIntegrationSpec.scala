@@ -7,6 +7,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardExceptionManagerIntegrationSpec extends FunSpec with Matchers
@@ -28,40 +29,27 @@ class StandardExceptionManagerIntegrationSpec extends FunSpec with Matchers
       val expectedExceptionName =
         "org.senkbeil.debugger.test.exceptions.CustomException"
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
+      import s.lowlevel._
 
-        // Use a breakpoint prior to our exceptions to prepare without passing
-        // the exceptions
-        breakpointManager.createBreakpointRequest(testFile, 10)
+      // Mark the exception we want to watch (now that the class
+      // is available)
+      exceptionManager.createExceptionRequest(
+        exceptionName = expectedExceptionName,
+        notifyCaught = true,
+        notifyUncaught = false
+      )
 
-        // When breakpoint triggered, assume the exception class has been loaded
-        eventManager.addResumingEventHandler(BreakpointEventType, e => {
-          val breakpointEvent = e.asInstanceOf[BreakpointEvent]
-          val location = breakpointEvent.location()
-          val fileName = location.sourcePath()
-          val lineNumber = location.lineNumber()
+      eventManager.addResumingEventHandler(ExceptionEventType, e => {
+        val exceptionEvent = e.asInstanceOf[ExceptionEvent]
+        val exceptionName = exceptionEvent.exception().referenceType().name()
 
-          logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
+        logger.debug(s"Detected exception: $exceptionName")
+        if (exceptionName == expectedExceptionName)
+          detectedException.set(true)
+      })
 
-          // Mark the exception we want to watch (now that the class
-          // is available)
-          exceptionManager.createExceptionRequest(
-            exceptionName = expectedExceptionName,
-            notifyCaught = true,
-            notifyUncaught = false
-          )
-
-          eventManager.addResumingEventHandler(ExceptionEventType, e => {
-            val exceptionEvent = e.asInstanceOf[ExceptionEvent]
-            val exceptionName = exceptionEvent.exception().referenceType().name()
-
-            logger.debug(s"Detected exception: $exceptionName")
-            if (exceptionName == expectedExceptionName)
-              detectedException.set(true)
-          })
-        })
-
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           detectedException.get() should be (true)
         })
@@ -77,40 +65,27 @@ class StandardExceptionManagerIntegrationSpec extends FunSpec with Matchers
       val expectedExceptionName =
         "org.senkbeil.debugger.test.exceptions.CustomException"
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
+      import s.lowlevel._
 
-        // Use a breakpoint prior to our exceptions to prepare without passing
-        // the exceptions
-        breakpointManager.createBreakpointRequest(testFile, 10)
+      // Mark the exception we want to watch (now that the class
+      // is available)
+      exceptionManager.createExceptionRequest(
+        exceptionName = expectedExceptionName,
+        notifyCaught = true,
+        notifyUncaught = false
+      )
 
-        // When breakpoint triggered, assume the exception class has been loaded
-        eventManager.addResumingEventHandler(BreakpointEventType, e => {
-          val breakpointEvent = e.asInstanceOf[BreakpointEvent]
-          val location = breakpointEvent.location()
-          val fileName = location.sourcePath()
-          val lineNumber = location.lineNumber()
+      eventManager.addResumingEventHandler(ExceptionEventType, e => {
+        val exceptionEvent = e.asInstanceOf[ExceptionEvent]
+        val exceptionName = exceptionEvent.exception().referenceType().name()
 
-          logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
+        logger.debug(s"Detected exception: $exceptionName")
+        if (exceptionName == expectedExceptionName)
+          detectedException.set(true)
+      })
 
-          // Mark the exception we want to watch (now that the class
-          // is available)
-          exceptionManager.createExceptionRequest(
-            exceptionName = expectedExceptionName,
-            notifyCaught = true,
-            notifyUncaught = false
-          )
-
-          eventManager.addResumingEventHandler(ExceptionEventType, e => {
-            val exceptionEvent = e.asInstanceOf[ExceptionEvent]
-            val exceptionName = exceptionEvent.exception().referenceType().name()
-
-            logger.debug(s"Detected exception: $exceptionName")
-            if (exceptionName == expectedExceptionName)
-              detectedException.set(true)
-          })
-        })
-
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           detectedException.get() should be (true)
         })
@@ -126,40 +101,27 @@ class StandardExceptionManagerIntegrationSpec extends FunSpec with Matchers
       val expectedExceptionName =
         "org.senkbeil.debugger.test.exceptions.CustomException"
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
+      import s.lowlevel._
 
-        // Use a breakpoint prior to our exceptions to prepare without passing
-        // the exceptions
-        breakpointManager.createBreakpointRequest(testFile, 10)
+      // Mark the exception we want to watch (now that the class
+      // is available)
+      exceptionManager.createExceptionRequest(
+        exceptionName = expectedExceptionName,
+        notifyCaught = false,
+        notifyUncaught = true
+      )
 
-        // When breakpoint triggered, assume the exception class has been loaded
-        eventManager.addResumingEventHandler(BreakpointEventType, e => {
-          val breakpointEvent = e.asInstanceOf[BreakpointEvent]
-          val location = breakpointEvent.location()
-          val fileName = location.sourcePath()
-          val lineNumber = location.lineNumber()
+      eventManager.addResumingEventHandler(ExceptionEventType, e => {
+        val exceptionEvent = e.asInstanceOf[ExceptionEvent]
+        val exceptionName = exceptionEvent.exception().referenceType().name()
 
-          logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
+        logger.debug(s"Detected exception: $exceptionName")
+        if (exceptionName == expectedExceptionName)
+          detectedException.set(true)
+      })
 
-          // Mark the exception we want to watch (now that the class
-          // is available)
-          exceptionManager.createExceptionRequest(
-            exceptionName = expectedExceptionName,
-            notifyCaught = false,
-            notifyUncaught = true
-          )
-
-          eventManager.addResumingEventHandler(ExceptionEventType, e => {
-            val exceptionEvent = e.asInstanceOf[ExceptionEvent]
-            val exceptionName = exceptionEvent.exception().referenceType().name()
-
-            logger.debug(s"Detected exception: $exceptionName")
-            if (exceptionName == expectedExceptionName)
-              detectedException.set(true)
-          })
-        })
-
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           detectedException.get() should be (true)
         })

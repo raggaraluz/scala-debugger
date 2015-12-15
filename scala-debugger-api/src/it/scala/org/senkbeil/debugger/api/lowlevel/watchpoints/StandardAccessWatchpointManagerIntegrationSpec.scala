@@ -7,6 +7,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
 import org.senkbeil.debugger.api.lowlevel.events.filters.MethodNameFilter
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardAccessWatchpointManagerIntegrationSpec extends FunSpec with Matchers
@@ -28,35 +29,24 @@ class StandardAccessWatchpointManagerIntegrationSpec extends FunSpec with Matche
 
       val detectedAccessWatchpoint = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
+      import s.lowlevel._
 
-        // TODO: This is currently in place to force our request to eventually
-        //       be created - once we have pending requests, we should not do
-        //       creation this way
-        eventManager.addResumingEventHandler(ClassPrepareEventType, e => {
-          val classPrepareEvent = e.asInstanceOf[ClassPrepareEvent]
-          val name = classPrepareEvent.referenceType().name()
+      accessWatchpointManager.createAccessWatchpointRequest(
+        className,
+        fieldName
+      )
 
-          // Once class with field is ready, create access watchpoint request
-          if (name == className) {
-            accessWatchpointManager.createAccessWatchpointRequest(
-              className,
-              fieldName
-            )
-          }
-        })
+      // Listen for access watchpoint events for specific variable
+      eventManager.addResumingEventHandler(AccessWatchpointEventType, e => {
+        val accessWatchpointEvent = e.asInstanceOf[AccessWatchpointEvent]
+        val name = accessWatchpointEvent.field().name()
 
-        // Listen for access watchpoint events for specific variable
-        eventManager.addResumingEventHandler(AccessWatchpointEventType, e => {
-          val accessWatchpointEvent = e.asInstanceOf[AccessWatchpointEvent]
-          val name = accessWatchpointEvent.field().name()
+        // If we detected access for our variable, mark our flag
+        if (name == fieldName) detectedAccessWatchpoint.set(true)
+      })
 
-          // If we detected access for our variable, mark our flag
-          if (name == fieldName) detectedAccessWatchpoint.set(true)
-        })
-
-
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           assert(detectedAccessWatchpoint.get(), s"$fieldName never accessed!")
         })

@@ -18,6 +18,7 @@ class DebuggerSpec extends FunSpec with Matchers with OneInstancePerTest
       startProcessingEvents: Boolean,
       newVirtualMachineFunc: (ScalaVirtualMachine) => T
     ): Unit = ???
+    override def newDummyScalaVirtualMachine(): ScalaVirtualMachine = ???
   }
 
   describe("Debugger") {

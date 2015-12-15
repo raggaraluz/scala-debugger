@@ -7,6 +7,7 @@ import com.sun.jdi.event.BreakpointEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 import scala.util.Try
@@ -26,31 +27,32 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
       val testFile = scalaClassStringToFileString(testClass)
       val lastLine = 30
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
+      import s.lowlevel._
 
-        // Add a breakpoint after all of our variables
-        breakpointManager.createBreakpointRequest(testFile, lastLine)
+      // Add a breakpoint after all of our variables
+      breakpointManager.createBreakpointRequest(testFile, lastLine)
 
-        @volatile var variableMap: Option[Map[String, Any]] = None
-        eventManager.addResumingEventHandler(BreakpointEventType, e => {
-          val breakpointEvent = e.asInstanceOf[BreakpointEvent]
+      @volatile var variableMap: Option[Map[String, Any]] = None
+      eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        val breakpointEvent = e.asInstanceOf[BreakpointEvent]
 
-          import Implicits._
-          val threadReference = breakpointEvent.thread()
-          val currentFrame = threadReference.frame(0)
+        import Implicits._
+        val threadReference = breakpointEvent.thread()
+        val currentFrame = threadReference.frame(0)
 
-          // Retrieve the local variables at the end of the program
-          variableMap = Some(currentFrame.thisVisibleFieldMap().map(v =>
-            (v._1.name(), Try(v._2.value()).getOrElse(null))
-          ).map(v => {
-            // Process any arrays before the VM is closed
-            val isArray = v._2 != null &&
-              Try(v._2.asInstanceOf[java.util.List[Value]]).isSuccess
-            (v._1, if (isArray) v._2.toString else v._2)
-          }))
-        })
+        // Retrieve the local variables at the end of the program
+        variableMap = Some(currentFrame.thisVisibleFieldMap().map(v =>
+          (v._1.name(), Try(v._2.value()).getOrElse(null))
+        ).map(v => {
+          // Process any arrays before the VM is closed
+          val isArray = v._2 != null &&
+            Try(v._2.asInstanceOf[java.util.List[Value]]).isSuccess
+          (v._1, if (isArray) v._2.toString else v._2)
+        }))
+      })
 
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           assert(variableMap.nonEmpty, "Breakpoint not hit yet!")
           val vMap = variableMap.get
@@ -70,31 +72,32 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
       val testFile = scalaClassStringToFileString(testClass)
       val lastLine = 30
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
+      import s.lowlevel._
 
-        // Add a breakpoint after all of our variables
-        breakpointManager.createBreakpointRequest(testFile, lastLine)
+      // Add a breakpoint after all of our variables
+      breakpointManager.createBreakpointRequest(testFile, lastLine)
 
-        @volatile var variableMap: Option[Map[String, Any]] = None
-        eventManager.addResumingEventHandler(BreakpointEventType, e => {
-          val breakpointEvent = e.asInstanceOf[BreakpointEvent]
+      @volatile var variableMap: Option[Map[String, Any]] = None
+      eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        val breakpointEvent = e.asInstanceOf[BreakpointEvent]
 
-          import Implicits._
-          val threadReference = breakpointEvent.thread()
-          val currentFrame = threadReference.frame(0)
+        import Implicits._
+        val threadReference = breakpointEvent.thread()
+        val currentFrame = threadReference.frame(0)
 
-          // Retrieve the local variables at the end of the program
-          variableMap = Some(currentFrame.localVisibleVariableMap().map(v =>
-            (v._1.name(), v._2.value())
-          ).map(v => {
-            // Process any arrays before the VM is closed
-            val isArray =
-              Try(v._2.asInstanceOf[java.util.List[Value]]).isSuccess
-            (v._1, if (isArray) v._2.toString else v._2)
-          }))
-        })
+        // Retrieve the local variables at the end of the program
+        variableMap = Some(currentFrame.localVisibleVariableMap().map(v =>
+          (v._1.name(), v._2.value())
+        ).map(v => {
+          // Process any arrays before the VM is closed
+          val isArray =
+            Try(v._2.asInstanceOf[java.util.List[Value]]).isSuccess
+          (v._1, if (isArray) v._2.toString else v._2)
+        }))
+      })
 
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           assert(variableMap.nonEmpty, "Breakpoint not hit yet!")
           val vMap = variableMap.get

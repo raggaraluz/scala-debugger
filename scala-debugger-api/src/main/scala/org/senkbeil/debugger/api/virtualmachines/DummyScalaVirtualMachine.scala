@@ -3,6 +3,7 @@ package org.senkbeil.debugger.api.virtualmachines
 import com.sun.jdi._
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.profiles.ProfileManager
+import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 
 /**
@@ -12,7 +13,8 @@ import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
  *                       of debugging via profiles
  */
 class DummyScalaVirtualMachine(
-  protected val profileManager: ProfileManager
+  protected val profileManager: ProfileManager,
+  override val lowlevel: ManagerContainer = ManagerContainer.usingDummyManagers()
 ) extends ScalaVirtualMachine {
   /**
    * Initializes the ScalaVirtualMachine system.
@@ -28,13 +30,6 @@ class DummyScalaVirtualMachine(
    * @return True if started, otherwise false
    */
   override def isStarted: Boolean = false
-
-  /**
-   * Represents the collection of low-level APIs for the virtual machine.
-   *
-   * @return The container of low-level managers
-   */
-  override lazy val lowlevel: ManagerContainer = ManagerContainer.usingDummyManagers()
 
   /**
    * A unique id assigned to the Scala virtual machine on the client (library)
@@ -53,3 +48,23 @@ class DummyScalaVirtualMachine(
   override val underlyingVirtualMachine: VirtualMachine = null
 }
 
+object DummyScalaVirtualMachine {
+  /**
+   * Creates a new instance of the dummy Scala virtual machine using a new
+   * instance of the default profile manager.
+   *
+   * @return The new dummy Scala virtual machine
+   */
+  def newInstance(): DummyScalaVirtualMachine = {
+    val managerContainer = ManagerContainer.usingDummyManagers()
+
+    val dummyScalaVirtualMachine = new DummyScalaVirtualMachine(
+      ProfileManager.newDefaultInstance(managerContainer),
+      managerContainer
+    )
+
+    dummyScalaVirtualMachine.use(PureDebugProfile.Name)
+
+    dummyScalaVirtualMachine
+  }
+}

@@ -6,7 +6,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.{DummyScalaVirtualMachine, StandardScalaVirtualMachine}
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureVMStartProfileIntegrationSpec extends FunSpec with Matchers
@@ -24,14 +24,14 @@ class PureVMStartProfileIntegrationSpec extends FunSpec with Matchers
 
       val detectedStart = new AtomicBoolean(false)
 
+      val s = DummyScalaVirtualMachine.newInstance()
+
+      s.withProfile(PureDebugProfile.Name)
+        .onUnsafeVMStart()
+        .foreach(_ => detectedStart.set(true))
+
       // Start our VM and listen for the start event
-      withLazyVirtualMachine(testClass) { (s, start) =>
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeVMStart()
-          .foreach(_ => detectedStart.set(true))
-
-        start()
-
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         // Eventually, we should receive the start event
         logTimeTaken(eventually {
           detectedStart.get() should be (true)

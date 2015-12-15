@@ -81,6 +81,15 @@ trait Debugger {
   def isRunning: Boolean
 
   /**
+   * Creates a new dummy Scala virtual machine instance that can be used to
+   * prepare pending requests to apply to the Scala virtual machines generated
+   * by the debugger once it starts.
+   *
+   * @return The new dummy (no-op) Scala virtual machine instance
+   */
+  def newDummyScalaVirtualMachine(): ScalaVirtualMachine
+
+  /**
    * Adds a new Scala virtual machine to use for pending operations. Essentially
    * a wrapper around [[Debugger.addPendingScalaVirtualMachine)]].
    *

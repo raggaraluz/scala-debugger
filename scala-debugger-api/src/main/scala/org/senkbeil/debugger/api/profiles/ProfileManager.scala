@@ -1,6 +1,9 @@
 package org.senkbeil.debugger.api.profiles
 
 import java.util.concurrent.ConcurrentHashMap
+import org.senkbeil.debugger.api.lowlevel.ManagerContainer
+import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
+
 import scala.collection.JavaConverters._
 
 import org.senkbeil.debugger.api.profiles.traits.DebugProfile
@@ -50,5 +53,35 @@ class ProfileManager {
    */
   def retrieve(name: String): Option[DebugProfile] = {
     profiles.get(name)
+  }
+}
+
+object ProfileManager {
+  /**
+   * Creates a new instance of the profile manager with default profiles
+   * already registered.
+   *
+   * @note Currently, the pure debug profile has its virtual machine set to
+   *       null, which makes operations like retrieving the main class name
+   *       and arguments impossible. Do not use those methods with this
+   *       default profile manager!
+   *
+   * @param managerContainer The container of managers to use with this new
+   *                         profile manager
+   *
+   * @return The new profile manager
+   */
+  def newDefaultInstance(
+    managerContainer: ManagerContainer = ManagerContainer.usingDummyManagers()
+  ): ProfileManager = {
+    val profileManager = new ProfileManager
+
+    // TODO: Refactor PureDebugProfile to not need virtual machine as providing
+    //       null will cause usage of it to fail
+    profileManager.register(PureDebugProfile.Name, new PureDebugProfile(
+      null, managerContainer
+    ))
+
+    profileManager
   }
 }

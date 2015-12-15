@@ -9,6 +9,7 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
 import org.senkbeil.debugger.api.lowlevel.events.filters.MethodNameFilter
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardMethodEntryManagerIntegrationSpec extends FunSpec with Matchers
@@ -34,48 +35,49 @@ class StandardMethodEntryManagerIntegrationSpec extends FunSpec with Matchers
       val reachedExpectedMethod = new AtomicBoolean(false)
       val reachedMethodBeforeFirstLine = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
+      import s.lowlevel._
 
-        // Set up the method entry event
-        methodEntryManager.createMethodEntryRequest(
-          expectedClassName,
-          expectedMethodName
-        )
+      // Set up the method entry event
+      methodEntryManager.createMethodEntryRequest(
+        expectedClassName,
+        expectedMethodName
+      )
 
-        // First line in test method
-        breakpointManager.createBreakpointRequest(testFile, 26)
+      // First line in test method
+      breakpointManager.createBreakpointRequest(testFile, 26)
 
-        // Listen for breakpoint on first line of method, checking if this
-        // breakpoint is hit before or after the method entry event
-        eventManager.addResumingEventHandler(BreakpointEventType, e => {
-          val breakpointEvent = e.asInstanceOf[BreakpointEvent]
-          val location = breakpointEvent.location()
-          val fileName = location.sourcePath()
-          val lineNumber = location.lineNumber()
+      // Listen for breakpoint on first line of method, checking if this
+      // breakpoint is hit before or after the method entry event
+      eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        val breakpointEvent = e.asInstanceOf[BreakpointEvent]
+        val location = breakpointEvent.location()
+        val fileName = location.sourcePath()
+        val lineNumber = location.lineNumber()
 
-          logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
+        logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
 
-          val methodEntryHit = reachedExpectedMethod.get()
-          reachedMethodBeforeFirstLine.set(methodEntryHit)
-        })
+        val methodEntryHit = reachedExpectedMethod.get()
+        reachedMethodBeforeFirstLine.set(methodEntryHit)
+      })
 
-        // Listen for method entry events for the specific method
-        eventManager.addResumingEventHandler(MethodEntryEventType, e => {
-          val methodEntryEvent = e.asInstanceOf[MethodEntryEvent]
-          val method = methodEntryEvent.method()
-          val className = method.declaringType().name()
-          val methodName = method.name()
+      // Listen for method entry events for the specific method
+      eventManager.addResumingEventHandler(MethodEntryEventType, e => {
+        val methodEntryEvent = e.asInstanceOf[MethodEntryEvent]
+        val method = methodEntryEvent.method()
+        val className = method.declaringType().name()
+        val methodName = method.name()
 
-          logger.debug(s"Reached method: $className/$methodName")
+        logger.debug(s"Reached method: $className/$methodName")
 
-          if (className == expectedClassName && methodName == expectedMethodName) {
-            reachedExpectedMethod.set(true)
-          } else {
-            reachedUnexpectedMethod.set(true)
-          }
-        }, methodNameFilter)
+        if (className == expectedClassName && methodName == expectedMethodName) {
+          reachedExpectedMethod.set(true)
+        } else {
+          reachedUnexpectedMethod.set(true)
+        }
+      }, methodNameFilter)
 
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           reachedUnexpectedMethod.get() should be (false)
           reachedExpectedMethod.get() should be (true)

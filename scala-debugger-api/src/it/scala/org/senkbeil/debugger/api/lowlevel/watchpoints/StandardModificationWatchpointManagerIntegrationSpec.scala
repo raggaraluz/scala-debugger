@@ -6,6 +6,7 @@ import com.sun.jdi.event.{ModificationWatchpointEvent, ClassPrepareEvent}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardModificationWatchpointManagerIntegrationSpec extends FunSpec with Matchers
@@ -27,35 +28,24 @@ class StandardModificationWatchpointManagerIntegrationSpec extends FunSpec with 
 
       val detectedModificationWatchpoint = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
+      import s.lowlevel._
 
-        // TODO: This is currently in place to force our request to eventually
-        //       be created - once we have pending requests, we should not do
-        //       creation this way
-        eventManager.addResumingEventHandler(ClassPrepareEventType, e => {
-          val classPrepareEvent = e.asInstanceOf[ClassPrepareEvent]
-          val name = classPrepareEvent.referenceType().name()
+      modificationWatchpointManager.createModificationWatchpointRequest(
+        className,
+        fieldName
+      )
 
-          // Once class with field is ready, create modification watchpoint request
-          if (name == className) {
-            modificationWatchpointManager.createModificationWatchpointRequest(
-              className,
-              fieldName
-            )
-          }
-        })
+      // Listen for modification watchpoint events for specific variable
+      eventManager.addResumingEventHandler(ModificationWatchpointEventType, e => {
+        val modificationWatchpointEvent = e.asInstanceOf[ModificationWatchpointEvent]
+        val name = modificationWatchpointEvent.field().name()
 
-        // Listen for modification watchpoint events for specific variable
-        eventManager.addResumingEventHandler(ModificationWatchpointEventType, e => {
-          val modificationWatchpointEvent = e.asInstanceOf[ModificationWatchpointEvent]
-          val name = modificationWatchpointEvent.field().name()
+        // If we detected modification for our variable, mark our flag
+        if (name == fieldName) detectedModificationWatchpoint.set(true)
+      })
 
-          // If we detected modification for our variable, mark our flag
-          if (name == fieldName) detectedModificationWatchpoint.set(true)
-        })
-
-
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           assert(detectedModificationWatchpoint.get(), s"$fieldName never modificationed!")
         })

@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.lowlevel.breakpoints.PendingBreakpointSupport
+import org.senkbeil.debugger.api.lowlevel.exceptions.PendingExceptionSupport
 import org.senkbeil.debugger.api.lowlevel.methods.{PendingMethodExitSupport, PendingMethodEntrySupport}
 import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
 import org.senkbeil.debugger.api.lowlevel.watchpoints.{PendingModificationWatchpointSupport, PendingAccessWatchpointSupport}
@@ -125,18 +126,21 @@ class StandardScalaVirtualMachine(
 
   private def processPendingForClass(className: String): Unit = {
     lowlevel.productIterator.foreach {
+      case p: PendingExceptionSupport               =>
+        logger.trace(vmString(s"Processing any pending exceptions for $className!"))
+        p.processPendingExceptionRequestsForClass(className)
       case p: PendingAccessWatchpointSupport        =>
         logger.trace(vmString(s"Processing any pending access watchpoints for $className!"))
-        p.pendingAccessWatchpointRequestsForClass(className)
+        p.processPendingAccessWatchpointRequestsForClass(className)
       case p: PendingModificationWatchpointSupport  =>
         logger.trace(vmString(s"Processing any pending modification watchpoints for $className!"))
-        p.pendingModificationWatchpointRequestsForClass(className)
+        p.processPendingModificationWatchpointRequestsForClass(className)
       case p: PendingMethodEntrySupport             =>
         logger.trace(vmString(s"Processing any pending method entries for $className!"))
-        p.pendingMethodEntryRequestsForClass(className)
+        p.processPendingMethodEntryRequestsForClass(className)
       case p: PendingMethodExitSupport              =>
         logger.trace(vmString(s"Processing any pending method exits for $className!"))
-        p.pendingMethodExitRequestsForClass(className)
+        p.processPendingMethodExitRequestsForClass(className)
       case _                                        =>
     }
   }

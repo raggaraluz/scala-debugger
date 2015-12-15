@@ -6,6 +6,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureClassPrepareProfileIntegrationSpec extends FunSpec with Matchers
@@ -24,15 +25,17 @@ class PureClassPrepareProfileIntegrationSpec extends FunSpec with Matchers
       val expectedClassName = "org.senkbeil.debugger.test.classes.CustomClass"
       val classPrepareHit = new AtomicInteger(0)
 
-      withVirtualMachine(testClass) { (s) =>
-        // Mark that we want to receive class prepare events and watch for one
-        // NOTE: This is already set within the ScalaVirtualMachine class
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeClassPrepare()
-          .map(_.referenceType().name())
-          .filter(_ == expectedClassName)
-          .foreach(_ => classPrepareHit.incrementAndGet())
+      val s = DummyScalaVirtualMachine.newInstance()
 
+      // Mark that we want to receive class prepare events and watch for one
+      // NOTE: This is already set within the ScalaVirtualMachine class
+      s.withProfile(PureDebugProfile.Name)
+        .onUnsafeClassPrepare()
+        .map(_.referenceType().name())
+        .filter(_ == expectedClassName)
+        .foreach(_ => classPrepareHit.incrementAndGet())
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         // Eventually, we should receive the class prepare event
         logTimeTaken(eventually {
           classPrepareHit.get() should be (1)

@@ -9,6 +9,7 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
 import org.senkbeil.debugger.api.lowlevel.events.filters.MethodNameFilter
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureMethodExitProfileIntegrationSpec extends FunSpec with Matchers
@@ -33,34 +34,36 @@ class PureMethodExitProfileIntegrationSpec extends FunSpec with Matchers
       val leftExpectedMethod = new AtomicBoolean(false)
       val leftMethodAfterLastLine = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass) { (s) =>
-        val methodPipeline = s.withProfile(PureDebugProfile.Name)
-          .onUnsafeMethodExit(expectedClassName, expectedMethodName)
-          .map(_.method())
-          .map(m => (m.declaringType().name(), m.name()))
+      val s = DummyScalaVirtualMachine.newInstance()
 
-        methodPipeline
-          .filter(_._1 == expectedClassName)
-          .filter(_._2 == expectedMethodName)
-          .foreach(_ => leftExpectedMethod.set(true))
+      val methodPipeline = s.withProfile(PureDebugProfile.Name)
+        .onUnsafeMethodExit(expectedClassName, expectedMethodName)
+        .map(_.method())
+        .map(m => (m.declaringType().name(), m.name()))
 
-        methodPipeline
-          .filterNot(_._1 == expectedClassName)
-          .foreach(_ => leftUnexpectedMethod.set(true))
+      methodPipeline
+        .filter(_._1 == expectedClassName)
+        .filter(_._2 == expectedMethodName)
+        .foreach(_ => leftExpectedMethod.set(true))
 
-        methodPipeline
-          .filterNot(_._2 == expectedMethodName)
-          .foreach(_ => leftUnexpectedMethod.set(true))
+      methodPipeline
+        .filterNot(_._1 == expectedClassName)
+        .foreach(_ => leftUnexpectedMethod.set(true))
 
-        // Last line in test method
-        s.onUnsafeBreakpoint(testFile, 28)
-          .map(_.location())
-          .map(l => (l.sourcePath(), l.lineNumber()))
-          .foreach(t => {
-            val methodExitHit = leftExpectedMethod.get()
-            leftMethodAfterLastLine.set(!methodExitHit)
-          })
+      methodPipeline
+        .filterNot(_._2 == expectedMethodName)
+        .foreach(_ => leftUnexpectedMethod.set(true))
 
+      // Last line in test method
+      s.onUnsafeBreakpoint(testFile, 28)
+        .map(_.location())
+        .map(l => (l.sourcePath(), l.lineNumber()))
+        .foreach(t => {
+        val methodExitHit = leftExpectedMethod.get()
+        leftMethodAfterLastLine.set(!methodExitHit)
+      })
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           leftUnexpectedMethod.get() should be (false)
           leftExpectedMethod.get() should be (true)

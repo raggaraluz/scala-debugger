@@ -6,9 +6,11 @@ import com.sun.jdi.event.BreakpointEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
+import org.senkbeil.debugger.api.lowlevel.breakpoints.PendingBreakpointSupport
 import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
@@ -31,25 +33,26 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
       val secondBreakpointLine = 17
       val secondBreakpointCount = new AtomicInteger(0)
 
-      withVirtualMachine(testClass) { (s) =>
-        s.withProfile(PureDebugProfile.Name)
-          .onBreakpoint(testFile, firstBreakpointLine)
-          .get
-          .map(_.location())
-          .map(l => (l.sourcePath(), l.lineNumber()))
-          .filter(_._1 == testFile)
-          .filter(_._2 == firstBreakpointLine)
-          .foreach(_ => firstBreakpointCount.incrementAndGet())
+      val s = DummyScalaVirtualMachine.newInstance()
+      s.withProfile(PureDebugProfile.Name)
+        .onBreakpoint(testFile, firstBreakpointLine)
+        .get
+        .map(_.location())
+        .map(l => (l.sourcePath(), l.lineNumber()))
+        .filter(_._1 == testFile)
+        .filter(_._2 == firstBreakpointLine)
+        .foreach(_ => firstBreakpointCount.incrementAndGet())
 
-        s.withProfile(PureDebugProfile.Name)
-          .onBreakpoint(testFile, secondBreakpointLine)
-          .get
-          .map(_.location())
-          .map(l => (l.sourcePath(), l.lineNumber()))
-          .filter(_._1 == testFile)
-          .filter(_._2 == secondBreakpointLine)
-          .foreach(_ => secondBreakpointCount.incrementAndGet())
+      s.withProfile(PureDebugProfile.Name)
+        .onBreakpoint(testFile, secondBreakpointLine)
+        .get
+        .map(_.location())
+        .map(l => (l.sourcePath(), l.lineNumber()))
+        .filter(_._1 == testFile)
+        .filter(_._2 == secondBreakpointLine)
+        .foreach(_ => secondBreakpointCount.incrementAndGet())
 
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           firstBreakpointCount.get() should be(10)
           secondBreakpointCount.get() should be(10)
@@ -67,25 +70,26 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
       val secondBreakpointLine = 18
       val secondBreakpointCount = new AtomicInteger(0)
 
-      withVirtualMachine(testClass) { (s) =>
-        s.withProfile(PureDebugProfile.Name)
-          .onBreakpoint(testFile, firstBreakpointLine)
-          .get
-          .map(_.location())
-          .map(l => (l.sourcePath(), l.lineNumber()))
-          .filter(_._1 == testFile)
-          .filter(_._2 == firstBreakpointLine)
-          .foreach(_ => firstBreakpointCount.incrementAndGet())
+      val s = DummyScalaVirtualMachine.newInstance()
+      s.withProfile(PureDebugProfile.Name)
+        .onBreakpoint(testFile, firstBreakpointLine)
+        .get
+        .map(_.location())
+        .map(l => (l.sourcePath(), l.lineNumber()))
+        .filter(_._1 == testFile)
+        .filter(_._2 == firstBreakpointLine)
+        .foreach(_ => firstBreakpointCount.incrementAndGet())
 
-        s.withProfile(PureDebugProfile.Name)
-          .onBreakpoint(testFile, secondBreakpointLine)
-          .get
-          .map(_.location())
-          .map(l => (l.sourcePath(), l.lineNumber()))
-          .filter(_._1 == testFile)
-          .filter(_._2 == secondBreakpointLine)
-          .foreach(_ => secondBreakpointCount.incrementAndGet())
+      s.withProfile(PureDebugProfile.Name)
+        .onBreakpoint(testFile, secondBreakpointLine)
+        .get
+        .map(_.location())
+        .map(l => (l.sourcePath(), l.lineNumber()))
+        .filter(_._1 == testFile)
+        .filter(_._2 == secondBreakpointLine)
+        .foreach(_ => secondBreakpointCount.incrementAndGet())
 
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           firstBreakpointCount.get() should be(10)
           secondBreakpointCount.get() should be(10)
@@ -103,23 +107,24 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
       val secondBreakpointLine = 11
       val secondBreakpoint = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass) { (s) =>
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeBreakpoint(testFile, firstBreakpointLine)
-          .map(_.location())
-          .map(l => (l.sourcePath(), l.lineNumber()))
-          .filter(_._1 == testFile)
-          .filter(_._2 == firstBreakpointLine)
-          .foreach(_ => firstBreakpoint.set(true))
+      val s = DummyScalaVirtualMachine.newInstance()
+      s.withProfile(PureDebugProfile.Name)
+        .onUnsafeBreakpoint(testFile, firstBreakpointLine)
+        .map(_.location())
+        .map(l => (l.sourcePath(), l.lineNumber()))
+        .filter(_._1 == testFile)
+        .filter(_._2 == firstBreakpointLine)
+        .foreach(_ => firstBreakpoint.set(true))
 
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeBreakpoint(testFile, secondBreakpointLine)
-          .map(_.location())
-          .map(l => (l.sourcePath(), l.lineNumber()))
-          .filter(_._1 == testFile)
-          .filter(_._2 == secondBreakpointLine)
-          .foreach(_ => secondBreakpoint.set(true))
+      s.withProfile(PureDebugProfile.Name)
+        .onUnsafeBreakpoint(testFile, secondBreakpointLine)
+        .map(_.location())
+        .map(l => (l.sourcePath(), l.lineNumber()))
+        .filter(_._1 == testFile)
+        .filter(_._2 == secondBreakpointLine)
+        .foreach(_ => secondBreakpoint.set(true))
 
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           // NOTE: Using asserts to provide more helpful failure messages
           assert(firstBreakpoint.get(), "First breakpoint not reached!")

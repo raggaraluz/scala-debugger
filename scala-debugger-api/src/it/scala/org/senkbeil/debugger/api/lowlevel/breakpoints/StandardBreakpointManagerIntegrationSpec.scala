@@ -7,6 +7,8 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Seconds, Milliseconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType
+import org.senkbeil.debugger.api.profiles.ProfileManager
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{Constants, TestUtilities, VirtualMachineFixtures}
 import EventType._
 
@@ -30,28 +32,30 @@ class StandardBreakpointManagerIntegrationSpec extends FunSpec with Matchers
       val secondBreakpointLine = 17
       val secondBreakpointCount = new AtomicInteger(0)
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
 
-        // Queue up our breakpoints
-        breakpointManager.createBreakpointRequest(testFile, firstBreakpointLine)
-        breakpointManager.createBreakpointRequest(testFile, secondBreakpointLine)
+      import s.lowlevel._
 
-        eventManager.addResumingEventHandler(BreakpointEventType, e => {
-          val breakpointEvent = e.asInstanceOf[BreakpointEvent]
-          val location = breakpointEvent.location()
-          val fileName = location.sourcePath()
-          val lineNumber = location.lineNumber()
+      // Queue up our breakpoints
+      breakpointManager.createBreakpointRequest(testFile, firstBreakpointLine)
+      breakpointManager.createBreakpointRequest(testFile, secondBreakpointLine)
 
-          logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
-          if (fileName == testFile) {
-            if (lineNumber == firstBreakpointLine)
-              firstBreakpointCount.incrementAndGet()
-            if (lineNumber == secondBreakpointLine)
-              secondBreakpointCount.incrementAndGet()
-          }
-        })
+      eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        val breakpointEvent = e.asInstanceOf[BreakpointEvent]
+        val location = breakpointEvent.location()
+        val fileName = location.sourcePath()
+        val lineNumber = location.lineNumber()
 
+        logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
+        if (fileName == testFile) {
+          if (lineNumber == firstBreakpointLine)
+            firstBreakpointCount.incrementAndGet()
+          if (lineNumber == secondBreakpointLine)
+            secondBreakpointCount.incrementAndGet()
+        }
+      })
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           firstBreakpointCount.get() should be(10)
           secondBreakpointCount.get() should be(10)
@@ -69,28 +73,30 @@ class StandardBreakpointManagerIntegrationSpec extends FunSpec with Matchers
       val secondBreakpointLine = 18
       val secondBreakpointCount = new AtomicInteger(0)
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
 
-        // Queue up our breakpoints
-        breakpointManager.createBreakpointRequest(testFile, firstBreakpointLine)
-        breakpointManager.createBreakpointRequest(testFile, secondBreakpointLine)
+      import s.lowlevel._
 
-        eventManager.addResumingEventHandler(BreakpointEventType, e => {
-          val breakpointEvent = e.asInstanceOf[BreakpointEvent]
-          val location = breakpointEvent.location()
-          val fileName = location.sourcePath()
-          val lineNumber = location.lineNumber()
+      // Queue up our breakpoints
+      breakpointManager.createBreakpointRequest(testFile, firstBreakpointLine)
+      breakpointManager.createBreakpointRequest(testFile, secondBreakpointLine)
 
-          logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
-          if (fileName == testFile) {
-            if (lineNumber == firstBreakpointLine)
-              firstBreakpointCount.incrementAndGet()
-            if (lineNumber == secondBreakpointLine)
-              secondBreakpointCount.incrementAndGet()
-          }
-        })
+      eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        val breakpointEvent = e.asInstanceOf[BreakpointEvent]
+        val location = breakpointEvent.location()
+        val fileName = location.sourcePath()
+        val lineNumber = location.lineNumber()
 
+        logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
+        if (fileName == testFile) {
+          if (lineNumber == firstBreakpointLine)
+            firstBreakpointCount.incrementAndGet()
+          if (lineNumber == secondBreakpointLine)
+            secondBreakpointCount.incrementAndGet()
+        }
+      })
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           firstBreakpointCount.get() should be(10)
           secondBreakpointCount.get() should be(10)
@@ -108,26 +114,28 @@ class StandardBreakpointManagerIntegrationSpec extends FunSpec with Matchers
       val secondBreakpointLine = 11
       val secondBreakpoint = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
 
-        // Queue up our breakpoints
-        breakpointManager.createBreakpointRequest(testFile, firstBreakpointLine)
-        breakpointManager.createBreakpointRequest(testFile, secondBreakpointLine)
+      import s.lowlevel._
 
-        eventManager.addResumingEventHandler(BreakpointEventType, e => {
-          val breakpointEvent = e.asInstanceOf[BreakpointEvent]
-          val location = breakpointEvent.location()
-          val fileName = location.sourcePath()
-          val lineNumber = location.lineNumber()
+      // Queue up our breakpoints
+      breakpointManager.createBreakpointRequest(testFile, firstBreakpointLine)
+      breakpointManager.createBreakpointRequest(testFile, secondBreakpointLine)
 
-          logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
-          if (fileName == testFile) {
-            if (lineNumber == firstBreakpointLine) firstBreakpoint.set(true)
-            if (lineNumber == secondBreakpointLine) secondBreakpoint.set(true)
-          }
-        })
+      eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        val breakpointEvent = e.asInstanceOf[BreakpointEvent]
+        val location = breakpointEvent.location()
+        val fileName = location.sourcePath()
+        val lineNumber = location.lineNumber()
 
+        logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
+        if (fileName == testFile) {
+          if (lineNumber == firstBreakpointLine) firstBreakpoint.set(true)
+          if (lineNumber == secondBreakpointLine) secondBreakpoint.set(true)
+        }
+      })
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           // NOTE: Using asserts to provide more helpful failure messages
           assert(firstBreakpoint.get(), "First breakpoint not reached!")

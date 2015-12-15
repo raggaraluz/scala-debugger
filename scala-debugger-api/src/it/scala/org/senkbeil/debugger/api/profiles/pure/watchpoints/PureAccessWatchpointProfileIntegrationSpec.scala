@@ -7,6 +7,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureAccessWatchpointProfileIntegrationSpec extends FunSpec with Matchers
@@ -28,22 +29,16 @@ class PureAccessWatchpointProfileIntegrationSpec extends FunSpec with Matchers
 
       val detectedAccessWatchpoint = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass) { (s) =>
-        // NOTE: Waiting for class to be ready before setting access watchpoint
-        // TODO: Remove wait for class to be ready once pending functionality added
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeClassPrepare()
-          .map(_.referenceType().name())
-          .filter(_ == className)
-          .foreach(_ => {
-            // Listen for access watchpoint events for specific variable
-            s.withProfile(PureDebugProfile.Name)
-              .onUnsafeAccessWatchpoint(className, fieldName)
-              .filter(_.field().declaringType().name() == className)
-              .filter(_.field().name() == fieldName)
-              .foreach(_ => detectedAccessWatchpoint.set(true))
-          })
+      val s = DummyScalaVirtualMachine.newInstance()
 
+      // Listen for access watchpoint events for specific variable
+      s.withProfile(PureDebugProfile.Name)
+        .onUnsafeAccessWatchpoint(className, fieldName)
+        .filter(_.field().declaringType().name() == className)
+        .filter(_.field().name() == fieldName)
+        .foreach(_ => detectedAccessWatchpoint.set(true))
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           assert(detectedAccessWatchpoint.get(), s"$fieldName never accessed!")
         })

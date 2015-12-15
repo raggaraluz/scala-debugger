@@ -6,6 +6,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureMonitorContendedEnterProfileIntegrationSpec extends FunSpec with Matchers
@@ -23,13 +24,15 @@ class PureMonitorContendedEnterProfileIntegrationSpec extends FunSpec with Match
 
       val detectedEnter = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass) { (s) =>
-        // Mark that we want to receive monitor contended enter events and
-        // watch for one
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeMonitorContendedEnter()
-          .foreach(_ => detectedEnter.set(true))
+      val s = DummyScalaVirtualMachine.newInstance()
 
+      // Mark that we want to receive monitor contended enter events and
+      // watch for one
+      s.withProfile(PureDebugProfile.Name)
+        .onUnsafeMonitorContendedEnter()
+        .foreach(_ => detectedEnter.set(true))
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         // Eventually, we should receive the monitor contended enter event
         logTimeTaken(eventually {
           // NOTE: Using asserts to provide more helpful failure messages
