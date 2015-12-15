@@ -157,6 +157,44 @@ class LaunchingDebuggerSpec extends FunSpec with Matchers
         actual should be (expected)
       }
 
+      it("should apply any pending requests to the virtual machine") {
+        val launchingDebugger = new TestLaunchingDebugger(shouldJdiLoad = true)
+        val expected = stub[TestScalaVirtualMachine]
+        launchingDebugger.addPendingScalaVirtualMachine(expected)
+
+        // MOCK ===============================================================
+        val mockLaunchingConnector = mock[LaunchingConnector]
+
+        (mockLaunchingConnector.name _).expects()
+          .returning("com.sun.jdi.CommandLineLaunch")
+
+        (mockVirtualMachineManager.launchingConnectors _).expects()
+          .returning(Seq(mockLaunchingConnector).asJava)
+
+        (mockLaunchingConnector.defaultArguments _).expects().returning(Map(
+          "main" -> createConnectorArgumentMock(setter = true),
+          "options" -> createConnectorArgumentMock(
+            setter = true, getter = Some("")
+          ),
+          "suspend" -> createConnectorArgumentMock(setter = true)
+        ).asJava)
+
+        (mockLaunchingConnector.launch _).expects(*)
+          .returning(mockVirtualMachine).once()
+        (mockLoopingTaskRunner.start _).expects().once()
+        // MOCK ===============================================================
+
+        mockNewScalaVirtualMachineFunc.expects(mockVirtualMachine, *, *)
+          .returning(mockScalaVirtualMachine).once()
+
+        (mockScalaVirtualMachine.processPendingRequests _)
+          .expects(expected).once()
+
+        (mockScalaVirtualMachine.initialize _).expects(true).once()
+
+        launchingDebugger.start(_ => {})
+      }
+
       it("should initialize the new virtual machine") {
         val launchingDebugger = new TestLaunchingDebugger(shouldJdiLoad = true)
 

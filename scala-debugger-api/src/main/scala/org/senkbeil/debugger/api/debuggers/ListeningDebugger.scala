@@ -202,9 +202,12 @@ class ListeningDebugger private[debugger] (
       newProfileManagerFunc(),
       loopingTaskRunner
     ))
-    scalaVirtualMachine.foreach(_.initialize(
-      startProcessingEvents = startProcessingEvents
-    ))
+    scalaVirtualMachine.foreach(s => {
+      getPendingScalaVirtualMachines.foreach(s.processPendingRequests)
+      s.initialize(
+        startProcessingEvents = startProcessingEvents
+      )
+    })
     scalaVirtualMachine.foreach(newVirtualMachineFunc)
 
     // Release CPU

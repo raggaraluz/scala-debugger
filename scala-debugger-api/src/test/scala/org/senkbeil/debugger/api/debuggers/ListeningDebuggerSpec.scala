@@ -297,6 +297,39 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
         )
       }
 
+      it("should apply any pending requests to the created ScalaVirtualMachine") {
+        val mockListeningConnector = mock[ListeningConnector]
+        val mockArguments = mock[java.util.Map[String, Connector.Argument]]
+        val mockVirtualMachine = mock[VirtualMachine]
+
+        val expected = stub[TestScalaVirtualMachine]
+        listeningDebugger.addPendingScalaVirtualMachine(expected)
+
+        // Expect accept call, returning a new virtual machine instance
+        (mockListeningConnector.accept _).expects(mockArguments)
+          .returning(mockVirtualMachine).once()
+
+        class TestScalaVirtualMachine extends StandardScalaVirtualMachine(
+          mockVirtualMachine, null, null
+        )
+        val mockScalaVirtualMachine = mock[TestScalaVirtualMachine]
+        mockNewScalaVirtualMachineFunc.expects(mockVirtualMachine, *, *)
+          .returning(mockScalaVirtualMachine).once()
+
+        (mockScalaVirtualMachine.processPendingRequests _)
+          .expects(expected).once()
+
+        (mockScalaVirtualMachine.initialize _).expects(true).once()
+
+        listeningDebugger.listenTask(
+          mockListeningConnector,
+          mockArguments,
+          true,
+          _ => {}
+        )
+      }
+
+
       it("should initialize the created ScalaVirtualMachine") {
         val mockListeningConnector = mock[ListeningConnector]
         val mockArguments = mock[java.util.Map[String, Connector.Argument]]

@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.debuggers
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.utils.JDILoader
-import org.senkbeil.debugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
+import org.senkbeil.debugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
 
 class DebuggerSpec extends FunSpec with Matchers with OneInstancePerTest
   with MockFactory
@@ -76,6 +76,124 @@ class DebuggerSpec extends FunSpec with Matchers with OneInstancePerTest
         val debugger = new TestDebugger(_jdiLoader)
 
         debugger.assertJdiLoaded()
+      }
+    }
+
+    describe("#addPendingScalaVirtualMachine") {
+      it("should add the virtual machine to the list") {
+        val debugger = new TestDebugger(null)
+
+        val testUniqueId = java.util.UUID.randomUUID().toString
+        val scalaVirtualMachine = new DummyScalaVirtualMachine(null) {
+          override val uniqueId: String = testUniqueId
+        }
+
+        val expected = Some(scalaVirtualMachine)
+
+        val actual = debugger.addPendingScalaVirtualMachine(scalaVirtualMachine)
+
+        actual should be (expected)
+        debugger.getPendingScalaVirtualMachines should contain (expected.get)
+      }
+
+      it("should not add the virtual machine if one with the same id has already been added") {
+        val debugger = new TestDebugger(null)
+
+        val testUniqueId = java.util.UUID.randomUUID().toString
+        val scalaVirtualMachine = new DummyScalaVirtualMachine(null) {
+          override val uniqueId: String = testUniqueId
+        }
+
+        debugger.addPendingScalaVirtualMachine(scalaVirtualMachine)
+
+        val expected = None
+
+        val actual = debugger.addPendingScalaVirtualMachine(scalaVirtualMachine)
+
+        actual should be (expected)
+        debugger.getPendingScalaVirtualMachines should contain (scalaVirtualMachine)
+      }
+    }
+
+    describe("#removePendingScalaVirtualMachine") {
+      it("should remove the virtual machine from the list") {
+        val debugger = new TestDebugger(null)
+
+        val testUniqueId = java.util.UUID.randomUUID().toString
+        val scalaVirtualMachine = new DummyScalaVirtualMachine(null) {
+          override val uniqueId: String = testUniqueId
+        }
+
+        debugger.addPendingScalaVirtualMachine(scalaVirtualMachine)
+
+        debugger.removePendingScalaVirtualMachine(scalaVirtualMachine.uniqueId)
+
+        debugger.getPendingScalaVirtualMachines should be (empty)
+      }
+
+      it("should do nothing if no virtual machine with the id has been added") {
+        val debugger = new TestDebugger(null)
+
+        debugger.removePendingScalaVirtualMachine("") should be (None)
+      }
+    }
+
+    describe("#withPending") {
+      it("should add the virtual machine to the list") {
+        val debugger = new TestDebugger(null)
+
+        val testUniqueId = java.util.UUID.randomUUID().toString
+        val scalaVirtualMachine = new DummyScalaVirtualMachine(null) {
+          override val uniqueId: String = testUniqueId
+        }
+
+        debugger.withPending(scalaVirtualMachine)
+
+        debugger.getPendingScalaVirtualMachines should contain (scalaVirtualMachine)
+      }
+
+      it("should not add the virtual machine if one with the same id has already been added") {
+        val debugger = new TestDebugger(null)
+
+        val testUniqueId = java.util.UUID.randomUUID().toString
+        val scalaVirtualMachine = new DummyScalaVirtualMachine(null) {
+          override val uniqueId: String = testUniqueId
+        }
+
+        val expected = Seq(scalaVirtualMachine)
+
+        debugger
+          .withPending(scalaVirtualMachine)
+          .withPending(scalaVirtualMachine)
+
+        val actual = debugger.getPendingScalaVirtualMachines
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#withoutPending") {
+      it("should remove the virtual machine from the list") {
+        val debugger = new TestDebugger(null)
+
+        val testUniqueId = java.util.UUID.randomUUID().toString
+        val scalaVirtualMachine = new DummyScalaVirtualMachine(null) {
+          override val uniqueId: String = testUniqueId
+        }
+
+        debugger
+          .withPending(scalaVirtualMachine)
+          .withoutPending(scalaVirtualMachine.uniqueId)
+
+        debugger.getPendingScalaVirtualMachines should be (empty)
+      }
+
+      it("should do nothing if no virtual machine with the id has been added") {
+        val debugger = new TestDebugger(null)
+
+        debugger.withoutPending(java.util.UUID.randomUUID().toString)
+
+        debugger.getPendingScalaVirtualMachines should be (empty)
       }
     }
   }

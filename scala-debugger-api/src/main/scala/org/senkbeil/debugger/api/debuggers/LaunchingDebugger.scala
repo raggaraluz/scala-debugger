@@ -122,6 +122,9 @@ class LaunchingDebugger private[debugger] (
       profileManager,
       loopingTaskRunner
     )
+    getPendingScalaVirtualMachines.foreach(
+      scalaVirtualMachine.processPendingRequests
+    )
     scalaVirtualMachine.initialize(
       startProcessingEvents = startProcessingEvents
     )

@@ -1,13 +1,19 @@
 package org.senkbeil.debugger.api.debuggers
 
+import java.util.concurrent.ConcurrentHashMap
+
 import org.senkbeil.debugger.api.utils.JDILoader
-import org.senkbeil.debugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
+import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+
+import scala.collection.JavaConverters._
 
 /**
  * Represents the generic interface that all debugger instances implement.
  */
 trait Debugger {
   protected val jdiLoader = new JDILoader(this.getClass.getClassLoader)
+  private val pendingScalaVirtualMachines =
+    new ConcurrentHashMap[String, ScalaVirtualMachine]().asScala
 
   /**
    * Determines whether or not the debugger is available for use.
@@ -73,4 +79,77 @@ trait Debugger {
    * @return True if it is running, otherwise false
    */
   def isRunning: Boolean
+
+  /**
+   * Adds a new Scala virtual machine to use for pending operations. Essentially
+   * a wrapper around [[Debugger.addPendingScalaVirtualMachine)]].
+   *
+   * @param scalaVirtualMachine The Scala virtual machine to add
+   *
+   * @return The debugger instance updated with the new pending operations
+   */
+  def withPending(scalaVirtualMachine: ScalaVirtualMachine): Debugger = {
+    addPendingScalaVirtualMachine(scalaVirtualMachine)
+    this
+  }
+
+  /**
+   * Removes a Scala virtual machine used for pending operations. Essentially
+   * a wrapper around [[Debugger.removePendingScalaVirtualMachine]].
+   *
+   * @param scalaVirtualMachineId The id of the Scala virtual machine to remove
+   *
+   * @return The updated debugger instance
+   */
+  def withoutPending(scalaVirtualMachineId: String): Debugger = {
+    removePendingScalaVirtualMachine(scalaVirtualMachineId)
+    this
+  }
+
+  /**
+   * Adds a new Scala virtual machine whose pending operations will be applied
+   * to any new Scala virtual machine resulting from this debugger.
+   *
+   * @param scalaVirtualMachine The Scala virtual machine to add
+   *
+   * @return Some Scala virtual machine if added, otherwise None
+   */
+  def addPendingScalaVirtualMachine(
+    scalaVirtualMachine: ScalaVirtualMachine
+  ): Option[ScalaVirtualMachine] = {
+    val key = scalaVirtualMachine.uniqueId
+    val hasKey = pendingScalaVirtualMachines.contains(key)
+
+    pendingScalaVirtualMachines.putIfAbsent(
+      scalaVirtualMachine.uniqueId,
+      scalaVirtualMachine
+    )
+
+    if (!hasKey) Some(scalaVirtualMachine) else None
+  }
+
+  /**
+   * Removes a Scala virtual machine from the list whose pending operations
+   * would be applied to any new Scala virtual machine resulting from this
+   * debugger.
+   *
+   * @param scalaVirtualMachineId The id of the Scala virtual machine to remove
+   *
+   * @return Some Scala virtual machine if removed, otherwise None
+   */
+  def removePendingScalaVirtualMachine(
+    scalaVirtualMachineId: String
+  ): Option[ScalaVirtualMachine] = pendingScalaVirtualMachines.remove(
+    scalaVirtualMachineId
+  )
+
+  /**
+   * Retrieves the collection of Scala virtual machines whose pending operations
+   * will be applied to any new Scala virtual machine resulting from this
+   * debugger.
+   *
+   * @return The collection of Scala virtual machines
+   */
+  def getPendingScalaVirtualMachines: Seq[ScalaVirtualMachine] =
+    pendingScalaVirtualMachines.values.toSeq
 }

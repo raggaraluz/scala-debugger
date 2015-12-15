@@ -42,7 +42,7 @@ class DummyScalaVirtualMachine(
    *
    * @return The unique id as a string
    */
-  override lazy val uniqueId: String = java.util.UUID.randomUUID().toString
+  override val uniqueId: String = java.util.UUID.randomUUID().toString
 
   /**
    * Represents the underlying virtual machine represented by this Scala
