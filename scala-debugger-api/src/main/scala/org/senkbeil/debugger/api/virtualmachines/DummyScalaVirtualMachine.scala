@@ -19,7 +19,7 @@ class DummyScalaVirtualMachine(
    *
    * @param startProcessingEvents If true, immediately starts processing events
    */
-  def initialize(startProcessingEvents: Boolean = true): Unit = {}
+  override def initialize(startProcessingEvents: Boolean = true): Unit = {}
 
   /**
    * Indicates whether or not the virtual machine has started (received the
@@ -27,14 +27,14 @@ class DummyScalaVirtualMachine(
    *
    * @return True if started, otherwise false
    */
-  def isStarted: Boolean = false
+  override def isStarted: Boolean = false
 
   /**
    * Represents the collection of low-level APIs for the virtual machine.
    *
    * @return The container of low-level managers
    */
-  lazy val lowlevel: ManagerContainer = ManagerContainer.usingDummyManagers()
+  override lazy val lowlevel: ManagerContainer = ManagerContainer.usingDummyManagers()
 
   /**
    * A unique id assigned to the Scala virtual machine on the client (library)
@@ -42,7 +42,7 @@ class DummyScalaVirtualMachine(
    *
    * @return The unique id as a string
    */
-  lazy val uniqueId: String = java.util.UUID.randomUUID().toString
+  override lazy val uniqueId: String = java.util.UUID.randomUUID().toString
 
   /**
    * Represents the underlying virtual machine represented by this Scala
@@ -50,6 +50,6 @@ class DummyScalaVirtualMachine(
    *
    * @return The JDI VirtualMachine instance
    */
-  val underlyingVirtualMachine: VirtualMachine = null
+  override val underlyingVirtualMachine: VirtualMachine = null
 }
 

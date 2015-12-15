@@ -4,7 +4,7 @@ import com.sun.jdi._
 import com.sun.jdi.connect.LaunchingConnector
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
-import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
 
 import scala.collection.JavaConverters._
 
@@ -72,7 +72,7 @@ class LaunchingDebugger private[debugger] (
    *
    * @return True if it is running, otherwise false
    */
-  def isRunning: Boolean = virtualMachine.nonEmpty
+  override def isRunning: Boolean = virtualMachine.nonEmpty
 
   /**
    * Retrieves the process of the launched JVM.
@@ -90,9 +90,9 @@ class LaunchingDebugger private[debugger] (
    *                              has been launched
    * @tparam T The return type of the callback function
    */
-  def start[T](
+  override def start[T](
     startProcessingEvents: Boolean,
-    newVirtualMachineFunc: StandardScalaVirtualMachine => T
+    newVirtualMachineFunc: ScalaVirtualMachine => T
   ): Unit = {
     assert(!isRunning, "Debugger already started!")
     assertJdiLoaded()
@@ -129,20 +129,9 @@ class LaunchingDebugger private[debugger] (
   }
 
   /**
-   * Starts the debugger, resulting in launching a new process to connect to.
-   *
-   * @param newVirtualMachineFunc The function to be invoked once the process
-   *                              has been launched
-   * @tparam T The return type of the callback function
-   */
-  def start[T](newVirtualMachineFunc: StandardScalaVirtualMachine => T): Unit = {
-    start(startProcessingEvents = true, newVirtualMachineFunc)
-  }
-
-  /**
    * Stops the process launched by the debugger.
    */
-  def stop(): Unit = {
+  override def stop(): Unit = {
     assert(isRunning, "Debugger has not been started!")
 
     // Stop the looping task runner processing events

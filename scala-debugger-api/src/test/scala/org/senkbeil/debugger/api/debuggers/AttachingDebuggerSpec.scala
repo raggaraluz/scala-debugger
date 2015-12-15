@@ -6,7 +6,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
-import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
 
 import scala.collection.JavaConverters._
 
@@ -145,7 +145,7 @@ class AttachingDebuggerSpec extends FunSpec with Matchers
           .returning(expected).once()
         // MOCK ===============================================================
 
-        var actual: StandardScalaVirtualMachine = null
+        var actual: ScalaVirtualMachine = null
         attachingDebugger.start(actual = _)
 
         actual should be (expected)

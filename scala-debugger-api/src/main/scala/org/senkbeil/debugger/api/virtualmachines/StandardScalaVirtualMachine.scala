@@ -29,7 +29,7 @@ class StandardScalaVirtualMachine(
   protected val _virtualMachine: VirtualMachine,
   protected val profileManager: ProfileManager,
   private val loopingTaskRunner: LoopingTaskRunner,
-  val uniqueId: String = java.util.UUID.randomUUID().toString
+  override val uniqueId: String = java.util.UUID.randomUUID().toString
 ) extends ScalaVirtualMachine with JDIHelperMethods with Logging {
   private val started = new AtomicBoolean(false)
 
@@ -39,7 +39,7 @@ class StandardScalaVirtualMachine(
    *
    * @return True if started, otherwise false
    */
-  def isStarted = started.get()
+  override def isStarted = started.get()
 
   /** Builds a string with the identifier of this virtual machine. */
   private def vmString(message: String) = s"(Scala VM $uniqueId) $message"
@@ -62,14 +62,14 @@ class StandardScalaVirtualMachine(
   )
 
   /** Represents the collection of low-level APIs for the virtual machine. */
-  lazy val lowlevel = newManagerContainer(loopingTaskRunner)
+  override lazy val lowlevel = newManagerContainer(loopingTaskRunner)
 
   /**
    * Initializes the ScalaVirtualMachine system.
    *
    * @param startProcessingEvents If true, immediately starts processing events
    */
-  def initialize(startProcessingEvents: Boolean = true): Unit = {
+  override def initialize(startProcessingEvents: Boolean = true): Unit = {
     logger.debug(vmString("Initializing Scala virtual machine!"))
 
     // Register our standard profiles
@@ -147,6 +147,6 @@ class StandardScalaVirtualMachine(
    *
    * @return The JDI VirtualMachine instance
    */
-  val underlyingVirtualMachine: VirtualMachine = _virtualMachine
+  override val underlyingVirtualMachine: VirtualMachine = _virtualMachine
 }
 

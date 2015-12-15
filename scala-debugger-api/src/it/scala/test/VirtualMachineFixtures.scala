@@ -9,7 +9,7 @@ import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
-import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
 import EventType._
 import com.sun.jdi.VirtualMachine
 
@@ -34,7 +34,7 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
     className: String,
     arguments: Seq[String] = Nil
   )(
-    testCode: (StandardScalaVirtualMachine) => Any
+    testCode: (ScalaVirtualMachine) => Any
   ): Unit = withLazyVirtualMachine(className, arguments) { (s, start) =>
     start()
     testCode(s)
@@ -53,7 +53,7 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
     className: String,
     arguments: Seq[String] = Nil
   )(
-    testCode: (StandardScalaVirtualMachine, () => Unit) => Any
+    testCode: (ScalaVirtualMachine, () => Unit) => Any
   ): Unit = {
     val launchingDebugger = LaunchingDebugger(
       className             = className,

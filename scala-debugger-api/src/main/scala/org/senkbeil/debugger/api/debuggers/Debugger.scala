@@ -1,7 +1,7 @@
 package org.senkbeil.debugger.api.debuggers
 
 import org.senkbeil.debugger.api.utils.JDILoader
-import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
 
 /**
  * Represents the generic interface that all debugger instances implement.
@@ -39,9 +39,28 @@ trait Debugger {
    * @param newVirtualMachineFunc The function that will be called when a new
    *                              virtual machine connection is created as a
    *                              result of this debugger
-   * @tparam T The type of return
+   * @tparam T The return type of the callback function
    */
-  def start[T](newVirtualMachineFunc: StandardScalaVirtualMachine => T): Unit
+  def start[T](newVirtualMachineFunc: ScalaVirtualMachine => T): Unit = {
+    start(startProcessingEvents = true, newVirtualMachineFunc)
+  }
+
+  /**
+   * Starts the debugger, performing any necessary setup and ending with
+   * an initialized debugger that is or will be capable of connecting to one or
+   * more virtual machine instances.
+   *
+   * @param startProcessingEvents If true, events are immediately processed by
+   *                              the VM as soon as it is connected
+   * @param newVirtualMachineFunc The function that will be called when a new
+   *                              virtual machine connection is created as a
+   *                              result of this debugger
+   * @tparam T The return type of the callback function
+   */
+  def start[T](
+    startProcessingEvents: Boolean,
+    newVirtualMachineFunc: ScalaVirtualMachine => T
+  ): Unit
 
   /**
    * Shuts down the debugger, releasing any connected virtual machines.

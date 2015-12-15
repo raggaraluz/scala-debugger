@@ -28,7 +28,7 @@ trait ScalaVirtualMachine extends SwappableDebugProfile {
    *
    * @return The container of low-level managers
    */
-  def lowlevel: ManagerContainer
+  val lowlevel: ManagerContainer
 
   /**
    * A unique id assigned to the Scala virtual machine on the client (library)
@@ -36,7 +36,7 @@ trait ScalaVirtualMachine extends SwappableDebugProfile {
    *
    * @return The unique id as a string
    */
-  def uniqueId: String
+  val uniqueId: String
 
   /**
    * Represents the underlying virtual machine represented by this Scala
@@ -44,7 +44,7 @@ trait ScalaVirtualMachine extends SwappableDebugProfile {
    *
    * @return The JDI VirtualMachine instance
    */
-  def underlyingVirtualMachine: VirtualMachine
+  val underlyingVirtualMachine: VirtualMachine
 
   /**
    * Processes any pending requests contained by the provided Scala virtual

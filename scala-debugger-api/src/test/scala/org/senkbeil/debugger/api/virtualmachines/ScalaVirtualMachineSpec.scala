@@ -16,12 +16,12 @@ class ScalaVirtualMachineSpec extends FunSpec with Matchers
 
   private def newScalaVirtualMachine(managerContainer: ManagerContainer) =
     new Object with ScalaVirtualMachine {
-      override def lowlevel: ManagerContainer = managerContainer
+      override val lowlevel: ManagerContainer = managerContainer
 
       override def initialize(startProcessingEvents: Boolean): Unit = {}
-      override def underlyingVirtualMachine: VirtualMachine = null
+      override val underlyingVirtualMachine: VirtualMachine = null
       override def isStarted: Boolean = false
-      override def uniqueId: String = ""
+      override val uniqueId: String = ""
       override protected val profileManager: ProfileManager = null
     }
 

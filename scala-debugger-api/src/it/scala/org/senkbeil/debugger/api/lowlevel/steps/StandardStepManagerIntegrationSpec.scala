@@ -8,7 +8,7 @@ import org.scalatest.concurrent.PatienceConfiguration.{Timeout, Interval}
 import org.scalatest.time.{Units, Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType
-import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
 import test.{TestUtilities, VirtualMachineFixtures}
 import test.Constants._
 import EventType._
@@ -259,7 +259,7 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
    */
   private def verifyStepsFromTo[T](
     testClass: String,
-    scalaVirtualMachine: StandardScalaVirtualMachine,
+    scalaVirtualMachine: ScalaVirtualMachine,
     stepMethod: (ThreadReference) => T,
     startingLine: Int,
     expectedLine: Int
@@ -315,7 +315,7 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
    */
   private def verifyStepsOnEach[T](
     testClass: String,
-    scalaVirtualMachine: StandardScalaVirtualMachine,
+    scalaVirtualMachine: ScalaVirtualMachine,
     stepMethod: (ThreadReference) => T,
     startingLine: Int,
     expectedReachableLines: Seq[Int],
