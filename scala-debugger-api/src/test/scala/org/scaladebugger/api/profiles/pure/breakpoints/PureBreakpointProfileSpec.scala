@@ -1,22 +1,21 @@
 package org.scaladebugger.api.profiles.pure.breakpoints
 
-import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.{Event, EventQueue}
-import com.sun.jdi.request.EventRequestManager
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.scaladebugger.api.lowlevel.breakpoints.{BreakpointManager, StandardBreakpointManager}
+import com.sun.jdi.event.Event
+import org.scaladebugger.api.lowlevel.breakpoints.BreakpointManager
 import org.scaladebugger.api.lowlevel.classes.ClassManager
 import org.scaladebugger.api.lowlevel.events.EventManager
+import org.scaladebugger.api.lowlevel.events.EventType.BreakpointEventType
 import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
 import org.scaladebugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 import org.scaladebugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.scaladebugger.api.pipelines.Pipeline
-import org.scaladebugger.api.utils.LoopingTaskRunner
+import org.scaladebugger.api.profiles.Constants
+import org.scalamock.scalatest.MockFactory
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import test.JDIMockHelpers
+
 import scala.util.{Failure, Success}
-import org.scaladebugger.api.lowlevel.events.EventType.BreakpointEventType
 
 class PureBreakpointProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory with JDIMockHelpers
@@ -368,6 +367,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
         pureBreakpointProfile.setRequestId(TestRequestId)
 
         inSequence {
+          val eventHandlerIds = Seq("a", "b")
           inAnyOrder {
             val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
             val uniqueIdPropertyFilter =
@@ -391,15 +391,23 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
               uniqueIdProperty +: arguments
             ).returning(Success("")).once()
 
-            (mockEventManager.addEventDataStream _)
-              .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
-              .returning(Pipeline.newPipeline(
-                classOf[(Event, Seq[JDIEventDataResult])]
-              )).twice()
+            // NOTE: Pipeline adds an event handler id to its metadata
+            def newEventPipeline(id: String) = Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            ).withMetadata(Map(EventManager.EventHandlerIdMetadataField -> id))
+
+            eventHandlerIds.foreach(id => {
+              (mockEventManager.addEventDataStream _)
+                .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
+                .returning(newEventPipeline(id)).once()
+            })
           }
 
           (mockBreakpointManager.removeBreakpointRequestWithId _)
             .expects(TestRequestId).once()
+          eventHandlerIds.foreach(id => {
+            (mockEventManager.removeEventHandler _).expects(id).once()
+          })
         }
 
         val p1 = pureBreakpointProfile.onBreakpointWithData(
@@ -415,6 +423,73 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
 
         p1.foreach(_.close())
         p2.foreach(_.close())
+      }
+
+      it("should remove the underlying request if close data says to do so") {
+        val fileName = "some file"
+        val lineNumber = 999
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureBreakpointProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          val eventHandlerIds = Seq("a", "b")
+          inAnyOrder {
+            val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+            val uniqueIdPropertyFilter =
+              UniqueIdPropertyFilter(id = TestRequestId)
+
+            // Memoized request function first checks to make sure the cache
+            // has not been invalidated underneath (first call will always be
+            // empty since we have never created the request)
+            (mockBreakpointManager.hasBreakpointRequest _)
+              .expects(fileName, lineNumber)
+              .returning(false).once()
+            (mockBreakpointManager.hasBreakpointRequest _)
+              .expects(fileName, lineNumber)
+              .returning(true).once()
+
+            // NOTE: Expect the request to be created with a unique id
+            (mockBreakpointManager.createBreakpointRequestWithId _).expects(
+              TestRequestId,
+              fileName,
+              lineNumber,
+              uniqueIdProperty +: arguments
+            ).returning(Success("")).once()
+
+            // NOTE: Pipeline adds an event handler id to its metadata
+            def newEventPipeline(id: String) = Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            ).withMetadata(Map(EventManager.EventHandlerIdMetadataField -> id))
+
+            eventHandlerIds.foreach(id => {
+              (mockEventManager.addEventDataStream _)
+                .expects(BreakpointEventType, Seq(uniqueIdPropertyFilter))
+                .returning(newEventPipeline(id)).once()
+            })
+          }
+
+          (mockBreakpointManager.removeBreakpointRequestWithId _)
+            .expects(TestRequestId).once()
+          eventHandlerIds.foreach(id => {
+            (mockEventManager.removeEventHandler _).expects(id).once()
+          })
+        }
+
+        val p1 = pureBreakpointProfile.onBreakpointWithData(
+          fileName,
+          lineNumber,
+          arguments: _*
+        )
+        val p2 = pureBreakpointProfile.onBreakpointWithData(
+          fileName,
+          lineNumber,
+          arguments: _*
+        )
+
+        p1.foreach(_.close(now = true, data = Constants.CloseRemoveAll))
       }
     }
   }

@@ -3,19 +3,21 @@ package org.scaladebugger.api.profiles.pure.breakpoints
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
+import com.sun.jdi.event._
 import org.scaladebugger.api.lowlevel.JDIArgument
-import org.scaladebugger.api.lowlevel.breakpoints.{DummyBreakpointManager, BreakpointManager, NoBreakpointLocationFound, StandardBreakpointManager}
-import org.scaladebugger.api.lowlevel.events.{JDIEventArgument, EventManager}
+import org.scaladebugger.api.lowlevel.breakpoints.BreakpointManager
+import org.scaladebugger.api.lowlevel.events.EventType._
 import org.scaladebugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
+import org.scaladebugger.api.lowlevel.events.{EventManager, JDIEventArgument}
 import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 import org.scaladebugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.scaladebugger.api.lowlevel.utils.JDIArgumentGroup
 import org.scaladebugger.api.pipelines.Pipeline
 import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
 import org.scaladebugger.api.profiles.traits.breakpoints.BreakpointProfile
-import org.scaladebugger.api.utils.Memoization
-import org.scaladebugger.api.lowlevel.events.EventType._
-import com.sun.jdi.event._
+import org.scaladebugger.api.utils.{Memoization, MultiMap}
+import org.scaladebugger.api.profiles.Constants._
+
 import scala.collection.JavaConverters._
 import scala.util.Try
 
@@ -26,6 +28,11 @@ import scala.util.Try
 trait PureBreakpointProfile extends BreakpointProfile {
   protected val breakpointManager: BreakpointManager
   protected val eventManager: EventManager
+
+  /**
+   * Contains a mapping of request ids to associated event handler ids.
+   */
+  private val pipelineRequestEventIds = new MultiMap[String, String]
 
   /**
    * Contains mapping from input to a counter indicating how many pipelines
@@ -128,6 +135,15 @@ trait PureBreakpointProfile extends BreakpointProfile {
       .incrementAndGet()
 
     val combinedPipeline = newPipeline.unionOutput(closePipeline)
+
+    // Store the new event handler id as associated with the current request
+    pipelineRequestEventIds.put(
+      requestId,
+      combinedPipeline.currentMetadata(
+        EventManager.EventHandlerIdMetadataField
+      ).asInstanceOf[String]
+    )
+
     combinedPipeline
   }
 
@@ -142,13 +158,17 @@ trait PureBreakpointProfile extends BreakpointProfile {
   protected def newBreakpointPipelineCloseFunc(
     requestId: String,
     args: (String, Int, Seq[JDIEventArgument])
-  ): () => Unit = () => {
+  ): (Option[Any]) => Unit = (data: Option[Any]) => {
     val pCounter = pipelineCounter(args)
 
     val totalPipelinesRemaining = pCounter.decrementAndGet()
 
-    if (totalPipelinesRemaining == 0) {
+    if (totalPipelinesRemaining == 0 || data.exists(_ == CloseRemoveAll)) {
       breakpointManager.removeBreakpointRequestWithId(requestId)
+      pipelineRequestEventIds.remove(requestId).foreach(
+        _.foreach(eventManager.removeEventHandler)
+      )
+      pCounter.set(0)
     }
   }
 

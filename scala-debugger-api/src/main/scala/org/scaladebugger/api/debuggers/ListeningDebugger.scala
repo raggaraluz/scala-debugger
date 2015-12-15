@@ -2,9 +2,9 @@ package org.scaladebugger.api.debuggers
 
 import com.sun.jdi._
 import com.sun.jdi.connect.{Connector, ListeningConnector}
-import org.scaladebugger.api.profiles.ProfileManager
-import org.scaladebugger.api.utils.{LoopingTaskRunner, Logging}
-import org.scaladebugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
+import org.scaladebugger.api.profiles.{ProfileManager, StandardProfileManager}
+import org.scaladebugger.api.utils.{Logging, LoopingTaskRunner}
+import org.scaladebugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -16,24 +16,24 @@ object ListeningDebugger {
    *
    * @param virtualMachineManager The manager to use for virtual machine
    *                              connectors
-   * @param address The address to use for remote JVMs to attach to this
-   *                debugger
    * @param port The port to use for remote JVMs to attach to this debugger
+   * @param hostname The hostname to use for remote JVMs to attach to this
+   *                 debugger
    * @param workers The total number of worker tasks to spawn
    */
   def apply(
-    address: String,
     port: Int,
+    hostname: String = "localhost",
     workers: Int = 1
   )(
     implicit virtualMachineManager: VirtualMachineManager =
       Bootstrap.virtualMachineManager()
   ): ListeningDebugger = new ListeningDebugger(
     virtualMachineManager,
-    () => new ProfileManager,
+    () => new StandardProfileManager,
     new LoopingTaskRunner(initialWorkers = workers),
-    address,
     port,
+    hostname,
     workers
   )
 }
@@ -48,23 +48,26 @@ object ListeningDebugger {
  *                              each new ScalaVirtualMachine
  * @param loopingTaskRunner The task runner to use with the ScalaVirtualMachines
  *                          created from the listening VMs
- * @param address The address to use for remote JVMs to attach to this debugger
  * @param port The port to use for remote JVMs to attach to this debugger
+ * @param hostname The hostname to use for remote JVMs to attach to
+ *                 this debugger
  * @param workers The total number of worker tasks to spawn
  */
 class ListeningDebugger private[api] (
   private val virtualMachineManager: VirtualMachineManager,
   private val newProfileManagerFunc: () => ProfileManager,
   private val loopingTaskRunner: LoopingTaskRunner,
-  private val address: String,
   private val port: Int,
+  private val hostname: String,
   private val workers: Int
 ) extends Debugger with Logging {
   private val ConnectorClassString = "com.sun.jdi.SocketListen"
 
   // Contains all components for the currently-running debugger
   @volatile private var components: Option[(
-    LoopingTaskRunner, ListeningConnector, Map[String, _ <: Connector.Argument]
+    LoopingTaskRunner,
+    ListeningConnector,
+    java.util.Map[String, Connector.Argument]
   )] = None
 
   /**
@@ -75,7 +78,7 @@ class ListeningDebugger private[api] (
     s"-agentlib:jdwp=transport=dt_socket" ::
     s"server=n" ::
     s"suspend=n" ::
-    s"address=$address:$port" ::
+    s"address=$hostname:$port" ::
     Nil).mkString(",")
 
   /**
@@ -117,14 +120,14 @@ class ListeningDebugger private[api] (
 
     val arguments = connector.defaultArguments()
 
-    arguments.get("localAddress").setValue(address)
+    if (hostname.nonEmpty) arguments.get("localAddress").setValue(hostname)
     arguments.get("port").setValue(port.toString)
 
     logger.info("Multiple Connections Allowed: " +
       connector.supportsMultipleConnections())
 
     // Open port for listening to JVM connections
-    logger.info(s"Listening on $address:$port")
+    logger.info(s"Listening on $hostname:$port")
     connector.startListening(arguments)
 
     // Start the task runner to process JVMs
@@ -132,7 +135,7 @@ class ListeningDebugger private[api] (
     loopingTaskRunner.start()
 
     // Store the connector and arguments (used for shutdown)
-    components = Some((loopingTaskRunner, connector, arguments.asScala.toMap))
+    components = Some((loopingTaskRunner, connector, arguments))
 
     // Start X workers to process connection requests
     logger.info(s"Spawning $workers worker tasks")
@@ -154,13 +157,20 @@ class ListeningDebugger private[api] (
 
     val (loopingTaskRunner, connector, arguments) = components.get
 
-    // Close the listening port
-    logger.info(s"Shutting down $address:$port")
-    connector.stopListening(arguments.asJava)
-
     // Cancel all worker threads via interrupt
     logger.info("Cancelling worker threads")
     loopingTaskRunner.stop()
+
+    // Dispose of any connected virtual machines
+    connectedVirtualMachines
+      .map(vm => Try(vm.dispose()))
+      .filter(_.isFailure)
+      .map(_.failed.get)
+      .foreach(logger.throwable)
+
+    // Close the listening port
+    logger.info(s"Shutting down $hostname:$port")
+    connector.stopListening(arguments)
 
     // Mark that we have completely stopped the debugger
     components = None
@@ -244,14 +254,4 @@ class ListeningDebugger private[api] (
     virtualMachineManager.listeningConnectors().asScala
       .find(_.name() == ConnectorClassString)
   }
-
-  /**
-   * Creates a new dummy Scala virtual machine instance that can be used to
-   * prepare pending requests to apply to the Scala virtual machines generated
-   * by the debugger once it starts.
-   *
-   * @return The new dummy (no-op) Scala virtual machine instance
-   */
-  override def newDummyScalaVirtualMachine(): ScalaVirtualMachine =
-    new DummyScalaVirtualMachine(newProfileManagerFunc())
 }

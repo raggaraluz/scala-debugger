@@ -48,6 +48,25 @@ class EventManagerSpec extends FunSpec with Matchers
           testExtraArguments: _*
         )
       }
+
+      it("should include the event handler id in the pipeline metadata") {
+        val expected = TestHandlerId
+        val testEventType = stub[EventType]
+        val testExtraArguments = Seq(stub[JDIEventArgument])
+
+        mockAddEventHandlerWithId.expects(*, *, *, *).returning(expected).once()
+
+        val pipeline = testEventManager.addEventStream(
+          testEventType,
+          testExtraArguments: _*
+        )
+
+        val actual = pipeline.currentMetadata(
+          EventManager.EventHandlerIdMetadataField
+        )
+
+        actual should be (expected)
+      }
     }
 
     describe("#addEventStreamWithId") {
@@ -65,6 +84,26 @@ class EventManagerSpec extends FunSpec with Matchers
           testExtraArguments: _*
         )
       }
+
+      it("should include the event handler id in the pipeline metadata") {
+        val expected = TestHandlerId
+        val testEventType = stub[EventType]
+        val testExtraArguments = Seq(stub[JDIEventArgument])
+
+        mockAddEventHandlerWithId.expects(*, *, *, *).returning(expected).once()
+
+        val pipeline = testEventManager.addEventStreamWithId(
+          expected,
+          testEventType,
+          testExtraArguments: _*
+        )
+
+        val actual = pipeline.currentMetadata(
+          EventManager.EventHandlerIdMetadataField
+        )
+
+        actual should be (expected)
+      }
     }
 
     describe("#addEventDataStream") {
@@ -80,6 +119,25 @@ class EventManagerSpec extends FunSpec with Matchers
           testEventType,
           testExtraArguments: _*
         )
+      }
+
+      it("should include the event handler id in the pipeline metadata") {
+        val expected = TestHandlerId
+        val testEventType = stub[EventType]
+        val testExtraArguments = Seq(stub[JDIEventArgument])
+
+        mockAddEventHandlerWithId.expects(*, *, *, *).returning(expected).once()
+
+        val pipeline = testEventManager.addEventDataStream(
+          testEventType,
+          testExtraArguments: _*
+        )
+
+        val actual = pipeline.currentMetadata(
+          EventManager.EventHandlerIdMetadataField
+        )
+
+        actual should be (expected)
       }
     }
 
@@ -97,6 +155,26 @@ class EventManagerSpec extends FunSpec with Matchers
           testEventType,
           testExtraArguments: _*
         )
+      }
+
+      it("should include the event handler id in the pipeline metadata") {
+        val expected = TestHandlerId
+        val testEventType = stub[EventType]
+        val testExtraArguments = Seq(stub[JDIEventArgument])
+
+        mockAddEventHandlerWithId.expects(*, *, *, *).returning(expected).once()
+
+        val pipeline = testEventManager.addEventDataStreamWithId(
+          expected,
+          testEventType,
+          testExtraArguments: _*
+        )
+
+        val actual = pipeline.currentMetadata(
+          EventManager.EventHandlerIdMetadataField
+        )
+
+        actual should be (expected)
       }
     }
 

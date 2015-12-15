@@ -3,6 +3,7 @@ package org.scaladebugger.api.profiles.pure.methods
 import java.util.concurrent.atomic.{AtomicInteger, AtomicBoolean}
 
 import com.sun.jdi.event.{BreakpointEvent, MethodExitEvent}
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -24,7 +25,7 @@ class PureMethodExitProfileIntegrationSpec extends FunSpec with Matchers
   describe("PureMethodExitProfile") {
     it("should be able to detect exiting a specific method in a class") {
       val testClass = "org.scaladebugger.test.methods.MethodExit"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val expectedClassName =
         "org.scaladebugger.test.methods.MethodExitTestClass"

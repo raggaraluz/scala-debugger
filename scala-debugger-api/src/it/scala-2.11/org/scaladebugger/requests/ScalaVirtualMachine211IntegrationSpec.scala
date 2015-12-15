@@ -1,5 +1,6 @@
 package org.scaladebugger.requests
 
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -28,7 +29,7 @@ class ScalaVirtualMachine211IntegrationSpec extends FunSpec with Matchers
           40, 41, 42, 45, 46, 47, 50, 52, 53, 57, 58, 59, 60, 63, 65, 72
         )
 
-        val file = scalaClassStringToFileString(testClass)
+        val file = JDITools.scalaClassStringToFileString(testClass)
 
         // There is some delay while receiving the Java classes that make up
         // our file, so must wait for enough responses to get all of our lines

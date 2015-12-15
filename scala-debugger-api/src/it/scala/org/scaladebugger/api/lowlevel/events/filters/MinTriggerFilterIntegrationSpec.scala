@@ -1,6 +1,7 @@
 package org.scaladebugger.api.lowlevel.events.filters
 
 import com.sun.jdi.event.BreakpointEvent
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -21,7 +22,7 @@ class MinTriggerFilterIntegrationSpec extends FunSpec with Matchers
   describe("MinTriggerFilter") {
     it("should ignore the first N events for a handler using MinTriggerFilter(N)") {
       val testClass = "org.scaladebugger.test.filters.MinTriggerFilter"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       // The filter to apply (should ignore the first three breakpoints)
       val filter = MinTriggerFilter(count = 3)

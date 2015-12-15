@@ -1,6 +1,7 @@
 package org.scaladebugger.api.lowlevel.events.data
 
 import com.sun.jdi.event.BreakpointEvent
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -26,7 +27,7 @@ class CustomPropertyDataRequestIntegrationSpec extends FunSpec with Matchers
     it("should retrieve the custom property if available") {
       val testClass =
         "org.scaladebugger.test.data.CustomPropertyDataRequest"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       // The request for data based on a custom property
       val request = CustomPropertyDataRequest(key = "key")

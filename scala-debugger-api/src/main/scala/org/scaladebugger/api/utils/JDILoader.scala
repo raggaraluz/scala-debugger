@@ -173,7 +173,7 @@ class JDILoader(
       .flatMap(_.toOption.flatMap(Option(_))) // Convert null to None
       .map(_.trim)
       .filter(_.nonEmpty)
-      .map(_ + "/" + jarPath)
+      .map(_ + java.io.File.separator + jarPath)
       .distinct
 
     paths

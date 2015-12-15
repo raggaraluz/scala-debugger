@@ -7,7 +7,7 @@ package org.scaladebugger.api.pipelines
  * @param closeFunc The function to be executed by the close operation
  */
 class CloseOperation[A](
-  private val closeFunc: () => Unit
+  private val closeFunc: Pipeline.CloseFunction
 ) extends Operation[A, Unit] {
   /**
    * Ignores the incoming data and closes the pipeline.

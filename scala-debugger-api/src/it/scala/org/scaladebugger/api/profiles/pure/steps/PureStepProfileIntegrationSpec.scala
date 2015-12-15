@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.event.{BreakpointEvent, StepEvent}
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.concurrent.PatienceConfiguration.{Interval, Timeout}
 import org.scalatest.time.{Milliseconds, Seconds, Span, Units}
@@ -284,7 +285,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
     startingLine: Int,
     expectedLine: Int
   ): (ScalaVirtualMachine, () => Unit, (ThreadReference) => T) => Unit = {
-    val testFile = scalaClassStringToFileString(testClass)
+    val testFile = JDITools.scalaClassStringToFileString(testClass)
     // Flag that indicates we reached the expected line
     val success = new AtomicBoolean(false)
 
@@ -341,7 +342,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
     failIfNotExact: Boolean = false,
     maxDuration: (Long, Units) = (EventuallyTimeout.toMillis, Milliseconds)
   ): (ScalaVirtualMachine, () => Unit, (ThreadReference) => T) => Unit = {
-    val testFile = scalaClassStringToFileString(testClass)
+    val testFile = JDITools.scalaClassStringToFileString(testClass)
     val expectedLines = collection.mutable.Stack(expectedReachableLines: _*)
 
     // Used to quit the test early and provide a message

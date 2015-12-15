@@ -3,6 +3,7 @@ package org.scaladebugger.api.lowlevel.watchpoints
 import java.util.concurrent.atomic.AtomicBoolean
 
 import com.sun.jdi.event.{ModificationWatchpointEvent, ClassPrepareEvent}
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.lowlevel.events.EventType._
@@ -21,7 +22,7 @@ class StandardModificationWatchpointManagerIntegrationSpec extends FunSpec with 
   describe("StandardModificationWatchpointManager") {
     it("should be able to detect modification to a field") {
       val testClass = "org.scaladebugger.test.watchpoints.ModificationWatchpoint"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val className = "org.scaladebugger.test.watchpoints.SomeModificationClass"
       val fieldName = "field"

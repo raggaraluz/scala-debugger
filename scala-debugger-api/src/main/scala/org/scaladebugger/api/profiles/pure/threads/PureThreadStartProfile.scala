@@ -14,8 +14,9 @@ import org.scaladebugger.api.lowlevel.utils.JDIArgumentGroup
 import org.scaladebugger.api.pipelines.Pipeline
 import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
 import org.scaladebugger.api.profiles.traits.threads.ThreadStartProfile
-import org.scaladebugger.api.utils.Memoization
+import org.scaladebugger.api.utils.{MultiMap, Memoization}
 import org.scaladebugger.api.lowlevel.events.EventType.ThreadStartEventType
+import org.scaladebugger.api.profiles.Constants._
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -27,6 +28,11 @@ import scala.util.Try
 trait PureThreadStartProfile extends ThreadStartProfile {
   protected val threadStartManager: ThreadStartManager
   protected val eventManager: EventManager
+
+  /**
+   * Contains a mapping of request ids to associated event handler ids.
+   */
+  private val pipelineRequestEventIds = new MultiMap[String, String]
 
   /**
    * Contains mapping from input to a counter indicating how many pipelines
@@ -128,6 +134,15 @@ trait PureThreadStartProfile extends ThreadStartProfile {
       .incrementAndGet()
 
     val combinedPipeline = newPipeline.unionOutput(closePipeline)
+
+    // Store the new event handler id as associated with the current request
+    pipelineRequestEventIds.put(
+      requestId,
+      combinedPipeline.currentMetadata(
+        EventManager.EventHandlerIdMetadataField
+      ).asInstanceOf[String]
+    )
+
     combinedPipeline
   }
 
@@ -142,13 +157,17 @@ trait PureThreadStartProfile extends ThreadStartProfile {
   protected def newThreadStartPipelineCloseFunc(
     requestId: String,
     args: Seq[JDIEventArgument]
-  ): () => Unit = () => {
+  ): (Option[Any]) => Unit = (data: Option[Any]) => {
     val pCounter = pipelineCounter(args)
 
     val totalPipelinesRemaining = pCounter.decrementAndGet()
 
-    if (totalPipelinesRemaining == 0) {
+    if (totalPipelinesRemaining == 0 || data.exists(_ == CloseRemoveAll)) {
       threadStartManager.removeThreadStartRequest(requestId)
+      pipelineRequestEventIds.remove(requestId).foreach(
+        _.foreach(eventManager.removeEventHandler)
+      )
+      pCounter.set(0)
     }
   }
 

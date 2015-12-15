@@ -72,6 +72,94 @@ class PipelineSpec extends FunSpec with Matchers with ParallelTestExecution
         val actual = pipeline.process(data: _*)
         actual should be (expected)
       }
+
+      it("should call the metadata pipeline if it has been added") {
+        val data = Seq(1, 2, 3)
+        val metadata = Map("a" -> 3)
+
+        val expected = data.map(d => (d, metadata))
+        val pipeline = new Pipeline(new NoOperation[Int], metadata)
+
+        var actual: Seq[(Int, Pipeline.Metadata)] = Nil
+
+        pipeline.metadata.foreach(actual :+= _)
+        pipeline.process(data: _*)
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#withMetadata") {
+      it("should combine the existing metadata with the new metadata") {
+        val p1Metadata = Map("a" -> 3, "b" -> 4)
+        val p2Metadata = Map("b" -> 999, "c" -> 5)
+        val expected = p1Metadata ++ p2Metadata
+
+        val pipeline = new Pipeline(mock[Operation[Int, Int]], p1Metadata)
+        val childPipeline = pipeline.withMetadata(p2Metadata)
+
+        val actual = childPipeline.currentMetadata
+        actual should be (expected)
+      }
+
+      it("should add a new child pipeline with no operation") {
+        val pipeline = new Pipeline(mock[Operation[Int, Int]])
+        val childPipeline = pipeline.withMetadata(Map("a" -> 3))
+
+        pipeline.children should contain (childPipeline)
+      }
+    }
+
+    describe("#metadata") {
+      it("should add a new child pipeline with a map operation") {
+        val pipeline = new Pipeline(mock[Operation[Int, Int]])
+
+        pipeline.metadata
+
+        pipeline.children.head.operation shouldBe a [MapOperation[_, _]]
+      }
+
+      it("should only add a metadata child pipeline once") {
+        val pipeline = new Pipeline(mock[Operation[Int, Int]])
+
+        pipeline.metadata
+        pipeline.metadata
+
+        pipeline.children should have length (1)
+      }
+
+      it("should have the same metadata as its parent") {
+        val expected = Map("a" -> 3)
+        val pipeline = new Pipeline(mock[Operation[Int, Int]], expected)
+
+        val childPipeline = pipeline.metadata
+
+        val actual = childPipeline.currentMetadata
+        actual should be (expected)
+      }
+    }
+
+    describe("#failed") {
+      it("should have the same metadata as its parent") {
+        val expected = Map("a" -> 3)
+        val pipeline = new Pipeline(mock[Operation[Int, Int]], expected)
+
+        val childPipeline = pipeline.failed
+
+        val actual = childPipeline.currentMetadata
+        actual should be (expected)
+      }
+    }
+
+    describe("#currentMetadata") {
+      it("should return the map of metadata for the current pipeline stage") {
+        val expected = Map("something" -> 3)
+
+        val pipeline = new Pipeline(mock[Operation[Int, Int]], expected)
+
+        val actual = pipeline.currentMetadata
+        actual should be (expected)
+      }
     }
 
     describe("#transform") {
@@ -92,6 +180,16 @@ class PipelineSpec extends FunSpec with Matchers with ParallelTestExecution
 
         pipeline.children should contain (childPipeline)
       }
+
+      it("should have the same metadata as its parent") {
+        val expected = Map("a" -> 3)
+        val pipeline = new Pipeline(mock[Operation[Int, Int]], expected)
+
+        val childPipeline = pipeline.transform(mock[Operation[Int, Int]])
+
+        val actual = childPipeline.currentMetadata
+        actual should be (expected)
+      }
     }
 
     describe("#map") {
@@ -109,6 +207,16 @@ class PipelineSpec extends FunSpec with Matchers with ParallelTestExecution
         val childPipeline = pipeline.map(mockFunction[Int, Int])
 
         pipeline.children should contain (childPipeline)
+      }
+
+      it("should have the same metadata as its parent") {
+        val expected = Map("a" -> 3)
+        val pipeline = new Pipeline(mock[Operation[Int, Int]], expected)
+
+        val childPipeline = pipeline.map(mockFunction[Int, Int])
+
+        val actual = childPipeline.currentMetadata
+        actual should be (expected)
       }
     }
 
@@ -132,6 +240,18 @@ class PipelineSpec extends FunSpec with Matchers with ParallelTestExecution
 
         pipeline.children should contain (childPipeline)
       }
+
+      it("should have the same metadata as its parent") {
+        val expected = Map("a" -> 3)
+        val pipeline = new Pipeline(mock[Operation[Int, Int]], expected)
+
+        val childPipeline = pipeline.flatMap(
+          mockFunction[Int, GenTraversableOnce[Int]]
+        )
+
+        val actual = childPipeline.currentMetadata
+        actual should be (expected)
+      }
     }
 
     describe("#filter") {
@@ -150,6 +270,16 @@ class PipelineSpec extends FunSpec with Matchers with ParallelTestExecution
 
         pipeline.children should contain (childPipeline)
       }
+
+      it("should have the same metadata as its parent") {
+        val expected = Map("a" -> 3)
+        val pipeline = new Pipeline(mock[Operation[Int, Int]], expected)
+
+        val childPipeline = pipeline.filter(mockFunction[Int, Boolean])
+
+        val actual = childPipeline.currentMetadata
+        actual should be (expected)
+      }
     }
 
     describe("#filterNot") {
@@ -167,6 +297,16 @@ class PipelineSpec extends FunSpec with Matchers with ParallelTestExecution
         val childPipeline = pipeline.filterNot(mockFunction[Int, Boolean])
 
         pipeline.children should contain (childPipeline)
+      }
+
+      it("should have the same metadata as its parent") {
+        val expected = Map("a" -> 3)
+        val pipeline = new Pipeline(mock[Operation[Int, Int]], expected)
+
+        val childPipeline = pipeline.filterNot(mockFunction[Int, Boolean])
+
+        val actual = childPipeline.currentMetadata
+        actual should be (expected)
       }
     }
 
@@ -223,6 +363,18 @@ class PipelineSpec extends FunSpec with Matchers with ParallelTestExecution
 
         unionInputPipeline.close(now = true)
       }
+
+      it("should create a pipeline with the default metadata") {
+        val expected = Pipeline.DefaultMetadataMap
+
+        val pipeline1 = new Pipeline(mock[Operation[Int, Int]], Map("a" -> 3))
+        val pipeline2 = new Pipeline(mock[Operation[Int, Int]], Map("b" -> 4))
+
+        val unionInputPipeline = pipeline1.unionInput(pipeline2)
+
+        val actual = unionInputPipeline.currentMetadata
+        actual should be (expected)
+      }
     }
 
     describe("#unionOutput") {
@@ -268,6 +420,20 @@ class PipelineSpec extends FunSpec with Matchers with ParallelTestExecution
 
         unionOutputPipeline.close(now = true)
       }
+
+      it("should create a pipeline with metadata from combining the two pipelines' metadata") {
+        val p1Metadata = Map("a" -> 3, "b" -> 4)
+        val p2Metadata = Map("b" -> 999, "c" -> 5)
+        val expected = p1Metadata ++ p2Metadata
+
+        val pipeline1 = new Pipeline(mock[Operation[Int, Int]], p1Metadata)
+        val pipeline2 = new Pipeline(mock[Operation[Int, Int]], p2Metadata)
+
+        val unionOutputPipeline = pipeline1.unionOutput(pipeline2)
+
+        val actual = unionOutputPipeline.currentMetadata
+        actual should be (expected)
+      }
     }
 
     describe("#close") {
@@ -305,6 +471,60 @@ class PipelineSpec extends FunSpec with Matchers with ParallelTestExecution
         )
 
         mockCloseFunc.expects().once()
+
+        pipeline.close()
+      }
+
+      it("should invoke the close function immediately if only data is given") {
+        val mockCloseFunc = mockFunction[Unit]
+        val pipeline = new Pipeline(
+          mock[Operation[Int, Int]],
+          mockCloseFunc
+        )
+
+        mockCloseFunc.expects().once()
+
+        pipeline.close(data = new Object)
+      }
+
+      it("should pass the provided data to the close function when close invoked on event") {
+        val expected = Some(new Object)
+        val mockCloseFuncWithData = mockFunction[Option[Any], Unit]
+        val pipeline = new Pipeline(
+          stub[Operation[Int, Int]],
+          mockCloseFuncWithData
+        )
+
+        pipeline.close(now = false, data = expected.get)
+
+        mockCloseFuncWithData.expects(expected).once()
+
+        pipeline.process(999)
+      }
+
+      it("should pass the provided data to the close function when close invoked immediately") {
+        val expected = Some(new Object)
+        val mockCloseFuncWithData = mockFunction[Option[Any], Unit]
+        val pipeline = new Pipeline(
+          mock[Operation[Int, Int]],
+          mockCloseFuncWithData
+        )
+
+        mockCloseFuncWithData.expects(expected).once()
+
+        pipeline.close(now = true, data = expected.get)
+      }
+
+      it("should pass None to the close function when close invoked without data") {
+        val expected: Option[Any] = None
+
+        val mockCloseFuncWithData = mockFunction[Option[Any], Unit]
+        val pipeline = new Pipeline(
+          mock[Operation[Int, Int]],
+          mockCloseFuncWithData
+        )
+
+        mockCloseFuncWithData.expects(expected).once()
 
         pipeline.close()
       }
@@ -384,6 +604,16 @@ class PipelineSpec extends FunSpec with Matchers with ParallelTestExecution
 
         pipeline.children should contain (childPipeline)
       }
+
+      it("should have the same metadata as its parent") {
+        val expected = Map("a" -> 3)
+        val pipeline = new Pipeline(mock[Operation[Int, Int]], expected)
+
+        val childPipeline = pipeline.noop()
+
+        val actual = childPipeline.currentMetadata
+        actual should be (expected)
+      }
     }
 
     describe("#children") {
@@ -421,6 +651,24 @@ class PipelineSpec extends FunSpec with Matchers with ParallelTestExecution
         outputClass should be (classOf[AnyRef])
       }
 
+      it("should create a pipeline with the default close function when only the class type is provided") {
+        val expected = Pipeline.DefaultCloseFunc
+
+        val pipeline = Pipeline.newPipeline(classOf[AnyRef])
+
+        val actual = pipeline.closeFunc
+        actual should be (expected)
+      }
+
+      it("should create a pipeline with the default metadata map when only the class type is provided") {
+        val expected = Pipeline.DefaultMetadataMap
+
+        val pipeline = Pipeline.newPipeline(classOf[AnyRef])
+
+        val actual = pipeline.currentMetadata
+        actual should be (expected)
+      }
+
       it("should create a new pipeline with the specified close function") {
         val mockCloseFunc = mockFunction[Unit]
         val pipeline = Pipeline.newPipeline(classOf[AnyRef], mockCloseFunc)
@@ -428,6 +676,68 @@ class PipelineSpec extends FunSpec with Matchers with ParallelTestExecution
         mockCloseFunc.expects().once()
 
         pipeline.close()
+      }
+
+      it("should create a new pipeline with the specified close function with data") {
+        val expected: Option[Any] = Some(new Object)
+        val mockCloseFunc = mockFunction[Option[Any], Unit]
+        val pipeline = Pipeline.newPipeline(classOf[AnyRef], mockCloseFunc)
+
+        mockCloseFunc.expects(expected).once()
+
+        pipeline.close(now = true, data = expected.get)
+      }
+
+      it("should create a new pipeline with default metadata when only the class type and close function are provided") {
+        val expected = Pipeline.DefaultMetadataMap
+
+        val pipeline = Pipeline.newPipeline(classOf[AnyRef], mockFunction[Unit])
+
+        val actual = pipeline.currentMetadata
+        actual should be (expected)
+      }
+
+      it("should create a new pipeline with the specified metadata map") {
+        val expected = Map("a" -> 3) //mock[Pipeline.Metadata]
+
+        val pipeline = Pipeline.newPipeline(classOf[AnyRef], expected)
+
+        val actual = pipeline.currentMetadata
+        actual should be (expected)
+      }
+
+      it("should create a new pipeline with default close function when only the class type and metadata map are provided") {
+        val expected = Pipeline.DefaultCloseFunc
+
+        val pipeline = Pipeline.newPipeline(classOf[AnyRef], Map("a" -> 3))
+
+        val actual = pipeline.closeFunc
+        actual should be (expected)
+      }
+
+      it("should create a new pipeline with the provided close function and metadata map") {
+        val mockCloseFunc = mockFunction[Unit]
+        val metadata = Map("a" -> 3)
+
+        val pipeline = Pipeline.newPipeline(classOf[AnyRef], mockCloseFunc, metadata)
+
+        pipeline.currentMetadata should be (metadata)
+
+        mockCloseFunc.expects().once()
+        pipeline.close()
+      }
+
+      it("should create a new pipeline with the provided close function with data and metadata map") {
+        val mockCloseFunc = mockFunction[Option[Any], Unit]
+        val metadata = Map("a" -> 3)
+
+        val pipeline = Pipeline.newPipeline(classOf[AnyRef], mockCloseFunc, metadata)
+
+        pipeline.currentMetadata should be (metadata)
+
+        val data = 999
+        mockCloseFunc.expects(Some(data)).once()
+        pipeline.close(now = true, data = data)
       }
     }
   }

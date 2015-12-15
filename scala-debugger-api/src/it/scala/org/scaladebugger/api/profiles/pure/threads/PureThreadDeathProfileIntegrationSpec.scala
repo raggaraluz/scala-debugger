@@ -2,6 +2,7 @@ package org.scaladebugger.api.profiles.pure.threads
 
 import java.util.concurrent.atomic.{AtomicInteger, AtomicBoolean}
 
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -21,7 +22,7 @@ class PureThreadDeathProfileIntegrationSpec extends FunSpec with Matchers
   describe("PureThreadDeathProfile") {
     it("should trigger when a thread dies") {
       val testClass = "org.scaladebugger.test.threads.ThreadDeath"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val threadDeathCount = new AtomicInteger(0)
 

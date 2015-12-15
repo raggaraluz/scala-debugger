@@ -6,4 +6,6 @@ project/project
 project/target
 target/
 **.iml
+site/
+.DS_Store
 

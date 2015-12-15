@@ -27,7 +27,7 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
     mockConnectorArgument
   }
 
-  private val testAddress = "localhost"
+  private val testHostname = "localhost"
   private val testPort = 1234
   private val testWorkers = 4
 
@@ -45,7 +45,7 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
     virtualMachineManager = mockVirtualMachineManager,
     newProfileManagerFunc = () => mockProfileManager,
     loopingTaskRunner     = mockLoopingTaskRunner,
-    address               = testAddress,
+    hostname              = testHostname,
     port                  = testPort,
     workers               = testWorkers
   ) {
@@ -244,6 +244,10 @@ class ListeningDebuggerSpec extends FunSpec with Matchers
 
         listeningDebugger.start((_) => {})
 
+        val mockVirtualMachine = mock[VirtualMachine]
+        (mockVirtualMachineManager.connectedVirtualMachines _).expects()
+          .returning(List[VirtualMachine](mockVirtualMachine).asJava).once()
+        (mockVirtualMachine.dispose _).expects().once()
         (mockListeningConnector.stopListening _).expects(*).once()
         (mockLoopingTaskRunner.stop _).expects(true).once()
 

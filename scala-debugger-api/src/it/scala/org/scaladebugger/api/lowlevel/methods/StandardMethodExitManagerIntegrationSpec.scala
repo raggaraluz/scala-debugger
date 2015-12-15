@@ -3,6 +3,7 @@ package org.scaladebugger.api.lowlevel.methods
 import java.util.concurrent.atomic.AtomicBoolean
 
 import com.sun.jdi.event.{BreakpointEvent, MethodExitEvent}
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -23,7 +24,7 @@ class StandardMethodExitManagerIntegrationSpec extends FunSpec with Matchers
   describe("StandardMethodExitManager") {
     it("should be able to detect exiting a specific method in a class") {
       val testClass = "org.scaladebugger.test.methods.MethodExit"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val expectedClassName =
         "org.scaladebugger.test.methods.MethodExitTestClass"

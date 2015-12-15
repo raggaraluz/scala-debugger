@@ -2,6 +2,7 @@ package org.scaladebugger.api.profiles.pure.monitors
 
 import com.sun.jdi.event.{Event, EventQueue}
 import com.sun.jdi.request.EventRequestManager
+import org.scaladebugger.api.profiles.Constants
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.lowlevel.events.EventManager
@@ -18,14 +19,14 @@ import test.JDIMockHelpers
 import scala.util.{Failure, Success}
 
 class PureMonitorContendedEnterProfileSpec extends FunSpec with Matchers
-with ParallelTestExecution with MockFactory with JDIMockHelpers
-{
+with ParallelTestExecution with MockFactory with JDIMockHelpers {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockMonitorContendedEnterManager = mock[MonitorContendedEnterManager]
   private val mockEventManager = mock[EventManager]
 
   private val pureMonitorContendedEnterProfile = new Object with PureMonitorContendedEnterProfile {
     private var requestId: String = _
+
     def setRequestId(requestId: String): Unit = this.requestId = requestId
 
     // NOTE: If we set a specific request id, return that, otherwise use the
@@ -65,8 +66,8 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           (mockEventManager.addEventDataStream _)
             .expects(MonitorContendedEnterEventType, Seq(uniqueIdPropertyFilter))
             .returning(Pipeline.newPipeline(
-              classOf[(Event, Seq[JDIEventDataResult])]
-            )).once()
+            classOf[(Event, Seq[JDIEventDataResult])]
+          )).once()
         }
 
         pureMonitorContendedEnterProfile.onMonitorContendedEnterWithData(
@@ -102,7 +103,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           arguments: _*
         )
 
-        actual should be (expected)
+        actual should be(expected)
       }
 
       it("should create a new request if the previous one was removed") {
@@ -136,8 +137,8 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           (mockEventManager.addEventDataStream _)
             .expects(MonitorContendedEnterEventType, Seq(uniqueIdPropertyFilter))
             .returning(Pipeline.newPipeline(
-              classOf[(Event, Seq[JDIEventDataResult])]
-            )).once()
+            classOf[(Event, Seq[JDIEventDataResult])]
+          )).once()
         }
 
         pureMonitorContendedEnterProfile.onMonitorContendedEnterWithData(
@@ -167,8 +168,8 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           (mockEventManager.addEventDataStream _)
             .expects(MonitorContendedEnterEventType, Seq(uniqueIdPropertyFilter))
             .returning(Pipeline.newPipeline(
-              classOf[(Event, Seq[JDIEventDataResult])]
-            )).once()
+            classOf[(Event, Seq[JDIEventDataResult])]
+          )).once()
         }
 
         pureMonitorContendedEnterProfile.onMonitorContendedEnterWithData(
@@ -203,8 +204,8 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           (mockEventManager.addEventDataStream _)
             .expects(MonitorContendedEnterEventType, Seq(uniqueIdPropertyFilter))
             .returning(Pipeline.newPipeline(
-              classOf[(Event, Seq[JDIEventDataResult])]
-            )).once()
+            classOf[(Event, Seq[JDIEventDataResult])]
+          )).once()
         }
 
         pureMonitorContendedEnterProfile.onMonitorContendedEnterWithData(
@@ -232,8 +233,8 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           (mockEventManager.addEventDataStream _)
             .expects(MonitorContendedEnterEventType, Seq(uniqueIdPropertyFilter))
             .returning(Pipeline.newPipeline(
-              classOf[(Event, Seq[JDIEventDataResult])]
-            )).once()
+            classOf[(Event, Seq[JDIEventDataResult])]
+          )).once()
         }
 
         pureMonitorContendedEnterProfile.onMonitorContendedEnterWithData(
@@ -249,6 +250,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
         pureMonitorContendedEnterProfile.setRequestId(TestRequestId)
 
         inSequence {
+          val eventHandlerIds = Seq("a", "b")
           inAnyOrder {
             val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
             val uniqueIdPropertyFilter =
@@ -273,15 +275,23 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
               .expects(TestRequestId, uniqueIdProperty +: arguments)
               .returning(Success(TestRequestId)).once()
 
-            (mockEventManager.addEventDataStream _)
-              .expects(MonitorContendedEnterEventType, Seq(uniqueIdPropertyFilter))
-              .returning(Pipeline.newPipeline(
-                classOf[(Event, Seq[JDIEventDataResult])]
-              )).twice()
+            // NOTE: Pipeline adds an event handler id to its metadata
+            def newEventPipeline(id: String) = Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            ).withMetadata(Map(EventManager.EventHandlerIdMetadataField -> id))
+
+            eventHandlerIds.foreach(id => {
+              (mockEventManager.addEventDataStream _)
+                .expects(MonitorContendedEnterEventType, Seq(uniqueIdPropertyFilter))
+                .returning(newEventPipeline(id)).once()
+            })
           }
 
           (mockMonitorContendedEnterManager.removeMonitorContendedEnterRequest _)
             .expects(TestRequestId).once()
+          eventHandlerIds.foreach(id => {
+            (mockEventManager.removeEventHandler _).expects(id).once()
+          })
         }
 
         val p1 = pureMonitorContendedEnterProfile.onMonitorContendedEnterWithData(arguments: _*)
@@ -290,7 +300,64 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
         p1.foreach(_.close())
         p2.foreach(_.close())
       }
+
+      it("should remove the underlying request if close data says to do so") {
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureMonitorContendedEnterProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          val eventHandlerIds = Seq("a", "b")
+          inAnyOrder {
+            val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+            val uniqueIdPropertyFilter =
+              UniqueIdPropertyFilter(id = TestRequestId)
+
+            // Memoized request function first checks to make sure the cache
+            // has not been invalidated underneath (first call will always be
+            // empty since we have never created the request)
+            (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _)
+              .expects()
+              .returning(Nil).once()
+            (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _)
+              .expects()
+              .returning(Seq(TestRequestId)).once()
+
+            (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
+              .expects(TestRequestId)
+              .returning(Some(MonitorContendedEnterRequestInfo(TestRequestId, arguments))).once()
+
+            // NOTE: Expect the request to be created with a unique id
+            (mockMonitorContendedEnterManager.createMonitorContendedEnterRequestWithId _)
+              .expects(TestRequestId, uniqueIdProperty +: arguments)
+              .returning(Success(TestRequestId)).once()
+
+            // NOTE: Pipeline adds an event handler id to its metadata
+            def newEventPipeline(id: String) = Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            ).withMetadata(Map(EventManager.EventHandlerIdMetadataField -> id))
+
+            eventHandlerIds.foreach(id => {
+              (mockEventManager.addEventDataStream _)
+                .expects(MonitorContendedEnterEventType, Seq(uniqueIdPropertyFilter))
+                .returning(newEventPipeline(id)).once()
+            })
+          }
+
+          (mockMonitorContendedEnterManager.removeMonitorContendedEnterRequest _)
+            .expects(TestRequestId).once()
+          eventHandlerIds.foreach(id => {
+            (mockEventManager.removeEventHandler _).expects(id).once()
+          })
+        }
+
+        val p1 = pureMonitorContendedEnterProfile.onMonitorContendedEnterWithData(arguments: _*)
+        val p2 = pureMonitorContendedEnterProfile.onMonitorContendedEnterWithData(arguments: _*)
+
+        p1.foreach(_.close(now = true, data = Constants.CloseRemoveAll))
+      }
     }
   }
 }
-

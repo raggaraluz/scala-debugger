@@ -2,6 +2,7 @@ package org.scaladebugger.api.profiles.pure.watchpoints
 
 import java.util.concurrent.atomic.AtomicBoolean
 
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.profiles.pure.PureDebugProfile
@@ -20,7 +21,7 @@ class PureModificationWatchpointProfileIntegrationSpec
   describe("PureModificationWatchpointProfile") {
     it("should be able to detect modification to a field") {
       val testClass = "org.scaladebugger.test.watchpoints.ModificationWatchpoint"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val className = "org.scaladebugger.test.watchpoints.SomeModificationClass"
       val fieldName = "field"

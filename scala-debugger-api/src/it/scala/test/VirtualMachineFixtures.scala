@@ -8,7 +8,7 @@ import org.scaladebugger.api.debuggers.LaunchingDebugger
 import org.scaladebugger.api.lowlevel.ManagerContainer
 import org.scaladebugger.api.lowlevel.events.EventType
 import org.scaladebugger.api.profiles.ProfileManager
-import org.scaladebugger.api.utils.{LoopingTaskRunner, Logging}
+import org.scaladebugger.api.utils.{JDITools, LoopingTaskRunner, Logging}
 import org.scaladebugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
 import EventType._
 import com.sun.jdi.VirtualMachine
@@ -69,7 +69,7 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
     val launchingDebugger = LaunchingDebugger(
       className             = className,
       commandLineArguments  = arguments,
-      jvmOptions            = Seq("-classpath", jvmClasspath),
+      jvmOptions            = Seq("-classpath", JDITools.jvmClassPath),
       suspend               = true // This should always be true for our tests
     )
 

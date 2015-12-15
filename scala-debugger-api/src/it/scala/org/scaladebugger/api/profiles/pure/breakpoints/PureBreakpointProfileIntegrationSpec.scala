@@ -3,6 +3,7 @@ package org.scaladebugger.api.profiles.pure.breakpoints
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
 import com.sun.jdi.event.BreakpointEvent
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -25,7 +26,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
   describe("PureBreakpointProfile") {
     it("should be able to set breakpoints within while loops") {
       val testClass = "org.scaladebugger.test.breakpoints.WhileLoop"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val firstBreakpointLine = 13
       val firstBreakpointCount = new AtomicInteger(0)
@@ -62,7 +63,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
 
     it("should be able to set breakpoints within for comprehensions") {
       val testClass = "org.scaladebugger.test.breakpoints.ForComprehension"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val firstBreakpointLine = 14
       val firstBreakpointCount = new AtomicInteger(0)
@@ -99,7 +100,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
 
     it("should be able to set breakpoints in a DelayInit object") {
       val testClass = "org.scaladebugger.test.breakpoints.DelayedInit"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val firstBreakpointLine = 10
       val firstBreakpoint = new AtomicBoolean(false)

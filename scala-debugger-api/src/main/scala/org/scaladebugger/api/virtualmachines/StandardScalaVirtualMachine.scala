@@ -11,6 +11,7 @@ import org.scaladebugger.api.lowlevel.watchpoints.{PendingModificationWatchpoint
 import org.scaladebugger.api.profiles.pure.PureDebugProfile
 import org.scaladebugger.api.profiles.ProfileManager
 import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
+import org.scaladebugger.api.profiles.traits.DebugProfile
 import org.scaladebugger.api.utils.{LoopingTaskRunner, Logging}
 import com.sun.jdi._
 
@@ -74,7 +75,7 @@ class StandardScalaVirtualMachine(
     logger.debug(vmString("Initializing Scala virtual machine!"))
 
     // Register our standard profiles
-    profileManager.register(
+    this.register(
       PureDebugProfile.Name,
       new PureDebugProfile(_virtualMachine, lowlevel)
     )
@@ -152,5 +153,37 @@ class StandardScalaVirtualMachine(
    * @return The JDI VirtualMachine instance
    */
   override val underlyingVirtualMachine: VirtualMachine = _virtualMachine
+
+  /**
+   * Registers the profile using the provided name. Ignores any registration
+   * under an already-used name.
+   *
+   * @param name The name of the profile to register
+   * @param profile The profile to register
+   */
+  override def register(
+    name: String,
+    profile: DebugProfile
+  ): Option[DebugProfile] = profileManager.register(name, profile)
+
+  /**
+   * Retrieves the profile with the provided name.
+   *
+   * @param name The name of the profile to retrieve
+   *
+   * @return Some debug profile if found, otherwise None
+   */
+  override def retrieve(name: String): Option[DebugProfile] =
+    profileManager.retrieve(name)
+
+  /**
+   * Unregisters the profile with the provided name.
+   *
+   * @param name The name of the profile to unregister
+   *
+   * @return Some debug profile if unregistered, otherwise None
+   */
+  override def unregister(name: String): Option[DebugProfile] =
+    profileManager.unregister(name)
 }
 

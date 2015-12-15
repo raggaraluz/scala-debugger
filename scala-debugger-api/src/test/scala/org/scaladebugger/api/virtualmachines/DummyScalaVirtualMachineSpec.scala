@@ -1,5 +1,6 @@
 package org.scaladebugger.api.virtualmachines
 
+import org.scaladebugger.api.profiles.traits.DebugProfile
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
 import org.scaladebugger.api.lowlevel.breakpoints.{PendingBreakpointSupport, DummyBreakpointManager}
@@ -111,6 +112,48 @@ class DummyScalaVirtualMachineSpec extends FunSpec with Matchers
 
         val actual = dummyScalaVirtualMachine.underlyingVirtualMachine
 
+        actual should be (expected)
+      }
+    }
+
+    describe("#register") {
+      it("should invoke the underlying profile manager") {
+        val testName = "some name"
+        val testProfile = mock[DebugProfile]
+        val expected = Some(testProfile)
+
+        (mockProfileManager.register _).expects(testName, testProfile)
+          .returning(expected).once()
+
+        val actual = dummyScalaVirtualMachine.register(testName, testProfile)
+        actual should be (expected)
+      }
+    }
+
+    describe("#unregister") {
+      it("should invoke the underlying profile manager") {
+        val testName = "some name"
+        val testProfile = mock[DebugProfile]
+        val expected = Some(testProfile)
+
+        (mockProfileManager.unregister _).expects(testName)
+          .returning(expected).once()
+
+        val actual = dummyScalaVirtualMachine.unregister(testName)
+        actual should be (expected)
+      }
+    }
+
+    describe("#retrieve") {
+      it("should invoke the underlying profile manager") {
+        val testName = "some name"
+        val testProfile = mock[DebugProfile]
+        val expected = Some(testProfile)
+
+        (mockProfileManager.retrieve _).expects(testName)
+          .returning(expected).once()
+
+        val actual = dummyScalaVirtualMachine.retrieve(testName)
         actual should be (expected)
       }
     }

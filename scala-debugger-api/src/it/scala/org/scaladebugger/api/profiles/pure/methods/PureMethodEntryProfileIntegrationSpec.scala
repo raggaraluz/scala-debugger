@@ -3,6 +3,7 @@ package org.scaladebugger.api.profiles.pure.methods
 import java.util.concurrent.atomic.{AtomicInteger, AtomicBoolean}
 
 import com.sun.jdi.event.{BreakpointEvent, MethodEntryEvent}
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -24,7 +25,7 @@ class PureMethodEntryProfileIntegrationSpec extends FunSpec with Matchers
   describe("PureMethodEntryProfile") {
     it("should be able to detect entering a specific method in a class") {
       val testClass = "org.scaladebugger.test.methods.MethodEntry"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val expectedClassName =
         "org.scaladebugger.test.methods.MethodEntryTestClass"
