@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.profiles.pure.methods
 import com.sun.jdi.event.{Event, EventQueue}
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.events.filters.{UniqueIdPropertyFilter, MethodNameFilter}
@@ -18,7 +18,7 @@ import org.senkbeil.debugger.api.lowlevel.events.EventType.MethodEntryEventType
 import scala.util.{Failure, Success}
 
 class PureMethodEntryProfileSpec extends FunSpec with Matchers
-with OneInstancePerTest with MockFactory with JDIMockHelpers
+with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockMethodEntryManager = mock[MethodEntryManager]

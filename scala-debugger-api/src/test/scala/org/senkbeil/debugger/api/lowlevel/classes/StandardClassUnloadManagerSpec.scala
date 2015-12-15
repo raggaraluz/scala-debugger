@@ -4,19 +4,19 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import com.sun.jdi.request.{EventRequest, EventRequestManager, ClassUnloadRequest}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.requests.{JDIRequestArgument, JDIRequestProcessor}
 
 import scala.util.{Failure, Success}
 
 class StandardClassUnloadManagerSpec extends FunSpec with Matchers with MockFactory
-  with OneInstancePerTest with org.scalamock.matchers.Matchers
+  with ParallelTestExecution with org.scalamock.matchers.Matchers
 {
-  private val TestId = java.util.UUID.randomUUID().toString
+  private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]
 
   private val classUnloadManager = new StandardClassUnloadManager(mockEventRequestManager) {
-    override protected def newRequestId(): String = TestId
+    override protected def newRequestId(): String = TestRequestId
   }
 
   describe("StandardClassUnloadManager") {
@@ -64,11 +64,9 @@ class StandardClassUnloadManagerSpec extends FunSpec with Matchers with MockFact
         val actual = classUnloadManager.createClassUnloadRequestWithId(expected.get)
         actual should be(expected)
       }
-    }
 
-    describe("#createClassUnloadRequest") {
       it("should create the class unload request and return Success(id)") {
-        val expected = Success(TestId)
+        val expected = Success(TestRequestId)
 
         val mockClassUnloadRequest = mock[ClassUnloadRequest]
         (mockEventRequestManager.createClassUnloadRequest _).expects()
@@ -80,7 +78,9 @@ class StandardClassUnloadManagerSpec extends FunSpec with Matchers with MockFact
           .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
         (mockClassUnloadRequest.setEnabled _).expects(true).once()
 
-        val actual = classUnloadManager.createClassUnloadRequest()
+        val actual = classUnloadManager.createClassUnloadRequestWithId(
+          expected.get
+        )
         actual should be (expected)
       }
 
@@ -90,7 +90,9 @@ class StandardClassUnloadManagerSpec extends FunSpec with Matchers with MockFact
         (mockEventRequestManager.createClassUnloadRequest _).expects()
           .throwing(expected.failed.get).once()
 
-        val actual = classUnloadManager.createClassUnloadRequest()
+        val actual = classUnloadManager.createClassUnloadRequestWithId(
+          TestRequestId
+        )
         actual should be (expected)
       }
     }
@@ -111,7 +113,7 @@ class StandardClassUnloadManagerSpec extends FunSpec with Matchers with MockFact
       it("should return false if it does not exist") {
         val expected = false
 
-        val actual = classUnloadManager.hasClassUnloadRequest(TestId)
+        val actual = classUnloadManager.hasClassUnloadRequest(TestRequestId)
         actual should be (expected)
       }
     }
@@ -132,14 +134,14 @@ class StandardClassUnloadManagerSpec extends FunSpec with Matchers with MockFact
       it("should return None if not found") {
         val expected = None
 
-        val actual = classUnloadManager.getClassUnloadRequest(TestId)
+        val actual = classUnloadManager.getClassUnloadRequest(TestRequestId)
         actual should be (expected)
       }
     }
 
     describe("#getClassUnloadRequestInfo") {
       it("should return Some(info) if found") {
-        val expected = ClassUnloadRequestInfo(Seq(
+        val expected = ClassUnloadRequestInfo(TestRequestId, Seq(
           mock[JDIRequestArgument],
           mock[JDIRequestArgument]
         ))
@@ -164,7 +166,7 @@ class StandardClassUnloadManagerSpec extends FunSpec with Matchers with MockFact
       it("should return None if not found") {
         val expected = None
 
-        val actual = classUnloadManager.getClassUnloadRequestInfo(TestId)
+        val actual = classUnloadManager.getClassUnloadRequestInfo(TestRequestId)
         actual should be (expected)
       }
     }
@@ -189,7 +191,7 @@ class StandardClassUnloadManagerSpec extends FunSpec with Matchers with MockFact
       it("should return false if the class unload request was not removed") {
         val expected = false
 
-        val actual = classUnloadManager.removeClassUnloadRequest(TestId)
+        val actual = classUnloadManager.removeClassUnloadRequest(TestRequestId)
         actual should be (expected)
       }
     }

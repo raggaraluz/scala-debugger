@@ -2,11 +2,11 @@ package org.senkbeil.debugger.api.lowlevel.events.filters.processors
 
 import com.sun.jdi.event.Event
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.filters.{JDIEventFilter, JDIEventFilterProcessor, AndFilter}
 
 class AndFilterProcessorSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   describe("AndFilterProcessor") {
     describe("#process") {

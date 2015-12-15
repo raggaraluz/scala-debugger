@@ -47,25 +47,12 @@ class StandardVMDeathManager(
 
     if (request.isSuccess) vmDeathRequests.putWithId(
       requestId,
-      VMDeathRequestInfo(extraArguments),
+      VMDeathRequestInfo(requestId, extraArguments),
       request.get
     )
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)
-  }
-
-  /**
-   * Creates a new vm death request for the specified class and method.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createVMDeathRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createVMDeathRequestWithId(newRequestId(), extraArguments: _*)
   }
 
   /**

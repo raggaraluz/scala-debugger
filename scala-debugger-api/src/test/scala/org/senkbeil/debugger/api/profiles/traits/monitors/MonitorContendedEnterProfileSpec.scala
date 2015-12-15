@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.profiles.traits.monitors
 
 import com.sun.jdi.event.MonitorContendedEnterEvent
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
@@ -11,7 +11,7 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import scala.util.{Failure, Success, Try}
 
 class MonitorContendedEnterProfileSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val TestThrowable = new Throwable
 

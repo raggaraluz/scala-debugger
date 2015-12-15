@@ -1,10 +1,10 @@
 package org.senkbeil.debugger.api.lowlevel.requests.properties
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class CustomPropertySpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val mockKey = mock[AnyRef]
   private val mockValue = mock[AnyRef]

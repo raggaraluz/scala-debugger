@@ -55,7 +55,30 @@ trait ModificationWatchpointManager {
     className: String,
     fieldName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createModificationWatchpointRequestWithId(
+    newRequestId(),
+    className,
+    fieldName,
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a modification watchpoint request based on the specified
+   * information.
+   *
+   * @param modificationWatchpointRequestInfo The information used to create the
+   *                                          modification watchpoint request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createModificationWatchpointRequestFromInfo(
+    modificationWatchpointRequestInfo: ModificationWatchpointRequestInfo
+  ): Try[String] = createModificationWatchpointRequestWithId(
+    modificationWatchpointRequestInfo.requestId,
+    modificationWatchpointRequestInfo.className,
+    modificationWatchpointRequestInfo.fieldName,
+    modificationWatchpointRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a modification watchpoint request with the specified field.
@@ -74,12 +97,12 @@ trait ModificationWatchpointManager {
   /**
    * Determines if a modification watchpoint request with the specified id.
    *
-   * @param id The id of the Modification Watchpoint Request
+   * @param requestId The id of the Modification Watchpoint Request
    *
    * @return True if a modification watchpoint request with the id exists,
    *         otherwise false
    */
-  def hasModificationWatchpointRequestWithId(id: String): Boolean
+  def hasModificationWatchpointRequestWithId(requestId: String): Boolean
 
   /**
    * Returns the collection of modification watchpoint requests representing the
@@ -99,12 +122,12 @@ trait ModificationWatchpointManager {
   /**
    * Retrieves the modification watchpoint request using the specified id.
    *
-   * @param id The id of the Modification Watchpoint Request
+   * @param requestId The id of the Modification Watchpoint Request
    *
    * @return Some modification watchpoint request if it exists, otherwise None
    */
   def getModificationWatchpointRequestWithId(
-    id: String
+    requestId: String
   ): Option[ModificationWatchpointRequest]
 
   /**
@@ -124,12 +147,12 @@ trait ModificationWatchpointManager {
   /**
    * Removes the modification watchpoint request with the specified id.
    *
-   * @param id The id of the Modification Watchpoint Request
+   * @param requestId The id of the Modification Watchpoint Request
    *
    * @return True if the modification watchpoint request was removed
    *         (if it existed), otherwise false
    */
-  def removeModificationWatchpointRequestWithId(id: String): Boolean
+  def removeModificationWatchpointRequestWithId(requestId: String): Boolean
 
   /**
    * Generates an id for a new request.

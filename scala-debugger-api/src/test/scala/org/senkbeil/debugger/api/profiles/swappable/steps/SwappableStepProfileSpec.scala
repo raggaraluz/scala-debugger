@@ -2,14 +2,14 @@ package org.senkbeil.debugger.api.profiles.swappable.steps
 
 import com.sun.jdi.ThreadReference
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.DebugProfile
 
 class SwappableStepProfileSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val mockThreadReference = mock[ThreadReference]
   private val mockDebugProfile = mock[DebugProfile]

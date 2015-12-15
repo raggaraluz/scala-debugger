@@ -1,10 +1,10 @@
 package org.senkbeil.debugger.api.lowlevel.events.filters
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
 
 class MaxTriggerFilterSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val testCount = 3
   private val maxTriggerFilter = MaxTriggerFilter(count = testCount)

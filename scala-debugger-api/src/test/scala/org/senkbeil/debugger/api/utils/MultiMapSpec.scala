@@ -1,8 +1,8 @@
 package org.senkbeil.debugger.api.utils
 
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
-class MultiMapSpec extends FunSpec with Matchers with OneInstancePerTest {
+class MultiMapSpec extends FunSpec with Matchers with ParallelTestExecution {
 
   private val TestId = java.util.UUID.randomUUID().toString
   private val TestKey = (java.util.UUID.randomUUID().toString, 999)

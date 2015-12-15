@@ -7,6 +7,7 @@ import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureVMDeathProfileIntegrationSpec extends FunSpec with Matchers
@@ -24,13 +25,15 @@ class PureVMDeathProfileIntegrationSpec extends FunSpec with Matchers
 
       val detectedDeath = new AtomicBoolean(false)
 
-      // Start our VM and listen for the start event
-      withVirtualMachine(testClass) { (s) =>
-        // Mark that we want to receive vm death events and watch for one
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeVMDeath()
-          .foreach(_ => detectedDeath.set(true))
+      val s = DummyScalaVirtualMachine.newInstance()
 
+      // Mark that we want to receive vm death events and watch for one
+      s.withProfile(PureDebugProfile.Name)
+        .onUnsafeVMDeath()
+        .foreach(_ => detectedDeath.set(true))
+
+      // Start our VM and listen for the start event
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         // Kill the JVM process so we get a disconnect event
         s.underlyingVirtualMachine.process().destroy()
 

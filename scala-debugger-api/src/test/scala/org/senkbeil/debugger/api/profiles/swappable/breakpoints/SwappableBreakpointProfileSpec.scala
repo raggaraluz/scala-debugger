@@ -1,14 +1,14 @@
 package org.senkbeil.debugger.api.profiles.swappable.breakpoints
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
 import org.senkbeil.debugger.api.profiles.traits.DebugProfile
 
 class SwappableBreakpointProfileSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val mockDebugProfile = mock[DebugProfile]
   private val mockProfileManager = mock[ProfileManager]

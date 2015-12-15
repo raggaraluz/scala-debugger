@@ -7,6 +7,7 @@ import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
 import org.senkbeil.debugger.api.lowlevel.events.EventType.BreakpointEventType
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureEventProfileIntegrationSpec extends FunSpec with Matchers
@@ -29,22 +30,24 @@ class PureEventProfileIntegrationSpec extends FunSpec with Matchers
       val hitLines = collection.mutable.Set[Int]()
       val eventCount = new AtomicInteger(0)
 
-      withVirtualMachine(testClass) { (s) =>
-        // Set our breakpoints
-        s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber1)
-        s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber2)
-        s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber3)
+      val s = DummyScalaVirtualMachine.newInstance()
 
-        // Set a separate event pipeline to receive events
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeEvent(BreakpointEventType)
-          .map(_.asInstanceOf[BreakpointEvent])
-          .map(_.location().lineNumber())
-          .foreach(lineNumber => {
-            hitLines += lineNumber
-            eventCount.incrementAndGet()
-          })
+      // Set our breakpoints
+      s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber1)
+      s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber2)
+      s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber3)
 
+      // Set a separate event pipeline to receive events
+      s.withProfile(PureDebugProfile.Name)
+        .onUnsafeEvent(BreakpointEventType)
+        .map(_.asInstanceOf[BreakpointEvent])
+        .map(_.location().lineNumber())
+        .foreach(lineNumber => {
+          hitLines += lineNumber
+          eventCount.incrementAndGet()
+        })
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           hitLines should contain allOf (lineNumber1, lineNumber2, lineNumber3)
           eventCount.get() should be > 0
@@ -61,6 +64,9 @@ class PureEventProfileIntegrationSpec extends FunSpec with Matchers
 
       val hitLines = collection.mutable.Set[Int]()
       val eventCount = new AtomicInteger(0)
+
+      // TODO: Unable to provide a pending Scala virtual machine as close does
+      //       not currently work - update once it does
 
       withVirtualMachine(testClass) { (s) =>
         // Set our breakpoints

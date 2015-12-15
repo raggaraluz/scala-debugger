@@ -40,46 +40,66 @@ trait MonitorWaitManager {
    */
   def createMonitorWaitRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createMonitorWaitRequestWithId(
+    newRequestId(),
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new monitor wait request based on the specified information.
+   *
+   * @param monitorWaitRequestInfo The information used to create the
+   *                               monitor wait request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createMonitorWaitRequestFromInfo(
+    monitorWaitRequestInfo: MonitorWaitRequestInfo
+  ): Try[String] = createMonitorWaitRequestWithId(
+    monitorWaitRequestInfo.requestId,
+    monitorWaitRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a monitor wait request with the specified id.
    *
-   * @param id The id of the Monitor Wait Request
+   * @param requestId The id of the Monitor Wait Request
    *
    * @return True if a monitor wait request with the id exists,
    *         otherwise false
    */
-  def hasMonitorWaitRequest(id: String): Boolean
+  def hasMonitorWaitRequest(requestId: String): Boolean
 
   /**
    * Retrieves the monitor wait request using the specified id.
    *
-   * @param id The id of the Monitor Wait Request
+   * @param requestId The id of the Monitor Wait Request
    *
    * @return Some monitor wait request if it exists, otherwise None
    */
-  def getMonitorWaitRequest(id: String): Option[MonitorWaitRequest]
+  def getMonitorWaitRequest(requestId: String): Option[MonitorWaitRequest]
 
   /**
    * Retrieves the information for a monitor wait request with the
    * specified id.
    *
-   * @param id The id of the Monitor Wait Request
+   * @param requestId The id of the Monitor Wait Request
    *
    * @return Some information about the request if it exists, otherwise None
    */
-  def getMonitorWaitRequestInfo(id: String): Option[MonitorWaitRequestInfo]
+  def getMonitorWaitRequestInfo(
+    requestId: String
+  ): Option[MonitorWaitRequestInfo]
 
   /**
    * Removes the specified monitor wait request.
    *
-   * @param id The id of the Monitor Wait Request
+   * @param requestId The id of the Monitor Wait Request
    *
    * @return True if the monitor wait request was removed
    *         (if it existed), otherwise false
    */
-  def removeMonitorWaitRequest(id: String): Boolean
+  def removeMonitorWaitRequest(requestId: String): Boolean
 
   /**
    * Generates an id for a new request.

@@ -4,7 +4,7 @@ import com.sun.jdi.ThreadReference
 import com.sun.jdi.event.StepEvent
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
@@ -13,7 +13,7 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 import scala.concurrent._
 import scala.util.{Failure, Success, Try}
 
-class StepProfileSpec extends FunSpec with Matchers with OneInstancePerTest
+class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
   with MockFactory with ScalaFutures
 {
   private val mockThreadReference = mock[ThreadReference]

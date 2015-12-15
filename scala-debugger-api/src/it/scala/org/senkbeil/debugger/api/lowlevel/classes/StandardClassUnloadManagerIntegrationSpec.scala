@@ -6,6 +6,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardClassUnloadManagerIntegrationSpec extends FunSpec with Matchers
@@ -25,15 +26,17 @@ class StandardClassUnloadManagerIntegrationSpec extends FunSpec with Matchers
 
       val detectedUnload = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
 
-        // Mark that we want to receive class unload events and watch for one
-        classUnloadManager.createClassUnloadRequest()
-        eventManager.addResumingEventHandler(ClassUnloadEventType, _ => {
-          detectedUnload.set(true)
-        })
+      import s.lowlevel._
 
+      // Mark that we want to receive class unload events and watch for one
+      classUnloadManager.createClassUnloadRequest()
+      eventManager.addResumingEventHandler(ClassUnloadEventType, _ => {
+        detectedUnload.set(true)
+      })
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         // Eventually, we should receive the class unload event
         logTimeTaken(eventually {
           detectedUnload.get() should be (true)

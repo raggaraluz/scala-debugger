@@ -7,6 +7,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardMonitorWaitManagerIntegrationSpec extends FunSpec with Matchers
@@ -24,24 +25,25 @@ class StandardMonitorWaitManagerIntegrationSpec extends FunSpec with Matchers
 
       val detectedWait = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
+      import s.lowlevel._
 
-        // Mark that we want to receive monitor wait events and
-        // watch for one
-        monitorWaitManager.createMonitorWaitRequest()
-        eventManager.addResumingEventHandler(MonitorWaitEventType, e => {
-          val monitorWaitEvent =
-            e.asInstanceOf[MonitorWaitEvent]
+      // Mark that we want to receive monitor wait events and
+      // watch for one
+      monitorWaitManager.createMonitorWaitRequest()
+      eventManager.addResumingEventHandler(MonitorWaitEventType, e => {
+        val monitorWaitEvent =
+          e.asInstanceOf[MonitorWaitEvent]
 
-          val threadName = monitorWaitEvent.thread().name()
-          val monitorTypeName =
-            monitorWaitEvent.monitor().referenceType().name()
+        val threadName = monitorWaitEvent.thread().name()
+        val monitorTypeName =
+          monitorWaitEvent.monitor().referenceType().name()
 
-          logger.debug(s"Detected wait in thread $threadName for monitor of type $monitorTypeName")
-          detectedWait.set(true)
-        })
+        logger.debug(s"Detected wait in thread $threadName for monitor of type $monitorTypeName")
+        detectedWait.set(true)
+      })
 
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         // Eventually, we should receive the monitor wait event
         logTimeTaken(eventually {
           // NOTE: Using asserts to provide more helpful failure messages

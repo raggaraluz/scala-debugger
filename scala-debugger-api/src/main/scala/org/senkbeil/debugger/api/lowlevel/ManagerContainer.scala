@@ -2,17 +2,19 @@ package org.senkbeil.debugger.api.lowlevel
 
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.request.EventRequestManager
-import org.senkbeil.debugger.api.lowlevel.breakpoints.{BreakpointManager, ExtendedBreakpointManager, StandardBreakpointManager}
+import org.senkbeil.debugger.api.lowlevel.breakpoints._
 import org.senkbeil.debugger.api.lowlevel.classes._
-import org.senkbeil.debugger.api.lowlevel.events.{StandardEventManager, EventManager}
-import org.senkbeil.debugger.api.lowlevel.exceptions.{StandardExceptionManager, ExceptionManager}
-import org.senkbeil.debugger.api.lowlevel.methods.{MethodExitManager, MethodEntryManager, StandardMethodEntryManager, StandardMethodExitManager}
+import org.senkbeil.debugger.api.lowlevel.events._
+import org.senkbeil.debugger.api.lowlevel.exceptions._
+import org.senkbeil.debugger.api.lowlevel.methods._
 import org.senkbeil.debugger.api.lowlevel.monitors._
-import org.senkbeil.debugger.api.lowlevel.steps.{StepManager, StandardStepManager}
-import org.senkbeil.debugger.api.lowlevel.threads.{ThreadStartManager, ThreadDeathManager, StandardThreadStartManager, StandardThreadDeathManager}
-import org.senkbeil.debugger.api.lowlevel.vm.{VMDeathManager, StandardVMDeathManager}
-import org.senkbeil.debugger.api.lowlevel.watchpoints.{AccessWatchpointManager, ModificationWatchpointManager, StandardModificationWatchpointManager, StandardAccessWatchpointManager}
+import org.senkbeil.debugger.api.lowlevel.steps._
+import org.senkbeil.debugger.api.lowlevel.threads._
+import org.senkbeil.debugger.api.lowlevel.vm._
+import org.senkbeil.debugger.api.lowlevel.watchpoints._
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
+
+import scala.util.Try
 
 /**
  * Represents a container for low-level managers.
@@ -37,8 +39,111 @@ case class ManagerContainer(
   threadDeathManager: ThreadDeathManager,
   threadStartManager: ThreadStartManager,
   vmDeathManager: VMDeathManager
-)
+) {
+  /**
+   * Processes any pending requests in the managers of the provided manager
+   * container by applying them to the managers in this manager container.
+   *
+   * @note This will not remove the pending requests from the managers
+   *       contained in the provided manager container!
+   *
+   * @param managerContainer The manager container whose managers with pending
+   *                         requests will have their requests processed in
+   *                         this manager container
+   */
+  def processPendingRequests(
+    managerContainer: ManagerContainer
+  ): Unit = managerContainer.productIterator.foreach(m => Try(m match {
+    case accessWatchpointManager: PendingAccessWatchpointSupport =>
+      accessWatchpointManager.pendingAccessWatchpointRequests.foreach(
+        this.accessWatchpointManager.createAccessWatchpointRequestFromInfo
+      )
+    case breakpointManager: PendingBreakpointSupport =>
+      breakpointManager.pendingBreakpointRequests.foreach(
+        this.breakpointManager.createBreakpointRequestFromInfo
+      )
+    case classPrepareManager: PendingClassPrepareSupport =>
+      classPrepareManager.pendingClassPrepareRequests.foreach(
+        this.classPrepareManager.createClassPrepareRequestFromInfo
+      )
+    case classUnloadManager: PendingClassUnloadSupport =>
+      classUnloadManager.pendingClassUnloadRequests.foreach(
+        this.classUnloadManager.createClassUnloadRequestFromInfo
+      )
+    case eventManager: PendingEventHandlerSupport =>
+      eventManager.pendingEventHandlers.foreach(
+        this.eventManager.addEventHandlerFromInfo
+      )
+    case exceptionManager: PendingExceptionSupport =>
+      exceptionManager.pendingExceptionRequests.foreach(
+        this.exceptionManager.createExceptionRequestFromInfo
+      )
+    case methodEntryManager: PendingMethodEntrySupport =>
+      methodEntryManager.pendingMethodEntryRequests.foreach(
+        this.methodEntryManager.createMethodEntryRequestFromInfo
+      )
+    case methodExitManager: PendingMethodExitSupport =>
+      methodExitManager.pendingMethodExitRequests.foreach(
+        this.methodExitManager.createMethodExitRequestFromInfo
+      )
+    case modificationWatchpointManager: PendingModificationWatchpointSupport =>
+      modificationWatchpointManager.pendingModificationWatchpointRequests.foreach(
+        this.modificationWatchpointManager.createModificationWatchpointRequestFromInfo
+      )
+    case monitorContendedEnteredManager: PendingMonitorContendedEnteredSupport =>
+      monitorContendedEnteredManager.pendingMonitorContendedEnteredRequests.foreach(
+        this.monitorContendedEnteredManager.createMonitorContendedEnteredRequestFromInfo
+      )
+    case monitorContendedEnterManager: PendingMonitorContendedEnterSupport =>
+      monitorContendedEnterManager.pendingMonitorContendedEnterRequests.foreach(
+        this.monitorContendedEnterManager.createMonitorContendedEnterRequestFromInfo
+      )
+    case monitorWaitedManager: PendingMonitorWaitedSupport =>
+      monitorWaitedManager.pendingMonitorWaitedRequests.foreach(
+        this.monitorWaitedManager.createMonitorWaitedRequestFromInfo
+      )
+    case monitorWaitManager: PendingMonitorWaitSupport =>
+      monitorWaitManager.pendingMonitorWaitRequests.foreach(
+        this.monitorWaitManager.createMonitorWaitRequestFromInfo
+      )
+    case stepManager: PendingStepSupport =>
+      stepManager.pendingStepRequests.foreach(
+        this.stepManager.createStepRequestFromInfo
+      )
+    case threadDeathManager: PendingThreadDeathSupport =>
+      threadDeathManager.pendingThreadDeathRequests.foreach(
+        this.threadDeathManager.createThreadDeathRequestFromInfo
+      )
+    case threadStartManager: PendingThreadStartSupport =>
+      threadStartManager.pendingThreadStartRequests.foreach(
+        this.threadStartManager.createThreadStartRequestFromInfo
+      )
+    case vmDeathManager: PendingVMDeathSupport =>
+      vmDeathManager.pendingVMDeathRequests.foreach(
+        this.vmDeathManager.createVMDeathRequestFromInfo
+      )
+  }))
 
+  /** Enables pending support for all managers supporting pending requests. */
+  def enablePendingSupport(): Unit = setPendingSupportForAll(true)
+
+  /** Disables pending support for all managers supporting pending requests. */
+  def disablePendingSupport(): Unit = setPendingSupportForAll(false)
+
+  /**
+   * Sets the pending support enablement to the specified value.
+   *
+   * @param value True if enabling pending support on managers, otherwise false
+   */
+  private def setPendingSupportForAll(value: Boolean): Unit = {
+    this.productIterator.foreach {
+      case p: PendingRequestSupport => p.setPendingSupport(value)
+      case _                        => // Do nothing in this case
+    }
+  }
+}
+
+/** Containers helper methods for initializing a manager container. */
 object ManagerContainer {
   /**
    * Initializes all managers for the specified virtual machine. Uses the
@@ -75,17 +180,18 @@ object ManagerContainer {
     lazy val eventQueue = virtualMachine.eventQueue()
     lazy val accessWatchpointManager =
       new StandardAccessWatchpointManager(eventRequestManager, classManager)
-    // TODO: Revert back to normal breakpoint manager and add pending breakpoint
-    //       functionality somewhere more separate
-    lazy val breakpointManager = new ExtendedBreakpointManager(
+        with StandardPendingAccessWatchpointSupport
+    lazy val breakpointManager =
       new StandardBreakpointManager(eventRequestManager, classManager)
-    )
+        with StandardPendingBreakpointSupport
     lazy val classManager =
       new StandardClassManager(virtualMachine, loadClasses = true)
     lazy val classPrepareManager =
       new StandardClassPrepareManager(eventRequestManager)
+        with StandardPendingClassPrepareSupport
     lazy val classUnloadManager =
       new StandardClassUnloadManager(eventRequestManager)
+        with StandardPendingClassUnloadSupport
     lazy val eventManager = new StandardEventManager(
       eventQueue,
       loopingTaskRunner,
@@ -93,30 +199,128 @@ object ManagerContainer {
     )
     lazy val exceptionManager =
       new StandardExceptionManager(virtualMachine, eventRequestManager)
+        with StandardPendingExceptionSupport
     lazy val methodEntryManager =
       new StandardMethodEntryManager(eventRequestManager)
+        with StandardPendingMethodEntrySupport
     lazy val methodExitManager =
       new StandardMethodExitManager(eventRequestManager)
+        with StandardPendingMethodExitSupport
     lazy val modificationWatchpointManager =
       new StandardModificationWatchpointManager(eventRequestManager, classManager)
+        with StandardPendingModificationWatchpointSupport
     lazy val monitorContendedEnteredManager =
       new StandardMonitorContendedEnteredManager(eventRequestManager)
+        with StandardPendingMonitorContendedEnteredSupport
     lazy val monitorContendedEnterManager =
       new StandardMonitorContendedEnterManager(eventRequestManager)
+        with StandardPendingMonitorContendedEnterSupport
     lazy val monitorWaitedManager =
       new StandardMonitorWaitedManager(eventRequestManager)
+        with StandardPendingMonitorWaitedSupport
     lazy val monitorWaitManager =
       new StandardMonitorWaitManager(eventRequestManager)
+        with StandardPendingMonitorWaitSupport
     lazy val requestManager =
       virtualMachine.eventRequestManager()
     lazy val stepManager =
       new StandardStepManager(eventRequestManager)
+        with StandardPendingStepSupport
     lazy val threadDeathManager =
       new StandardThreadDeathManager(eventRequestManager)
+        with StandardPendingThreadDeathSupport
     lazy val threadStartManager =
       new StandardThreadStartManager(eventRequestManager)
+        with StandardPendingThreadStartSupport
     lazy val vmDeathManager =
       new StandardVMDeathManager(eventRequestManager)
+        with StandardPendingVMDeathSupport
+
+    ManagerContainer(
+      accessWatchpointManager         = accessWatchpointManager,
+      breakpointManager               = breakpointManager,
+      classManager                    = classManager,
+      classPrepareManager             = classPrepareManager,
+      classUnloadManager              = classUnloadManager,
+      eventManager                    = eventManager,
+      exceptionManager                = exceptionManager,
+      methodEntryManager              = methodEntryManager,
+      methodExitManager               = methodExitManager,
+      modificationWatchpointManager   = modificationWatchpointManager,
+      monitorContendedEnteredManager  = monitorContendedEnteredManager,
+      monitorContendedEnterManager    = monitorContendedEnterManager,
+      monitorWaitedManager            = monitorWaitedManager,
+      monitorWaitManager              = monitorWaitManager,
+      requestManager                  = requestManager,
+      stepManager                     = stepManager,
+      threadDeathManager              = threadDeathManager,
+      threadStartManager              = threadStartManager,
+      vmDeathManager                  = vmDeathManager
+    )
+  }
+
+  /**
+   * Initializes all managers to dummy implementations with pending requests
+   * enabled to allow setting requests ahead of virtual machine connections.
+   *
+   * @note Currently, classManager and requestManager are null!
+   *
+   * @return The container holding all of the new managers
+   */
+  def usingDummyManagers(): ManagerContainer = {
+    lazy val accessWatchpointManager =
+      new DummyAccessWatchpointManager
+        with StandardPendingAccessWatchpointSupport
+    lazy val breakpointManager =
+      new DummyBreakpointManager
+        with StandardPendingBreakpointSupport
+    lazy val classManager = null
+    lazy val classPrepareManager =
+      new DummyClassPrepareManager
+        with StandardPendingClassPrepareSupport
+    lazy val classUnloadManager =
+      new DummyClassUnloadManager
+        with StandardPendingClassUnloadSupport
+    lazy val eventManager =
+      new DummyEventManager
+        with StandardPendingEventHandlerSupport
+    lazy val exceptionManager =
+      new DummyExceptionManager
+        with StandardPendingExceptionSupport
+    lazy val methodEntryManager =
+      new DummyMethodEntryManager
+        with StandardPendingMethodEntrySupport
+    lazy val methodExitManager =
+      new DummyMethodExitManager
+        with StandardPendingMethodExitSupport
+    lazy val modificationWatchpointManager =
+      new DummyModificationWatchpointManager
+        with StandardPendingModificationWatchpointSupport
+    lazy val monitorContendedEnteredManager =
+      new DummyMonitorContendedEnteredManager
+        with StandardPendingMonitorContendedEnteredSupport
+    lazy val monitorContendedEnterManager =
+      new DummyMonitorContendedEnterManager
+        with StandardPendingMonitorContendedEnterSupport
+    lazy val monitorWaitedManager =
+      new DummyMonitorWaitedManager
+        with StandardPendingMonitorWaitedSupport
+    lazy val monitorWaitManager =
+      new DummyMonitorWaitManager
+        with StandardPendingMonitorWaitSupport
+    lazy val requestManager = null
+    lazy val stepManager =
+      new DummyStepManager
+        with StandardPendingStepSupport
+    lazy val threadDeathManager =
+      new DummyThreadDeathManager
+        with StandardPendingThreadDeathSupport
+    lazy val threadStartManager =
+      new DummyThreadStartManager
+        with StandardPendingThreadStartSupport
+    lazy val vmDeathManager =
+      new DummyVMDeathManager
+        with StandardPendingVMDeathSupport
 
     ManagerContainer(
       accessWatchpointManager         = accessWatchpointManager,

@@ -2,11 +2,11 @@ package org.senkbeil.debugger.api.lowlevel.requests.properties.processors
 
 import com.sun.jdi.request._
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.requests.properties.EnabledProperty
 
 class EnabledPropertyProcessorSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val testValue = false
   private val enabledProperty = EnabledProperty(value = testValue)

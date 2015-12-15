@@ -8,7 +8,7 @@ import org.scalatest.concurrent.PatienceConfiguration.{Timeout, Interval}
 import org.scalatest.time.{Units, Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType
-import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
 import test.{TestUtilities, VirtualMachineFixtures}
 import test.Constants._
 import EventType._
@@ -33,14 +33,16 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
         // Should return to higher frame on next line
         val expectedLine = 35
 
-        withVirtualMachine(testClass) { (s) =>
-          verifyStepsFromTo(
-            testClass = testClass,
-            scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.createStepOutLineRequest(_: ThreadReference),
-            startingLine = startingLine,
-            expectedLine = expectedLine
-          )
+        val s = DummyScalaVirtualMachine.newInstance()
+        val verify = verifyStepsFromTo(
+          testClass = testClass,
+          scalaVirtualMachine = s,
+          startingLine = startingLine,
+          expectedLine = expectedLine
+        )
+
+        withLazyVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s, f) =>
+          verify(s, f, s.lowlevel.stepManager.createStepOutLineRequest(_: ThreadReference))
         }
       }
 
@@ -53,14 +55,16 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
         // Should return to higher frame on next line
         val expectedLine = 41
 
-        withVirtualMachine(testClass) { (s) =>
-          verifyStepsFromTo(
-            testClass = testClass,
-            scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.createStepOutLineRequest(_: ThreadReference),
-            startingLine = startingLine,
-            expectedLine = expectedLine
-          )
+        val s = DummyScalaVirtualMachine.newInstance()
+        val verify = verifyStepsFromTo(
+          testClass = testClass,
+          scalaVirtualMachine = s,
+          startingLine = startingLine,
+          expectedLine = expectedLine
+        )
+
+        withLazyVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s, f) =>
+          verify(s, f, s.lowlevel.stepManager.createStepOutLineRequest(_: ThreadReference))
         }
       }
     }
@@ -93,18 +97,20 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
           49
         )
 
+        val s = DummyScalaVirtualMachine.newInstance()
+        val verify = verifyStepsOnEach(
+          testClass = testClass,
+          scalaVirtualMachine = s,
+          startingLine = startingLine,
+          expectedReachableLines = expectedReachableLines,
+          failIfNotExact = true,
+          maxDuration = (15, Seconds)
+        )
+
         // NOTE: Have to up the maximum duration due to the delay caused by
         //       the for comprehension
-        withVirtualMachine(testClass) { (s) =>
-          verifyStepsOnEach(
-            testClass = testClass,
-            scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.createStepOverLineRequest(_: ThreadReference),
-            startingLine = startingLine,
-            expectedReachableLines = expectedReachableLines,
-            failIfNotExact = true,
-            maxDuration = (15, Seconds)
-          )
+        withLazyVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s, f) =>
+          verify(s, f, s.lowlevel.stepManager.createStepOverLineRequest(_: ThreadReference))
         }
       }
 
@@ -116,14 +122,16 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
 
         val expectedReachableLines = Seq(14, 16, 18)
 
-        withVirtualMachine(testClass) { (s) =>
-          verifyStepsOnEach(
-            testClass = testClass,
-            scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.createStepOverLineRequest(_: ThreadReference),
-            startingLine = startingLine,
-            expectedReachableLines = expectedReachableLines
-          )
+        val s = DummyScalaVirtualMachine.newInstance()
+        val verify = verifyStepsOnEach(
+          testClass = testClass,
+          scalaVirtualMachine = s,
+          startingLine = startingLine,
+          expectedReachableLines = expectedReachableLines
+        )
+
+        withLazyVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s, f) =>
+          verify(s, f, s.lowlevel.stepManager.createStepOverLineRequest(_: ThreadReference))
         }
       }
 
@@ -136,14 +144,16 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
         // Should return to higher frame on next line
         val expectedLine = 39
 
-        withVirtualMachine(testClass) { (s) =>
-          verifyStepsFromTo(
-            testClass = testClass,
-            scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.createStepOverLineRequest(_: ThreadReference),
-            startingLine = startingLine,
-            expectedLine = expectedLine
-          )
+        val s = DummyScalaVirtualMachine.newInstance()
+        val verify = verifyStepsFromTo(
+          testClass = testClass,
+          scalaVirtualMachine = s,
+          startingLine = startingLine,
+          expectedLine = expectedLine
+        )
+
+        withLazyVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s, f) =>
+          verify(s, f, s.lowlevel.stepManager.createStepOverLineRequest(_: ThreadReference))
         }
       }
 
@@ -155,14 +165,16 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
 
         val expectedReachableLines = Seq(33, 34, 35, 37, 38, 39, 41, 42, 44)
 
-        withVirtualMachine(testClass) { (s) =>
-          verifyStepsOnEach(
-            testClass = testClass,
-            scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.createStepOverLineRequest(_: ThreadReference),
-            startingLine = startingLine,
-            expectedReachableLines = expectedReachableLines
-          )
+        val s = DummyScalaVirtualMachine.newInstance()
+        val verify = verifyStepsOnEach(
+          testClass = testClass,
+          scalaVirtualMachine = s,
+          startingLine = startingLine,
+          expectedReachableLines = expectedReachableLines
+        )
+
+        withLazyVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s, f) =>
+          verify(s, f, s.lowlevel.stepManager.createStepOverLineRequest(_: ThreadReference))
         }
       }
     }
@@ -192,18 +204,20 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
            */
         )
 
+        val s = DummyScalaVirtualMachine.newInstance()
+        val verify = verifyStepsOnEach(
+          testClass = testClass,
+          scalaVirtualMachine = s,
+          startingLine = startingLine,
+          expectedReachableLines = expectedReachableLines,
+          failIfNotExact = true,
+          maxDuration = (15, Seconds)
+        )
+
         // NOTE: Have to up the maximum duration due to the delay caused by
         //       the for comprehension
-        withVirtualMachine(testClass) { (s) =>
-          verifyStepsOnEach(
-            testClass = testClass,
-            scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.createStepIntoLineRequest(_: ThreadReference),
-            startingLine = startingLine,
-            expectedReachableLines = expectedReachableLines,
-            failIfNotExact = true,
-            maxDuration = (15, Seconds)
-          )
+        withLazyVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s, f) =>
+          verify(s, f, s.lowlevel.stepManager.createStepIntoLineRequest(_: ThreadReference))
         }
       }
 
@@ -216,14 +230,16 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
         // invoking line, and finally to the inside of the function
         val expectedReachableLines = Seq(56, 48, 57)
 
-        withVirtualMachine(testClass) { (s) =>
-          verifyStepsOnEach(
-            testClass = testClass,
-            scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.createStepIntoLineRequest(_: ThreadReference),
-            startingLine = startingLine,
-            expectedReachableLines = expectedReachableLines
-          )
+        val s = DummyScalaVirtualMachine.newInstance()
+        val verify = verifyStepsOnEach(
+          testClass = testClass,
+          scalaVirtualMachine = s,
+          startingLine = startingLine,
+          expectedReachableLines = expectedReachableLines
+        )
+
+        withLazyVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s, f) =>
+          verify(s, f, s.lowlevel.stepManager.createStepIntoLineRequest(_: ThreadReference))
         }
       }
 
@@ -233,14 +249,16 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
         val startingLine = 42
         val expectedLine = 49
 
-        withVirtualMachine(testClass) { (s) =>
-          verifyStepsFromTo(
-            testClass = testClass,
-            scalaVirtualMachine = s,
-            stepMethod = s.lowlevel.stepManager.createStepIntoLineRequest(_: ThreadReference),
-            startingLine = startingLine,
-            expectedLine = expectedLine
-          )
+        val s = DummyScalaVirtualMachine.newInstance()
+        val verify = verifyStepsFromTo(
+          testClass = testClass,
+          scalaVirtualMachine = s,
+          startingLine = startingLine,
+          expectedLine = expectedLine
+        )
+
+        withLazyVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s, f) =>
+          verify(s, f, s.lowlevel.stepManager.createStepIntoLineRequest(_: ThreadReference))
         }
       }
     }
@@ -252,51 +270,57 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
    *
    * @param testClass The full name of the class
    * @param scalaVirtualMachine The Scala virtual machine whose managers to use
-   * @param stepMethod The step method to invoke
    * @param startingLine The line in the file to start on
    * @param expectedLine The line in the file to reach
    * @tparam T The return type of the step method
+   *
+   * @return The function to execute to start the actual verification check
    */
   private def verifyStepsFromTo[T](
     testClass: String,
     scalaVirtualMachine: ScalaVirtualMachine,
-    stepMethod: (ThreadReference) => T,
     startingLine: Int,
     expectedLine: Int
-  ) = {
-    import scalaVirtualMachine.lowlevel._
-
+  ): (ScalaVirtualMachine, () => Unit, (ThreadReference) => T) => Unit = {
     val testFile = scalaClassStringToFileString(testClass)
     // Flag that indicates we reached the expected line
     val success = new AtomicBoolean(false)
 
-    breakpointManager.createBreakpointRequest(testFile, startingLine)
+    scalaVirtualMachine.lowlevel.breakpointManager
+      .createBreakpointRequest(testFile, startingLine)
 
-    // On receiving a breakpoint, send a step request
-    eventManager.addResumingEventHandler(BreakpointEventType, e => {
-      val breakpointEvent = e.asInstanceOf[BreakpointEvent]
-      val className = breakpointEvent.location().declaringType().name()
-      val lineNumber = breakpointEvent.location.lineNumber()
+    // Return a function used to begin the verification
+    (s: ScalaVirtualMachine, start: () => Unit, stepMethod: (ThreadReference) => T) => {
+      import s.lowlevel._
 
-      logger.debug(s"Hit breakpoint at $className:$lineNumber")
-      stepMethod(breakpointEvent.thread())
-    })
+      // On receiving a breakpoint, send a step request
+      eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        val breakpointEvent = e.asInstanceOf[BreakpointEvent]
+        val className = breakpointEvent.location().declaringType().name()
+        val lineNumber = breakpointEvent.location.lineNumber()
 
-    // On receiving a step request, verify that we are in the right
-    // location
-    eventManager.addResumingEventHandler(StepEventType, e => {
-      val stepEvent = e.asInstanceOf[StepEvent]
-      val className = stepEvent.location().declaringType().name()
-      val lineNumber = stepEvent.location().lineNumber()
+        logger.debug(s"Hit breakpoint at $className:$lineNumber")
+        stepMethod(breakpointEvent.thread())
+      })
 
-      logger.debug(s"Stepped onto $className:$lineNumber")
-      success.set(lineNumber == expectedLine)
-    })
+      // On receiving a step request, verify that we are in the right
+      // location
+      eventManager.addResumingEventHandler(StepEventType, e => {
+        val stepEvent = e.asInstanceOf[StepEvent]
+        val className = stepEvent.location().declaringType().name()
+        val lineNumber = stepEvent.location().lineNumber()
 
-    logTimeTaken(eventually {
-      // NOTE: Using asserts to provide more helpful failure messages
-      assert(success.get(), s"Did not reach $testClass:$expectedLine!")
-    })
+        logger.debug(s"Stepped onto $className:$lineNumber")
+        success.set(lineNumber == expectedLine)
+      })
+
+      start()
+
+      logTimeTaken(eventually {
+        // NOTE: Using asserts to provide more helpful failure messages
+        assert(success.get(), s"Did not reach $testClass:$expectedLine!")
+      })
+    }
   }
 
   /**
@@ -305,25 +329,23 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
    *
    * @param testClass The full name of the class
    * @param scalaVirtualMachine The Scala virtual machine whose managers to use
-   * @param stepMethod The step method to invoke
    * @param startingLine The line in the file to start on
    * @param expectedReachableLines The collection of lines to reach
    * @param failIfNotExact If true, will fail the verification if the lines
    *                       reached do not exactly match the lines provided
    * @param maxDuration The maximum duration (digit, unit) to wait
    * @tparam T The return type of the step method
+   *
+   * @return The function to execute to start the actual verification check
    */
   private def verifyStepsOnEach[T](
     testClass: String,
     scalaVirtualMachine: ScalaVirtualMachine,
-    stepMethod: (ThreadReference) => T,
     startingLine: Int,
     expectedReachableLines: Seq[Int],
     failIfNotExact: Boolean = false,
     maxDuration: (Long, Units) = (EventuallyTimeout.toMillis, Milliseconds)
-  ) = {
-    import scalaVirtualMachine.lowlevel._
-
+  ): (ScalaVirtualMachine, () => Unit, (ThreadReference) => T) => Unit = {
     val testFile = scalaClassStringToFileString(testClass)
     val expectedLines = collection.mutable.Stack(expectedReachableLines: _*)
 
@@ -332,57 +354,65 @@ class StandardStepManagerIntegrationSpec extends FunSpec with Matchers
     @volatile var failEarlyMessage = "???"
 
     // Add a breakpoint to get us in the right location for steps
-    breakpointManager.createBreakpointRequest(testFile, startingLine)
+    scalaVirtualMachine.lowlevel.breakpointManager
+      .createBreakpointRequest(testFile, startingLine)
 
-    // On receiving a breakpoint, send a step request
-    eventManager.addResumingEventHandler(BreakpointEventType, e => {
-      val breakpointEvent = e.asInstanceOf[BreakpointEvent]
-      val className = breakpointEvent.location().declaringType().name()
-      val lineNumber = breakpointEvent.location.lineNumber()
+    // Return a function used to begin the verification
+    (s: ScalaVirtualMachine, start: () => Unit, stepMethod: (ThreadReference) => T) => {
+      import s.lowlevel._
 
-      logger.debug(s"Hit breakpoint at $className:$lineNumber")
-      stepMethod(breakpointEvent.thread())
-    })
+      // On receiving a breakpoint, send a step request
+      eventManager.addResumingEventHandler(BreakpointEventType, e => {
+        val breakpointEvent = e.asInstanceOf[BreakpointEvent]
+        val className = breakpointEvent.location().declaringType().name()
+        val lineNumber = breakpointEvent.location.lineNumber()
 
-    // On receiving a step request, verify that we are in the right
-    // location
-    eventManager.addResumingEventHandler(StepEventType, e => {
-      val stepEvent = e.asInstanceOf[StepEvent]
-      val className = stepEvent.location().declaringType().name()
-      val lineNumber = stepEvent.location().lineNumber()
+        logger.debug(s"Hit breakpoint at $className:$lineNumber")
+        stepMethod(breakpointEvent.thread())
+      })
 
-      logger.debug(s"Stepped onto $className:$lineNumber")
+      // On receiving a step request, verify that we are in the right
+      // location
+      eventManager.addResumingEventHandler(StepEventType, e => {
+        val stepEvent = e.asInstanceOf[StepEvent]
+        val className = stepEvent.location().declaringType().name()
+        val lineNumber = stepEvent.location().lineNumber()
 
-      val nextLine = expectedLines.top
+        logger.debug(s"Stepped onto $className:$lineNumber")
 
-      // Mark the line as stepped on by removing it (if next in line)
-      if (nextLine == lineNumber) {
-        expectedLines.pop()
+        val nextLine = expectedLines.top
 
-      // Fail the test if we are enforcing strictness and the next line does
-      // not match what we expect
-      } else if (failIfNotExact) {
-        failEarlyMessage =
-          s"Line $lineNumber is not the next expected line of $nextLine!"
-        failEarly.set(true)
-      }
+        // Mark the line as stepped on by removing it (if next in line)
+        if (nextLine == lineNumber) {
+          expectedLines.pop()
 
-      // Continue stepping if not reached all lines and not exiting early
-      if (expectedLines.nonEmpty && !failEarly.get())
-        stepMethod(stepEvent.thread())
-    })
+        // Fail the test if we are enforcing strictness and the next line does
+        // not match what we expect
+        } else if (failIfNotExact) {
+          failEarlyMessage =
+            s"Line $lineNumber is not the next expected line of $nextLine!"
+          failEarly.set(true)
+        }
 
-    // NOTE: Using asserts to provide more helpful failure messages
-    logTimeTaken(eventually(
-      timeout = Timeout(scaled(Span(maxDuration._1, maxDuration._2))),
-      interval = Interval(scaled(test.Constants.EventuallyInterval))
-    ) {
-      // If marked to fail early, use that message for better reporting
-      assert(!failEarly.get(), failEarlyMessage)
+        // Continue stepping if not reached all lines and not exiting early
+        if (expectedLines.nonEmpty && !failEarly.get())
+          stepMethod(stepEvent.thread())
+      })
 
-      val stringLines = expectedLines.mkString(",")
-      assert(expectedLines.isEmpty,
-        s"Did not reach the following lines in order: $stringLines")
-    })
+      start()
+
+      // NOTE: Using asserts to provide more helpful failure messages
+      logTimeTaken(eventually(
+        timeout = Timeout(scaled(Span(maxDuration._1, maxDuration._2))),
+        interval = Interval(scaled(test.Constants.EventuallyInterval))
+      ) {
+        // If marked to fail early, use that message for better reporting
+        assert(!failEarly.get(), failEarlyMessage)
+
+        val stringLines = expectedLines.mkString(",")
+        assert(expectedLines.isEmpty,
+          s"Did not reach the following lines in order: $stringLines")
+      })
+    }
   }
 }

@@ -2,12 +2,12 @@ package org.senkbeil.debugger.api.profiles.pure.info
 
 import com.sun.jdi.{Location, VirtualMachine}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import test.JDIMockHelpers
 
 class PureMiscInfoProfileSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers
+  with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val mockVirtualMachine = mock[VirtualMachine]
   private val mockClassManager = mock[ClassManager]

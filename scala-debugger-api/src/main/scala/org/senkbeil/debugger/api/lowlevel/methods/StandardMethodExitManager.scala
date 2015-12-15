@@ -10,9 +10,9 @@ import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
 import scala.util.Try
 
 /**
- * Represents the manager for method entry requests.
+ * Represents the manager for method exit requests.
  *
- * @param eventRequestManager The manager used to create method entry requests
+ * @param eventRequestManager The manager used to create method exit requests
  */
 class StandardMethodExitManager(
   private val eventRequestManager: EventRequestManager
@@ -21,30 +21,30 @@ class StandardMethodExitManager(
     new MultiMap[MethodExitRequestInfo, MethodExitRequest]
 
   /**
-   * Retrieves the list of method entry requests contained by this manager.
+   * Retrieves the list of method exit requests contained by this manager.
    *
-   * @return The collection of method entry request information
+   * @return The collection of method exit request information
    */
   override def methodExitRequestList: Seq[MethodExitRequestInfo] =
     methodExitRequests.keys
 
   /**
-   * Retrieves the list of method entry requests contained by this manager.
+   * Retrieves the list of method exit requests contained by this manager.
    *
-   * @return The collection of method entry requests by id
+   * @return The collection of method exit requests by id
    */
   override def methodExitRequestListById: Seq[String] = methodExitRequests.ids
 
   /**
-   * Creates a new method entry request for the specified class and method.
+   * Creates a new method exit request for the specified class and method.
    *
    * @note The method name is purely used for indexing the request in the
    *       internal list. You should set a method name filter on the event
-   *       handler for the method entry event.
+   *       handler for the method exit event.
    *
    * @param requestId The id of the request used to retrieve and delete it
-   * @param className The name of the class whose method entry events to watch
-   * @param methodName The name of the method whose entry to watch
+   * @param className The name of the class whose method exit events to watch
+   * @param methodName The name of the method whose exit to watch
    * @param extraArguments Any additional arguments to provide to the request
    *
    * @return Success(id) if successful, otherwise Failure
@@ -65,7 +65,7 @@ class StandardMethodExitManager(
 
     if (request.isSuccess) methodExitRequests.putWithId(
       requestId,
-      MethodExitRequestInfo(className, methodName),
+      MethodExitRequestInfo(requestId, className, methodName),
       request.get
     )
 
@@ -74,40 +74,14 @@ class StandardMethodExitManager(
   }
 
   /**
-   * Creates a new method entry request for the specified class and method.
-   *
-   * @note The method name is purely used for indexing the request in the
-   *       internal list. You should set a method name filter on the event
-   *       handler for the method entry event.
-   *
-   * @param className The name of the class whose method entry events to watch
-   * @param methodName The name of the method whose entry to watch
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createMethodExitRequest(
-    className: String,
-    methodName: String,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createMethodExitRequestWithId(
-      newRequestId(),
-      className,
-      methodName,
-      extraArguments: _*
-    )
-  }
-
-  /**
-   * Determines if a method entry request for the specific class and method
+   * Determines if a method exit request for the specific class and method
    * exists.
    *
-   * @param className The name of the class targeted by the method entry request
-   * @param methodName The name of the method targeted by the method entry
+   * @param className The name of the class targeted by the method exit request
+   * @param methodName The name of the method targeted by the method exit
    *                   request
    *
-   * @return True if a method entry request exists, otherwise false
+   * @return True if a method exit request exists, otherwise false
    */
   override def hasMethodExitRequest(
     className: String,
@@ -119,24 +93,24 @@ class StandardMethodExitManager(
   }
 
   /**
-   * Determines if a method entry request exists with the specified id.
+   * Determines if a method exit request exists with the specified id.
    *
    * @param requestId The id of the request
    *
-   * @return True if a method entry request exists, otherwise false
+   * @return True if a method exit request exists, otherwise false
    */
   override def hasMethodExitRequestWithId(requestId: String): Boolean = {
     methodExitRequests.hasWithId(requestId)
   }
 
   /**
-   * Retrieves the method entry requests for the specific class and method.
+   * Retrieves the method exit requests for the specific class and method.
    *
-   * @param className The name of the class targeted by the method entry request
-   * @param methodName The name of the method targeted by the method entry
+   * @param className The name of the class targeted by the method exit request
+   * @param methodName The name of the method targeted by the method exit
    *                   request
    *
-   * @return Some collection of method entry requests if they exist,
+   * @return Some collection of method exit requests if they exist,
    *         otherwise None
    */
   override def getMethodExitRequest(
@@ -151,11 +125,11 @@ class StandardMethodExitManager(
   }
 
   /**
-   * Retrieves the method entry request with the specified id.
+   * Retrieves the method exit request with the specified id.
    *
    * @param requestId The id of the request
    *
-   * @return Some method entry request if it exists, otherwise None
+   * @return Some method exit request if it exists, otherwise None
    */
   override def getMethodExitRequestWithId(
     requestId: String
@@ -164,13 +138,13 @@ class StandardMethodExitManager(
   }
 
   /**
-   * Removes the specified method entry request.
+   * Removes the specified method exit request.
    *
-   * @param className The name of the class targeted by the method entry request
-   * @param methodName The name of the method targeted by the method entry
+   * @param className The name of the class targeted by the method exit request
+   * @param methodName The name of the method targeted by the method exit
    *                   request
    *
-   * @return True if the method entry request was removed (if it existed),
+   * @return True if the method exit request was removed (if it existed),
    *         otherwise false
    */
   override def removeMethodExitRequest(
@@ -185,11 +159,11 @@ class StandardMethodExitManager(
   }
 
   /**
-   * Removes the specified method entry request.
+   * Removes the specified method exit request.
    *
    * @param requestId The id of the request
    *
-   * @return True if the method entry request was removed (if it existed),
+   * @return True if the method exit request was removed (if it existed),
    *         otherwise false
    */
   override def removeMethodExitRequestWithId(

@@ -41,47 +41,65 @@ trait ClassPrepareManager {
    */
   def createClassPrepareRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createClassPrepareRequestWithId(
+    newRequestId(),
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new class prepare request based on the specified information.
+   *
+   * @param classPrepareRequestInfo The information used to create the
+   *                                class prepare request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createClassPrepareRequestFromInfo(
+    classPrepareRequestInfo: ClassPrepareRequestInfo
+  ): Try[String] = createClassPrepareRequestWithId(
+    classPrepareRequestInfo.requestId,
+    classPrepareRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a class prepare request with the specified id.
    *
-   * @param id The id of the Class Prepare Request
+   * @param requestId The id of the Class Prepare Request
    *
    * @return True if a class prepare request with the id exists, otherwise false
    */
-  def hasClassPrepareRequest(id: String): Boolean
+  def hasClassPrepareRequest(requestId: String): Boolean
 
   /**
    * Retrieves the class prepare request using the specified id.
    *
-   * @param id The id of the Class Prepare Request
+   * @param requestId The id of the Class Prepare Request
    *
    * @return Some class prepare request if it exists, otherwise None
    */
-  def getClassPrepareRequest(id: String): Option[ClassPrepareRequest]
+  def getClassPrepareRequest(requestId: String): Option[ClassPrepareRequest]
 
   /**
    * Retrieves the information for a class prepare request with the
    * specified id.
    *
-   * @param id The id of the Class Prepare Request
+   * @param requestId The id of the Class Prepare Request
    *
    * @return Some information about the request if it exists, otherwise None
    */
   def getClassPrepareRequestInfo(
-    id: String
+    requestId: String
   ): Option[ClassPrepareRequestInfo]
 
   /**
    * Removes the specified class prepare request.
    *
-   * @param id The id of the Class Prepare Request
+   * @param requestId The id of the Class Prepare Request
    *
    * @return True if the class prepare request was removed (if it existed),
    *         otherwise false
    */
-  def removeClassPrepareRequest(id: String): Boolean
+  def removeClassPrepareRequest(requestId: String): Boolean
 
   /**
    * Generates an id for a new request.

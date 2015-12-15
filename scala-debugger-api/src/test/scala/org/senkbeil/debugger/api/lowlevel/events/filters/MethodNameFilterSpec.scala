@@ -1,10 +1,10 @@
 package org.senkbeil.debugger.api.lowlevel.events.filters
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class MethodNameFilterSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val testName = "some name"
   private val methodNameFilter = MethodNameFilter(name = testName)

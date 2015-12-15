@@ -1,11 +1,13 @@
-package org.senkbeil.debugger.api.virtualmachines
+package org.senkbeil.debugger.api.profiles.pure.info
+
+import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
 import org.scalatest.concurrent.Eventually
-import org.scalatest.time.{Seconds, Span, Milliseconds}
-import org.scalatest.{ParallelTestExecution, FunSpec, Matchers}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
+import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
 import test.{TestUtilities, VirtualMachineFixtures}
 
-class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
+class PureMiscInfoProfileIntegrationSpec extends FunSpec with Matchers
   with ParallelTestExecution with VirtualMachineFixtures
   with TestUtilities with Eventually
 {
@@ -14,17 +16,7 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
     interval = scaled(test.Constants.EventuallyInterval)
   )
 
-  describe("ScalaVirtualMachine") {
-    it("should indicate that it has started upon receiving the start event") {
-      val testClass = "org.senkbeil.debugger.test.misc.MainUsingMethod"
-
-      withVirtualMachine(testClass) { (s) =>
-        eventually {
-          assert(s.isStarted, "ScalaVirtualMachine not started!")
-        }
-      }
-    }
-
+  describe("PureMiscInfoProfile") {
     it("should return the class name of a Scala main method entrypoint") {
       val testClass = "org.senkbeil.debugger.test.misc.MainUsingMethod"
 
@@ -34,7 +26,7 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
         // NOTE: This is not available until AFTER we have resumed from the
         //       start event (as the main method is not yet loaded)
         eventually {
-          val actual = s.mainClassName
+          val actual = s.withProfile(PureDebugProfile.Name).mainClassName
           actual should be(expected)
         }
       }
@@ -49,7 +41,7 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
         // NOTE: This is not available until AFTER we have resumed from the
         //       start event (as the main method is not yet loaded)
         eventually {
-          val actual = s.mainClassName
+          val actual = s.withProfile(PureDebugProfile.Name).mainClassName
           actual should be(expected)
         }
       }
@@ -65,7 +57,7 @@ class ScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
         // NOTE: This is not available until AFTER we have resumed from the
         //       start event (as the main method is not yet loaded)
         eventually {
-          val actual = s.commandLineArguments
+          val actual = s.withProfile(PureDebugProfile.Name).commandLineArguments
           actual should contain theSameElementsInOrderAs expected
         }
       }

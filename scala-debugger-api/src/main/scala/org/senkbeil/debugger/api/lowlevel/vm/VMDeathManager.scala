@@ -39,44 +39,64 @@ trait VMDeathManager {
    *
    * @return Success(id) if successful, otherwise Failure
    */
-  def createVMDeathRequest(extraArguments: JDIRequestArgument*): Try[String]
+  def createVMDeathRequest(
+    extraArguments: JDIRequestArgument*
+  ): Try[String] = createVMDeathRequestWithId(
+    newRequestId(),
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new vm death request based on the specified information.
+   *
+   * @param vmDeathRequestInfo The information used to create the
+   *                                vm death request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createVMDeathRequestFromInfo(
+    vmDeathRequestInfo: VMDeathRequestInfo
+  ): Try[String] = createVMDeathRequestWithId(
+    vmDeathRequestInfo.requestId,
+    vmDeathRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a vm death request with the specified id.
    *
-   * @param id The id of the VM Death Request
+   * @param requestId The id of the VM Death Request
    *
    * @return True if a vm death request with the id exists, otherwise false
    */
-  def hasVMDeathRequest(id: String): Boolean
+  def hasVMDeathRequest(requestId: String): Boolean
 
   /**
    * Retrieves the vm death request using the specified id.
    *
-   * @param id The id of the VM Death Request
+   * @param requestId The id of the VM Death Request
    *
    * @return Some vm death request if it exists, otherwise None
    */
-  def getVMDeathRequest(id: String): Option[VMDeathRequest]
+  def getVMDeathRequest(requestId: String): Option[VMDeathRequest]
 
   /**
    * Retrieves the information for a vm death request with the specified id.
    *
-   * @param id The id of the request
+   * @param requestId The id of the request
    *
    * @return Some vm death information if found, otherwise None
    */
-  def getVMDeathRequestInfo(id: String): Option[VMDeathRequestInfo]
+  def getVMDeathRequestInfo(requestId: String): Option[VMDeathRequestInfo]
 
   /**
    * Removes the specified vm death request.
    *
-   * @param id The id of the VM Death Request
+   * @param requestId The id of the VM Death Request
    *
    * @return True if the vm death request was removed (if it existed),
    *         otherwise false
    */
-  def removeVMDeathRequest(id: String): Boolean
+  def removeVMDeathRequest(requestId: String): Boolean
 
   /**
    * Generates an id for a new request.

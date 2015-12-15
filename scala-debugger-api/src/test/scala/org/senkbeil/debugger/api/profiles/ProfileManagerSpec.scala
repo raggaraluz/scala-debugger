@@ -1,10 +1,10 @@
 package org.senkbeil.debugger.api.profiles
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
 import org.senkbeil.debugger.api.profiles.traits.DebugProfile
 
-class ProfileManagerSpec extends FunSpec with Matchers with OneInstancePerTest
+class ProfileManagerSpec extends FunSpec with Matchers with ParallelTestExecution
   with MockFactory
 {
 

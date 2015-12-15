@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.utils
+package org.senkbeil.debugger.api.utils
 
-import scala.collection.JavaConverters._
 import java.util.concurrent.ConcurrentHashMap
 
+import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**

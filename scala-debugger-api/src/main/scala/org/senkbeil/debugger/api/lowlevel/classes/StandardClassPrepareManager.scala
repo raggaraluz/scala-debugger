@@ -47,25 +47,12 @@ class StandardClassPrepareManager(
 
     if (request.isSuccess) classPrepareRequests.putWithId(
       requestId,
-      ClassPrepareRequestInfo(extraArguments),
+      ClassPrepareRequestInfo(requestId, extraArguments),
       request.get
     )
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)
-  }
-
-  /**
-   * Creates a new class prepare request.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createClassPrepareRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createClassPrepareRequestWithId(newRequestId(), extraArguments: _*)
   }
 
   /**

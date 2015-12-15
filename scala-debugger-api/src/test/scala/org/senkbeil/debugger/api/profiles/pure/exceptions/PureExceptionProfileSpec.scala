@@ -1,25 +1,22 @@
 package org.senkbeil.debugger.api.profiles.pure.exceptions
 
-import com.sun.jdi.VirtualMachine
-import com.sun.jdi.event.{Event, EventQueue}
-import com.sun.jdi.request.EventRequestManager
+import com.sun.jdi.event.Event
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
-import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
-import org.senkbeil.debugger.api.lowlevel.exceptions.{ExceptionManager, StandardExceptionManager}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
+import org.senkbeil.debugger.api.lowlevel.events.EventType.ExceptionEventType
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
+import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
+import org.senkbeil.debugger.api.lowlevel.exceptions.ExceptionManager
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.senkbeil.debugger.api.pipelines.Pipeline
-import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 import test.JDIMockHelpers
 
-import org.senkbeil.debugger.api.lowlevel.events.EventType.ExceptionEventType
 import scala.util.{Failure, Success}
 
 class PureExceptionProfileSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers
+  with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockExceptionManager = mock[ExceptionManager]

@@ -50,28 +50,12 @@ class StandardMonitorWaitedManager(
 
     if (request.isSuccess) monitorWaitedRequests.putWithId(
       requestId,
-      MonitorWaitedRequestInfo(extraArguments),
+      MonitorWaitedRequestInfo(requestId, extraArguments),
       request.get
     )
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)
-  }
-
-  /**
-   * Creates a new monitor waited request.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createMonitorWaitedRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createMonitorWaitedRequestWithId(
-      newRequestId(),
-      extraArguments: _*
-    )
   }
 
   /**

@@ -84,6 +84,7 @@ class StandardExceptionManager(
       exceptionRequests.putWithId(
         requestId,
         ExceptionRequestInfo(
+          requestId = requestId,
           className = DefaultCatchallExceptionName,
           notifyCaught = notifyCaught,
           notifyUncaught = notifyUncaught,
@@ -95,33 +96,6 @@ class StandardExceptionManager(
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)
-  }
-
-  /**
-   * Creates a new exception request to catch all exceptions from the JVM.
-   *
-   * @note The request id given does not get added to the request id list and
-   *       removing by id will not remove this request instance.
-   *
-   * @param notifyCaught If true, events will be reported when any exception
-   *                     is detected within a try { ... } block
-   * @param notifyUncaught If true, events will be reported when any exception
-   *                       is detected not within a try { ... } block
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createCatchallExceptionRequest(
-    notifyCaught: Boolean,
-    notifyUncaught: Boolean,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createCatchallExceptionRequestWithId(
-      newRequestId(),
-      notifyCaught,
-      notifyUncaught,
-      extraArguments: _*
-    )
   }
 
   /**
@@ -193,6 +167,7 @@ class StandardExceptionManager(
     notifyUncaught: Boolean,
     extraArguments: JDIRequestArgument*
   ): Try[String] = {
+    require(exceptionName != null, "Exception name cannot be null!")
     val exceptionReferenceTypes = virtualMachine.classesByName(exceptionName)
 
     // If no classes match the requested exception type, exit early
@@ -214,6 +189,7 @@ class StandardExceptionManager(
     if (requests.isSuccess) exceptionRequests.putWithId(
       requestId,
       ExceptionRequestInfo(
+        requestId = requestId,
         className = exceptionName,
         notifyCaught = notifyCaught,
         notifyUncaught = notifyUncaught,
@@ -224,35 +200,6 @@ class StandardExceptionManager(
 
     // If no exception was thrown, assume that we succeeded
     requests.map(_ => requestId)
-  }
-
-  /**
-   * Creates a new exception request for the specified exception class.
-   *
-   * @note Any exception and its subclass will be watched.
-   *
-   * @param exceptionName The full class name of the exception to watch
-   * @param notifyCaught If true, events will be reported when the exception
-   *                     is detected within a try { ... } block
-   * @param notifyUncaught If true, events will be reported when the exception
-   *                       is detected not within a try { ... } block
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createExceptionRequest(
-    exceptionName: String,
-    notifyCaught: Boolean,
-    notifyUncaught: Boolean,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createExceptionRequestWithId(
-      newRequestId(),
-      exceptionName,
-      notifyCaught,
-      notifyUncaught,
-      extraArguments: _*
-    )
   }
 
   /**

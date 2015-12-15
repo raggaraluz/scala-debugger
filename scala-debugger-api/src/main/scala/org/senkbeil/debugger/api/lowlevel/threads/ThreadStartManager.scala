@@ -38,45 +38,65 @@ trait ThreadStartManager {
    */
   def createThreadStartRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createThreadStartRequestWithId(
+    newRequestId(),
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new thread start request based on the specified information.
+   *
+   * @param threadStartRequestInfo The information used to create the
+   *                                thread start request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createThreadStartRequestFromInfo(
+    threadStartRequestInfo: ThreadStartRequestInfo
+  ): Try[String] = createThreadStartRequestWithId(
+    threadStartRequestInfo.requestId,
+    threadStartRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a thread start request with the specified id.
    *
-   * @param id The id of the Thread Start Request
+   * @param requestId The id of the Thread Start Request
    *
    * @return True if a thread start request with the id exists, otherwise false
    */
-  def hasThreadStartRequest(id: String): Boolean
+  def hasThreadStartRequest(requestId: String): Boolean
 
   /**
    * Retrieves the thread start request using the specified id.
    *
-   * @param id The id of the Thread Start Request
+   * @param requestId The id of the Thread Start Request
    *
    * @return Some thread start request if it exists, otherwise None
    */
-  def getThreadStartRequest(id: String): Option[ThreadStartRequest]
+  def getThreadStartRequest(requestId: String): Option[ThreadStartRequest]
 
   /**
    * Retrieves the information for a thread start request with the
    * specified id.
    *
-   * @param id The id of the Thread Start Request
+   * @param requestId The id of the Thread Start Request
    *
    * @return Some information about the request if it exists, otherwise None
    */
-  def getThreadStartRequestInfo(id: String): Option[ThreadStartRequestInfo]
+  def getThreadStartRequestInfo(
+    requestId: String
+  ): Option[ThreadStartRequestInfo]
 
   /**
    * Removes the specified thread start request.
    *
-   * @param id The id of the Thread Start Request
+   * @param requestId The id of the Thread Start Request
    *
    * @return True if the thread start request was removed (if it existed),
    *         otherwise false
    */
-  def removeThreadStartRequest(id: String): Boolean
+  def removeThreadStartRequest(requestId: String): Boolean
 
   /**
    * Generates an id for a new request.

@@ -9,6 +9,7 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
 import org.senkbeil.debugger.api.lowlevel.events.filters.MethodNameFilter
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureMethodEntryProfileIntegrationSpec extends FunSpec with Matchers
@@ -33,34 +34,36 @@ class PureMethodEntryProfileIntegrationSpec extends FunSpec with Matchers
       val reachedExpectedMethod = new AtomicBoolean(false)
       val reachedMethodBeforeFirstLine = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass) { (s) =>
-        val methodPipeline = s.withProfile(PureDebugProfile.Name)
-          .onUnsafeMethodEntry(expectedClassName, expectedMethodName)
-          .map(_.method())
-          .map(m => (m.declaringType().name(), m.name()))
+      val s = DummyScalaVirtualMachine.newInstance()
 
-        methodPipeline
-          .filter(_._1 == expectedClassName)
-          .filter(_._2 == expectedMethodName)
-          .foreach(_ => reachedExpectedMethod.set(true))
+      val methodPipeline = s.withProfile(PureDebugProfile.Name)
+        .onUnsafeMethodEntry(expectedClassName, expectedMethodName)
+        .map(_.method())
+        .map(m => (m.declaringType().name(), m.name()))
 
-        methodPipeline
-          .filterNot(_._1 == expectedClassName)
-          .foreach(_ => reachedUnexpectedMethod.set(true))
+      methodPipeline
+        .filter(_._1 == expectedClassName)
+        .filter(_._2 == expectedMethodName)
+        .foreach(_ => reachedExpectedMethod.set(true))
 
-        methodPipeline
-          .filterNot(_._2 == expectedMethodName)
-          .foreach(_ => reachedUnexpectedMethod.set(true))
+      methodPipeline
+        .filterNot(_._1 == expectedClassName)
+        .foreach(_ => reachedUnexpectedMethod.set(true))
 
-        // First line in test method
-        s.onUnsafeBreakpoint(testFile, 26)
-          .map(_.location())
-          .map(l => (l.sourcePath(), l.lineNumber()))
-          .foreach(t => {
-            val methodEntryHit = reachedExpectedMethod.get()
-            reachedMethodBeforeFirstLine.set(methodEntryHit)
-          })
+      methodPipeline
+        .filterNot(_._2 == expectedMethodName)
+        .foreach(_ => reachedUnexpectedMethod.set(true))
 
+      // First line in test method
+      s.onUnsafeBreakpoint(testFile, 26)
+        .map(_.location())
+        .map(l => (l.sourcePath(), l.lineNumber()))
+        .foreach(t => {
+        val methodEntryHit = reachedExpectedMethod.get()
+        reachedMethodBeforeFirstLine.set(methodEntryHit)
+      })
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           reachedUnexpectedMethod.get() should be (false)
           reachedExpectedMethod.get() should be (true)

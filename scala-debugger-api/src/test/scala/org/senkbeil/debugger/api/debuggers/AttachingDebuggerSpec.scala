@@ -3,15 +3,15 @@ package org.senkbeil.debugger.api.debuggers
 import com.sun.jdi.connect.{AttachingConnector, Connector}
 import com.sun.jdi.{VirtualMachine, VirtualMachineManager}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
-import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
 
 import scala.collection.JavaConverters._
 
 class AttachingDebuggerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private def createConnectorArgumentMock(
     setter: Boolean = false,
@@ -32,10 +32,10 @@ class AttachingDebuggerSpec extends FunSpec with Matchers
   private val mockProfileManager = mock[ProfileManager]
   private val mockLoopingTaskRunner = mock[LoopingTaskRunner]
   private val mockNewScalaVirtualMachineFunc = mockFunction[
-    VirtualMachine, ProfileManager, LoopingTaskRunner, ScalaVirtualMachine
+    VirtualMachine, ProfileManager, LoopingTaskRunner, StandardScalaVirtualMachine
   ]
 
-  private class TestScalaVirtualMachine extends ScalaVirtualMachine(
+  private class TestScalaVirtualMachine extends StandardScalaVirtualMachine(
     mockVirtualMachine, mockProfileManager, mockLoopingTaskRunner
   )
   private val mockScalaVirtualMachine = mock[TestScalaVirtualMachine]
@@ -43,7 +43,7 @@ class AttachingDebuggerSpec extends FunSpec with Matchers
   private class TestAttachingDebugger(
     override val isAvailable: Boolean = true,
     private val shouldJdiLoad: Boolean = true,
-    private val customScalaVirtualMachine: Option[ScalaVirtualMachine] = Some(null)
+    private val customScalaVirtualMachine: Option[StandardScalaVirtualMachine] = Some(null)
   ) extends AttachingDebugger(
     virtualMachineManager = mockVirtualMachineManager,
     profileManager        = mockProfileManager,
@@ -56,7 +56,7 @@ class AttachingDebuggerSpec extends FunSpec with Matchers
       virtualMachine: VirtualMachine,
       profileManager: ProfileManager,
       loopingTaskRunner: LoopingTaskRunner
-    ): ScalaVirtualMachine = mockNewScalaVirtualMachineFunc(
+    ): StandardScalaVirtualMachine = mockNewScalaVirtualMachineFunc(
       virtualMachine,
       profileManager,
       loopingTaskRunner
@@ -149,6 +149,42 @@ class AttachingDebuggerSpec extends FunSpec with Matchers
         attachingDebugger.start(actual = _)
 
         actual should be (expected)
+      }
+
+      it("should apply any pending requests to the virtual machine") {
+        val attachingDebugger = new TestAttachingDebugger(shouldJdiLoad = true)
+        val expected = stub[TestScalaVirtualMachine]
+        attachingDebugger.addPendingScalaVirtualMachine(expected)
+
+        // MOCK ===============================================================
+        val mockAttachingConnector = mock[AttachingConnector]
+
+        (mockAttachingConnector.name _).expects()
+          .returning("com.sun.jdi.SocketAttach")
+
+        (mockVirtualMachineManager.attachingConnectors _).expects()
+          .returning(Seq(mockAttachingConnector).asJava)
+
+        (mockAttachingConnector.defaultArguments _).expects().returning(Map(
+          "hostname" -> createConnectorArgumentMock(setter = true),
+          "port" -> createConnectorArgumentMock(setter = true),
+          "timeout" -> createConnectorArgumentMock(setter = true)
+        ).asJava)
+
+        (mockAttachingConnector.attach _).expects(*)
+          .returning(mockVirtualMachine).once()
+        (mockLoopingTaskRunner.start _).expects().once()
+        // MOCK ===============================================================
+
+        mockNewScalaVirtualMachineFunc.expects(mockVirtualMachine, *, *)
+          .returning(mockScalaVirtualMachine).once()
+
+        (mockScalaVirtualMachine.processPendingRequests _)
+          .expects(expected).once()
+
+        (mockScalaVirtualMachine.initialize _).expects(true).once()
+
+        attachingDebugger.start(_ => {})
       }
 
       it("should initialize the new virtual machine") {

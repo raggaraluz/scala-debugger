@@ -2,12 +2,12 @@ package org.senkbeil.debugger.api.lowlevel.methods
 
 import com.sun.jdi.request.{EventRequest, EventRequestManager, MethodEntryRequest}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 import scala.util.{Failure, Success}
 
 class StandardMethodEntryManagerSpec extends FunSpec with Matchers with MockFactory
-  with OneInstancePerTest with org.scalamock.matchers.Matchers
+  with ParallelTestExecution with org.scalamock.matchers.Matchers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]
@@ -20,8 +20,8 @@ class StandardMethodEntryManagerSpec extends FunSpec with Matchers with MockFact
     describe("#methodEntryRequestList") {
       it("should contain all method entry request information stored in the manager") {
         val methodEntryRequests = Seq(
-          MethodEntryRequestInfo("class1", "method1"),
-          MethodEntryRequestInfo("class2", "method2")
+          MethodEntryRequestInfo(TestRequestId, "class1", "method1"),
+          MethodEntryRequestInfo(TestRequestId + 1, "class2", "method2")
         )
 
         // NOTE: Must create a new method entry manager that does NOT override
@@ -29,10 +29,10 @@ class StandardMethodEntryManagerSpec extends FunSpec with Matchers with MockFact
         //       duplicates of the test id when storing it
         val methodEntryManager = new StandardMethodEntryManager(mockEventRequestManager)
 
-        methodEntryRequests.foreach { case MethodEntryRequestInfo(className, methodName, _) =>
+        methodEntryRequests.foreach { case MethodEntryRequestInfo(requestId, className, methodName, _) =>
           (mockEventRequestManager.createMethodEntryRequest _).expects()
             .returning(stub[MethodEntryRequest]).once()
-          methodEntryManager.createMethodEntryRequest(className, methodName)
+          methodEntryManager.createMethodEntryRequestWithId(requestId, className, methodName)
         }
 
         methodEntryManager.methodEntryRequestList should
@@ -87,9 +87,7 @@ class StandardMethodEntryManagerSpec extends FunSpec with Matchers with MockFact
         )
         actual should be(expected)
       }
-    }
 
-    describe("#createMethodEntryRequest") {
       it("should create the method entry request with a class inclusion filter for the class name") {
         val expected = Success(TestRequestId)
         val testClassName = "some class name"
@@ -107,7 +105,11 @@ class StandardMethodEntryManagerSpec extends FunSpec with Matchers with MockFact
           .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
         (mockMethodEntryRequest.setEnabled _).expects(true).once()
 
-        val actual = methodEntryManager.createMethodEntryRequest(testClassName, testMethodName)
+        val actual = methodEntryManager.createMethodEntryRequestWithId(
+          expected.get,
+          testClassName,
+          testMethodName
+        )
         actual should be (expected)
       }
 
@@ -119,7 +121,11 @@ class StandardMethodEntryManagerSpec extends FunSpec with Matchers with MockFact
         (mockEventRequestManager.createMethodEntryRequest _).expects()
           .throwing(expected.failed.get).once()
 
-        val actual = methodEntryManager.createMethodEntryRequest(testClassName, testMethodName)
+        val actual = methodEntryManager.createMethodEntryRequestWithId(
+          TestRequestId,
+          testClassName,
+          testMethodName
+        )
         actual should be (expected)
       }
     }

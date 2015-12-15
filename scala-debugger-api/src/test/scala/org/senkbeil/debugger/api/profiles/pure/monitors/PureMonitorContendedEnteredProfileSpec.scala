@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.profiles.pure.monitors
 import com.sun.jdi.event.{Event, EventQueue}
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.EventType.MonitorContendedEnteredEventType
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
@@ -18,7 +18,7 @@ import test.JDIMockHelpers
 import scala.util.{Failure, Success}
 
 class PureMonitorContendedEnteredProfileSpec extends FunSpec with Matchers
-with OneInstancePerTest with MockFactory with JDIMockHelpers
+with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockMonitorContendedEnteredManager =
@@ -228,7 +228,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockMonitorContendedEnteredManager.getMonitorContendedEnteredRequestInfo _)
             .expects(internalId)
-            .returning(Some(MonitorContendedEnteredRequestInfo(arguments))).once()
+            .returning(Some(MonitorContendedEnteredRequestInfo(TestRequestId, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MonitorContendedEnteredEventType, Seq(uniqueIdPropertyFilter))
@@ -267,7 +267,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
 
             (mockMonitorContendedEnteredManager.getMonitorContendedEnteredRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(MonitorContendedEnteredRequestInfo(arguments))).once()
+              .returning(Some(MonitorContendedEnteredRequestInfo(TestRequestId, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockMonitorContendedEnteredManager.createMonitorContendedEnteredRequestWithId _)

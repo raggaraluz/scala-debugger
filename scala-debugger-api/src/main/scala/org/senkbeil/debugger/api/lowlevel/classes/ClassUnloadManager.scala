@@ -38,47 +38,65 @@ trait ClassUnloadManager {
    */
   def createClassUnloadRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createClassUnloadRequestWithId(
+    newRequestId(),
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new class unload request based on the specified information.
+   *
+   * @param classUnloadRequestInfo The information used to create the
+   *                                class unload request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createClassUnloadRequestFromInfo(
+    classUnloadRequestInfo: ClassUnloadRequestInfo
+  ): Try[String] = createClassUnloadRequestWithId(
+    classUnloadRequestInfo.requestId,
+    classUnloadRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a class unload request with the specified id.
    *
-   * @param id The id of the Class Unload Request
+   * @param requestId The id of the Class Unload Request
    *
    * @return True if a class unload request with the id exists, otherwise false
    */
-  def hasClassUnloadRequest(id: String): Boolean
+  def hasClassUnloadRequest(requestId: String): Boolean
 
   /**
    * Retrieves the class unload request using the specified id.
    *
-   * @param id The id of the Class Unload Request
+   * @param requestId The id of the Class Unload Request
    *
    * @return Some class unload request if it exists, otherwise None
    */
-  def getClassUnloadRequest(id: String): Option[ClassUnloadRequest]
+  def getClassUnloadRequest(requestId: String): Option[ClassUnloadRequest]
 
   /**
    * Retrieves the information for a class unload request with the
    * specified id.
    *
-   * @param id The id of the Class Unload Request
+   * @param requestId The id of the Class Unload Request
    *
    * @return Some information about the request if it exists, otherwise None
    */
   def getClassUnloadRequestInfo(
-    id: String
+    requestId: String
   ): Option[ClassUnloadRequestInfo]
 
   /**
    * Removes the specified class unload request.
    *
-   * @param id The id of the Class Unload Request
+   * @param requestId The id of the Class Unload Request
    *
    * @return True if the class unload request was removed (if it existed),
    *         otherwise false
    */
-  def removeClassUnloadRequest(id: String): Boolean
+  def removeClassUnloadRequest(requestId: String): Boolean
 
   /**
    * Generates an id for a new request.

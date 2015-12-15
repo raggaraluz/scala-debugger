@@ -23,14 +23,14 @@ lazy val scalaDebuggerApi = project
     // TODO: Determine why this causes multiple tests to fail (maybe processes
     //       spawned are clashing?)
     // Run integration tests in parallel
-    //parallelExecution in IntegrationTest := true,
-    //testForkedParallel in IntegrationTest := true,
+//    parallelExecution in IntegrationTest := true,
+//    testForkedParallel in IntegrationTest := true,
 
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % "1.7.5",
       "org.slf4j" % "slf4j-log4j12" % "1.7.5" % "test,it",
       "log4j" % "log4j" % "1.2.17" % "test,it",
-      "org.scalatest" %% "scalatest" % "3.0.0-M11" % "test,it",
+      "org.scalatest" %% "scalatest" % "3.0.0-M14" % "test,it",
       "org.scalamock" %% "scalamock-scalatest-support" % "3.2.1" % "test,it"
     ),
     // JDK Dependency (just for sbt, must exist on classpath for execution,
@@ -44,6 +44,7 @@ lazy val scalaDebuggerApi = project
     internalDependencyClasspath in IntegrationTest +=
       { Attributed.blank(Build.JavaTools) }
   ): _*)
+  .dependsOn(scalaDebuggerMacro % "compile->compile;test->compile;it->compile")
   .dependsOn(scalaDebuggerTest % "test->compile;it->compile")
 
 //
@@ -54,6 +55,19 @@ lazy val scalaDebuggerTest = project
   .settings(Common.settings: _*)
   .settings(
     // Do not publish the test project
+    publishArtifact := false,
+    publishLocal := {}
+  )
+
+//
+// DEBUGGER MACRO PROJECT CONFIGURATION
+//
+lazy val scalaDebuggerMacro = project
+  .in(file("scala-debugger-macro"))
+  .settings(Common.settings: _*)
+  .settings(Macro.settings: _*)
+  .settings(
+    // Do not publish the macro project
     publishArtifact := false,
     publishLocal := {}
   )

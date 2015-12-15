@@ -3,12 +3,12 @@ package org.senkbeil.debugger.api.lowlevel.requests
 import com.sun.jdi.request.EventRequest
 import com.sun.jdi.{ObjectReference, ReferenceType, ThreadReference}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.requests.filters._
 import org.senkbeil.debugger.api.lowlevel.requests.properties.{CustomProperty, EnabledProperty, SuspendPolicyProperty}
 
 class JDIRequestArgumentProcessorSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   // Create three mock filters to provide to the main filter processor
   private val mockArgumentsAndProcessors = Seq(

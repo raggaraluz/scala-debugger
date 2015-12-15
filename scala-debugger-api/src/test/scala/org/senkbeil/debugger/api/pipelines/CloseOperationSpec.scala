@@ -1,9 +1,9 @@
 package org.senkbeil.debugger.api.pipelines
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
-class CloseOperationSpec extends FunSpec with Matchers with OneInstancePerTest
+class CloseOperationSpec extends FunSpec with Matchers with ParallelTestExecution
   with MockFactory
 {
   describe("CloseOperation") {

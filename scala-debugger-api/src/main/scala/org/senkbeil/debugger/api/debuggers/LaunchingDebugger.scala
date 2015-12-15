@@ -4,7 +4,7 @@ import com.sun.jdi._
 import com.sun.jdi.connect.LaunchingConnector
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
-import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
 
 import scala.collection.JavaConverters._
 
@@ -72,7 +72,7 @@ class LaunchingDebugger private[debugger] (
    *
    * @return True if it is running, otherwise false
    */
-  def isRunning: Boolean = virtualMachine.nonEmpty
+  override def isRunning: Boolean = virtualMachine.nonEmpty
 
   /**
    * Retrieves the process of the launched JVM.
@@ -90,7 +90,7 @@ class LaunchingDebugger private[debugger] (
    *                              has been launched
    * @tparam T The return type of the callback function
    */
-  def start[T](
+  override def start[T](
     startProcessingEvents: Boolean,
     newVirtualMachineFunc: ScalaVirtualMachine => T
   ): Unit = {
@@ -122,6 +122,9 @@ class LaunchingDebugger private[debugger] (
       profileManager,
       loopingTaskRunner
     )
+    getPendingScalaVirtualMachines.foreach(
+      scalaVirtualMachine.processPendingRequests
+    )
     scalaVirtualMachine.initialize(
       startProcessingEvents = startProcessingEvents
     )
@@ -129,20 +132,9 @@ class LaunchingDebugger private[debugger] (
   }
 
   /**
-   * Starts the debugger, resulting in launching a new process to connect to.
-   *
-   * @param newVirtualMachineFunc The function to be invoked once the process
-   *                              has been launched
-   * @tparam T The return type of the callback function
-   */
-  def start[T](newVirtualMachineFunc: ScalaVirtualMachine => T): Unit = {
-    start(startProcessingEvents = true, newVirtualMachineFunc)
-  }
-
-  /**
    * Stops the process launched by the debugger.
    */
-  def stop(): Unit = {
+  override def stop(): Unit = {
     assert(isRunning, "Debugger has not been started!")
 
     // Stop the looping task runner processing events
@@ -176,7 +168,7 @@ class LaunchingDebugger private[debugger] (
     virtualMachine: VirtualMachine,
     profileManager: ProfileManager,
     loopingTaskRunner: LoopingTaskRunner
-  ): ScalaVirtualMachine = new ScalaVirtualMachine(
+  ): StandardScalaVirtualMachine = new StandardScalaVirtualMachine(
     virtualMachine,
     profileManager,
     loopingTaskRunner
@@ -192,4 +184,14 @@ class LaunchingDebugger private[debugger] (
     virtualMachineManager.launchingConnectors().asScala
       .find(_.name() == ConnectorClassString)
   }
+
+  /**
+   * Creates a new dummy Scala virtual machine instance that can be used to
+   * prepare pending requests to apply to the Scala virtual machines generated
+   * by the debugger once it starts.
+   *
+   * @return The new dummy (no-op) Scala virtual machine instance
+   */
+  override def newDummyScalaVirtualMachine(): ScalaVirtualMachine =
+    new DummyScalaVirtualMachine(profileManager)
 }

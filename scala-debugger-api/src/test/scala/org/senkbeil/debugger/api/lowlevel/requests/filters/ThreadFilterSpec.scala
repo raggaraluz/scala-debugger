@@ -2,10 +2,10 @@ package org.senkbeil.debugger.api.lowlevel.requests.filters
 
 import com.sun.jdi.ThreadReference
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class ThreadFilterSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val mockThreadReference = mock[ThreadReference]
   private val threadFilter = ThreadFilter(threadReference = mockThreadReference)

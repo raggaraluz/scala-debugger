@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.profiles.pure.classes
 import com.sun.jdi.event.{Event, EventQueue}
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.classes.{ClassUnloadManager, ClassUnloadRequestInfo, StandardClassUnloadManager}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.EventType.ClassUnloadEventType
@@ -18,7 +18,7 @@ import test.JDIMockHelpers
 import scala.util.{Failure, Success}
 
 class PureClassUnloadProfileSpec extends FunSpec with Matchers
-with OneInstancePerTest with MockFactory with JDIMockHelpers
+with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockClassUnloadManager = mock[ClassUnloadManager]
@@ -227,7 +227,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockClassUnloadManager.getClassUnloadRequestInfo _)
             .expects(internalId)
-            .returning(Some(ClassUnloadRequestInfo(arguments))).once()
+            .returning(Some(ClassUnloadRequestInfo(TestRequestId, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ClassUnloadEventType, Seq(uniqueIdPropertyFilter))
@@ -266,7 +266,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
 
             (mockClassUnloadManager.getClassUnloadRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(ClassUnloadRequestInfo(arguments))).once()
+              .returning(Some(ClassUnloadRequestInfo(TestRequestId, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockClassUnloadManager.createClassUnloadRequestWithId _)

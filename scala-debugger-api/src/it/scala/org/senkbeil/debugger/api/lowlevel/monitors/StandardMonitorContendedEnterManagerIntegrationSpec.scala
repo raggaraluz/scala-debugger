@@ -7,6 +7,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardMonitorContendedEnterManagerIntegrationSpec extends FunSpec with Matchers
@@ -24,24 +25,25 @@ class StandardMonitorContendedEnterManagerIntegrationSpec extends FunSpec with M
 
       val detectedEnter = new AtomicBoolean(false)
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
+      import s.lowlevel._
 
-        // Mark that we want to receive monitor contended enter events and
-        // watch for one
-        monitorContendedEnterManager.createMonitorContendedEnterRequest()
-        eventManager.addResumingEventHandler(MonitorContendedEnterEventType, e => {
-          val monitorContendedEnterEvent =
-            e.asInstanceOf[MonitorContendedEnterEvent]
+      // Mark that we want to receive monitor contended enter events and
+      // watch for one
+      monitorContendedEnterManager.createMonitorContendedEnterRequest()
+      eventManager.addResumingEventHandler(MonitorContendedEnterEventType, e => {
+        val monitorContendedEnterEvent =
+          e.asInstanceOf[MonitorContendedEnterEvent]
 
-          val threadName = monitorContendedEnterEvent.thread().name()
-          val monitorTypeName =
-            monitorContendedEnterEvent.monitor().referenceType().name()
+        val threadName = monitorContendedEnterEvent.thread().name()
+        val monitorTypeName =
+          monitorContendedEnterEvent.monitor().referenceType().name()
 
-          logger.debug(s"Detected attempted monitor enter in thread $threadName for monitor of type $monitorTypeName")
-          detectedEnter.set(true)
-        })
+        logger.debug(s"Detected attempted monitor enter in thread $threadName for monitor of type $monitorTypeName")
+        detectedEnter.set(true)
+      })
 
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         // Eventually, we should receive the monitor contended enter event
         logTimeTaken(eventually {
           // NOTE: Using asserts to provide more helpful failure messages

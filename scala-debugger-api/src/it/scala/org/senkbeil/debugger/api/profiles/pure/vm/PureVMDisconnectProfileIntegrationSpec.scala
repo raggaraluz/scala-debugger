@@ -6,6 +6,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureVMDisconnectProfileIntegrationSpec extends FunSpec with Matchers
@@ -23,12 +24,14 @@ class PureVMDisconnectProfileIntegrationSpec extends FunSpec with Matchers
 
       val detectedDisconnect = new AtomicBoolean(false)
 
-      // Start our VM and listen for the disconnect event
-      withVirtualMachine(testClass) { (s) =>
-        s.withProfile(PureDebugProfile.Name)
-          .onUnsafeVMDisconnect()
-          .foreach(_ => detectedDisconnect.set(true))
+      val s = DummyScalaVirtualMachine.newInstance()
 
+      s.withProfile(PureDebugProfile.Name)
+        .onUnsafeVMDisconnect()
+        .foreach(_ => detectedDisconnect.set(true))
+
+      // Start our VM and listen for the disconnect event
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         // Kill the JVM process so we get a disconnect event
         s.underlyingVirtualMachine.process().destroy()
 

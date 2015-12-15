@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.profiles.traits.exceptions
 
 import com.sun.jdi.event.ExceptionEvent
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.pipelines.Pipeline
@@ -10,7 +10,7 @@ import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
 
 import scala.util.{Failure, Success, Try}
 
-class ExceptionProfileSpec extends FunSpec with Matchers with OneInstancePerTest
+class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecution
   with MockFactory
 {
   private val TestThrowable = new Throwable

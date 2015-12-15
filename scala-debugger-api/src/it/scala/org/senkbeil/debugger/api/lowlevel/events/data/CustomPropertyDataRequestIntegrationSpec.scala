@@ -9,6 +9,7 @@ import org.senkbeil.debugger.api.lowlevel.events.data.requests.CustomPropertyDat
 import org.senkbeil.debugger.api.lowlevel.events.data.results.CustomPropertyDataResult
 import org.senkbeil.debugger.api.lowlevel.events.filters.CustomPropertyFilter
 import org.senkbeil.debugger.api.lowlevel.requests.properties.CustomProperty
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 import EventType._
 
@@ -46,32 +47,34 @@ class CustomPropertyDataRequestIntegrationSpec extends FunSpec with Matchers
       // Will contain the hit breakpoints
       @volatile var actual = collection.mutable.Seq[JDIEventDataResult]()
 
-      withVirtualMachine(testClass) { (s) =>
-        import s.lowlevel._
+      val s = DummyScalaVirtualMachine.newInstance()
 
-        // Queue up our breakpoints
-        breakpointLines.foreach(
-          breakpointManager.createBreakpointRequest(testFile, _: Int)
-        )
+      import s.lowlevel._
 
-        // Set specific breakpoints with custom property
-        propertyBreakpoints.foreach(i => breakpointManager.createBreakpointRequest(
-          fileName = testFile,
-          lineNumber = i,
-          property
-        ))
+      // Queue up our breakpoints
+      breakpointLines.foreach(
+        breakpointManager.createBreakpointRequest(testFile, _: Int)
+      )
 
-        // Queue up a generic breakpoint event handler that retrieves data
-        eventManager.addResumingEventHandler(BreakpointEventType, (e, d) => {
-          val breakpointEvent = e.asInstanceOf[BreakpointEvent]
-          val location = breakpointEvent.location()
-          val fileName = location.sourcePath()
-          val lineNumber = location.lineNumber()
+      // Set specific breakpoints with custom property
+      propertyBreakpoints.foreach(i => breakpointManager.createBreakpointRequest(
+        fileName = testFile,
+        lineNumber = i,
+        property
+      ))
 
-          logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
-          actual ++= d
-        }, request)
+      // Queue up a generic breakpoint event handler that retrieves data
+      eventManager.addResumingEventHandler(BreakpointEventType, (e, d) => {
+        val breakpointEvent = e.asInstanceOf[BreakpointEvent]
+        val location = breakpointEvent.location()
+        val fileName = location.sourcePath()
+        val lineNumber = location.lineNumber()
 
+        logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
+        actual ++= d
+      }, request)
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           actual should contain theSameElementsInOrderAs (expected)
         })

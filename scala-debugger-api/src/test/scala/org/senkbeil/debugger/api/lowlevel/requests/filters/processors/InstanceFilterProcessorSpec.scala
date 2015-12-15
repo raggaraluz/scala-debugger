@@ -3,11 +3,11 @@ package org.senkbeil.debugger.api.lowlevel.requests.filters.processors
 import com.sun.jdi.ObjectReference
 import com.sun.jdi.request._
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.requests.filters.InstanceFilter
 
 class InstanceFilterProcessorSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val mockObjectReference = mock[ObjectReference]
   private val instanceFilter = InstanceFilter(

@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.lowlevel.watchpoints
 import com.sun.jdi.request.{ModificationWatchpointRequest, EventRequest, EventRequestManager}
 import com.sun.jdi.{ReferenceType, VirtualMachine}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import test.JDIMockHelpers
 
@@ -11,7 +11,7 @@ import scala.collection.JavaConverters._
 import scala.util.{Failure, Success}
 
 class StandardModificationWatchpointManagerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers
+  with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]
@@ -60,9 +60,9 @@ class StandardModificationWatchpointManagerSpec extends FunSpec with Matchers
         val testClassName = "full.class.name"
         val testFieldName = "fieldName"
         val expected = Seq(
-          ModificationWatchpointRequestInfo(testClassName, testFieldName),
-          ModificationWatchpointRequestInfo(testClassName, testFieldName + 1),
-          ModificationWatchpointRequestInfo(testClassName, testFieldName + 2)
+          ModificationWatchpointRequestInfo(TestRequestId, testClassName, testFieldName),
+          ModificationWatchpointRequestInfo(TestRequestId + 1, testClassName, testFieldName + 1),
+          ModificationWatchpointRequestInfo(TestRequestId + 2, testClassName, testFieldName + 2)
         )
 
         // NOTE: Must create a new modificationWatchpoint manager that does NOT override the
@@ -73,7 +73,7 @@ class StandardModificationWatchpointManagerSpec extends FunSpec with Matchers
           mockClassManager
         )
 
-        expected.foreach { case ModificationWatchpointRequestInfo(className, fieldName, _) =>
+        expected.foreach { case ModificationWatchpointRequestInfo(requestId, className, fieldName, _) =>
           val stubField = createFieldStub(fieldName)
           val mockReferenceType = mock[ReferenceType]
           (mockClassManager.allClasses _).expects()
@@ -85,7 +85,8 @@ class StandardModificationWatchpointManagerSpec extends FunSpec with Matchers
           (mockEventRequestManager.createModificationWatchpointRequest _)
             .expects(stubField)
             .returning(stub[ModificationWatchpointRequest]).once()
-          modificationWatchpointManager.createModificationWatchpointRequest(
+          modificationWatchpointManager.createModificationWatchpointRequestWithId(
+            requestId,
             className,
             fieldName
           )
@@ -126,9 +127,7 @@ class StandardModificationWatchpointManagerSpec extends FunSpec with Matchers
         )
         actual should be(expected)
       }
-    }
 
-    describe("#createModificationWatchpointRequest") {
       it("should create the modification watchpoint request and return Success(id)") {
         val expected = Success(TestRequestId)
         val testClassName = "full.class.name"
@@ -151,7 +150,8 @@ class StandardModificationWatchpointManagerSpec extends FunSpec with Matchers
           .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
         (mockModificationWatchpointRequest.setEnabled _).expects(true).once()
 
-        val actual = modificationWatchpointManager.createModificationWatchpointRequest(
+        val actual = modificationWatchpointManager.createModificationWatchpointRequestWithId(
+          expected.get,
           testClassName,
           testFieldName
         )
@@ -175,7 +175,8 @@ class StandardModificationWatchpointManagerSpec extends FunSpec with Matchers
           .expects(stubField)
           .throwing(expected.failed.get).once()
 
-        val actual = modificationWatchpointManager.createModificationWatchpointRequest(
+        val actual = modificationWatchpointManager.createModificationWatchpointRequestWithId(
+          TestRequestId,
           testClassName,
           testFieldName
         )
@@ -194,7 +195,8 @@ class StandardModificationWatchpointManagerSpec extends FunSpec with Matchers
         // Provide reference types with different names so there is no match
         (mockReferenceType.name _).expects().returning(testClassName + 1).once()
 
-        val actual = modificationWatchpointManager.createModificationWatchpointRequest(
+        val actual = modificationWatchpointManager.createModificationWatchpointRequestWithId(
+          TestRequestId,
           testClassName,
           testFieldName
         )
@@ -216,7 +218,8 @@ class StandardModificationWatchpointManagerSpec extends FunSpec with Matchers
         (mockReferenceType.allFields _).expects()
           .returning(Seq(stubField).asJava).once()
 
-        val actual = modificationWatchpointManager.createModificationWatchpointRequest(
+        val actual = modificationWatchpointManager.createModificationWatchpointRequestWithId(
+          TestRequestId,
           testClassName,
           testFieldName
         )

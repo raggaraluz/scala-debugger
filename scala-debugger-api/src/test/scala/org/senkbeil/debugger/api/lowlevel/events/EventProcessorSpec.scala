@@ -2,11 +2,11 @@ package org.senkbeil.debugger.api.lowlevel.events
 
 import com.sun.jdi.event.Event
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 
 class EventProcessorSpec extends FunSpec with Matchers with MockFactory
-  with OneInstancePerTest
+  with ParallelTestExecution
 {
   private val mockEvent = mock[Event]
   private val mockEventFunctions = Seq(

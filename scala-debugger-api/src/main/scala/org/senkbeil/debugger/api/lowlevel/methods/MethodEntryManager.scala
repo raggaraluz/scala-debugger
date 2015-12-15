@@ -61,7 +61,29 @@ trait MethodEntryManager {
     className: String,
     methodName: String,
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createMethodEntryRequestWithId(
+    newRequestId(),
+    className,
+    methodName,
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a method entry request based on the specified information.
+   *
+   * @param methodEntryRequestInfo The information used to create the
+   *                               method entry request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createMethodEntryRequestFromInfo(
+    methodEntryRequestInfo: MethodEntryRequestInfo
+  ): Try[String] = createMethodEntryRequestWithId(
+    methodEntryRequestInfo.requestId,
+    methodEntryRequestInfo.className,
+    methodEntryRequestInfo.methodName,
+    methodEntryRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a method entry request for the specific class and method

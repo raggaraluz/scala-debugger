@@ -2,12 +2,12 @@ package org.senkbeil.debugger.api.lowlevel.methods
 
 import com.sun.jdi.request.{EventRequest, EventRequestManager, MethodExitRequest}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 import scala.util.{Failure, Success}
 
 class StandardMethodExitManagerSpec extends FunSpec with Matchers with MockFactory
-  with OneInstancePerTest with org.scalamock.matchers.Matchers
+  with ParallelTestExecution with org.scalamock.matchers.Matchers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]
@@ -20,8 +20,8 @@ class StandardMethodExitManagerSpec extends FunSpec with Matchers with MockFacto
     describe("#methodExitRequestList") {
       it("should contain all method exit requests in the form of (class, method) stored in the manager") {
         val methodExitRequests = Seq(
-          MethodExitRequestInfo("class1", "method1"),
-          MethodExitRequestInfo("class2", "method2")
+          MethodExitRequestInfo(TestRequestId, "class1", "method1"),
+          MethodExitRequestInfo(TestRequestId + 1, "class2", "method2")
         )
 
         // NOTE: Must create a new method exit manager that does NOT override
@@ -29,10 +29,10 @@ class StandardMethodExitManagerSpec extends FunSpec with Matchers with MockFacto
         //       duplicates of the test id when storing it
         val methodExitManager = new StandardMethodExitManager(mockEventRequestManager)
 
-        methodExitRequests.foreach { case MethodExitRequestInfo(className, methodName, _) =>
+        methodExitRequests.foreach { case MethodExitRequestInfo(requestId, className, methodName, _) =>
           (mockEventRequestManager.createMethodExitRequest _).expects()
             .returning(stub[MethodExitRequest]).once()
-          methodExitManager.createMethodExitRequest(className, methodName)
+          methodExitManager.createMethodExitRequestWithId(requestId, className, methodName)
         }
 
         methodExitManager.methodExitRequestList should
@@ -87,9 +87,7 @@ class StandardMethodExitManagerSpec extends FunSpec with Matchers with MockFacto
         )
         actual should be(expected)
       }
-    }
 
-    describe("#createMethodExitRequest") {
       it("should create the method exit request with a class inclusion filter for the class name") {
         val expected = Success(TestRequestId)
         val testClassName = "some class name"
@@ -107,7 +105,11 @@ class StandardMethodExitManagerSpec extends FunSpec with Matchers with MockFacto
           .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
         (mockMethodExitRequest.setEnabled _).expects(true).once()
 
-        val actual = methodExitManager.createMethodExitRequest(testClassName, testMethodName)
+        val actual = methodExitManager.createMethodExitRequestWithId(
+          expected.get,
+          testClassName,
+          testMethodName
+        )
         actual should be (expected)
       }
 
@@ -119,7 +121,11 @@ class StandardMethodExitManagerSpec extends FunSpec with Matchers with MockFacto
         (mockEventRequestManager.createMethodExitRequest _).expects()
           .throwing(expected.failed.get).once()
 
-        val actual = methodExitManager.createMethodExitRequest(testClassName, testMethodName)
+        val actual = methodExitManager.createMethodExitRequestWithId(
+          TestRequestId,
+          testClassName,
+          testMethodName
+        )
         actual should be (expected)
       }
     }

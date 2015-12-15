@@ -4,19 +4,19 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import com.sun.jdi.request.{EventRequest, EventRequestManager, ThreadStartRequest}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.requests.{JDIRequestProcessor, JDIRequestArgument}
 
 import scala.util.{Failure, Success}
 
 class StandardThreadStartManagerSpec extends FunSpec with Matchers with MockFactory
-  with OneInstancePerTest with org.scalamock.matchers.Matchers
+  with ParallelTestExecution with org.scalamock.matchers.Matchers
 {
-  private val TestId = java.util.UUID.randomUUID().toString
+  private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]
 
   private val threadStartManager = new StandardThreadStartManager(mockEventRequestManager) {
-    override protected def newRequestId(): String = TestId
+    override protected def newRequestId(): String = TestRequestId
   }
 
   describe("StandardThreadStartManager") {
@@ -47,7 +47,7 @@ class StandardThreadStartManagerSpec extends FunSpec with Matchers with MockFact
       }
     }
 
-    describe("#createThreadStartRequest") {
+    describe("#createThreadStartRequestWithId") {
       it("should create the thread start request using the provided id") {
         val expected = Success(java.util.UUID.randomUUID().toString)
 
@@ -65,25 +65,6 @@ class StandardThreadStartManagerSpec extends FunSpec with Matchers with MockFact
           threadStartManager.createThreadStartRequestWithId(expected.get)
         actual should be(expected)
       }
-    }
-
-    describe("#createThreadStartRequest") {
-      it("should create the thread start request and return Success(id)") {
-        val expected = Success(TestId)
-
-        val mockThreadStartRequest = mock[ThreadStartRequest]
-        (mockEventRequestManager.createThreadStartRequest _).expects()
-          .returning(mockThreadStartRequest).once()
-
-        // Should set enabled to true by default, and
-        // set the suspend policy to thread level by default
-        (mockThreadStartRequest.setSuspendPolicy _)
-          .expects(EventRequest.SUSPEND_EVENT_THREAD).once()
-        (mockThreadStartRequest.setEnabled _).expects(true).once()
-
-        val actual = threadStartManager.createThreadStartRequest()
-        actual should be (expected)
-      }
 
       it("should return the exception if unable to create the request") {
         val expected = Failure(new Throwable)
@@ -91,7 +72,9 @@ class StandardThreadStartManagerSpec extends FunSpec with Matchers with MockFact
         (mockEventRequestManager.createThreadStartRequest _).expects()
           .throwing(expected.failed.get).once()
 
-        val actual = threadStartManager.createThreadStartRequest()
+        val actual = threadStartManager.createThreadStartRequestWithId(
+          TestRequestId
+        )
         actual should be (expected)
       }
     }
@@ -112,7 +95,7 @@ class StandardThreadStartManagerSpec extends FunSpec with Matchers with MockFact
       it("should return false if it does not exist") {
         val expected = false
 
-        val actual = threadStartManager.hasThreadStartRequest(TestId)
+        val actual = threadStartManager.hasThreadStartRequest(TestRequestId)
         actual should be (expected)
       }
     }
@@ -133,7 +116,7 @@ class StandardThreadStartManagerSpec extends FunSpec with Matchers with MockFact
       it("should return None if not found") {
         val expected = None
 
-        val actual = threadStartManager.getThreadStartRequest(TestId)
+        val actual = threadStartManager.getThreadStartRequest(TestRequestId)
         actual should be (expected)
       }
     }
@@ -141,6 +124,7 @@ class StandardThreadStartManagerSpec extends FunSpec with Matchers with MockFact
     describe("#getThreadStartRequestInfo") {
       it("should return Some(info) if found") {
         val expected = ThreadStartRequestInfo(
+          TestRequestId,
           Seq(mock[JDIRequestArgument], mock[JDIRequestArgument])
         )
         expected.extraArguments.foreach(a => {
@@ -164,7 +148,7 @@ class StandardThreadStartManagerSpec extends FunSpec with Matchers with MockFact
       it("should return None if not found") {
         val expected = None
 
-        val actual = threadStartManager.getThreadStartRequestInfo(TestId)
+        val actual = threadStartManager.getThreadStartRequestInfo(TestRequestId)
         actual should be (expected)
       }
     }
@@ -189,7 +173,7 @@ class StandardThreadStartManagerSpec extends FunSpec with Matchers with MockFact
       it("should return false if the thread start request was not removed") {
         val expected = false
 
-        val actual = threadStartManager.removeThreadStartRequest(TestId)
+        val actual = threadStartManager.removeThreadStartRequest(TestRequestId)
         actual should be (expected)
       }
     }

@@ -7,6 +7,8 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType._
+import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
+import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
@@ -28,28 +30,19 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
       val expectedExceptionName =
         "org.senkbeil.debugger.test.exceptions.CustomException"
 
-      withVirtualMachine(testClass) { (s) =>
-        // Use a breakpoint prior to our exceptions to prepare without passing
-        // the exceptions
-        s.onUnsafeBreakpoint(testFile, 10).map(_.location()).foreach(l => {
-          // When breakpoint triggered, assume the exception class
-          // has been loaded
-          val fileName = l.sourcePath()
-          val lineNumber = l.lineNumber()
+      val s = DummyScalaVirtualMachine.newInstance()
 
-          logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
+      // Mark the exception we want to watch (now that the class
+      // is available)
+      s.withProfile(PureDebugProfile.Name).onUnsafeException(
+        exceptionName = expectedExceptionName,
+        notifyCaught = true,
+        notifyUncaught = false
+      ).map(_.exception().referenceType().name())
+        .filter(_ == expectedExceptionName)
+        .foreach(_ => detectedException.set(true))
 
-          // Mark the exception we want to watch (now that the class
-          // is available)
-          s.onUnsafeException(
-            exceptionName = expectedExceptionName,
-            notifyCaught = true,
-            notifyUncaught = false
-          ).map(_.exception().referenceType().name())
-            .filter(_ == expectedExceptionName)
-            .foreach(_ => detectedException.set(true))
-        })
-
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           detectedException.get() should be (true)
         })
@@ -65,28 +58,19 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
       val expectedExceptionName =
         "org.senkbeil.debugger.test.exceptions.CustomException"
 
-      withVirtualMachine(testClass) { (s) =>
-        // Use a breakpoint prior to our exceptions to prepare without passing
-        // the exceptions
-        s.onUnsafeBreakpoint(testFile, 10).map(_.location()).foreach(l => {
-          // When breakpoint triggered, assume the exception class
-          // has been loaded
-          val fileName = l.sourcePath()
-          val lineNumber = l.lineNumber()
+      val s = DummyScalaVirtualMachine.newInstance()
 
-          logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
+      // Mark the exception we want to watch (now that the class
+      // is available)
+      s.withProfile(PureDebugProfile.Name).onUnsafeException(
+        exceptionName = expectedExceptionName,
+        notifyCaught = true,
+        notifyUncaught = false
+      ).map(_.exception().referenceType().name())
+        .filter(_ == expectedExceptionName)
+        .foreach(_ => detectedException.set(true))
 
-          // Mark the exception we want to watch (now that the class
-          // is available)
-          s.onUnsafeException(
-            exceptionName = expectedExceptionName,
-            notifyCaught = true,
-            notifyUncaught = false
-          ).map(_.exception().referenceType().name())
-            .filter(_ == expectedExceptionName)
-            .foreach(_ => detectedException.set(true))
-        })
-
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           detectedException.get() should be (true)
         })
@@ -102,28 +86,19 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
       val expectedExceptionName =
         "org.senkbeil.debugger.test.exceptions.CustomException"
 
-      withVirtualMachine(testClass) { (s) =>
-        // Use a breakpoint prior to our exceptions to prepare without passing
-        // the exceptions
-        s.onUnsafeBreakpoint(testFile, 10).map(_.location()).foreach(l => {
-          // When breakpoint triggered, assume the exception class
-          // has been loaded
-          val fileName = l.sourcePath()
-          val lineNumber = l.lineNumber()
+      val s = DummyScalaVirtualMachine.newInstance()
 
-          logger.debug(s"Reached breakpoint: $fileName:$lineNumber")
+      // Mark the exception we want to watch (now that the class
+      // is available)
+      s.withProfile(PureDebugProfile.Name).onUnsafeException(
+        exceptionName = expectedExceptionName,
+        notifyCaught = false,
+        notifyUncaught = true
+      ).map(_.exception().referenceType().name())
+        .filter(_ == expectedExceptionName)
+        .foreach(_ => detectedException.set(true))
 
-          // Mark the exception we want to watch (now that the class
-          // is available)
-          s.onUnsafeException(
-            exceptionName = expectedExceptionName,
-            notifyCaught = false,
-            notifyUncaught = true
-          ).map(_.exception().referenceType().name())
-            .filter(_ == expectedExceptionName)
-            .foreach(_ => detectedException.set(true))
-        })
-
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           detectedException.get() should be (true)
         })

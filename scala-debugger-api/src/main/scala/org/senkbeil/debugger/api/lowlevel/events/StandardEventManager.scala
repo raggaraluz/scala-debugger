@@ -92,107 +92,10 @@ class StandardEventManager(
   }
 
   /**
-   * Adds a new event stream that tracks incoming JDI events.
-   *
-   * @param eventType The type of JDI event to stream
-   * @param eventArguments The arguments used when determining whether or not
-   *                       to send the event down the stream
-   *
-   * @return The resulting event stream in the form of a pipeline of events
-   */
-  override def addEventStream(
-    eventType: EventType,
-    eventArguments: JDIEventArgument*
-  ): IdentityPipeline[Event] = {
-    addEventDataStream(eventType, eventArguments: _*).map(_._1).noop()
-  }
-
-  /**
-   * Adds a new event data stream that tracks incoming JDI events and data
-   * collected from those events.
-   *
-   * @param eventType The type of JDI event to stream
-   * @param eventArguments The arguments used when determining whether or not
-   *                       to send the event down the stream
-   *
-   * @return The resulting event stream in the form of a pipeline of events
-   *         and collected data
-   */
-  override def addEventDataStream(
-    eventType: EventType,
-    eventArguments: JDIEventArgument*
-  ): IdentityPipeline[EventAndData] = {
-    val eventHandlerId = newEventId()
-
-    val eventPipeline = Pipeline.newPipeline(
-      classOf[EventAndData],
-      () => removeEventHandler(eventHandlerId)
-    )
-
-    // Create a resuming event handler while providing our own id
-    wrapAndAddEventHandler(
-      eventHandlerId,
-      eventType,
-      (e, d) => { eventPipeline.process((e, d)); true },
-      eventArguments: _*
-    )
-
-    eventPipeline
-  }
-
-  /**
-   * Adds the event function to this manager. This event automatically counts
-   * towards resuming the event set after completion.
-   *
-   * @param eventType The type of the event to add a function
-   * @param eventHandler The function to add, taking the occurring event and
-   *                     a collection of retrieved data from the event
-   * @param eventArguments The arguments used when determining whether or not to
-   *                       invoke the event handler
-   *
-   * @return The id associated with the event handler
-   */
-  override def addResumingEventHandler(
-    eventType: EventType,
-    eventHandler: (Event, Seq[JDIEventDataResult]) => Unit,
-    eventArguments: JDIEventArgument*
-  ): String = {
-    // Convert the function to an "always true" event function
-    val fullEventFunction = (event: Event, data: Seq[JDIEventDataResult]) => {
-      eventHandler(event, data)
-      true
-    }
-
-    addEventHandler(eventType, fullEventFunction, eventArguments: _*)
-  }
-
-  /**
-   * Adds the event function to this manager. This event automatically counts
-   * towards resuming the event set after completion.
-   *
-   * @param eventType The type of the event to add a function
-   * @param eventHandler The function to add, taking the occurring event
-   * @param eventArguments The arguments used when determining whether or not to
-   *                       invoke the event handler
-   *
-   * @return The id associated with the event handler
-   */
-  override def addResumingEventHandler(
-    eventType: EventType,
-    eventHandler: (Event) => Unit,
-    eventArguments: JDIEventArgument*
-  ): String = addResumingEventHandler(
-    eventType = eventType,
-    eventHandler = (event: Event, _: Seq[JDIEventDataResult]) => {
-      eventHandler(event)
-    },
-    eventArguments: _*
-  )
-
-  /**
    * Adds the event function to this manager. The return value of the handler
    * function contributes towards whether or not to resume the event set.
    *
+   * @param eventHandlerId The id to associate with the event handler
    * @param eventType The type of the event to add a function
    * @param eventHandler The function to add, taking the occurring event and
    *                     a collection of retrieved data from the event
@@ -201,14 +104,12 @@ class StandardEventManager(
    *
    * @return The id associated with the event handler
    */
-  override def addEventHandler(
+  override def addEventHandlerWithId(
+    eventHandlerId: String,
     eventType: EventType,
     eventHandler: EventHandler,
     eventArguments: JDIEventArgument*
   ): String = {
-    // Generate the id for this handler
-    val eventHandlerId = newEventId()
-
     wrapAndAddEventHandler(
       eventHandlerId,
       eventType,
@@ -216,29 +117,6 @@ class StandardEventManager(
       eventArguments: _*
     )
   }
-
-  /**
-   * Adds the event function to this manager. The return value of the handler
-   * function contributes towards whether or not to resume the event set.
-   *
-   * @param eventType The type of the event to add a function
-   * @param eventHandler The function to add, taking the occurring event
-   * @param eventArguments The arguments used when determining whether or not to
-   *                       invoke the event handler
-   *
-   * @return The id associated with the event handler
-   */
-  override def addEventHandler(
-    eventType: EventType,
-    eventHandler: (Event) => Boolean,
-    eventArguments: JDIEventArgument*
-  ): String = addEventHandler(
-    eventType = eventType,
-    eventHandler = (event: Event, _: Seq[JDIEventDataResult]) => {
-      eventHandler(event)
-    },
-    eventArguments: _*
-  )
 
   /**
    * Wraps the provided event handler and adds it to the internal collection.
@@ -256,7 +134,7 @@ class StandardEventManager(
     eventType: EventType,
     eventHandler: EventHandler,
     eventArguments: JDIEventArgument*
-    ): String = {
+  ): String = {
     // Create a wrapper that contains our filtering logic
     val wrapperEventHandler =
       newWrapperEventHandler(eventHandler, eventArguments)

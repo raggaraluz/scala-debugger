@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.profiles.pure.vm
 
 import com.sun.jdi.event.{EventQueue, Event, VMStartEvent}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType.VMStartEventType
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument}
@@ -11,7 +11,7 @@ import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 import test.JDIMockHelpers
 
 class PureVMStartProfileSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers
+  with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val mockEventManager = mock[EventManager]
 

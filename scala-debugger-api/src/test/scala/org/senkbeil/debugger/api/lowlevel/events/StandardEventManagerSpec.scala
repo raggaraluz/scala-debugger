@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.lowlevel.events
 
 import com.sun.jdi.event.{Event, EventSet, EventQueue}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
 
 import EventType._
 import org.senkbeil.debugger.api.lowlevel.events.data.{JDIEventDataProcessor, JDIEventDataRequest, JDIEventDataResult}
@@ -10,7 +10,7 @@ import org.senkbeil.debugger.api.lowlevel.events.filters.{JDIEventFilterProcesso
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 
 class StandardEventManagerSpec extends FunSpec with Matchers with MockFactory
-  with OneInstancePerTest with org.scalamock.matchers.Matchers
+  with ParallelTestExecution with org.scalamock.matchers.Matchers
 {
   private val mockEventQueue = mock[EventQueue]
   private val mockLoopingTaskRunner = mock[LoopingTaskRunner]
@@ -107,6 +107,19 @@ class StandardEventManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#addEventStreamWithId") {
+      it("should use the provided id as the event handler id") {
+        val expected = java.util.UUID.randomUUID().toString
+        val stubEventType = stub[EventType]
+
+        eventManager.addEventStreamWithId(expected, stubEventType)
+
+        val actual = eventManager.getHandlerIdsForEventType(stubEventType).head
+
+        actual should be (expected)
+      }
+    }
+
     describe("#addEventStream") {
       it("should send events whenever the underlying event handler is invoked") {
         val stubEventType = stub[EventType]
@@ -138,6 +151,19 @@ class StandardEventManagerSpec extends FunSpec with Matchers with MockFactory
 
         // Event handler removed by the close operation
         eventManager.getHandlerIdsForEventType(stubEventType) should be (empty)
+      }
+    }
+
+    describe("#addEventDataStreamWithId") {
+      it("should use the provided id as the event handler id") {
+        val expected = java.util.UUID.randomUUID().toString
+        val stubEventType = stub[EventType]
+
+        eventManager.addEventDataStreamWithId(expected, stubEventType)
+
+        val actual = eventManager.getHandlerIdsForEventType(stubEventType).head
+
+        actual should be (expected)
       }
     }
 
@@ -178,6 +204,32 @@ class StandardEventManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#addResumingEventHandlerWithId") {
+      it("should use the provided id as the event handler id") {
+        val expected = Seq(
+          java.util.UUID.randomUUID().toString,
+          java.util.UUID.randomUUID().toString
+        )
+        val stubEventType = stub[EventType]
+
+        eventManager.addResumingEventHandlerWithId(
+          expected.head,
+          stubEventType,
+          (_: Event) => {}
+        )
+
+        eventManager.addResumingEventHandlerWithId(
+          expected.last,
+          stubEventType,
+          (_: Event, _: Seq[JDIEventDataResult]) => {}
+        )
+
+        val actual = eventManager.getHandlerIdsForEventType(stubEventType)
+
+        actual should contain theSameElementsAs (expected)
+      }
+    }
+
     describe("#addResumingEventHandler") {
       it("should compose the provided unit function to return true") {
         // Using a stub to avoid hacks for EventType.toString()
@@ -192,6 +244,32 @@ class StandardEventManagerSpec extends FunSpec with Matchers with MockFactory
 
         // Verify that the handler returns true when invoked
         createdHandler(mock[Event], Nil) should be (true)
+      }
+    }
+
+    describe("#addEventHandlerWithId") {
+      it("should use the provided id as the event handler id") {
+        val expected = Seq(
+          java.util.UUID.randomUUID().toString,
+          java.util.UUID.randomUUID().toString
+        )
+        val stubEventType = stub[EventType]
+
+        eventManager.addEventHandlerWithId(
+          expected.head,
+          stubEventType,
+          (_: Event) => false
+        )
+
+        eventManager.addEventHandlerWithId(
+          expected.last,
+          stubEventType,
+          (_: Event, _: Seq[JDIEventDataResult]) => false
+        )
+
+        val actual = eventManager.getHandlerIdsForEventType(stubEventType)
+
+        actual should contain theSameElementsAs (expected)
       }
     }
 

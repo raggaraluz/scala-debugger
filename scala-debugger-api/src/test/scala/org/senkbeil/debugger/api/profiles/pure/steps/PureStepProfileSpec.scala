@@ -6,7 +6,7 @@ import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.{ScalaFutures, Futures}
 import org.scalatest.time.{Span, Milliseconds}
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import org.senkbeil.debugger.api.lowlevel.requests.filters.ThreadFilter
 import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
@@ -21,7 +21,7 @@ import test.JDIMockHelpers
 import scala.util.{Failure, Success}
 
 class PureStepProfileSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers with Futures
+  with ParallelTestExecution with MockFactory with JDIMockHelpers with Futures
   with ScalaFutures
 {
   implicit override val patienceConfig = PatienceConfig(

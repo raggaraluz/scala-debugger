@@ -9,7 +9,7 @@ import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.lowlevel.events.EventType
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
-import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
 import EventType._
 import com.sun.jdi.VirtualMachine
 
@@ -27,17 +27,24 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
    *
    * @param className The name of the main class to use as the JVM entrypoint
    * @param arguments The arguments to provide to the main class
+   * @param pendingScalaVirtualMachines The collection of virtual machines
+   *                                    containing pending requests to apply
+   *                                    to the generated virtual machine
    * @param testCode The test code to evaluate when the JVM connects, given the
    *                 ScalaVirtualMachine as an argument
    */
   def withVirtualMachine(
     className: String,
-    arguments: Seq[String] = Nil
+    arguments: Seq[String] = Nil,
+    pendingScalaVirtualMachines: Seq[ScalaVirtualMachine] = Nil
   )(
     testCode: (ScalaVirtualMachine) => Any
-  ): Unit = withLazyVirtualMachine(className, arguments) { (s, start) =>
-    start()
-    testCode(s)
+  ): Unit = {
+    val pendings = pendingScalaVirtualMachines
+    withLazyVirtualMachine(className, arguments, pendings) { (s, start) =>
+      start()
+      testCode(s)
+    }
   }
 
   /**
@@ -45,13 +52,17 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
    *
    * @param className The name of the main class to use as the JVM entrypoint
    * @param arguments The arguments to provide to the main class
+   * @param pendingScalaVirtualMachines The collection of virtual machines
+   *                                    containing pending requests to apply
+   *                                    to the generated virtual machine
    * @param testCode The test code to evaluate when the JVM connects, given
    *                 the ScalaVirtualMachine and a function to execute when
    *                 ready to start the virtual machine
    */
   def withLazyVirtualMachine(
     className: String,
-    arguments: Seq[String] = Nil
+    arguments: Seq[String] = Nil,
+    pendingScalaVirtualMachines: Seq[ScalaVirtualMachine] = Nil
   )(
     testCode: (ScalaVirtualMachine, () => Unit) => Any
   ): Unit = {
@@ -60,6 +71,11 @@ trait VirtualMachineFixtures extends TestUtilities with Logging {
       commandLineArguments  = arguments,
       jvmOptions            = Seq("-classpath", jvmClasspath),
       suspend               = true // This should always be true for our tests
+    )
+
+    // Apply any pending requests
+    pendingScalaVirtualMachines.foreach(
+      launchingDebugger.addPendingScalaVirtualMachine
     )
 
     launchingDebugger.start(startProcessingEvents = false, { s =>

@@ -63,7 +63,12 @@ trait ExceptionManager {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createCatchallExceptionRequestWithId(
+    newRequestId(),
+    notifyCaught,
+    notifyUncaught,
+    extraArguments: _*
+  )
 
   /**
    * Retrieves the id of the exception request used to catch all exceptions.
@@ -136,7 +141,43 @@ trait ExceptionManager {
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createExceptionRequestWithId(
+    newRequestId(),
+    exceptionName,
+    notifyCaught,
+    notifyUncaught,
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new exception request based on the specified information. If the
+   * class name is null, will create a catchall exception request.
+   *
+   * @param exceptionRequestInfo The information used to create the exception
+   *                             request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createExceptionRequestFromInfo(
+    exceptionRequestInfo: ExceptionRequestInfo
+  ): Try[String] = {
+    if (exceptionRequestInfo.className != null) {
+      createExceptionRequestWithId(
+        exceptionRequestInfo.requestId,
+        exceptionRequestInfo.className,
+        exceptionRequestInfo.notifyCaught,
+        exceptionRequestInfo.notifyUncaught,
+        exceptionRequestInfo.extraArguments: _*
+      )
+    } else {
+      createCatchallExceptionRequestWithId(
+        exceptionRequestInfo.requestId,
+        exceptionRequestInfo.notifyCaught,
+        exceptionRequestInfo.notifyUncaught,
+        exceptionRequestInfo.extraArguments: _*
+      )
+    }
+  }
 
   /**
    * Determines if an exception request exists for the specified exception

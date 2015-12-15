@@ -47,25 +47,12 @@ class StandardClassUnloadManager(
 
     if (request.isSuccess) classUnloadRequests.putWithId(
       requestId,
-      ClassUnloadRequestInfo(extraArguments),
+      ClassUnloadRequestInfo(requestId, extraArguments),
       request.get
     )
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)
-  }
-
-  /**
-   * Creates a new class unload request.
-   *
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createClassUnloadRequest(
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createClassUnloadRequestWithId(newRequestId(), extraArguments: _*)
   }
 
   /**

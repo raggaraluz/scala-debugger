@@ -40,51 +40,71 @@ trait MonitorContendedEnterManager {
    */
   def createMonitorContendedEnterRequest(
     extraArguments: JDIRequestArgument*
-  ): Try[String]
+  ): Try[String] = createMonitorContendedEnterRequestWithId(
+    newRequestId(),
+    extraArguments: _*
+  )
+
+  /**
+   * Creates a new monitor contended enter request based on the specified
+   * information.
+   *
+   * @param monitorContendedEnterRequestInfo The information used to create
+   *                                           the monitor contended enter
+   *                                           request
+   *
+   * @return Success(id) if successful, otherwise Failure
+   */
+  def createMonitorContendedEnterRequestFromInfo(
+    monitorContendedEnterRequestInfo: MonitorContendedEnterRequestInfo
+  ): Try[String] = createMonitorContendedEnterRequestWithId(
+    monitorContendedEnterRequestInfo.requestId,
+    monitorContendedEnterRequestInfo.extraArguments: _*
+  )
 
   /**
    * Determines if a monitor contended enter request with the specified id.
    *
-   * @param id The id of the Monitor Contended Enter Request
+   * @param requestId The id of the Monitor Contended Enter Request
    *
    * @return True if a monitor contended enter request with the id exists,
    *         otherwise false
    */
-  def hasMonitorContendedEnterRequest(id: String): Boolean
+  def hasMonitorContendedEnterRequest(requestId: String): Boolean
 
   /**
    * Retrieves the monitor contended enter request using the specified id.
    *
-   * @param id The id of the Monitor Contended Enter Request
+   * @param requestId The id of the Monitor Contended Enter Request
    *
    * @return Some monitor contended enter request if it exists, otherwise None
    */
   def getMonitorContendedEnterRequest(
-    id: String
+    requestId: String
   ): Option[MonitorContendedEnterRequest]
 
   /**
    * Retrieves the information for a monitor contended enter request with the
    * specified id.
    *
-   * @param id The id of the Monitor Contended Enter Request
+   * @param requestId The id of the Monitor Contended Enter Request
    *
    * @return Some information about the request if it exists, otherwise None
    */
   def getMonitorContendedEnterRequestInfo(
-    id: String
+    requestId: String
   ): Option[MonitorContendedEnterRequestInfo]
 
   /**
    * Removes the specified monitor contended enter request.
    *
-   * @param id The id of the Monitor Contended Enter Request
+   * @param requestId The id of the Monitor Contended Enter Request
    *
    * @return True if the monitor contended enter request was removed
    *         (if it existed), otherwise false
    */
   def removeMonitorContendedEnterRequest(
-    id: String
+    requestId: String
   ): Boolean
 
   /**

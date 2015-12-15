@@ -4,7 +4,7 @@ import com.sun.jdi._
 import com.sun.jdi.connect.{Connector, ListeningConnector}
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
-import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+import org.senkbeil.debugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -83,7 +83,7 @@ class ListeningDebugger private[debugger] (
    *
    * @return True if it is running, otherwise false
    */
-  def isRunning: Boolean = components.nonEmpty
+  override def isRunning: Boolean = components.nonEmpty
 
   /**
    * Indicates whether or not the listening debugger supports multiple JVM
@@ -104,7 +104,7 @@ class ListeningDebugger private[debugger] (
    *                              connects to this debugger
    * @tparam T The return type of the callback function
    */
-  def start[T](
+  override def start[T](
     startProcessingEvents: Boolean,
     newVirtualMachineFunc: ScalaVirtualMachine => T
   ): Unit = {
@@ -147,21 +147,9 @@ class ListeningDebugger private[debugger] (
   }
 
   /**
-   * Starts the debugger, resulting in opening the specified socket to listen
-   * for remote JVM connections.
-   *
-   * @param newVirtualMachineFunc The function to be invoked once per JVM that
-   *                              connects to this debugger
-   * @tparam T The return type of the callback function
-   */
-  def start[T](newVirtualMachineFunc: ScalaVirtualMachine => T): Unit = {
-    start(startProcessingEvents = true, newVirtualMachineFunc)
-  }
-
-  /**
    * Stops listening for incoming connections and shuts down the task runner.
    */
-  def stop(): Unit = {
+  override def stop(): Unit = {
     assert(isRunning, "Debugger has not been started!")
 
     val (loopingTaskRunner, connector, arguments) = components.get
@@ -204,7 +192,7 @@ class ListeningDebugger private[debugger] (
     connector: ListeningConnector,
     arguments: java.util.Map[String, Connector.Argument],
     startProcessingEvents: Boolean,
-    newVirtualMachineFunc: ScalaVirtualMachine => T
+    newVirtualMachineFunc: StandardScalaVirtualMachine => T
   ): Unit = {
     val newVirtualMachine = Try(connector.accept(arguments))
 
@@ -214,9 +202,12 @@ class ListeningDebugger private[debugger] (
       newProfileManagerFunc(),
       loopingTaskRunner
     ))
-    scalaVirtualMachine.foreach(_.initialize(
-      startProcessingEvents = startProcessingEvents
-    ))
+    scalaVirtualMachine.foreach(s => {
+      getPendingScalaVirtualMachines.foreach(s.processPendingRequests)
+      s.initialize(
+        startProcessingEvents = startProcessingEvents
+      )
+    })
     scalaVirtualMachine.foreach(newVirtualMachineFunc)
 
     // Release CPU
@@ -238,7 +229,7 @@ class ListeningDebugger private[debugger] (
     virtualMachine: VirtualMachine,
     profileManager: ProfileManager,
     loopingTaskRunner: LoopingTaskRunner
-  ): ScalaVirtualMachine = new ScalaVirtualMachine(
+  ): StandardScalaVirtualMachine = new StandardScalaVirtualMachine(
     virtualMachine,
     profileManager,
     loopingTaskRunner
@@ -253,4 +244,14 @@ class ListeningDebugger private[debugger] (
     virtualMachineManager.listeningConnectors().asScala
       .find(_.name() == ConnectorClassString)
   }
+
+  /**
+   * Creates a new dummy Scala virtual machine instance that can be used to
+   * prepare pending requests to apply to the Scala virtual machines generated
+   * by the debugger once it starts.
+   *
+   * @return The new dummy (no-op) Scala virtual machine instance
+   */
+  override def newDummyScalaVirtualMachine(): ScalaVirtualMachine =
+    new DummyScalaVirtualMachine(newProfileManagerFunc())
 }

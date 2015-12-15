@@ -76,35 +76,12 @@ class StandardModificationWatchpointManager(
 
     if (request.isSuccess) modificationWatchpointRequests.putWithId(
       requestId,
-      ModificationWatchpointRequestInfo(className, fieldName),
+      ModificationWatchpointRequestInfo(requestId, className, fieldName),
       request.get
     )
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)
-  }
-
-  /**
-   * Creates a new modification watchpoint request for the specified field
-   * using the field's name.
-   *
-   * @param className The name of the class containing the field
-   * @param fieldName The name of the field to watch
-   * @param extraArguments Any additional arguments to provide to the request
-   *
-   * @return Success(id) if successful, otherwise Failure
-   */
-  override def createModificationWatchpointRequest(
-    className: String,
-    fieldName: String,
-    extraArguments: JDIRequestArgument*
-  ): Try[String] = {
-    createModificationWatchpointRequestWithId(
-      newRequestId(),
-      className,
-      fieldName,
-      extraArguments: _*
-    )
   }
 
   /**

@@ -1,10 +1,10 @@
 package org.senkbeil.debugger.api.lowlevel.requests.filters
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class ClassExclusionFilterSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val testPattern = "some pattern"
   private val classExclusionFilter = ClassExclusionFilter(

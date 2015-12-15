@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.profiles.pure.monitors
 import com.sun.jdi.event.{Event, EventQueue}
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager
 import org.senkbeil.debugger.api.lowlevel.events.EventType.MonitorWaitEventType
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
@@ -18,7 +18,7 @@ import test.JDIMockHelpers
 import scala.util.{Failure, Success}
 
 class PureMonitorWaitProfileSpec extends FunSpec with Matchers
-with OneInstancePerTest with MockFactory with JDIMockHelpers
+with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockMonitorWaitManager = mock[MonitorWaitManager]
@@ -227,7 +227,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockMonitorWaitManager.getMonitorWaitRequestInfo _)
             .expects(internalId)
-            .returning(Some(MonitorWaitRequestInfo(arguments))).once()
+            .returning(Some(MonitorWaitRequestInfo(TestRequestId, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MonitorWaitEventType, Seq(uniqueIdPropertyFilter))
@@ -266,7 +266,7 @@ with OneInstancePerTest with MockFactory with JDIMockHelpers
 
             (mockMonitorWaitManager.getMonitorWaitRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(MonitorWaitRequestInfo(arguments))).once()
+              .returning(Some(MonitorWaitRequestInfo(TestRequestId, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockMonitorWaitManager.createMonitorWaitRequestWithId _)
