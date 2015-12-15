@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.debuggers
 import com.sun.jdi.connect.{AttachingConnector, Connector}
 import com.sun.jdi.{VirtualMachine, VirtualMachineManager}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.profiles.ProfileManager
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 import org.senkbeil.debugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
@@ -11,7 +11,7 @@ import org.senkbeil.debugger.api.virtualmachines.{ScalaVirtualMachine, StandardS
 import scala.collection.JavaConverters._
 
 class AttachingDebuggerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private def createConnectorArgumentMock(
     setter: Boolean = false,

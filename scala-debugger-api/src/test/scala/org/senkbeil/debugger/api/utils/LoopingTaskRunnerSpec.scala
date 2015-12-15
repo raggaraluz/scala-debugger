@@ -6,10 +6,10 @@ import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Span}
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class LoopingTaskRunnerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with Eventually
+  with ParallelTestExecution with MockFactory with Eventually
 {
   implicit override val patienceConfig = PatienceConfig(
     timeout = scaled(Span(300, Milliseconds)),

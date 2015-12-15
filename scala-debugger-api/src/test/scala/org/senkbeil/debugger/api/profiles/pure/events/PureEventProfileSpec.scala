@@ -1,7 +1,7 @@
 package org.senkbeil.debugger.api.profiles.pure.events
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
 import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
@@ -11,7 +11,7 @@ import test.JDIMockHelpers
 import scala.util.Success
 
 class PureEventProfileSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers
+  with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val mockEventManager = mock[EventManager]
   private val pureEventProfile = new Object with PureEventProfile {

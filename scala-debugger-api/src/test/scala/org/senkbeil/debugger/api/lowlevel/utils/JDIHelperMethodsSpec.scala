@@ -2,13 +2,13 @@ package org.senkbeil.debugger.api.lowlevel.utils
 
 import com.sun.jdi._
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 class JDIHelperMethodsSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val mockReferenceType = mock[ReferenceType]
   private val mockThreadReference = mock[ThreadReference]

@@ -1,14 +1,14 @@
 package org.senkbeil.debugger.api.lowlevel.monitors
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import test.TestMonitorWaitManager
 
 import scala.util.Success
 
 class MonitorWaitManagerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockMonitorWaitManager = mock[MonitorWaitManager]

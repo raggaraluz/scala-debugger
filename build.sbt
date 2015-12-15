@@ -23,8 +23,8 @@ lazy val scalaDebuggerApi = project
     // TODO: Determine why this causes multiple tests to fail (maybe processes
     //       spawned are clashing?)
     // Run integration tests in parallel
-    //parallelExecution in IntegrationTest := true,
-    //testForkedParallel in IntegrationTest := true,
+//    parallelExecution in IntegrationTest := true,
+//    testForkedParallel in IntegrationTest := true,
 
     libraryDependencies ++= Seq(
       "org.slf4j" % "slf4j-api" % "1.7.5",

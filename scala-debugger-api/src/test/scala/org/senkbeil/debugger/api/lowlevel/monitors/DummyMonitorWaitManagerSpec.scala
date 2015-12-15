@@ -1,11 +1,11 @@
 package org.senkbeil.debugger.api.lowlevel.monitors
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.DummyOperationException
 
 class DummyMonitorWaitManagerSpec extends FunSpec with Matchers with MockFactory
-  with OneInstancePerTest with org.scalamock.matchers.Matchers
+  with ParallelTestExecution with org.scalamock.matchers.Matchers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val monitorWaitManager = new DummyMonitorWaitManager

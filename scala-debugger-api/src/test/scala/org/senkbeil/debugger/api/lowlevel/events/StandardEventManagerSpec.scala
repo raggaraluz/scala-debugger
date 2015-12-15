@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.lowlevel.events
 
 import com.sun.jdi.event.{Event, EventSet, EventQueue}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
 
 import EventType._
 import org.senkbeil.debugger.api.lowlevel.events.data.{JDIEventDataProcessor, JDIEventDataRequest, JDIEventDataResult}
@@ -10,7 +10,7 @@ import org.senkbeil.debugger.api.lowlevel.events.filters.{JDIEventFilterProcesso
 import org.senkbeil.debugger.api.utils.LoopingTaskRunner
 
 class StandardEventManagerSpec extends FunSpec with Matchers with MockFactory
-  with OneInstancePerTest with org.scalamock.matchers.Matchers
+  with ParallelTestExecution with org.scalamock.matchers.Matchers
 {
   private val mockEventQueue = mock[EventQueue]
   private val mockLoopingTaskRunner = mock[LoopingTaskRunner]

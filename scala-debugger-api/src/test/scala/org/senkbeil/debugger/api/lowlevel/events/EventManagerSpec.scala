@@ -2,14 +2,14 @@ package org.senkbeil.debugger.api.lowlevel.events
 
 import com.sun.jdi.event.Event
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager.EventHandler
 import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
 import org.senkbeil.debugger.api.lowlevel.events.data.{JDIEventDataResult, JDIEventDataRequest}
 import test.TestEventManager
 
 class EventManagerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val TestHandlerId = java.util.UUID.randomUUID().toString
   private val mockEventManager = mock[EventManager]

@@ -2,7 +2,7 @@ package org.senkbeil.debugger.api.lowlevel.steps
 
 import com.sun.jdi.ThreadReference
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.{ActionInfo, PendingActionManager}
 import test.{JDIMockHelpers, TestStepManager}
@@ -10,7 +10,7 @@ import test.{JDIMockHelpers, TestStepManager}
 import scala.util.{Try, Failure, Success}
 
 class PendingStepSupportSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers
+  with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockStepManager = mock[StepManager]

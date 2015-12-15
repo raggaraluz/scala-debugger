@@ -1,12 +1,12 @@
 package org.senkbeil.debugger.api.lowlevel.events
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
 import org.senkbeil.debugger.api.lowlevel.events.EventManager.EventHandler
 import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
 
 class DummyEventManagerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val TestHandlerId = java.util.UUID.randomUUID().toString
   private val eventManager = new DummyEventManager

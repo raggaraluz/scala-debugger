@@ -2,14 +2,14 @@ package org.senkbeil.debugger.api.lowlevel.steps
 
 import com.sun.jdi.ThreadReference
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import test.TestStepManager
 
 import scala.util.{Try, Success}
 
 class StepManagerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockStepManager = mock[StepManager]

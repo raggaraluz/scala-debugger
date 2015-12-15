@@ -1,14 +1,14 @@
 package org.senkbeil.debugger.api.lowlevel.breakpoints
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import test.TestBreakpointManager
 
 import scala.util.Success
 
 class BreakpointManagerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockBreakpointManager = mock[BreakpointManager]

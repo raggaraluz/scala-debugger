@@ -2,12 +2,12 @@ package org.senkbeil.debugger.api.lowlevel.events
 
 import com.sun.jdi.event.Event
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.data.{JDIEventDataProcessor, JDIEventDataRequest, JDIEventDataResult, JDIEventDataUnknownError}
 import org.senkbeil.debugger.api.lowlevel.events.filters.{JDIEventFilter, JDIEventFilterProcessor}
 
 class JDIEventArgumentProcessorSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   describe("JDIEventArgumentProcessor") {
     describe("#processAll") {

@@ -1,7 +1,7 @@
 package org.senkbeil.debugger.api.lowlevel.vm
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.{ActionInfo, PendingActionManager}
 import test.{JDIMockHelpers, TestVMDeathManager}
@@ -9,7 +9,7 @@ import test.{JDIMockHelpers, TestVMDeathManager}
 import scala.util.{Failure, Success}
 
 class PendingVMDeathSupportSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers
+  with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockVMDeathManager = mock[VMDeathManager]

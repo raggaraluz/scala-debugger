@@ -1,11 +1,11 @@
 package org.senkbeil.debugger.api.lowlevel.events.filters
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.filters.processors.CustomPropertyFilterProcessor
 
 class UniqueIdPropertyFilterSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val testId = java.util.UUID.randomUUID().toString
   private val uniqueIdPropertyFilter = UniqueIdPropertyFilter(id = testId)

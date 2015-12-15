@@ -1,10 +1,10 @@
 package org.senkbeil.debugger.api.lowlevel.requests.properties
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class EnabledPropertySpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val testValue = false
   private val enabledProperty = EnabledProperty(value = testValue)

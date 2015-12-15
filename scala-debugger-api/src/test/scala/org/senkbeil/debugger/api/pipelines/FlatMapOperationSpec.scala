@@ -1,9 +1,9 @@
 package org.senkbeil.debugger.api.pipelines
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
-class FlatMapOperationSpec extends FunSpec with Matchers with OneInstancePerTest
+class FlatMapOperationSpec extends FunSpec with Matchers with ParallelTestExecution
   with MockFactory
 {
   describe("FlatMapOperation") {

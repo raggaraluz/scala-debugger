@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.lowlevel.breakpoints
 import com.sun.jdi.{Location, VirtualMachine}
 import com.sun.jdi.request.{EventRequest, BreakpointRequest, EventRequestManager}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.JDIArgument
 import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import org.senkbeil.debugger.api.lowlevel.requests.{JDIRequestProcessor, JDIRequestArgumentProcessor, JDIRequestArgument}
@@ -12,7 +12,7 @@ import test.JDIMockHelpers
 import scala.util.{Success, Failure}
 
 class StandardBreakpointManagerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers
+  with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]

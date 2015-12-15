@@ -2,13 +2,13 @@ package org.senkbeil.debugger.api.lowlevel.wrappers
 
 import com.sun.jdi.{Field, ClassNotPreparedException, ReferenceType}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
 import test.JDIMockHelpers
 
 import scala.collection.JavaConverters._
 
 class ReferenceTypeWrapperSpec extends FunSpec with Matchers with MockFactory
-  with JDIMockHelpers with OneInstancePerTest
+  with JDIMockHelpers with ParallelTestExecution
 {
   private val mockReferenceType = mock[ReferenceType]
   private val referenceTypeWrapper =

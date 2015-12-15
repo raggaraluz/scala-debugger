@@ -1,13 +1,13 @@
 package org.senkbeil.debugger.api.pipelines
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 import scala.collection.GenTraversableOnce
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success}
 
-class PipelineSpec extends FunSpec with Matchers with OneInstancePerTest
+class PipelineSpec extends FunSpec with Matchers with ParallelTestExecution
   with MockFactory
 {
   describe("Pipeline") {

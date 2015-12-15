@@ -2,11 +2,11 @@ package org.senkbeil.debugger.api.lowlevel.events.filters.processors
 
 import com.sun.jdi.event.Event
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.filters.MinTriggerFilter
 
 class MinTriggerFilterProcessorSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val testCount = 3
   private val minTriggerFilter = MinTriggerFilter(count = testCount)

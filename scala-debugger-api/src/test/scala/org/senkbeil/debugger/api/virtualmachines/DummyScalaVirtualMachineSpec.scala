@@ -1,7 +1,7 @@
 package org.senkbeil.debugger.api.virtualmachines
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
 import org.senkbeil.debugger.api.lowlevel.breakpoints.{PendingBreakpointSupport, DummyBreakpointManager}
 import org.senkbeil.debugger.api.lowlevel.classes.{PendingClassUnloadSupport, DummyClassUnloadManager, PendingClassPrepareSupport, DummyClassPrepareManager}
 import org.senkbeil.debugger.api.lowlevel.events.{PendingEventHandlerSupport, DummyEventManager}
@@ -15,7 +15,7 @@ import org.senkbeil.debugger.api.lowlevel.watchpoints.{PendingModificationWatchp
 import org.senkbeil.debugger.api.profiles.ProfileManager
 
 class DummyScalaVirtualMachineSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val mockProfileManager = mock[ProfileManager]
   private val dummyScalaVirtualMachine = new DummyScalaVirtualMachine(

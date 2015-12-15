@@ -2,11 +2,11 @@ package org.senkbeil.debugger.api.lowlevel.requests.properties.processors
 
 import com.sun.jdi.request._
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.requests.properties.SuspendPolicyProperty
 
 class SuspendPolicyPropertyProcessorSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val testPolicy = 0
   private val suspendPolicyProperty = SuspendPolicyProperty(policy = testPolicy)

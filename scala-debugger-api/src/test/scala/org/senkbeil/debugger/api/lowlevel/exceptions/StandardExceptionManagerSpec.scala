@@ -3,12 +3,12 @@ package org.senkbeil.debugger.api.lowlevel.exceptions
 import com.sun.jdi.{ReferenceType, VirtualMachine}
 import com.sun.jdi.request.{EventRequest, EventRequestManager, ExceptionRequest}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success}
 
 class StandardExceptionManagerSpec extends FunSpec with Matchers with MockFactory
-  with OneInstancePerTest with org.scalamock.matchers.Matchers
+  with ParallelTestExecution with org.scalamock.matchers.Matchers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockReferenceType = mock[ReferenceType]

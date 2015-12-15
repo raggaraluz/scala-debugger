@@ -1,10 +1,10 @@
 package org.senkbeil.debugger.api.lowlevel.requests.filters
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{OneInstancePerTest, FunSpec, Matchers}
+import org.scalatest.{ParallelTestExecution, FunSpec, Matchers}
 
 class SourceNameFilterSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val testPattern = "some pattern"
   private val sourceNameFilter = SourceNameFilter(

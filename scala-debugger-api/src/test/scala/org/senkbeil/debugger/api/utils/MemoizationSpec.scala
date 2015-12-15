@@ -1,10 +1,10 @@
 package org.senkbeil.debugger.api.utils
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{OneInstancePerTest, FunSpec, Matchers}
+import org.scalatest.{ParallelTestExecution, FunSpec, Matchers}
 
 class MemoizationSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   describe("Memoization") {
     describe("#apply") {

@@ -3,12 +3,12 @@ package org.senkbeil.debugger.api.lowlevel.events.data.processors
 import com.sun.jdi.event.Event
 import com.sun.jdi.request.EventRequest
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.data.requests.CustomPropertyDataRequest
 import org.senkbeil.debugger.api.lowlevel.events.data.results.CustomPropertyDataResult
 
 class CustomPropertyDataRequestProcessorSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val testKey = "some key"
   private val testValue = "some value"

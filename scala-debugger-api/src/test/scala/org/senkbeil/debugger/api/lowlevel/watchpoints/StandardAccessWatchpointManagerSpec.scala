@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.lowlevel.watchpoints
 import com.sun.jdi.{ReferenceType, VirtualMachine, Field}
 import com.sun.jdi.request.{EventRequest, EventRequestManager, AccessWatchpointRequest}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
 import test.JDIMockHelpers
 import scala.collection.JavaConverters._
@@ -11,7 +11,7 @@ import scala.collection.JavaConverters._
 import scala.util.{Failure, Success}
 
 class StandardAccessWatchpointManagerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers
+  with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockEventRequestManager = mock[EventRequestManager]

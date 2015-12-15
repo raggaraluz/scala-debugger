@@ -1,14 +1,14 @@
 package org.senkbeil.debugger.api.lowlevel.methods
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import test.TestMethodEntryManager
 
 import scala.util.Success
 
 class MethodEntryManagerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockMethodEntryManager = mock[MethodEntryManager]

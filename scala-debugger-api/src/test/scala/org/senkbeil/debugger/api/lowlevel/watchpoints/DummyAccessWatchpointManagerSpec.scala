@@ -1,12 +1,12 @@
 package org.senkbeil.debugger.api.lowlevel.watchpoints
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.DummyOperationException
 import test.JDIMockHelpers
 
 class DummyAccessWatchpointManagerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers
+  with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val accessWatchpointManager = new DummyAccessWatchpointManager

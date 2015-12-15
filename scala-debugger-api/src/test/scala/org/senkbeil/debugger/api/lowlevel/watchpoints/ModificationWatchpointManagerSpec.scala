@@ -1,14 +1,14 @@
 package org.senkbeil.debugger.api.lowlevel.watchpoints
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import test.TestModificationWatchpointManager
 
 import scala.util.Success
 
 class ModificationWatchpointManagerSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockModificationWatchpointManager = mock[ModificationWatchpointManager]

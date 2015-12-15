@@ -1,11 +1,11 @@
 package org.senkbeil.debugger.api.debuggers
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.utils.JDILoader
 import org.senkbeil.debugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
 
-class DebuggerSpec extends FunSpec with Matchers with OneInstancePerTest
+class DebuggerSpec extends FunSpec with Matchers with ParallelTestExecution
   with MockFactory
 {
   private class TestDebugger(override val jdiLoader: JDILoader)

@@ -3,7 +3,7 @@ package org.senkbeil.debugger.api.lowlevel
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.breakpoints.{BreakpointManager, BreakpointRequestInfo, DummyBreakpointManager, PendingBreakpointSupport}
 import org.senkbeil.debugger.api.lowlevel.classes._
 import org.senkbeil.debugger.api.lowlevel.events.EventManager.EventHandler
@@ -19,7 +19,7 @@ import org.senkbeil.debugger.api.lowlevel.vm.{DummyVMDeathManager, PendingVMDeat
 import org.senkbeil.debugger.api.lowlevel.watchpoints._
 
 class ManagerContainerSpec extends FunSpec with Matchers
-  with MockFactory with OneInstancePerTest
+  with MockFactory with ParallelTestExecution
 {
   
   describe("ManagerContainer") {

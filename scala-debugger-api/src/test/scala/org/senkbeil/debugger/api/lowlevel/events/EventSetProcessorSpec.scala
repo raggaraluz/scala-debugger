@@ -2,12 +2,12 @@ package org.senkbeil.debugger.api.lowlevel.events
 
 import com.sun.jdi.event.{EventIterator, EventSet, Event}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
 import EventType.EventType
 
 class EventSetProcessorSpec extends FunSpec with Matchers with MockFactory
-  with OneInstancePerTest
+  with ParallelTestExecution
 {
   // TODO: This is a workaround for a log statement that is causing a test to
   //       fail if we don't mock the toString function

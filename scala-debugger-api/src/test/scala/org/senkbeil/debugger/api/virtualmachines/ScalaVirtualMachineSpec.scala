@@ -2,12 +2,12 @@ package org.senkbeil.debugger.api.virtualmachines
 
 import com.sun.jdi.VirtualMachine
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.ManagerContainer
 import org.senkbeil.debugger.api.profiles.ProfileManager
 
 class ScalaVirtualMachineSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private class TestManagerContainer extends ManagerContainer(
     null, null, null, null, null, null, null, null, null, null, null, null,

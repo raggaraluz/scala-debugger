@@ -1,7 +1,7 @@
 package org.senkbeil.debugger.api.lowlevel.threads
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
 import org.senkbeil.debugger.api.utils.{ActionInfo, PendingActionManager}
 import test.{JDIMockHelpers, TestThreadDeathManager}
@@ -9,7 +9,7 @@ import test.{JDIMockHelpers, TestThreadDeathManager}
 import scala.util.{Failure, Success}
 
 class PendingThreadDeathSupportSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory with JDIMockHelpers
+  with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockThreadDeathManager = mock[ThreadDeathManager]

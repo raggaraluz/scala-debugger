@@ -1,10 +1,10 @@
 package org.senkbeil.debugger.api.lowlevel.events.data.requests
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class CustomPropertyDataRequestSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockFactory
+  with ParallelTestExecution with MockFactory
 {
   private val testKey = "some key"
   private val customPropertyDataRequest =
