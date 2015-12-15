@@ -31,7 +31,7 @@ class PureThreadStartProfileIntegrationSpec extends FunSpec with Matchers
       s.withProfile(PureDebugProfile.Name)
         .onUnsafeThreadStart()
         .map(_.thread().name())
-        .filterNot(_ == "main")
+        .filter(_.startsWith("test thread"))
         .foreach(_ => threadStartCount.incrementAndGet())
 
       // Start our Thread and listen for the start event

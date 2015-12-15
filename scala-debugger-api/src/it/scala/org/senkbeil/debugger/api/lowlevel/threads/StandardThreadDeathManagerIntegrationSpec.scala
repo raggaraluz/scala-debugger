@@ -36,7 +36,10 @@ class StandardThreadDeathManagerIntegrationSpec extends FunSpec with Matchers
         val threadName = threadEvent.thread().name()
 
         logger.debug(s"Detected death of thread named $threadName")
-        threadDeathCount.incrementAndGet()
+        if (threadName.startsWith("test thread")) {
+          logger.trace(s"Thread was desired test thread! Incrementing counter!")
+          threadDeathCount.incrementAndGet()
+        }
       })
 
       // Start our Thread and listen for the start event

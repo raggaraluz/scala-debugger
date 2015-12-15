@@ -36,7 +36,10 @@ class StandardThreadStartManagerIntegrationSpec extends FunSpec with Matchers
         val threadName = threadEvent.thread().name()
 
         logger.debug(s"Detected start of thread named $threadName")
-        if (threadName != "main") threadStartCount.incrementAndGet()
+        if (threadName.startsWith("test thread")) {
+          logger.trace(s"Thread was desired test thread! Incrementing counter!")
+          threadStartCount.incrementAndGet()
+        }
       })
 
       // Start our Thread and listen for the start event

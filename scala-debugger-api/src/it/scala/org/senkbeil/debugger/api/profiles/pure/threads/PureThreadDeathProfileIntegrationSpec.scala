@@ -30,6 +30,8 @@ class PureThreadDeathProfileIntegrationSpec extends FunSpec with Matchers
       // Mark that we want to receive thread death events
       s.withProfile(PureDebugProfile.Name)
         .onUnsafeThreadDeath()
+        .map(_.thread().name())
+        .filter(_.startsWith("test thread"))
         .foreach(_ => threadDeathCount.incrementAndGet())
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
