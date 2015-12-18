@@ -44,7 +44,7 @@ lazy val scalaDebuggerApi = project
     internalDependencyClasspath in IntegrationTest +=
       { Attributed.blank(Build.JavaTools) }
   ): _*)
-  .dependsOn(scalaDebuggerMacro % "compile->compile;test->compile;it->compile")
+  .dependsOn(scalaDebuggerMacros % "compile->compile;test->compile;it->compile")
   .dependsOn(scalaDebuggerTest % "test->compile;it->compile")
 
 //
@@ -62,8 +62,8 @@ lazy val scalaDebuggerTest = project
 //
 // DEBUGGER MACRO PROJECT CONFIGURATION
 //
-lazy val scalaDebuggerMacro = project
-  .in(file("scala-debugger-macro"))
+lazy val scalaDebuggerMacros = project
+  .in(file("scala-debugger-macros"))
   .settings(Common.settings: _*)
   .settings(Macro.settings: _*)
   .settings(
@@ -83,5 +83,5 @@ lazy val root = project
     // Do not publish the aggregation project
     publishArtifact := false,
     publishLocal := {}
-  ).aggregate(scalaDebuggerApi, scalaDebuggerTest)
+  ).aggregate(scalaDebuggerApi, scalaDebuggerTest, scalaDebuggerMacros)
 

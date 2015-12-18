@@ -1,7 +1,7 @@
 package test
 
-import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager}
-import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
+import org.scaladebugger.api.lowlevel.events.{JDIEventArgument, EventManager}
+import org.scaladebugger.api.lowlevel.events.EventType.EventType
 
 /**
  * Test event manager that merely invokes the provided event manager

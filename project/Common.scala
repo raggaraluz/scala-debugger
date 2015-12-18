@@ -10,9 +10,9 @@ object Common {
   )
 
   def settings = Seq(
-    version := "1.1.0-SNAPSHOT",
+    version := "1.0.0-SNAPSHOT",
 
-    organization := "org.senkbeil",
+    organization := "org.scala-debugger",
 
     licenses += (
       "Apache-2.0",

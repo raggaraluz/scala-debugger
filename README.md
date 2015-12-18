@@ -77,7 +77,7 @@ vm.eventManager.addResumingEventHandler(StepEventType, e => {
 #### JDI Implicit Wrappers ####
 ```scala
 // Import implicit wrappers for standard JDI types like StackFrameReference and ThreadReference
-import org.senkbeil.debugger.wrappers._
+import org.scaladebugger.wrappers._
 
 val vm: ScalaVirtualMachine = /* Wrapper around standard Java JDI virtual machine */
 val sourceName = "some-file.scala"

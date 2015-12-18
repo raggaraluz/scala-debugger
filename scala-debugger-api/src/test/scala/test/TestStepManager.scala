@@ -2,8 +2,8 @@ package test
 
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.request.StepRequest
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.steps.{StepRequestInfo, StepManager}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.steps.{StepRequestInfo, StepManager}
 
 import scala.util.Try
 

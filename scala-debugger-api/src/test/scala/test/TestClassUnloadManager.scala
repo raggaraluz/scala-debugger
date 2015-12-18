@@ -1,8 +1,8 @@
 package test
 
 import com.sun.jdi.request.ClassUnloadRequest
-import org.senkbeil.debugger.api.lowlevel.classes.{ClassUnloadManager, ClassUnloadRequestInfo}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.classes.{ClassUnloadManager, ClassUnloadRequestInfo}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 
 import scala.util.Try
 

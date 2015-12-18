@@ -1,8 +1,8 @@
 package test
 
 import com.sun.jdi.request.ModificationWatchpointRequest
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.watchpoints.{ModificationWatchpointManager, ModificationWatchpointRequestInfo}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.watchpoints.{ModificationWatchpointManager, ModificationWatchpointRequestInfo}
 
 import scala.util.Try
 /**
