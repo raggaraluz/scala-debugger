@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.events.data
+package org.scaladebugger.api.lowlevel.events.data
 
 /**
  * Represents an error that occurred when retrieving a result.

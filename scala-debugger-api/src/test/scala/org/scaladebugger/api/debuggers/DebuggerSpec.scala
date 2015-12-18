@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.debuggers
+package org.scaladebugger.api.debuggers
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.utils.JDILoader
-import org.senkbeil.debugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
+import org.scaladebugger.api.utils.JDILoader
+import org.scaladebugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
 
 class DebuggerSpec extends FunSpec with Matchers with ParallelTestExecution
   with MockFactory

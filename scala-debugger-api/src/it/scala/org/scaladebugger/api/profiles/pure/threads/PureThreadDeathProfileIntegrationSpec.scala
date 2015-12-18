@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.api.profiles.pure.threads
+package org.scaladebugger.api.profiles.pure.threads
 
 import java.util.concurrent.atomic.{AtomicInteger, AtomicBoolean}
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureThreadDeathProfileIntegrationSpec extends FunSpec with Matchers
@@ -20,7 +20,7 @@ class PureThreadDeathProfileIntegrationSpec extends FunSpec with Matchers
 
   describe("PureThreadDeathProfile") {
     it("should trigger when a thread dies") {
-      val testClass = "org.senkbeil.debugger.test.threads.ThreadDeath"
+      val testClass = "org.scaladebugger.test.threads.ThreadDeath"
       val testFile = scalaClassStringToFileString(testClass)
 
       val threadDeathCount = new AtomicInteger(0)

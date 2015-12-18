@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.profiles.pure.breakpoints
+package org.scaladebugger.api.profiles.pure.breakpoints
 
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
@@ -6,11 +6,11 @@ import com.sun.jdi.event.BreakpointEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.breakpoints.PendingBreakpointSupport
-import org.senkbeil.debugger.api.lowlevel.events.EventType
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.breakpoints.PendingBreakpointSupport
+import org.scaladebugger.api.lowlevel.events.EventType
+import org.scaladebugger.api.lowlevel.events.EventType._
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
@@ -24,7 +24,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
 
   describe("PureBreakpointProfile") {
     it("should be able to set breakpoints within while loops") {
-      val testClass = "org.senkbeil.debugger.test.breakpoints.WhileLoop"
+      val testClass = "org.scaladebugger.test.breakpoints.WhileLoop"
       val testFile = scalaClassStringToFileString(testClass)
 
       val firstBreakpointLine = 13
@@ -61,7 +61,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
     }
 
     it("should be able to set breakpoints within for comprehensions") {
-      val testClass = "org.senkbeil.debugger.test.breakpoints.ForComprehension"
+      val testClass = "org.scaladebugger.test.breakpoints.ForComprehension"
       val testFile = scalaClassStringToFileString(testClass)
 
       val firstBreakpointLine = 14
@@ -98,7 +98,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
     }
 
     it("should be able to set breakpoints in a DelayInit object") {
-      val testClass = "org.senkbeil.debugger.test.breakpoints.DelayedInit"
+      val testClass = "org.scaladebugger.test.breakpoints.DelayedInit"
       val testFile = scalaClassStringToFileString(testClass)
 
       val firstBreakpointLine = 10

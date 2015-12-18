@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.profiles.pure.exceptions
+package org.scaladebugger.api.profiles.pure.exceptions
 
 import java.util.concurrent.atomic.{AtomicInteger, AtomicBoolean}
 
@@ -6,9 +6,9 @@ import com.sun.jdi.event.{BreakpointEvent, ExceptionEvent}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.events.EventType._
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
@@ -23,12 +23,12 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
   describe("PureExceptionProfile") {
     it("should be able to detect exceptions in try blocks") {
       val testClass =
-        "org.senkbeil.debugger.test.exceptions.InsideTryBlockException"
+        "org.scaladebugger.test.exceptions.InsideTryBlockException"
       val testFile = scalaClassStringToFileString(testClass)
 
       val detectedException = new AtomicBoolean(false)
       val expectedExceptionName =
-        "org.senkbeil.debugger.test.exceptions.CustomException"
+        "org.scaladebugger.test.exceptions.CustomException"
 
       val s = DummyScalaVirtualMachine.newInstance()
 
@@ -51,12 +51,12 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
 
     it("should be able to detect exceptions in functional try calls") {
       val testClass =
-        "org.senkbeil.debugger.test.exceptions.InsideFunctionalTryException"
+        "org.scaladebugger.test.exceptions.InsideFunctionalTryException"
       val testFile = scalaClassStringToFileString(testClass)
 
       val detectedException = new AtomicBoolean(false)
       val expectedExceptionName =
-        "org.senkbeil.debugger.test.exceptions.CustomException"
+        "org.scaladebugger.test.exceptions.CustomException"
 
       val s = DummyScalaVirtualMachine.newInstance()
 
@@ -79,12 +79,12 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
 
     it("should be able to detect exceptions outside of try blocks") {
       val testClass =
-        "org.senkbeil.debugger.test.exceptions.OutsideTryException"
+        "org.scaladebugger.test.exceptions.OutsideTryException"
       val testFile = scalaClassStringToFileString(testClass)
 
       val detectedException = new AtomicBoolean(false)
       val expectedExceptionName =
-        "org.senkbeil.debugger.test.exceptions.CustomException"
+        "org.scaladebugger.test.exceptions.CustomException"
 
       val s = DummyScalaVirtualMachine.newInstance()
 

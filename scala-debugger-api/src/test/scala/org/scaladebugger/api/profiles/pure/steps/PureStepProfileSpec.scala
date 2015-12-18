@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.profiles.pure.steps
+package org.scaladebugger.api.profiles.pure.steps
 
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.event.{StepEvent, Event, EventQueue}
@@ -7,15 +7,15 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.{ScalaFutures, Futures}
 import org.scalatest.time.{Span, Milliseconds}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.lowlevel.requests.filters.ThreadFilter
-import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
-import org.senkbeil.debugger.api.lowlevel.steps.{StepManager, StandardStepManager}
-import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.pipelines.{Operation, Pipeline}
-import org.senkbeil.debugger.api.utils.LoopingTaskRunner
-import org.senkbeil.debugger.api.lowlevel.events.EventType.StepEventType
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
+import org.scaladebugger.api.lowlevel.requests.filters.ThreadFilter
+import org.scaladebugger.api.lowlevel.requests.properties.UniqueIdProperty
+import org.scaladebugger.api.lowlevel.steps.{StepManager, StandardStepManager}
+import org.scaladebugger.api.lowlevel.events.{JDIEventArgument, EventManager}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.pipelines.{Operation, Pipeline}
+import org.scaladebugger.api.utils.LoopingTaskRunner
+import org.scaladebugger.api.lowlevel.events.EventType.StepEventType
 import test.JDIMockHelpers
 
 import scala.util.{Failure, Success}

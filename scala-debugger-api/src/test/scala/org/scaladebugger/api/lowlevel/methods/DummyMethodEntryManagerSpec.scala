@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.lowlevel.methods
+package org.scaladebugger.api.lowlevel.methods
 
 import com.sun.jdi.request.{EventRequest, EventRequestManager, MethodEntryRequest}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.DummyOperationException
+import org.scaladebugger.api.lowlevel.DummyOperationException
 
 import scala.util.{Failure, Success}
 

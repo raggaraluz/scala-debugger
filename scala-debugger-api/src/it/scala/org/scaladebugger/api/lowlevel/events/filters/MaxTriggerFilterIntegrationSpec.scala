@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.api.lowlevel.events.filters
+package org.scaladebugger.api.lowlevel.events.filters
 
 import com.sun.jdi.event.BreakpointEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType
+import org.scaladebugger.api.lowlevel.events.EventType
 import EventType._
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class MaxTriggerFilterIntegrationSpec extends FunSpec with Matchers
@@ -20,7 +20,7 @@ class MaxTriggerFilterIntegrationSpec extends FunSpec with Matchers
 
   describe("MaxTriggerFilter") {
     it("should ignore all events for a handler after the first N using MaxTriggerFilter(N)") {
-      val testClass = "org.senkbeil.debugger.test.filters.MaxTriggerFilter"
+      val testClass = "org.scaladebugger.test.filters.MaxTriggerFilter"
       val testFile = scalaClassStringToFileString(testClass)
 
       // The filter to apply (should ignore breakpoints after first three)

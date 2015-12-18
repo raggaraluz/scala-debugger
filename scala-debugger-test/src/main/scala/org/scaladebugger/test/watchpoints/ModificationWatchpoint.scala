@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.test.watchpoints
+package org.scaladebugger.test.watchpoints
 
 /**
  * Used to verify that modification to fields can be observed via a

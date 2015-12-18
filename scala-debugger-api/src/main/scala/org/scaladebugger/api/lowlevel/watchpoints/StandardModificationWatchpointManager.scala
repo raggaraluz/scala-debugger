@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.lowlevel.watchpoints
+package org.scaladebugger.api.lowlevel.watchpoints
 
 import com.sun.jdi.request.{ModificationWatchpointRequest, EventRequestManager}
-import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.utils.{Logging, MultiMap}
+import org.scaladebugger.api.lowlevel.classes.ClassManager
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
+import org.scaladebugger.api.utils.{Logging, MultiMap}
 
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Try}
@@ -21,7 +21,7 @@ class StandardModificationWatchpointManager(
   private val eventRequestManager: EventRequestManager,
   private val classManager: ClassManager
 ) extends ModificationWatchpointManager with Logging {
-  import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
+  import org.scaladebugger.api.lowlevel.requests.Implicits._
 
   private val modificationWatchpointRequests =
     new MultiMap[ModificationWatchpointRequestInfo, ModificationWatchpointRequest]

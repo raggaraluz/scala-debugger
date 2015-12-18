@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.utils
+package org.scaladebugger.api.utils
 
-import org.senkbeil.debugger.api.utils.ActionInfo._
+import org.scaladebugger.api.utils.ActionInfo._
 
 /**
  * Represents the information about an action.

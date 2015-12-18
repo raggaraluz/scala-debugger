@@ -1,19 +1,19 @@
-package org.senkbeil.debugger.api.profiles.pure
+package org.scaladebugger.api.profiles.pure
 
 import com.sun.jdi.VirtualMachine
-import org.senkbeil.debugger.api.lowlevel.ManagerContainer
-import org.senkbeil.debugger.api.profiles.pure.breakpoints.PureBreakpointProfile
-import org.senkbeil.debugger.api.profiles.pure.classes.{PureClassUnloadProfile, PureClassPrepareProfile}
-import org.senkbeil.debugger.api.profiles.pure.events.PureEventProfile
-import org.senkbeil.debugger.api.profiles.pure.exceptions.PureExceptionProfile
-import org.senkbeil.debugger.api.profiles.pure.info.PureMiscInfoProfile
-import org.senkbeil.debugger.api.profiles.pure.methods.{PureMethodExitProfile, PureMethodEntryProfile}
-import org.senkbeil.debugger.api.profiles.pure.monitors.{PureMonitorWaitProfile, PureMonitorWaitedProfile, PureMonitorContendedEnterProfile, PureMonitorContendedEnteredProfile}
-import org.senkbeil.debugger.api.profiles.pure.steps.PureStepProfile
-import org.senkbeil.debugger.api.profiles.pure.threads.{PureThreadStartProfile, PureThreadDeathProfile}
-import org.senkbeil.debugger.api.profiles.pure.vm.{PureVMDisconnectProfile, PureVMStartProfile, PureVMDeathProfile}
-import org.senkbeil.debugger.api.profiles.pure.watchpoints.{PureAccessWatchpointProfile, PureModificationWatchpointProfile}
-import org.senkbeil.debugger.api.profiles.traits.DebugProfile
+import org.scaladebugger.api.lowlevel.ManagerContainer
+import org.scaladebugger.api.profiles.pure.breakpoints.PureBreakpointProfile
+import org.scaladebugger.api.profiles.pure.classes.{PureClassUnloadProfile, PureClassPrepareProfile}
+import org.scaladebugger.api.profiles.pure.events.PureEventProfile
+import org.scaladebugger.api.profiles.pure.exceptions.PureExceptionProfile
+import org.scaladebugger.api.profiles.pure.info.PureMiscInfoProfile
+import org.scaladebugger.api.profiles.pure.methods.{PureMethodExitProfile, PureMethodEntryProfile}
+import org.scaladebugger.api.profiles.pure.monitors.{PureMonitorWaitProfile, PureMonitorWaitedProfile, PureMonitorContendedEnterProfile, PureMonitorContendedEnteredProfile}
+import org.scaladebugger.api.profiles.pure.steps.PureStepProfile
+import org.scaladebugger.api.profiles.pure.threads.{PureThreadStartProfile, PureThreadDeathProfile}
+import org.scaladebugger.api.profiles.pure.vm.{PureVMDisconnectProfile, PureVMStartProfile, PureVMDeathProfile}
+import org.scaladebugger.api.profiles.pure.watchpoints.{PureAccessWatchpointProfile, PureModificationWatchpointProfile}
+import org.scaladebugger.api.profiles.traits.DebugProfile
 
 /**
  * Contains information about the pure debug profile.

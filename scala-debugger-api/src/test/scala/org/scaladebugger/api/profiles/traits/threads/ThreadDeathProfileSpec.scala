@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.api.profiles.traits.threads
+package org.scaladebugger.api.profiles.traits.threads
 
 import com.sun.jdi.event.ThreadDeathEvent
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.pipelines.Pipeline
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
+import org.scaladebugger.api.pipelines.Pipeline
+import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
 
 import scala.util.{Failure, Success, Try}
 

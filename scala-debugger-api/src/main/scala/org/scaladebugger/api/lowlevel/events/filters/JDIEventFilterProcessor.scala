@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.events.filters
+package org.scaladebugger.api.lowlevel.events.filters
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.lowlevel.events.JDIEventProcessor
+import org.scaladebugger.api.lowlevel.events.JDIEventProcessor
 
 /**
   * Represents a processor for a JDI Event Filter.

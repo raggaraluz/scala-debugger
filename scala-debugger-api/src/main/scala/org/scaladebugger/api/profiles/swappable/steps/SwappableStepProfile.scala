@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.api.profiles.swappable.steps
+package org.scaladebugger.api.profiles.swappable.steps
 
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.event.StepEvent
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
-import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
-import org.senkbeil.debugger.api.profiles.traits.steps.StepProfile
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
+import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
+import org.scaladebugger.api.profiles.traits.steps.StepProfile
 
 import scala.concurrent.Future
 import scala.util.Try

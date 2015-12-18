@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.api.profiles.pure.threads
+package org.scaladebugger.api.profiles.pure.threads
 
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureThreadStartProfileIntegrationSpec extends FunSpec with Matchers
@@ -20,7 +20,7 @@ class PureThreadStartProfileIntegrationSpec extends FunSpec with Matchers
 
   describe("PureThreadStartProfile") {
     it("should trigger when a thread starts") {
-      val testClass = "org.senkbeil.debugger.test.threads.ThreadStart"
+      val testClass = "org.scaladebugger.test.threads.ThreadStart"
       val testFile = scalaClassStringToFileString(testClass)
 
       val threadStartCount = new AtomicInteger(0)

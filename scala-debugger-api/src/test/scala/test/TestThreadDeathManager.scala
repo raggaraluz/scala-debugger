@@ -1,8 +1,8 @@
 package test
 
 import com.sun.jdi.request.ThreadDeathRequest
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.threads.{ThreadDeathRequestInfo, ThreadDeathManager}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.threads.{ThreadDeathRequestInfo, ThreadDeathManager}
 
 import scala.util.Try
 

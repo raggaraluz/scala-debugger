@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.events.filters
+package org.scaladebugger.api.lowlevel.events.filters
 
-import org.senkbeil.debugger.api.lowlevel.events.filters.processors.OrFilterProcessor
+import org.scaladebugger.api.lowlevel.events.filters.processors.OrFilterProcessor
 
 /**
  * Represents a local filter that will return the result of ORing multiple

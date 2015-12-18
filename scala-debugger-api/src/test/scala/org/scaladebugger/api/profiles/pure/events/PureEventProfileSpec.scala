@@ -1,11 +1,11 @@
-package org.senkbeil.debugger.api.profiles.pure.events
+package org.scaladebugger.api.profiles.pure.events
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
-import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.scaladebugger.api.lowlevel.events.EventType.EventType
+import org.scaladebugger.api.lowlevel.events.{EventManager, JDIEventArgument}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.pipelines.Pipeline
 import test.JDIMockHelpers
 
 import scala.util.Success

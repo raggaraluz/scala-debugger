@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.debuggers
+package org.scaladebugger.api.debuggers
 
 import java.net.ServerSocket
 import java.util.concurrent.atomic.AtomicBoolean
@@ -54,7 +54,7 @@ class AttachingDebuggerIntegrationSpec  extends FunSpec with Matchers
     }
 
     (port, spawn(
-      className = "org.senkbeil.debugger.test.misc.AttachingMain",
+      className = "org.scaladebugger.test.misc.AttachingMain",
       server = true,
       suspend = true,
       port = port

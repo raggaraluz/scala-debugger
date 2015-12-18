@@ -1,18 +1,18 @@
-package org.senkbeil.debugger.api.profiles.swappable
+package org.scaladebugger.api.profiles.swappable
 
-import org.senkbeil.debugger.api.profiles.ProfileManager
-import org.senkbeil.debugger.api.profiles.swappable.breakpoints.SwappableBreakpointProfile
-import org.senkbeil.debugger.api.profiles.swappable.classes.{SwappableClassPrepareProfile, SwappableClassUnloadProfile}
-import org.senkbeil.debugger.api.profiles.swappable.events.SwappableEventProfile
-import org.senkbeil.debugger.api.profiles.swappable.exceptions.SwappableExceptionProfile
-import org.senkbeil.debugger.api.profiles.swappable.info.SwappableMiscInfoProfile
-import org.senkbeil.debugger.api.profiles.swappable.methods.{SwappableMethodEntryProfile, SwappableMethodExitProfile}
-import org.senkbeil.debugger.api.profiles.swappable.monitors.{SwappableMonitorContendedEnteredProfile, SwappableMonitorContendedEnterProfile, SwappableMonitorWaitedProfile, SwappableMonitorWaitProfile}
-import org.senkbeil.debugger.api.profiles.swappable.steps.SwappableStepProfile
-import org.senkbeil.debugger.api.profiles.swappable.threads.{SwappableThreadDeathProfile, SwappableThreadStartProfile}
-import org.senkbeil.debugger.api.profiles.swappable.vm.{SwappableVMStartProfile, SwappableVMDisconnectProfile, SwappableVMDeathProfile}
-import org.senkbeil.debugger.api.profiles.swappable.watchpoints.{SwappableAccessWatchpointProfile, SwappableModificationWatchpointProfile}
-import org.senkbeil.debugger.api.profiles.traits.DebugProfile
+import org.scaladebugger.api.profiles.ProfileManager
+import org.scaladebugger.api.profiles.swappable.breakpoints.SwappableBreakpointProfile
+import org.scaladebugger.api.profiles.swappable.classes.{SwappableClassPrepareProfile, SwappableClassUnloadProfile}
+import org.scaladebugger.api.profiles.swappable.events.SwappableEventProfile
+import org.scaladebugger.api.profiles.swappable.exceptions.SwappableExceptionProfile
+import org.scaladebugger.api.profiles.swappable.info.SwappableMiscInfoProfile
+import org.scaladebugger.api.profiles.swappable.methods.{SwappableMethodEntryProfile, SwappableMethodExitProfile}
+import org.scaladebugger.api.profiles.swappable.monitors.{SwappableMonitorContendedEnteredProfile, SwappableMonitorContendedEnterProfile, SwappableMonitorWaitedProfile, SwappableMonitorWaitProfile}
+import org.scaladebugger.api.profiles.swappable.steps.SwappableStepProfile
+import org.scaladebugger.api.profiles.swappable.threads.{SwappableThreadDeathProfile, SwappableThreadStartProfile}
+import org.scaladebugger.api.profiles.swappable.vm.{SwappableVMStartProfile, SwappableVMDisconnectProfile, SwappableVMDeathProfile}
+import org.scaladebugger.api.profiles.swappable.watchpoints.{SwappableAccessWatchpointProfile, SwappableModificationWatchpointProfile}
+import org.scaladebugger.api.profiles.traits.DebugProfile
 
 /**
  * Contains information about the pure debug profile.

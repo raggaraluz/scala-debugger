@@ -1,8 +1,8 @@
 package test
 
 import com.sun.jdi.request.VMDeathRequest
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.vm.{VMDeathRequestInfo, VMDeathManager}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.vm.{VMDeathRequestInfo, VMDeathManager}
 
 import scala.util.Try
 

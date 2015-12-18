@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.events.filters
+package org.scaladebugger.api.lowlevel.events.filters
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.filters.processors.CustomPropertyFilterProcessor
+import org.scaladebugger.api.lowlevel.events.filters.processors.CustomPropertyFilterProcessor
 
 class UniqueIdPropertyFilterSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory

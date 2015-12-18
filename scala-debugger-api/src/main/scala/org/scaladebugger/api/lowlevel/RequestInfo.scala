@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel
+package org.scaladebugger.api.lowlevel
 
 /**
  * Represents generic information about a request.

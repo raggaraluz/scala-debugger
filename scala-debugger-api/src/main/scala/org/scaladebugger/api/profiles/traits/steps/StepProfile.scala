@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.profiles.traits.steps
+package org.scaladebugger.api.profiles.traits.steps
 
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.event.StepEvent
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
+import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
 
 import scala.concurrent.Future
 

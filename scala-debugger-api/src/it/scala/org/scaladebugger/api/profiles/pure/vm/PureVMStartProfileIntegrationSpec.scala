@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.api.profiles.pure.vm
+package org.scaladebugger.api.profiles.pure.vm
 
 import java.util.concurrent.atomic.AtomicBoolean
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.{DummyScalaVirtualMachine, StandardScalaVirtualMachine}
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.virtualmachines.{DummyScalaVirtualMachine, StandardScalaVirtualMachine}
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureVMStartProfileIntegrationSpec extends FunSpec with Matchers
@@ -20,7 +20,7 @@ class PureVMStartProfileIntegrationSpec extends FunSpec with Matchers
 
   describe("PureVMStartProfile") {
     it("should trigger when a virtual machine starts") {
-      val testClass = "org.senkbeil.debugger.test.misc.MainUsingApp"
+      val testClass = "org.scaladebugger.test.misc.MainUsingApp"
 
       val detectedStart = new AtomicBoolean(false)
 

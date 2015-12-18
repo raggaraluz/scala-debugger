@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.requests.properties
+package org.scaladebugger.api.lowlevel.requests.properties
 
-import org.senkbeil.debugger.api.lowlevel.requests.properties.processors.EnabledPropertyProcessor
+import org.scaladebugger.api.lowlevel.requests.properties.processors.EnabledPropertyProcessor
 
 /**
  * Represents an argument used set the enabled status of the request.

@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.events.filters.processors
+package org.scaladebugger.api.lowlevel.events.filters.processors
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.lowlevel.events.filters.{CustomPropertyFilterLike, JDIEventFilter, JDIEventFilterProcessor, CustomPropertyFilter}
+import org.scaladebugger.api.lowlevel.events.filters.{CustomPropertyFilterLike, JDIEventFilter, JDIEventFilterProcessor, CustomPropertyFilter}
 
 /**
  * Represents a processor for the custom property filter.

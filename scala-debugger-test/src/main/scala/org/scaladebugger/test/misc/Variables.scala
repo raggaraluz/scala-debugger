@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.test.misc
+package org.scaladebugger.test.misc
 
-import org.senkbeil.debugger.test.helpers.Stubs._
+import org.scaladebugger.test.helpers.Stubs._
 
 /**
  * Provides test of examining variable values.
@@ -8,7 +8,7 @@ import org.senkbeil.debugger.test.helpers.Stubs._
  * @note This was lifted from ensime-server, which in turn lifted it from
  *       the Scala IDE project! Modified to accommodate additional testing.
  *
- * @note Should have a class name of org.senkbeil.test.misc.Variables
+ * @note Should have a class name of org.scaladebugger.test.misc.Variables
  */
 object Variables {
   val z1 = 1

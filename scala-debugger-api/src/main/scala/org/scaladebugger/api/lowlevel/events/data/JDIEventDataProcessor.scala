@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.events.data
+package org.scaladebugger.api.lowlevel.events.data
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.lowlevel.events.JDIEventProcessor
+import org.scaladebugger.api.lowlevel.events.JDIEventProcessor
 
 /**
  * Represents a processor for data retrieval from an event.

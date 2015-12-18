@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.vm
+package org.scaladebugger.api.lowlevel.vm
 
-import org.senkbeil.debugger.api.lowlevel.RequestInfo
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.RequestInfo
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 
 /**
  * Represents information about a vm death request.

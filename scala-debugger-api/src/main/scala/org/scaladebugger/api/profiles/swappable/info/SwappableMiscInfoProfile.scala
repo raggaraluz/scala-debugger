@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.profiles.swappable.info
+package org.scaladebugger.api.profiles.swappable.info
 
-import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
-import org.senkbeil.debugger.api.profiles.traits.info.MiscInfoProfile
+import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
+import org.scaladebugger.api.profiles.traits.info.MiscInfoProfile
 
 /**
  * Represents a swappable profile for miscellaneous info that redirects the

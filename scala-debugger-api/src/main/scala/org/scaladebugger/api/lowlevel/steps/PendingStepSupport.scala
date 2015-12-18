@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.lowlevel.steps
+package org.scaladebugger.api.lowlevel.steps
 
 import com.sun.jdi.ThreadReference
-import org.senkbeil.debugger.api.lowlevel.PendingRequestSupport
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.utils.PendingActionManager
+import org.scaladebugger.api.lowlevel.PendingRequestSupport
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.utils.PendingActionManager
 
 import scala.util.{Success, Try}
 

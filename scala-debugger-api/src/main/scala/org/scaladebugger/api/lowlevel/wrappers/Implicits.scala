@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.wrappers
+package org.scaladebugger.api.lowlevel.wrappers
 
 import scala.language.implicitConversions
 

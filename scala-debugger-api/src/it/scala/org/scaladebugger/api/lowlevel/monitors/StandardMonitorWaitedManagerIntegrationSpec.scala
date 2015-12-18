@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.monitors
+package org.scaladebugger.api.lowlevel.monitors
 
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -6,8 +6,8 @@ import com.sun.jdi.event.MonitorWaitedEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.events.EventType._
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardMonitorWaitedManagerIntegrationSpec extends FunSpec with Matchers
@@ -21,7 +21,7 @@ class StandardMonitorWaitedManagerIntegrationSpec extends FunSpec with Matchers
 
   describe("StandardMonitorWaitedManager") {
     it("should trigger when a thread has finished waiting on a monitor object") {
-      val testClass = "org.senkbeil.debugger.test.monitors.MonitorWaited"
+      val testClass = "org.scaladebugger.test.monitors.MonitorWaited"
 
       val detectedWaited = new AtomicBoolean(false)
 

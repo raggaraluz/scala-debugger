@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.requests.filters
+package org.scaladebugger.api.lowlevel.requests.filters
 
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestProcessor
-import org.senkbeil.debugger.api.lowlevel.requests.filters.processors.ClassInclusionFilterProcessor
+import org.scaladebugger.api.lowlevel.requests.JDIRequestProcessor
+import org.scaladebugger.api.lowlevel.requests.filters.processors.ClassInclusionFilterProcessor
 
 /**
  * Represents a filter used to limit requests to only classes specified by

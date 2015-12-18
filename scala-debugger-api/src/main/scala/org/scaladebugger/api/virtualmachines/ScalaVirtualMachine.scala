@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.virtualmachines
+package org.scaladebugger.api.virtualmachines
 
 import com.sun.jdi._
-import org.senkbeil.debugger.api.lowlevel.ManagerContainer
-import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
+import org.scaladebugger.api.lowlevel.ManagerContainer
+import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
 
 /**
  * Represents a virtual machine running Scala code.

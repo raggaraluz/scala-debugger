@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.exceptions
+package org.scaladebugger.api.lowlevel.exceptions
 
-import org.senkbeil.debugger.api.utils.PendingActionManager
+import org.scaladebugger.api.utils.PendingActionManager
 
 /**
  * Provides pending exception capabilities to an existing exception manager.

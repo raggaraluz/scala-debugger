@@ -1,13 +1,13 @@
-package org.senkbeil.debugger.api.profiles.pure.watchpoints
+package org.scaladebugger.api.profiles.pure.watchpoints
 
 import java.util.concurrent.atomic.AtomicBoolean
 
 import com.sun.jdi.event.AccessWatchpointEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.events.EventType._
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureAccessWatchpointProfileIntegrationSpec extends FunSpec with Matchers
@@ -21,10 +21,10 @@ class PureAccessWatchpointProfileIntegrationSpec extends FunSpec with Matchers
 
   describe("PureAccessWatchpointProfile") {
     it("should be able to detect access to a field") {
-      val testClass = "org.senkbeil.debugger.test.watchpoints.AccessWatchpoint"
+      val testClass = "org.scaladebugger.test.watchpoints.AccessWatchpoint"
       val testFile = scalaClassStringToFileString(testClass)
 
-      val className = "org.senkbeil.debugger.test.watchpoints.SomeAccessClass"
+      val className = "org.scaladebugger.test.watchpoints.SomeAccessClass"
       val fieldName = "field"
 
       val detectedAccessWatchpoint = new AtomicBoolean(false)

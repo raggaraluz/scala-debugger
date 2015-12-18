@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.events.filters
+package org.scaladebugger.api.lowlevel.events.filters
 
-import org.senkbeil.debugger.api.lowlevel.events.filters.processors.NotFilterProcessor
+import org.scaladebugger.api.lowlevel.events.filters.processors.NotFilterProcessor
 
 /**
  * Represents a local filter that will return the result of negating a filter.

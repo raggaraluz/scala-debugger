@@ -1,18 +1,18 @@
-package org.senkbeil.debugger.api.lowlevel
+package org.scaladebugger.api.lowlevel
 
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.request.EventRequestManager
-import org.senkbeil.debugger.api.lowlevel.breakpoints._
-import org.senkbeil.debugger.api.lowlevel.classes._
-import org.senkbeil.debugger.api.lowlevel.events._
-import org.senkbeil.debugger.api.lowlevel.exceptions._
-import org.senkbeil.debugger.api.lowlevel.methods._
-import org.senkbeil.debugger.api.lowlevel.monitors._
-import org.senkbeil.debugger.api.lowlevel.steps._
-import org.senkbeil.debugger.api.lowlevel.threads._
-import org.senkbeil.debugger.api.lowlevel.vm._
-import org.senkbeil.debugger.api.lowlevel.watchpoints._
-import org.senkbeil.debugger.api.utils.LoopingTaskRunner
+import org.scaladebugger.api.lowlevel.breakpoints._
+import org.scaladebugger.api.lowlevel.classes._
+import org.scaladebugger.api.lowlevel.events._
+import org.scaladebugger.api.lowlevel.exceptions._
+import org.scaladebugger.api.lowlevel.methods._
+import org.scaladebugger.api.lowlevel.monitors._
+import org.scaladebugger.api.lowlevel.steps._
+import org.scaladebugger.api.lowlevel.threads._
+import org.scaladebugger.api.lowlevel.vm._
+import org.scaladebugger.api.lowlevel.watchpoints._
+import org.scaladebugger.api.utils.LoopingTaskRunner
 
 import scala.util.Try
 

@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.methods
+package org.scaladebugger.api.lowlevel.methods
 
 import com.sun.jdi.request.{EventRequest, EventRequestManager, MethodEntryRequest}
 import org.scalamock.scalatest.MockFactory

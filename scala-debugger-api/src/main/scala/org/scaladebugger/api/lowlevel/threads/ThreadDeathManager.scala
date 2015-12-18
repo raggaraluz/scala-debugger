@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.threads
+package org.scaladebugger.api.lowlevel.threads
 
 import com.sun.jdi.request.ThreadDeathRequest
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 
 import scala.util.Try
 

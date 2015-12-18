@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.test.methods
+package org.scaladebugger.test.methods
 
 /**
  * Used to verify the MethodEntry manager.

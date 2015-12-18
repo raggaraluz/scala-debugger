@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.lowlevel.watchpoints
+package org.scaladebugger.api.lowlevel.watchpoints
 
 import com.sun.jdi.request.{ModificationWatchpointRequest, EventRequest, EventRequestManager}
 import com.sun.jdi.{ReferenceType, VirtualMachine}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
+import org.scaladebugger.api.lowlevel.classes.ClassManager
 import test.JDIMockHelpers
 
 import scala.collection.JavaConverters._

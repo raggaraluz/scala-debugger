@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.lowlevel.requests.filters.processors
+package org.scaladebugger.api.lowlevel.requests.filters.processors
 
 import com.sun.jdi.ReferenceType
 import com.sun.jdi.request._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.requests.filters.ClassReferenceFilter
+import org.scaladebugger.api.lowlevel.requests.filters.ClassReferenceFilter
 
 class ClassReferenceFilterProcessorSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory

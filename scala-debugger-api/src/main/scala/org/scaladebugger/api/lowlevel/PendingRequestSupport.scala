@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel
+package org.scaladebugger.api.lowlevel
 
 import java.util.concurrent.atomic.AtomicBoolean
 

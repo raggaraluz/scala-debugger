@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.events.filters
+package org.scaladebugger.api.lowlevel.events.filters
 
 /**
  * Represents the interface for custom property filters to implement.

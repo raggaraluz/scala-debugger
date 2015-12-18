@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.virtualmachines
+package org.scaladebugger.api.virtualmachines
 
 import com.sun.jdi.VirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.ManagerContainer
-import org.senkbeil.debugger.api.profiles.ProfileManager
+import org.scaladebugger.api.lowlevel.ManagerContainer
+import org.scaladebugger.api.profiles.ProfileManager
 
 class ScalaVirtualMachineSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory

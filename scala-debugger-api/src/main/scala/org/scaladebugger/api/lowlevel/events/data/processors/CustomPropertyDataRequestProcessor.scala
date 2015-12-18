@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.lowlevel.events.data.processors
+package org.scaladebugger.api.lowlevel.events.data.processors
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.lowlevel.events.data.{JDIEventDataProcessor, JDIEventDataRequest, JDIEventDataResult}
-import org.senkbeil.debugger.api.lowlevel.events.data.requests.CustomPropertyDataRequest
-import org.senkbeil.debugger.api.lowlevel.events.data.results.CustomPropertyDataResult
+import org.scaladebugger.api.lowlevel.events.data.{JDIEventDataProcessor, JDIEventDataRequest, JDIEventDataResult}
+import org.scaladebugger.api.lowlevel.events.data.requests.CustomPropertyDataRequest
+import org.scaladebugger.api.lowlevel.events.data.results.CustomPropertyDataResult
 
 /**
  * Represents a processor for the custom property data request.

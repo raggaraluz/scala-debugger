@@ -1,13 +1,13 @@
-package org.senkbeil.debugger.api.profiles.pure.vm
+package org.scaladebugger.api.profiles.pure.vm
 
 import com.sun.jdi.event.VMDisconnectEvent
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.events.EventManager
-import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
-import org.senkbeil.debugger.api.pipelines.Pipeline
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
-import org.senkbeil.debugger.api.profiles.traits.vm.VMDisconnectProfile
-import org.senkbeil.debugger.api.lowlevel.events.EventType.VMDisconnectEventType
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.lowlevel.events.EventManager
+import org.scaladebugger.api.lowlevel.utils.JDIArgumentGroup
+import org.scaladebugger.api.pipelines.Pipeline
+import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.profiles.traits.vm.VMDisconnectProfile
+import org.scaladebugger.api.lowlevel.events.EventType.VMDisconnectEventType
 
 import scala.util.Try
 

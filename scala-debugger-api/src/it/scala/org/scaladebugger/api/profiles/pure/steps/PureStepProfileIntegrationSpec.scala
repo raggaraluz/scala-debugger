@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.profiles.pure.steps
+package org.scaladebugger.api.profiles.pure.steps
 
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -8,10 +8,10 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.concurrent.PatienceConfiguration.{Interval, Timeout}
 import org.scalatest.time.{Milliseconds, Seconds, Span, Units}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
+import org.scaladebugger.api.lowlevel.events.EventType
+import org.scaladebugger.api.lowlevel.events.EventType._
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
 import test.Constants._
 import test.{TestUtilities, VirtualMachineFixtures}
 
@@ -27,7 +27,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
   describe("PureStepProfile") {
     describe("stepping out of") {
       it("should be able to finish executing a method and return to the next line in the parent frame") {
-        val testClass = "org.senkbeil.debugger.test.steps.MethodCalls"
+        val testClass = "org.scaladebugger.test.steps.MethodCalls"
 
         // Start on first line of a method
         val startingLine = 15
@@ -49,7 +49,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
       }
 
       it("should be able to finish executing a function and return to the next line in the parent frame") {
-        val testClass = "org.senkbeil.debugger.test.steps.FunctionCalls"
+        val testClass = "org.scaladebugger.test.steps.FunctionCalls"
 
         // Start on first line of a method
         val startingLine = 18
@@ -73,7 +73,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
 
     describe("stepping over") {
       it("should skip over each iteration") {
-        val testClass = "org.senkbeil.debugger.test.steps.BasicIterations"
+        val testClass = "org.scaladebugger.test.steps.BasicIterations"
 
         // Start on first line of main method
         val startingLine = 13
@@ -117,7 +117,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
       }
 
       it("should be able to step over declarations and assignments") {
-        val testClass = "org.senkbeil.debugger.test.steps.BasicAssignments"
+        val testClass = "org.scaladebugger.test.steps.BasicAssignments"
 
         // Start on first line of main method
         val startingLine = 13
@@ -138,7 +138,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
       }
 
       it("should be able to step back out to higher frame once method finishes") {
-        val testClass = "org.senkbeil.debugger.test.steps.MethodCalls"
+        val testClass = "org.scaladebugger.test.steps.MethodCalls"
 
         // Start on last line of a method
         val startingLine = 28
@@ -160,7 +160,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
       }
 
       it("should be able to step over all lines in a method") {
-        val testClass = "org.senkbeil.debugger.test.steps.MethodCalls"
+        val testClass = "org.scaladebugger.test.steps.MethodCalls"
 
         // Start on first line of main method
         val startingLine = 31
@@ -185,7 +185,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
       // TODO: This cannot be done (gets stuck in strings and classloaders)
       //       until we add filtering of Boxed types and Classloaders
       ignore("should enter all iterations except for comprehension") {
-        val testClass = "org.senkbeil.debugger.test.steps.BasicIterations"
+        val testClass = "org.scaladebugger.test.steps.BasicIterations"
 
         // Start on first line of main method
         val startingLine = 13
@@ -194,7 +194,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
         // NOTE: These expectations were made based off of IntelliJ's handling
         val expectedReachableLines = Seq(
           /*
-           * If prefixed with s, referencing org.senkbeil.debugger.test.helpers.Stub…
+           * If prefixed with s, referencing org.scaladebugger.test.helpers.Stub…
            *  16, s10, 16,
            *  21, 22, 21, 22, s10, 22, s10, 22, s10, 22, 21,
            *  26, 27, 26, 27, s11, 27, s11, 27, s11, 27, 26,
@@ -224,7 +224,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
       }
 
       it("should be able to step into a function in a class") {
-        val testClass = "org.senkbeil.debugger.test.steps.FunctionCalls"
+        val testClass = "org.scaladebugger.test.steps.FunctionCalls"
 
         val startingLine = 48
 
@@ -246,7 +246,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
       }
 
       it("should be able to step into a method in a class") {
-        val testClass = "org.senkbeil.debugger.test.steps.MethodCalls"
+        val testClass = "org.scaladebugger.test.steps.MethodCalls"
 
         val startingLine = 42
         val expectedLine = 49

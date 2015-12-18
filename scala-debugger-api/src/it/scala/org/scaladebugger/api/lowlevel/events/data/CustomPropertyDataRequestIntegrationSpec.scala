@@ -1,15 +1,15 @@
-package org.senkbeil.debugger.api.lowlevel.events.data
+package org.scaladebugger.api.lowlevel.events.data
 
 import com.sun.jdi.event.BreakpointEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType
-import org.senkbeil.debugger.api.lowlevel.events.data.requests.CustomPropertyDataRequest
-import org.senkbeil.debugger.api.lowlevel.events.data.results.CustomPropertyDataResult
-import org.senkbeil.debugger.api.lowlevel.events.filters.CustomPropertyFilter
-import org.senkbeil.debugger.api.lowlevel.requests.properties.CustomProperty
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.events.EventType
+import org.scaladebugger.api.lowlevel.events.data.requests.CustomPropertyDataRequest
+import org.scaladebugger.api.lowlevel.events.data.results.CustomPropertyDataResult
+import org.scaladebugger.api.lowlevel.events.filters.CustomPropertyFilter
+import org.scaladebugger.api.lowlevel.requests.properties.CustomProperty
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 import EventType._
 
@@ -25,7 +25,7 @@ class CustomPropertyDataRequestIntegrationSpec extends FunSpec with Matchers
   describe("CustomPropertyDataRequest") {
     it("should retrieve the custom property if available") {
       val testClass =
-        "org.senkbeil.debugger.test.data.CustomPropertyDataRequest"
+        "org.scaladebugger.test.data.CustomPropertyDataRequest"
       val testFile = scalaClassStringToFileString(testClass)
 
       // The request for data based on a custom property

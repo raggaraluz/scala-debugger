@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.watchpoints
+package org.scaladebugger.api.lowlevel.watchpoints
 
 /**
  * Represents an exception that occurred when attempting to create a watchpoint

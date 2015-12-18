@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.monitors
+package org.scaladebugger.api.lowlevel.monitors
 
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -6,8 +6,8 @@ import com.sun.jdi.event.MonitorContendedEnteredEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.events.EventType._
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardMonitorContendedEnteredManagerIntegrationSpec extends FunSpec with Matchers
@@ -21,7 +21,7 @@ class StandardMonitorContendedEnteredManagerIntegrationSpec extends FunSpec with
 
   describe("StandardMonitorContendedEnteredManager") {
     it("should trigger when a thread enters a monitor after waiting for it to be released by another thread") {
-      val testClass = "org.senkbeil.debugger.test.monitors.MonitorContendedEntered"
+      val testClass = "org.scaladebugger.test.monitors.MonitorContendedEntered"
 
       val detectedEntered = new AtomicBoolean(false)
 

@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.requests.filters
+package org.scaladebugger.api.lowlevel.requests.filters
 
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestProcessor
-import org.senkbeil.debugger.api.lowlevel.requests.filters.processors.CountFilterProcessor
+import org.scaladebugger.api.lowlevel.requests.JDIRequestProcessor
+import org.scaladebugger.api.lowlevel.requests.filters.processors.CountFilterProcessor
 
 /**
  * Represents a filter used to restrict events until the specific event has

@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.events.filters.processors
+package org.scaladebugger.api.lowlevel.events.filters.processors
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.lowlevel.events.filters.{JDIEventFilter, OrFilter, JDIEventFilterProcessor}
+import org.scaladebugger.api.lowlevel.events.filters.{JDIEventFilter, OrFilter, JDIEventFilterProcessor}
 
 /**
  * Represents a processor for the 'or' filter.

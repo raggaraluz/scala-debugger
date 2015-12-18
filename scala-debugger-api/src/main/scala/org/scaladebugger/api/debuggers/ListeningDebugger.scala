@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.debuggers
+package org.scaladebugger.api.debuggers
 
 import com.sun.jdi._
 import com.sun.jdi.connect.{Connector, ListeningConnector}
-import org.senkbeil.debugger.api.profiles.ProfileManager
-import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
-import org.senkbeil.debugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
+import org.scaladebugger.api.profiles.ProfileManager
+import org.scaladebugger.api.utils.{LoopingTaskRunner, Logging}
+import org.scaladebugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -52,7 +52,7 @@ object ListeningDebugger {
  * @param port The port to use for remote JVMs to attach to this debugger
  * @param workers The total number of worker tasks to spawn
  */
-class ListeningDebugger private[debugger] (
+class ListeningDebugger private[api] (
   private val virtualMachineManager: VirtualMachineManager,
   private val newProfileManagerFunc: () => ProfileManager,
   private val loopingTaskRunner: LoopingTaskRunner,

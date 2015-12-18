@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.requests.filters.processors
+package org.scaladebugger.api.lowlevel.requests.filters.processors
 
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.lowlevel.requests.filters.{JDIRequestFilter, JDIRequestFilterProcessor, SourceNameFilter}
+import org.scaladebugger.api.lowlevel.requests.filters.{JDIRequestFilter, JDIRequestFilterProcessor, SourceNameFilter}
 
 /**
  * Represents a processor for the source name filter.

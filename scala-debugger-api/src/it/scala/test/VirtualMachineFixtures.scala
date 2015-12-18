@@ -4,12 +4,12 @@ import java.io.{InputStreamReader, BufferedReader}
 import java.util.concurrent.atomic.AtomicBoolean
 
 import com.sun.jdi.event.VMStartEvent
-import org.senkbeil.debugger.api.debuggers.LaunchingDebugger
-import org.senkbeil.debugger.api.lowlevel.ManagerContainer
-import org.senkbeil.debugger.api.lowlevel.events.EventType
-import org.senkbeil.debugger.api.profiles.ProfileManager
-import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
-import org.senkbeil.debugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
+import org.scaladebugger.api.debuggers.LaunchingDebugger
+import org.scaladebugger.api.lowlevel.ManagerContainer
+import org.scaladebugger.api.lowlevel.events.EventType
+import org.scaladebugger.api.profiles.ProfileManager
+import org.scaladebugger.api.utils.{LoopingTaskRunner, Logging}
+import org.scaladebugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
 import EventType._
 import com.sun.jdi.VirtualMachine
 

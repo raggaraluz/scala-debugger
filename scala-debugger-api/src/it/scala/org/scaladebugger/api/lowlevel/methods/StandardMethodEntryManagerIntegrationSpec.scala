@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.methods
+package org.scaladebugger.api.lowlevel.methods
 
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
@@ -6,10 +6,10 @@ import com.sun.jdi.event.{BreakpointEvent, MethodEntryEvent}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
-import org.senkbeil.debugger.api.lowlevel.events.filters.MethodNameFilter
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.events.EventType
+import org.scaladebugger.api.lowlevel.events.EventType._
+import org.scaladebugger.api.lowlevel.events.filters.MethodNameFilter
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardMethodEntryManagerIntegrationSpec extends FunSpec with Matchers
@@ -23,11 +23,11 @@ class StandardMethodEntryManagerIntegrationSpec extends FunSpec with Matchers
 
   describe("StandardMethodEntryManager") {
     it("should be able to detect entering a specific method in a class") {
-      val testClass = "org.senkbeil.debugger.test.methods.MethodEntry"
+      val testClass = "org.scaladebugger.test.methods.MethodEntry"
       val testFile = scalaClassStringToFileString(testClass)
 
       val expectedClassName =
-        "org.senkbeil.debugger.test.methods.MethodEntryTestClass"
+        "org.scaladebugger.test.methods.MethodEntryTestClass"
       val expectedMethodName = "testMethod"
       val methodNameFilter = MethodNameFilter(name = expectedMethodName)
 

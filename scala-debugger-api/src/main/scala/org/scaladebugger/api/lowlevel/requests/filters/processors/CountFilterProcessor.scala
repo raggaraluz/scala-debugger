@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.requests.filters.processors
+package org.scaladebugger.api.lowlevel.requests.filters.processors
 
 import com.sun.jdi.request.EventRequest
-import org.senkbeil.debugger.api.lowlevel.requests.filters.{JDIRequestFilter, JDIRequestFilterProcessor, CountFilter}
+import org.scaladebugger.api.lowlevel.requests.filters.{JDIRequestFilter, JDIRequestFilterProcessor, CountFilter}
 
 /**
  * Represents a processor for the count filter.

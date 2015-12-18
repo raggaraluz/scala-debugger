@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.threads
+package org.scaladebugger.api.lowlevel.threads
 
-import org.senkbeil.debugger.api.utils.PendingActionManager
+import org.scaladebugger.api.utils.PendingActionManager
 
 /**
  * Provides pending thread start capabilities to an existing thread start

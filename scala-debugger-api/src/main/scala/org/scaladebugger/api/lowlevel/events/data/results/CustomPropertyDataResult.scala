@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.events.data.results
+package org.scaladebugger.api.lowlevel.events.data.results
 
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
 
 /**
  * Represents the result from retrieving a custom property.

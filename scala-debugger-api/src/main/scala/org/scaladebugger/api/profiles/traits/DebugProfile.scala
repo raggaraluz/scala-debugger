@@ -1,16 +1,16 @@
-package org.senkbeil.debugger.api.profiles.traits
+package org.scaladebugger.api.profiles.traits
 
-import org.senkbeil.debugger.api.profiles.traits.breakpoints.BreakpointProfile
-import org.senkbeil.debugger.api.profiles.traits.classes.{ClassPrepareProfile, ClassUnloadProfile}
-import org.senkbeil.debugger.api.profiles.traits.events.EventProfile
-import org.senkbeil.debugger.api.profiles.traits.exceptions.ExceptionProfile
-import org.senkbeil.debugger.api.profiles.traits.info.MiscInfoProfile
-import org.senkbeil.debugger.api.profiles.traits.methods.{MethodEntryProfile, MethodExitProfile}
-import org.senkbeil.debugger.api.profiles.traits.monitors.{MonitorContendedEnterProfile, MonitorContendedEnteredProfile, MonitorWaitProfile, MonitorWaitedProfile}
-import org.senkbeil.debugger.api.profiles.traits.steps.StepProfile
-import org.senkbeil.debugger.api.profiles.traits.threads.{ThreadDeathProfile, ThreadStartProfile}
-import org.senkbeil.debugger.api.profiles.traits.vm.{VMDisconnectProfile, VMStartProfile, VMDeathProfile}
-import org.senkbeil.debugger.api.profiles.traits.watchpoints.{AccessWatchpointProfile, ModificationWatchpointProfile}
+import org.scaladebugger.api.profiles.traits.breakpoints.BreakpointProfile
+import org.scaladebugger.api.profiles.traits.classes.{ClassPrepareProfile, ClassUnloadProfile}
+import org.scaladebugger.api.profiles.traits.events.EventProfile
+import org.scaladebugger.api.profiles.traits.exceptions.ExceptionProfile
+import org.scaladebugger.api.profiles.traits.info.MiscInfoProfile
+import org.scaladebugger.api.profiles.traits.methods.{MethodEntryProfile, MethodExitProfile}
+import org.scaladebugger.api.profiles.traits.monitors.{MonitorContendedEnterProfile, MonitorContendedEnteredProfile, MonitorWaitProfile, MonitorWaitedProfile}
+import org.scaladebugger.api.profiles.traits.steps.StepProfile
+import org.scaladebugger.api.profiles.traits.threads.{ThreadDeathProfile, ThreadStartProfile}
+import org.scaladebugger.api.profiles.traits.vm.{VMDisconnectProfile, VMStartProfile, VMDeathProfile}
+import org.scaladebugger.api.profiles.traits.watchpoints.{AccessWatchpointProfile, ModificationWatchpointProfile}
 
 /**
  * Represents the interface that needs to be implemented to provide

@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.test.classes
+package org.scaladebugger.test.classes
 
 import java.net.URLClassLoader
 
@@ -11,7 +11,7 @@ object ClassUnload extends App {
     val testJarUrl = this.getClass.getResource("/TestJar.jar")
     val urlClassLoader = new URLClassLoader(Array(testJarUrl), null)
 
-    val className = "org.senkbeil.debugger.test.jar.CustomClass"
+    val className = "org.scaladebugger.test.jar.CustomClass"
     val klass = urlClassLoader.loadClass(className)
     val instance = klass.newInstance() // Causes class to be loaded
 

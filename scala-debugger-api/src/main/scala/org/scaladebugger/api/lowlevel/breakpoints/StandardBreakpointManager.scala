@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.lowlevel.breakpoints
+package org.scaladebugger.api.lowlevel.breakpoints
 
 import com.sun.jdi.request.{EventRequestManager, BreakpointRequest}
-import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
+import org.scaladebugger.api.lowlevel.classes.ClassManager
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
+import org.scaladebugger.api.utils.{MultiMap, Logging}
 import com.sun.jdi.Location
 
 import scala.collection.JavaConverters._
@@ -21,7 +21,7 @@ class StandardBreakpointManager(
   private val eventRequestManager: EventRequestManager,
   private val classManager: ClassManager
 ) extends BreakpointManager with Logging {
-  import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
+  import org.scaladebugger.api.lowlevel.requests.Implicits._
 
   private val breakpointRequests =
     new MultiMap[BreakpointRequestInfo, Seq[BreakpointRequest]]

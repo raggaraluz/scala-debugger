@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.events.data
+package org.scaladebugger.api.lowlevel.events.data
 
-import org.senkbeil.debugger.api.lowlevel.events.JDIEventArgument
+import org.scaladebugger.api.lowlevel.events.JDIEventArgument
 
 /** Represents the request to retrieve data from an event. */
 trait JDIEventDataRequest extends JDIEventArgument

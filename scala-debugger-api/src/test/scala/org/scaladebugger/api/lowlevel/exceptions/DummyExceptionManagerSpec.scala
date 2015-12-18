@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.lowlevel.exceptions
+package org.scaladebugger.api.lowlevel.exceptions
 
 import com.sun.jdi.request.{EventRequest, EventRequestManager, ExceptionRequest}
 import com.sun.jdi.{ReferenceType, VirtualMachine}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.DummyOperationException
+import org.scaladebugger.api.lowlevel.DummyOperationException
 
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success}

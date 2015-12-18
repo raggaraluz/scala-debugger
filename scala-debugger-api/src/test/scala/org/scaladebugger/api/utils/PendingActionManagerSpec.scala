@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.utils
+package org.scaladebugger.api.utils
 
 import java.util.concurrent.atomic.AtomicBoolean
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.utils.ActionInfo.ActionId
+import org.scaladebugger.api.utils.ActionInfo.ActionId
 
 class PendingActionManagerSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory

@@ -1,13 +1,13 @@
-package org.senkbeil.debugger.api.lowlevel.wrappers
+package org.scaladebugger.api.lowlevel.wrappers
 
-import org.senkbeil.debugger.api.lowlevel.events.EventType
+import org.scaladebugger.api.lowlevel.events.EventType
 import EventType.BreakpointEventType
 import com.sun.jdi.Value
 import com.sun.jdi.event.BreakpointEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 import scala.util.Try
@@ -23,7 +23,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
 
   describe("StackFrameWrapper") {
     it("should be able to analyze this object variables") {
-      val testClass = "org.senkbeil.debugger.test.misc.Variables"
+      val testClass = "org.scaladebugger.test.misc.Variables"
       val testFile = scalaClassStringToFileString(testClass)
       val lastLine = 30
 
@@ -68,7 +68,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
     }
 
     it("should be able to analyze local variables") {
-      val testClass = "org.senkbeil.debugger.test.misc.Variables"
+      val testClass = "org.scaladebugger.test.misc.Variables"
       val testFile = scalaClassStringToFileString(testClass)
       val lastLine = 30
 
@@ -121,7 +121,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
 
           // Scala-based list of objects
           val kString = vMap("k").asInstanceOf[String]
-          kString should include ("org.senkbeil.debugger.test.misc.Variables$One")
+          kString should include ("org.scaladebugger.test.misc.Variables$One")
           kString should include ("java.lang.Integer")
           kString should include ("java.lang.Boolean")
         })

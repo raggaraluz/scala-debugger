@@ -1,13 +1,13 @@
-package org.senkbeil.debugger.api.lowlevel.events
+package org.scaladebugger.api.lowlevel.events
 
 import com.sun.jdi.event.{Event, EventSet, EventQueue}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
 
 import EventType._
-import org.senkbeil.debugger.api.lowlevel.events.data.{JDIEventDataProcessor, JDIEventDataRequest, JDIEventDataResult}
-import org.senkbeil.debugger.api.lowlevel.events.filters.{JDIEventFilterProcessor, JDIEventFilter}
-import org.senkbeil.debugger.api.utils.LoopingTaskRunner
+import org.scaladebugger.api.lowlevel.events.data.{JDIEventDataProcessor, JDIEventDataRequest, JDIEventDataResult}
+import org.scaladebugger.api.lowlevel.events.filters.{JDIEventFilterProcessor, JDIEventFilter}
+import org.scaladebugger.api.utils.LoopingTaskRunner
 
 class StandardEventManagerSpec extends FunSpec with Matchers with MockFactory
   with ParallelTestExecution with org.scalamock.matchers.Matchers

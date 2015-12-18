@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.utils
+package org.scaladebugger.api.utils
 
 import java.util.concurrent.ConcurrentHashMap
 

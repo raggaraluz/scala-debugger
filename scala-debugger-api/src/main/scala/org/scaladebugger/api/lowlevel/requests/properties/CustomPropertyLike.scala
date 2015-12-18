@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.requests.properties
+package org.scaladebugger.api.lowlevel.requests.properties
 
 /**
  * Represents the interface for custom properties to implement.

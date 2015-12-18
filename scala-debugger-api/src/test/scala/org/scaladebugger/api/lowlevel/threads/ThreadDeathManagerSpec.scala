@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.threads
+package org.scaladebugger.api.lowlevel.threads
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 import test.TestThreadDeathManager
 
 import scala.util.Success

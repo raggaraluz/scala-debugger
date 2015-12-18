@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.test.watchpoints
+package org.scaladebugger.test.watchpoints
 
 /**
  * Used to verify that access to fields can be observed via an

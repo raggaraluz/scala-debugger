@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.utils
+package org.scaladebugger.api.lowlevel.utils
 
 import com.sun.jdi._
-import org.senkbeil.debugger.api.utils.Logging
+import org.scaladebugger.api.utils.Logging
 
 import scala.collection.JavaConverters._
 import scala.util.Try

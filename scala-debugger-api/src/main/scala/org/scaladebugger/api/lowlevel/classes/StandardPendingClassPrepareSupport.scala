@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.classes
+package org.scaladebugger.api.lowlevel.classes
 
-import org.senkbeil.debugger.api.utils.PendingActionManager
+import org.scaladebugger.api.utils.PendingActionManager
 
 /**
  * Provides pending class prepare capabilities to an existing class prepare

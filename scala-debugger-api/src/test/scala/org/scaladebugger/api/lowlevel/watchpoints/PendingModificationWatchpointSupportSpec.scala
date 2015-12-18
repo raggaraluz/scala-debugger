@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.lowlevel.watchpoints
+package org.scaladebugger.api.lowlevel.watchpoints
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.utils.{ActionInfo, PendingActionManager}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.utils.{ActionInfo, PendingActionManager}
 import test.{JDIMockHelpers, TestModificationWatchpointManager}
 
 import scala.util.{Failure, Success}

@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.methods
+package org.scaladebugger.api.lowlevel.methods
 
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -6,9 +6,9 @@ import com.sun.jdi.event.{BreakpointEvent, MethodExitEvent}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
-import org.senkbeil.debugger.api.lowlevel.events.filters.MethodNameFilter
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.events.EventType._
+import org.scaladebugger.api.lowlevel.events.filters.MethodNameFilter
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardMethodExitManagerIntegrationSpec extends FunSpec with Matchers
@@ -22,11 +22,11 @@ class StandardMethodExitManagerIntegrationSpec extends FunSpec with Matchers
 
   describe("StandardMethodExitManager") {
     it("should be able to detect exiting a specific method in a class") {
-      val testClass = "org.senkbeil.debugger.test.methods.MethodExit"
+      val testClass = "org.scaladebugger.test.methods.MethodExit"
       val testFile = scalaClassStringToFileString(testClass)
 
       val expectedClassName =
-        "org.senkbeil.debugger.test.methods.MethodExitTestClass"
+        "org.scaladebugger.test.methods.MethodExitTestClass"
       val expectedMethodName = "testMethod"
       val methodNameFilter = MethodNameFilter(name = expectedMethodName)
 

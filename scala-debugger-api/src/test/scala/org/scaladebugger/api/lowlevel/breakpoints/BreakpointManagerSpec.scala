@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.breakpoints
+package org.scaladebugger.api.lowlevel.breakpoints
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 import test.TestBreakpointManager
 
 import scala.util.Success

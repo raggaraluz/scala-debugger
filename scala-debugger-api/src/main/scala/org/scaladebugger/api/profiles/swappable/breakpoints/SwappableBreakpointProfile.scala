@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.profiles.swappable.breakpoints
+package org.scaladebugger.api.profiles.swappable.breakpoints
 
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
-import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
-import org.senkbeil.debugger.api.profiles.traits.breakpoints.BreakpointProfile
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
+import org.scaladebugger.api.profiles.traits.breakpoints.BreakpointProfile
 
 import scala.util.Try
 

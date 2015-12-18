@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.pipelines
+package org.scaladebugger.api.pipelines
 
 /**
  * Represents an operation that filters data in a pipeline.

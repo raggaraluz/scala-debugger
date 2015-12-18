@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.utils
+package org.scaladebugger.api.utils
 
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}

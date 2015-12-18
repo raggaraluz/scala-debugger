@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.breakpoints
+package org.scaladebugger.api.lowlevel.breakpoints
 
 import com.sun.jdi.request.BreakpointRequest
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 
 import scala.util.Try
 

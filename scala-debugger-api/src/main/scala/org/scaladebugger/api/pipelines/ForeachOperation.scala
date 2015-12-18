@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.pipelines
+package org.scaladebugger.api.pipelines
 
 /**
  * Represents an operation that maps data to other values in a pipeline.

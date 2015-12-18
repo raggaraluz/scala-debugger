@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.api.lowlevel.exceptions
+package org.scaladebugger.api.lowlevel.exceptions
 
 import com.sun.jdi.{ReferenceType, VirtualMachine}
 import com.sun.jdi.request.{EventRequestManager, ExceptionRequest}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{SuspendPolicyProperty, EnabledProperty}
-import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.properties.{SuspendPolicyProperty, EnabledProperty}
+import org.scaladebugger.api.utils.{MultiMap, Logging}
 import scala.collection.JavaConverters._
-import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
+import org.scaladebugger.api.lowlevel.requests.Implicits._
 
 import scala.util.{Failure, Try}
 import StandardExceptionManager._

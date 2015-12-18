@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.exceptions
+package org.scaladebugger.api.lowlevel.exceptions
 
 import com.sun.jdi.{ReferenceType, VirtualMachine}
 import com.sun.jdi.request.{EventRequest, EventRequestManager, ExceptionRequest}

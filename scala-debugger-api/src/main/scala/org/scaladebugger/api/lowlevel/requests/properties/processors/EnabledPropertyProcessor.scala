@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.requests.properties.processors
+package org.scaladebugger.api.lowlevel.requests.properties.processors
 
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{JDIRequestPropertyProcessor, JDIRequestProperty, EnabledProperty}
+import org.scaladebugger.api.lowlevel.requests.properties.{JDIRequestPropertyProcessor, JDIRequestProperty, EnabledProperty}
 
 /**
  * Represents a processor for the enabled status of a request.

@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.lowlevel.events.filters.processors
+package org.scaladebugger.api.lowlevel.events.filters.processors
 
 import java.util.concurrent.atomic.AtomicInteger
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.lowlevel.events.filters.{JDIEventFilter, JDIEventFilterProcessor, MaxTriggerFilter}
+import org.scaladebugger.api.lowlevel.events.filters.{JDIEventFilter, JDIEventFilterProcessor, MaxTriggerFilter}
 
 /**
  * Represents a processor for the max trigger filter.

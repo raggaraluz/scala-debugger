@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.requests.properties.processors
+package org.scaladebugger.api.lowlevel.requests.properties.processors
 
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{CustomPropertyLike, JDIRequestPropertyProcessor, JDIRequestProperty, CustomProperty}
+import org.scaladebugger.api.lowlevel.requests.properties.{CustomPropertyLike, JDIRequestPropertyProcessor, JDIRequestProperty, CustomProperty}
 
 /**
  * Represents a processor for the custom property of a request.

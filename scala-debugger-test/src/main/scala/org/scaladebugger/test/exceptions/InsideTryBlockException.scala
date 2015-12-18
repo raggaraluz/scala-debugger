@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.test.exceptions
+package org.scaladebugger.test.exceptions
 
 /**
  * Used to test exception reporting in uncaught situations.

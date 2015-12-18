@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.debuggers
+package org.scaladebugger.api.debuggers
 
 import java.util.concurrent.ConcurrentHashMap
 
-import org.senkbeil.debugger.api.utils.JDILoader
-import org.senkbeil.debugger.api.virtualmachines.ScalaVirtualMachine
+import org.scaladebugger.api.utils.JDILoader
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.collection.JavaConverters._
 

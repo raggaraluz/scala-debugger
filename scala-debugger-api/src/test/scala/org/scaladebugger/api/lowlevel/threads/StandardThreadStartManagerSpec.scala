@@ -1,11 +1,11 @@
-package org.senkbeil.debugger.api.lowlevel.threads
+package org.scaladebugger.api.lowlevel.threads
 
 import java.util.concurrent.atomic.AtomicInteger
 
 import com.sun.jdi.request.{EventRequest, EventRequestManager, ThreadStartRequest}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.requests.{JDIRequestProcessor, JDIRequestArgument}
+import org.scaladebugger.api.lowlevel.requests.{JDIRequestProcessor, JDIRequestArgument}
 
 import scala.util.{Failure, Success}
 

@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.profiles.swappable.events
+package org.scaladebugger.api.profiles.swappable.events
 
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
-import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
-import org.senkbeil.debugger.api.profiles.traits.events.EventProfile
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.lowlevel.events.EventType.EventType
+import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
+import org.scaladebugger.api.profiles.traits.events.EventProfile
 
 import scala.util.Try
 

@@ -1,8 +1,8 @@
 package test
 
 import com.sun.jdi.request.ExceptionRequest
-import org.senkbeil.debugger.api.lowlevel.exceptions.{ExceptionRequestInfo, ExceptionManager}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.exceptions.{ExceptionRequestInfo, ExceptionManager}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 
 import scala.util.Try
 

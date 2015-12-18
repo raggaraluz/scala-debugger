@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.events
+package org.scaladebugger.api.lowlevel.events
 
-import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
+import org.scaladebugger.api.lowlevel.events.EventType.EventType
 
 /**
  * Represents an event manager whose operations do nothing.

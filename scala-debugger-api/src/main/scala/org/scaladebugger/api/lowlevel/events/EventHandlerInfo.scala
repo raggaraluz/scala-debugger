@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.events
+package org.scaladebugger.api.lowlevel.events
 
-import org.senkbeil.debugger.api.lowlevel.events.EventManager.EventHandler
-import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
+import org.scaladebugger.api.lowlevel.events.EventManager.EventHandler
+import org.scaladebugger.api.lowlevel.events.EventType.EventType
 
 /**
  * Represents information about an event handler.

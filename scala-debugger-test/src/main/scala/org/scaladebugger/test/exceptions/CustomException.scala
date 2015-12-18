@@ -1,3 +1,3 @@
-package org.senkbeil.debugger.test.exceptions
+package org.scaladebugger.test.exceptions
 
 class CustomException extends Throwable

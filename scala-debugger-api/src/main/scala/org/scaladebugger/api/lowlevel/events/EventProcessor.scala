@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.events
+package org.scaladebugger.api.lowlevel.events
 
 import com.sun.jdi.event.Event
 import scala.util.{Failure, Success, Try}

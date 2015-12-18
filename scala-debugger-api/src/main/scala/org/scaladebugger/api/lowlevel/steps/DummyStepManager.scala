@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.lowlevel.steps
+package org.scaladebugger.api.lowlevel.steps
 
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.request.StepRequest
-import org.senkbeil.debugger.api.lowlevel.DummyOperationException
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.DummyOperationException
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 
 import scala.util.{Failure, Try}
 

@@ -1,11 +1,11 @@
-package org.senkbeil.debugger.api.lowlevel.events.filters
+package org.scaladebugger.api.lowlevel.events.filters
 
 import com.sun.jdi.event.BreakpointEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.events.EventType
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 import EventType._
 
@@ -20,7 +20,7 @@ class MinTriggerFilterIntegrationSpec extends FunSpec with Matchers
 
   describe("MinTriggerFilter") {
     it("should ignore the first N events for a handler using MinTriggerFilter(N)") {
-      val testClass = "org.senkbeil.debugger.test.filters.MinTriggerFilter"
+      val testClass = "org.scaladebugger.test.filters.MinTriggerFilter"
       val testFile = scalaClassStringToFileString(testClass)
 
       // The filter to apply (should ignore the first three breakpoints)

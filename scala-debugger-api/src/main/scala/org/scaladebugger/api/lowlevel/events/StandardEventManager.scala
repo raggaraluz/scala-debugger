@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.lowlevel.events
+package org.scaladebugger.api.lowlevel.events
 
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
-import org.senkbeil.debugger.api.pipelines.Pipeline
-import org.senkbeil.debugger.api.utils.{MultiMap, LoopingTaskRunner, Logging}
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
+import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.pipelines.Pipeline
+import org.scaladebugger.api.utils.{MultiMap, LoopingTaskRunner, Logging}
 import com.sun.jdi.event.{EventQueue, EventSet, Event}
 
 import java.util.concurrent.ConcurrentHashMap

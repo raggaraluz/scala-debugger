@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.breakpoints
+package org.scaladebugger.api.lowlevel.breakpoints
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.DummyOperationException
+import org.scaladebugger.api.lowlevel.DummyOperationException
 import test.JDIMockHelpers
 
 class DummyBreakpointManagerSpec extends FunSpec with Matchers

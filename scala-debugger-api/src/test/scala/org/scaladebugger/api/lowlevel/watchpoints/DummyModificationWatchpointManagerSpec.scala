@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.watchpoints
+package org.scaladebugger.api.lowlevel.watchpoints
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.DummyOperationException
+import org.scaladebugger.api.lowlevel.DummyOperationException
 import test.JDIMockHelpers
 
 class DummyModificationWatchpointManagerSpec extends FunSpec with Matchers

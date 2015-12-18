@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.exceptions
+package org.scaladebugger.api.lowlevel.exceptions
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 import test.TestExceptionManager
 
 import scala.util.Success

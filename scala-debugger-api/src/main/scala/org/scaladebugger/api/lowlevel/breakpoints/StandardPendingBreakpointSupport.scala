@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.breakpoints
+package org.scaladebugger.api.lowlevel.breakpoints
 
-import org.senkbeil.debugger.api.utils.PendingActionManager
+import org.scaladebugger.api.utils.PendingActionManager
 
 /**
  * Provides pending breakpoint capabilities to an existing breakpoint manager.

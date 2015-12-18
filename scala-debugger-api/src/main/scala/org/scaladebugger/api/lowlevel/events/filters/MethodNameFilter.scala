@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.events.filters
+package org.scaladebugger.api.lowlevel.events.filters
 
-import org.senkbeil.debugger.api.lowlevel.events.filters.processors.MethodNameFilterProcessor
+import org.scaladebugger.api.lowlevel.events.filters.processors.MethodNameFilterProcessor
 
 /**
  * Represents a local filter that will result in ignoring any incoming event if

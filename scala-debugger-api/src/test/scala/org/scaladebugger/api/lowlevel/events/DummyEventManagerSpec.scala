@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.lowlevel.events
+package org.scaladebugger.api.lowlevel.events
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
-import org.senkbeil.debugger.api.lowlevel.events.EventManager.EventHandler
-import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
+import org.scaladebugger.api.lowlevel.events.EventManager.EventHandler
+import org.scaladebugger.api.lowlevel.events.EventType.EventType
 
 class DummyEventManagerSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory

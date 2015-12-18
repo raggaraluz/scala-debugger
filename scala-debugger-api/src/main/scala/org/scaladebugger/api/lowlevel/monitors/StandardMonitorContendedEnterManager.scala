@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.lowlevel.monitors
+package org.scaladebugger.api.lowlevel.monitors
 
 import com.sun.jdi.request.{MonitorContendedEnterRequest, EventRequestManager}
-import org.senkbeil.debugger.api.lowlevel.requests.Implicits._
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
-import org.senkbeil.debugger.api.utils.{MultiMap, Logging}
+import org.scaladebugger.api.lowlevel.requests.Implicits._
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.properties.{EnabledProperty, SuspendPolicyProperty}
+import org.scaladebugger.api.utils.{MultiMap, Logging}
 
 import scala.util.Try
 

@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.classes
+package org.scaladebugger.api.lowlevel.classes
 
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -6,8 +6,8 @@ import com.sun.jdi.event.ClassPrepareEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.events.EventType._
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardClassPrepareManagerIntegrationSpec extends FunSpec with Matchers
@@ -21,9 +21,9 @@ class StandardClassPrepareManagerIntegrationSpec extends FunSpec with Matchers
 
   describe("StandardClassPrepareManager") {
     it("should trigger when a class is loaded") {
-      val testClass = "org.senkbeil.debugger.test.classes.ClassPrepare"
+      val testClass = "org.scaladebugger.test.classes.ClassPrepare"
 
-      val expectedClassName = "org.senkbeil.debugger.test.classes.CustomClass"
+      val expectedClassName = "org.scaladebugger.test.classes.CustomClass"
       val detectedPrepare = new AtomicBoolean(false)
 
       val s = DummyScalaVirtualMachine.newInstance()

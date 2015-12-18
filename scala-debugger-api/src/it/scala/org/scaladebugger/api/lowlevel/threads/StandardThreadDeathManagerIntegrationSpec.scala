@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.threads
+package org.scaladebugger.api.lowlevel.threads
 
 import java.util.concurrent.atomic.{AtomicInteger, AtomicBoolean}
 
@@ -6,8 +6,8 @@ import com.sun.jdi.event.ThreadDeathEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.events.EventType._
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardThreadDeathManagerIntegrationSpec extends FunSpec with Matchers
@@ -21,7 +21,7 @@ class StandardThreadDeathManagerIntegrationSpec extends FunSpec with Matchers
 
   describe("StandardThreadDeathManager") {
     it("should trigger when a thread dies") {
-      val testClass = "org.senkbeil.debugger.test.threads.ThreadDeath"
+      val testClass = "org.scaladebugger.test.threads.ThreadDeath"
       val testFile = scalaClassStringToFileString(testClass)
 
       val threadDeathCount = new AtomicInteger(0)

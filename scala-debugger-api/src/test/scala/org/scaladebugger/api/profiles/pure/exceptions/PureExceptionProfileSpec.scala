@@ -1,16 +1,16 @@
-package org.senkbeil.debugger.api.profiles.pure.exceptions
+package org.scaladebugger.api.profiles.pure.exceptions
 
 import com.sun.jdi.event.Event
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventManager
-import org.senkbeil.debugger.api.lowlevel.events.EventType.ExceptionEventType
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
-import org.senkbeil.debugger.api.lowlevel.exceptions.ExceptionManager
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
-import org.senkbeil.debugger.api.pipelines.Pipeline
+import org.scaladebugger.api.lowlevel.events.EventManager
+import org.scaladebugger.api.lowlevel.events.EventType.ExceptionEventType
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
+import org.scaladebugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
+import org.scaladebugger.api.lowlevel.exceptions.ExceptionManager
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.properties.UniqueIdProperty
+import org.scaladebugger.api.pipelines.Pipeline
 import test.JDIMockHelpers
 
 import scala.util.{Failure, Success}

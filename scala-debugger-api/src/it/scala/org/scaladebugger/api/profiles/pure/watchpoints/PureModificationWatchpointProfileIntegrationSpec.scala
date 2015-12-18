@@ -1,11 +1,11 @@
-package org.senkbeil.debugger.api.profiles.pure.watchpoints
+package org.scaladebugger.api.profiles.pure.watchpoints
 
 import java.util.concurrent.atomic.AtomicBoolean
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureModificationWatchpointProfileIntegrationSpec
@@ -19,10 +19,10 @@ class PureModificationWatchpointProfileIntegrationSpec
 
   describe("PureModificationWatchpointProfile") {
     it("should be able to detect modification to a field") {
-      val testClass = "org.senkbeil.debugger.test.watchpoints.ModificationWatchpoint"
+      val testClass = "org.scaladebugger.test.watchpoints.ModificationWatchpoint"
       val testFile = scalaClassStringToFileString(testClass)
 
-      val className = "org.senkbeil.debugger.test.watchpoints.SomeModificationClass"
+      val className = "org.scaladebugger.test.watchpoints.SomeModificationClass"
       val fieldName = "field"
 
       val detectedModificationWatchpoint = new AtomicBoolean(false)

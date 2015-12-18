@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.events
+package org.scaladebugger.api.lowlevel.events
 
 import com.sun.jdi.event.{Event, EventSet}
 import EventType.EventType
-import org.senkbeil.debugger.api.utils.Logging
+import org.scaladebugger.api.utils.Logging
 
 /**
  * Represents a processor for an event set, evaluating any associated

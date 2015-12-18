@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.requests
+package org.scaladebugger.api.lowlevel.requests
 
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.lowlevel.JDIArgument
 
 /**
  * Represents an argument for a JDI Request.

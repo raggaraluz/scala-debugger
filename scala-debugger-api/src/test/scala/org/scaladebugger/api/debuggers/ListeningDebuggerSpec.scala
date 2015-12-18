@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.debuggers
+package org.scaladebugger.api.debuggers
 
 import java.util
 
@@ -7,9 +7,9 @@ import com.sun.jdi.connect.{TransportTimeoutException, Connector, ListeningConne
 import com.sun.jdi.{VirtualMachine, VirtualMachineManager}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.profiles.ProfileManager
-import org.senkbeil.debugger.api.utils.LoopingTaskRunner
-import org.senkbeil.debugger.api.virtualmachines.StandardScalaVirtualMachine
+import org.scaladebugger.api.profiles.ProfileManager
+import org.scaladebugger.api.utils.LoopingTaskRunner
+import org.scaladebugger.api.virtualmachines.StandardScalaVirtualMachine
 
 import scala.collection.JavaConverters._
 

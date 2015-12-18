@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.test.data
+package org.scaladebugger.test.data
 
 /**
  * Used to verify the CustomPropertyDataRequest.

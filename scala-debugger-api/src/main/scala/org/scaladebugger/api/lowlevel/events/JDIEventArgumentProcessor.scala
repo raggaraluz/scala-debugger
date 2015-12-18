@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.events
+package org.scaladebugger.api.lowlevel.events
 
 import com.sun.jdi.event.Event
-import org.senkbeil.debugger.api.lowlevel.events.data.{JDIEventDataProcessor, JDIEventDataResult, JDIEventDataUnknownError}
-import org.senkbeil.debugger.api.lowlevel.events.filters.JDIEventFilterProcessor
+import org.scaladebugger.api.lowlevel.events.data.{JDIEventDataProcessor, JDIEventDataResult, JDIEventDataUnknownError}
+import org.scaladebugger.api.lowlevel.events.filters.JDIEventFilterProcessor
 
 import scala.util.Try
 

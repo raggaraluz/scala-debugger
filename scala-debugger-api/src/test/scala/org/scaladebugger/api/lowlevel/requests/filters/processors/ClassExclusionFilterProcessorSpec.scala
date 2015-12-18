@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.lowlevel.requests.filters.processors
+package org.scaladebugger.api.lowlevel.requests.filters.processors
 
 import com.sun.jdi.request._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.requests.filters.ClassExclusionFilter
+import org.scaladebugger.api.lowlevel.requests.filters.ClassExclusionFilter
 
 class ClassExclusionFilterProcessorSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory

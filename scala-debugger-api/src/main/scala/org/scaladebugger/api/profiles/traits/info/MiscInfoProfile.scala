@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.profiles.traits.info
+package org.scaladebugger.api.profiles.traits.info
 
 /**
  * Represents the interface that needs to be implemented to provide

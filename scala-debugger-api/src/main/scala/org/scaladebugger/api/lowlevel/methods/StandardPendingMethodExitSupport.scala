@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.methods
+package org.scaladebugger.api.lowlevel.methods
 
-import org.senkbeil.debugger.api.utils.PendingActionManager
+import org.scaladebugger.api.utils.PendingActionManager
 
 /**
  * Provides pending method exit capabilities to an existing method exit

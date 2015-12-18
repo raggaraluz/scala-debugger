@@ -1,13 +1,13 @@
-package org.senkbeil.debugger.api.profiles.pure.events
+package org.scaladebugger.api.profiles.pure.events
 
 import java.util.concurrent.atomic.AtomicInteger
 import com.sun.jdi.event.BreakpointEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.lowlevel.events.EventType.BreakpointEventType
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.lowlevel.events.EventType.BreakpointEventType
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureEventProfileIntegrationSpec extends FunSpec with Matchers
@@ -21,7 +21,7 @@ class PureEventProfileIntegrationSpec extends FunSpec with Matchers
 
   describe("PureEventProfile") {
     it("should receive events for the specified event type") {
-      val testClass = "org.senkbeil.debugger.test.events.LoopingEvent"
+      val testClass = "org.scaladebugger.test.events.LoopingEvent"
       val testFile = scalaClassStringToFileString(testClass)
       val lineNumber1 = 13
       val lineNumber2 = 16
@@ -56,7 +56,7 @@ class PureEventProfileIntegrationSpec extends FunSpec with Matchers
     }
 
     it("should stop receiving events upon being closed") {
-      val testClass = "org.senkbeil.debugger.test.events.LoopingEvent"
+      val testClass = "org.scaladebugger.test.events.LoopingEvent"
       val testFile = scalaClassStringToFileString(testClass)
       val lineNumber1 = 13
       val lineNumber2 = 16

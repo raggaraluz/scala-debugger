@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.virtualmachines
+package org.scaladebugger.api.virtualmachines
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Seconds, Span, Milliseconds}
@@ -16,7 +16,7 @@ class StandardScalaVirtualMachineIntegrationSpec extends FunSpec with Matchers
 
   describe("StandardScalaVirtualMachine") {
     it("should indicate that it has started upon receiving the start event") {
-      val testClass = "org.senkbeil.debugger.test.misc.MainUsingMethod"
+      val testClass = "org.scaladebugger.test.misc.MainUsingMethod"
 
       withVirtualMachine(testClass) { (s) =>
         eventually {

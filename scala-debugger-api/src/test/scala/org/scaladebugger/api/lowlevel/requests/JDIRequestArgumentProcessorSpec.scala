@@ -1,11 +1,11 @@
-package org.senkbeil.debugger.api.lowlevel.requests
+package org.scaladebugger.api.lowlevel.requests
 
 import com.sun.jdi.request.EventRequest
 import com.sun.jdi.{ObjectReference, ReferenceType, ThreadReference}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.requests.filters._
-import org.senkbeil.debugger.api.lowlevel.requests.properties.{CustomProperty, EnabledProperty, SuspendPolicyProperty}
+import org.scaladebugger.api.lowlevel.requests.filters._
+import org.scaladebugger.api.lowlevel.requests.properties.{CustomProperty, EnabledProperty, SuspendPolicyProperty}
 
 class JDIRequestArgumentProcessorSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory

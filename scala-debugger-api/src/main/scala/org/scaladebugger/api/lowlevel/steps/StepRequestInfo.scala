@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.steps
+package org.scaladebugger.api.lowlevel.steps
 
 import com.sun.jdi.ThreadReference
-import org.senkbeil.debugger.api.lowlevel.RequestInfo
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.RequestInfo
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 
 /**
  * Represents information about a step request.

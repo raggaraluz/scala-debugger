@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.requests.properties
+package org.scaladebugger.api.lowlevel.requests.properties
 
 import com.sun.jdi.request.EventRequest
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestProcessor
+import org.scaladebugger.api.lowlevel.requests.JDIRequestProcessor
 
 /**
   * Represents a processor for a JDI Event Filter.

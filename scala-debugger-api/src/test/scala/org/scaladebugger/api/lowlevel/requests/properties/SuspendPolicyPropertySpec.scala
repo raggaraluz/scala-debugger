@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.requests.properties
+package org.scaladebugger.api.lowlevel.requests.properties
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}

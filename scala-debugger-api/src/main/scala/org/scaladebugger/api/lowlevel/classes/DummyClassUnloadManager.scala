@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.classes
+package org.scaladebugger.api.lowlevel.classes
 
 import com.sun.jdi.request.ClassUnloadRequest
-import org.senkbeil.debugger.api.lowlevel.DummyOperationException
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.DummyOperationException
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 
 import scala.util.{Failure, Try}
 

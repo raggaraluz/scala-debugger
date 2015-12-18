@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.test.classes
+package org.scaladebugger.test.classes
 
 /**
  * Provides test of class preparation (loading) used to verify reception

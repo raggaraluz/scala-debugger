@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.requests.filters
+package org.scaladebugger.api.lowlevel.requests.filters
 
 import com.sun.jdi.ThreadReference
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestProcessor
-import org.senkbeil.debugger.api.lowlevel.requests.filters.processors.ThreadFilterProcessor
+import org.scaladebugger.api.lowlevel.requests.JDIRequestProcessor
+import org.scaladebugger.api.lowlevel.requests.filters.processors.ThreadFilterProcessor
 
 /**
  * Represents a filter used to limit requests to a specific thread.

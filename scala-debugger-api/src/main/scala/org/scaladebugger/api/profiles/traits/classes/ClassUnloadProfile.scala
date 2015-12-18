@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.profiles.traits.classes
+package org.scaladebugger.api.profiles.traits.classes
 
 import com.sun.jdi.event.ClassUnloadEvent
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.pipelines.Pipeline
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
+import org.scaladebugger.api.pipelines.Pipeline
+import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
 
 import scala.util.Try
 

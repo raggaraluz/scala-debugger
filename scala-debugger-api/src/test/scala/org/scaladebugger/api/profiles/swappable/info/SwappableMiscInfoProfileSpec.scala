@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.profiles.swappable.info
+package org.scaladebugger.api.profiles.swappable.info
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.profiles.ProfileManager
-import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
-import org.senkbeil.debugger.api.profiles.traits.DebugProfile
+import org.scaladebugger.api.profiles.ProfileManager
+import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
+import org.scaladebugger.api.profiles.traits.DebugProfile
 
 class SwappableMiscInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory

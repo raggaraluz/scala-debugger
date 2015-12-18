@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.test.monitors
+package org.scaladebugger.test.monitors
 
 /**
  * Provides test of monitor contended entered used to verify reception of

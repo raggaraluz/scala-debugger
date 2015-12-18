@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.requests.properties
+package org.scaladebugger.api.lowlevel.requests.properties
 
 import com.sun.jdi.request.EventRequest
-import org.senkbeil.debugger.api.lowlevel.requests.properties.processors.SuspendPolicyPropertyProcessor
+import org.scaladebugger.api.lowlevel.requests.properties.processors.SuspendPolicyPropertyProcessor
 
 /**
  * Represents an argument used set the suspend policy of the request.

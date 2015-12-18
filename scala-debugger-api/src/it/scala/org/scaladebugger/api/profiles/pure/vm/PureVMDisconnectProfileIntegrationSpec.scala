@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.api.profiles.pure.vm
+package org.scaladebugger.api.profiles.pure.vm
 
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureVMDisconnectProfileIntegrationSpec extends FunSpec with Matchers
@@ -20,7 +20,7 @@ class PureVMDisconnectProfileIntegrationSpec extends FunSpec with Matchers
 
   describe("PureVMDisconnectProfile") {
     it("should trigger when a virtual machine disconnects") {
-      val testClass = "org.senkbeil.debugger.test.misc.MainUsingApp"
+      val testClass = "org.scaladebugger.test.misc.MainUsingApp"
 
       val detectedDisconnect = new AtomicBoolean(false)
 

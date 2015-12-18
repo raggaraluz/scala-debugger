@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.exceptions
+package org.scaladebugger.api.lowlevel.exceptions
 
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
@@ -6,8 +6,8 @@ import com.sun.jdi.event.{BreakpointEvent, ClassPrepareEvent, ExceptionEvent}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.events.EventType._
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardExceptionManagerIntegrationSpec extends FunSpec with Matchers
@@ -22,12 +22,12 @@ class StandardExceptionManagerIntegrationSpec extends FunSpec with Matchers
   describe("StandardExceptionManager") {
     it("should be able to detect exceptions in try blocks") {
       val testClass =
-        "org.senkbeil.debugger.test.exceptions.InsideTryBlockException"
+        "org.scaladebugger.test.exceptions.InsideTryBlockException"
       val testFile = scalaClassStringToFileString(testClass)
 
       val detectedException = new AtomicBoolean(false)
       val expectedExceptionName =
-        "org.senkbeil.debugger.test.exceptions.CustomException"
+        "org.scaladebugger.test.exceptions.CustomException"
 
       val s = DummyScalaVirtualMachine.newInstance()
       import s.lowlevel._
@@ -58,12 +58,12 @@ class StandardExceptionManagerIntegrationSpec extends FunSpec with Matchers
 
     it("should be able to detect exceptions in functional try calls") {
       val testClass =
-        "org.senkbeil.debugger.test.exceptions.InsideFunctionalTryException"
+        "org.scaladebugger.test.exceptions.InsideFunctionalTryException"
       val testFile = scalaClassStringToFileString(testClass)
 
       val detectedException = new AtomicBoolean(false)
       val expectedExceptionName =
-        "org.senkbeil.debugger.test.exceptions.CustomException"
+        "org.scaladebugger.test.exceptions.CustomException"
 
       val s = DummyScalaVirtualMachine.newInstance()
       import s.lowlevel._
@@ -94,12 +94,12 @@ class StandardExceptionManagerIntegrationSpec extends FunSpec with Matchers
 
     it("should be able to detect exceptions outside of try blocks") {
       val testClass =
-        "org.senkbeil.debugger.test.exceptions.OutsideTryException"
+        "org.scaladebugger.test.exceptions.OutsideTryException"
       val testFile = scalaClassStringToFileString(testClass)
 
       val detectedException = new AtomicBoolean(false)
       val expectedExceptionName =
-        "org.senkbeil.debugger.test.exceptions.CustomException"
+        "org.scaladebugger.test.exceptions.CustomException"
 
       val s = DummyScalaVirtualMachine.newInstance()
       import s.lowlevel._

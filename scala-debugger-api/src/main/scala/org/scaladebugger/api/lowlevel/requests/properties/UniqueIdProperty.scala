@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.requests.properties
+package org.scaladebugger.api.lowlevel.requests.properties
 
-import org.senkbeil.debugger.api.lowlevel.requests.properties.processors.CustomPropertyProcessor
+import org.scaladebugger.api.lowlevel.requests.properties.processors.CustomPropertyProcessor
 
 /**
  * Represents an argument used set a unique id on the request.

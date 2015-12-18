@@ -1,18 +1,18 @@
-package org.senkbeil.debugger.api.virtualmachines
+package org.scaladebugger.api.virtualmachines
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
-import org.senkbeil.debugger.api.lowlevel.breakpoints.{PendingBreakpointSupport, DummyBreakpointManager}
-import org.senkbeil.debugger.api.lowlevel.classes.{PendingClassUnloadSupport, DummyClassUnloadManager, PendingClassPrepareSupport, DummyClassPrepareManager}
-import org.senkbeil.debugger.api.lowlevel.events.{PendingEventHandlerSupport, DummyEventManager}
-import org.senkbeil.debugger.api.lowlevel.exceptions.{PendingExceptionSupport, DummyExceptionManager}
-import org.senkbeil.debugger.api.lowlevel.methods.{PendingMethodExitSupport, DummyMethodExitManager, PendingMethodEntrySupport, DummyMethodEntryManager}
-import org.senkbeil.debugger.api.lowlevel.monitors._
-import org.senkbeil.debugger.api.lowlevel.steps.{PendingStepSupport, DummyStepManager}
-import org.senkbeil.debugger.api.lowlevel.threads.{PendingThreadStartSupport, DummyThreadStartManager, PendingThreadDeathSupport, DummyThreadDeathManager}
-import org.senkbeil.debugger.api.lowlevel.vm.{PendingVMDeathSupport, DummyVMDeathManager}
-import org.senkbeil.debugger.api.lowlevel.watchpoints.{PendingModificationWatchpointSupport, DummyModificationWatchpointManager, PendingAccessWatchpointSupport, DummyAccessWatchpointManager}
-import org.senkbeil.debugger.api.profiles.ProfileManager
+import org.scaladebugger.api.lowlevel.breakpoints.{PendingBreakpointSupport, DummyBreakpointManager}
+import org.scaladebugger.api.lowlevel.classes.{PendingClassUnloadSupport, DummyClassUnloadManager, PendingClassPrepareSupport, DummyClassPrepareManager}
+import org.scaladebugger.api.lowlevel.events.{PendingEventHandlerSupport, DummyEventManager}
+import org.scaladebugger.api.lowlevel.exceptions.{PendingExceptionSupport, DummyExceptionManager}
+import org.scaladebugger.api.lowlevel.methods.{PendingMethodExitSupport, DummyMethodExitManager, PendingMethodEntrySupport, DummyMethodEntryManager}
+import org.scaladebugger.api.lowlevel.monitors._
+import org.scaladebugger.api.lowlevel.steps.{PendingStepSupport, DummyStepManager}
+import org.scaladebugger.api.lowlevel.threads.{PendingThreadStartSupport, DummyThreadStartManager, PendingThreadDeathSupport, DummyThreadDeathManager}
+import org.scaladebugger.api.lowlevel.vm.{PendingVMDeathSupport, DummyVMDeathManager}
+import org.scaladebugger.api.lowlevel.watchpoints.{PendingModificationWatchpointSupport, DummyModificationWatchpointManager, PendingAccessWatchpointSupport, DummyAccessWatchpointManager}
+import org.scaladebugger.api.profiles.ProfileManager
 
 class DummyScalaVirtualMachineSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory

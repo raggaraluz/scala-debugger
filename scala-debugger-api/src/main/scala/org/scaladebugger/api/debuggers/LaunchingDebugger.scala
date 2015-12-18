@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.api.debuggers
+package org.scaladebugger.api.debuggers
 
 import com.sun.jdi._
 import com.sun.jdi.connect.LaunchingConnector
-import org.senkbeil.debugger.api.profiles.ProfileManager
-import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
-import org.senkbeil.debugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
+import org.scaladebugger.api.profiles.ProfileManager
+import org.scaladebugger.api.utils.{LoopingTaskRunner, Logging}
+import org.scaladebugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
 
 import scala.collection.JavaConverters._
 
@@ -55,7 +55,7 @@ object LaunchingDebugger {
  * @param jvmOptions The options to provide to the new process' JVM
  * @param suspend If true, suspends the JVM until it connects to the debugger
  */
-class LaunchingDebugger private[debugger] (
+class LaunchingDebugger private[api] (
   private val virtualMachineManager: VirtualMachineManager,
   private val profileManager: ProfileManager,
   private val loopingTaskRunner: LoopingTaskRunner,

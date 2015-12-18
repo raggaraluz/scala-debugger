@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.exceptions
+package org.scaladebugger.api.lowlevel.exceptions
 
 /**
  * Represents an exception that occurred when attempting to create an exception

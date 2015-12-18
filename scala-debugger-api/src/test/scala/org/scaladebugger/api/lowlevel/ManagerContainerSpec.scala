@@ -1,22 +1,22 @@
-package org.senkbeil.debugger.api.lowlevel
+package org.scaladebugger.api.lowlevel
 
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.breakpoints.{BreakpointManager, BreakpointRequestInfo, DummyBreakpointManager, PendingBreakpointSupport}
-import org.senkbeil.debugger.api.lowlevel.classes._
-import org.senkbeil.debugger.api.lowlevel.events.EventManager.EventHandler
-import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
-import org.senkbeil.debugger.api.lowlevel.events._
-import org.senkbeil.debugger.api.lowlevel.exceptions.{DummyExceptionManager, ExceptionManager, ExceptionRequestInfo, PendingExceptionSupport}
-import org.senkbeil.debugger.api.lowlevel.methods._
-import org.senkbeil.debugger.api.lowlevel.monitors._
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.steps.{DummyStepManager, PendingStepSupport, StepManager, StepRequestInfo}
-import org.senkbeil.debugger.api.lowlevel.threads._
-import org.senkbeil.debugger.api.lowlevel.vm.{DummyVMDeathManager, PendingVMDeathSupport, VMDeathManager, VMDeathRequestInfo}
-import org.senkbeil.debugger.api.lowlevel.watchpoints._
+import org.scaladebugger.api.lowlevel.breakpoints.{BreakpointManager, BreakpointRequestInfo, DummyBreakpointManager, PendingBreakpointSupport}
+import org.scaladebugger.api.lowlevel.classes._
+import org.scaladebugger.api.lowlevel.events.EventManager.EventHandler
+import org.scaladebugger.api.lowlevel.events.EventType.EventType
+import org.scaladebugger.api.lowlevel.events._
+import org.scaladebugger.api.lowlevel.exceptions.{DummyExceptionManager, ExceptionManager, ExceptionRequestInfo, PendingExceptionSupport}
+import org.scaladebugger.api.lowlevel.methods._
+import org.scaladebugger.api.lowlevel.monitors._
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.steps.{DummyStepManager, PendingStepSupport, StepManager, StepRequestInfo}
+import org.scaladebugger.api.lowlevel.threads._
+import org.scaladebugger.api.lowlevel.vm.{DummyVMDeathManager, PendingVMDeathSupport, VMDeathManager, VMDeathRequestInfo}
+import org.scaladebugger.api.lowlevel.watchpoints._
 
 class ManagerContainerSpec extends FunSpec with Matchers
   with MockFactory with ParallelTestExecution

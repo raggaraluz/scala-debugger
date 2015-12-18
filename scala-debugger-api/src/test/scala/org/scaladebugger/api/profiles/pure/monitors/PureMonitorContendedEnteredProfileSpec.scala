@@ -1,18 +1,18 @@
-package org.senkbeil.debugger.api.profiles.pure.monitors
+package org.scaladebugger.api.profiles.pure.monitors
 
 import com.sun.jdi.event.{Event, EventQueue}
 import com.sun.jdi.request.EventRequestManager
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventManager
-import org.senkbeil.debugger.api.lowlevel.events.EventType.MonitorContendedEnteredEventType
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
-import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorContendedEnteredManager, MonitorContendedEnteredRequestInfo, StandardMonitorContendedEnteredManager}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
-import org.senkbeil.debugger.api.pipelines.Pipeline
-import org.senkbeil.debugger.api.utils.LoopingTaskRunner
+import org.scaladebugger.api.lowlevel.events.EventManager
+import org.scaladebugger.api.lowlevel.events.EventType.MonitorContendedEnteredEventType
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
+import org.scaladebugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
+import org.scaladebugger.api.lowlevel.monitors.{MonitorContendedEnteredManager, MonitorContendedEnteredRequestInfo, StandardMonitorContendedEnteredManager}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.properties.UniqueIdProperty
+import org.scaladebugger.api.pipelines.Pipeline
+import org.scaladebugger.api.utils.LoopingTaskRunner
 import test.JDIMockHelpers
 
 import scala.util.{Failure, Success}

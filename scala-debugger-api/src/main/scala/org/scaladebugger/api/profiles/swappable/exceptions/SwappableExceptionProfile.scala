@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.profiles.swappable.exceptions
+package org.scaladebugger.api.profiles.swappable.exceptions
 
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
-import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
-import org.senkbeil.debugger.api.profiles.traits.exceptions.ExceptionProfile
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
+import org.scaladebugger.api.profiles.traits.exceptions.ExceptionProfile
 
 import scala.util.Try
 

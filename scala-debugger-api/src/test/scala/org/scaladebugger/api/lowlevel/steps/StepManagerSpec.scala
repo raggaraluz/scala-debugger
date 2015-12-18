@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.lowlevel.steps
+package org.scaladebugger.api.lowlevel.steps
 
 import com.sun.jdi.ThreadReference
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 import test.TestStepManager
 
 import scala.util.{Try, Success}

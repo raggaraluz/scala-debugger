@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.api.lowlevel.events.filters
+package org.scaladebugger.api.lowlevel.events.filters
 
 import com.sun.jdi.event.BreakpointEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType
-import org.senkbeil.debugger.api.lowlevel.requests.properties.CustomProperty
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.events.EventType
+import org.scaladebugger.api.lowlevel.requests.properties.CustomProperty
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 import EventType._
 
@@ -21,7 +21,7 @@ class CustomPropertyFilterIntegrationSpec extends FunSpec with Matchers
 
   describe("CustomPropertyFilter") {
     it("should ignore all events whose custom property does not match the filter") {
-      val testClass = "org.senkbeil.debugger.test.filters.CustomPropertyFilter"
+      val testClass = "org.scaladebugger.test.filters.CustomPropertyFilter"
       val testFile = scalaClassStringToFileString(testClass)
 
       // The filter to apply (should ignore any breakpoint event without

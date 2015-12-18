@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.breakpoints
+package org.scaladebugger.api.lowlevel.breakpoints
 
 /**
  * Represents an exception that occurred when attempting to create a breakpoint

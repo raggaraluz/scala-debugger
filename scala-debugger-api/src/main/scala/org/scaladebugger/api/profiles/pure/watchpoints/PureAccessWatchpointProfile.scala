@@ -1,21 +1,21 @@
-package org.senkbeil.debugger.api.profiles.pure.watchpoints
+package org.scaladebugger.api.profiles.pure.watchpoints
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 import com.sun.jdi.event.AccessWatchpointEvent
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
-import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
-import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
-import org.senkbeil.debugger.api.lowlevel.watchpoints.{AccessWatchpointManager, NoFieldFound, StandardAccessWatchpointManager}
-import org.senkbeil.debugger.api.pipelines.Pipeline
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
-import org.senkbeil.debugger.api.profiles.traits.watchpoints.AccessWatchpointProfile
-import org.senkbeil.debugger.api.utils.Memoization
-import org.senkbeil.debugger.api.lowlevel.events.EventType.AccessWatchpointEventType
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
+import org.scaladebugger.api.lowlevel.events.{JDIEventArgument, EventManager}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.properties.UniqueIdProperty
+import org.scaladebugger.api.lowlevel.utils.JDIArgumentGroup
+import org.scaladebugger.api.lowlevel.watchpoints.{AccessWatchpointManager, NoFieldFound, StandardAccessWatchpointManager}
+import org.scaladebugger.api.pipelines.Pipeline
+import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.profiles.traits.watchpoints.AccessWatchpointProfile
+import org.scaladebugger.api.utils.Memoization
+import org.scaladebugger.api.lowlevel.events.EventType.AccessWatchpointEventType
 
 import scala.collection.JavaConverters._
 import scala.util.Try

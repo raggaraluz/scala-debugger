@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.test.filters
+package org.scaladebugger.test.filters
 
 /**
  * Used to verify the MinTriggerFilter.

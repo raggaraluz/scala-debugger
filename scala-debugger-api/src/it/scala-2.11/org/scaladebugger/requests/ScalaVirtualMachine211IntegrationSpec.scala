@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.requests
+package org.scaladebugger.requests
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
@@ -17,7 +17,7 @@ class ScalaVirtualMachine211IntegrationSpec extends FunSpec with Matchers
 
   describe("ScalaVirtualMachine for 2.11") {
     it("should return the breakpointable line numbers for the file") {
-      val testClass = "org.senkbeil.debugger.test.misc.AvailableLines"
+      val testClass = "org.scaladebugger.test.misc.AvailableLines"
 
       withVirtualMachine(testClass) { (s) =>
         // NOTE: In Scala 2.11, there is no breakpoint available on the object

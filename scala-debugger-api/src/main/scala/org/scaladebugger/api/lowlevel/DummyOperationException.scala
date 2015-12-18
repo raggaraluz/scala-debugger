@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel
+package org.scaladebugger.api.lowlevel
 
 /**
  * Represents an exception that is thrown by dummy managers (normally as the

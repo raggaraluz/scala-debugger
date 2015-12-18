@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.test.threads
+package org.scaladebugger.test.threads
 
 /**
  * Used to receive thread start events from the JVM.

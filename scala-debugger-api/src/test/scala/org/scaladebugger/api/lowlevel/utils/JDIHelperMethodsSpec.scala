@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.utils
+package org.scaladebugger.api.lowlevel.utils
 
 import com.sun.jdi._
 import org.scalamock.scalatest.MockFactory

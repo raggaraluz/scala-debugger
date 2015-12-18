@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.requests
+package org.scaladebugger.api.lowlevel.requests
 
 import com.sun.jdi.request.EventRequestManager
 

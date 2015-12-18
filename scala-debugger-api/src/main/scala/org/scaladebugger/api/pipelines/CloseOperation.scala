@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.pipelines
+package org.scaladebugger.api.pipelines
 
 /**
  * Represents an operation that closes the pipeline.

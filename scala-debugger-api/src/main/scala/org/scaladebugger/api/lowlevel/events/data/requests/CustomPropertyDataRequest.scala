@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.events.data.requests
+package org.scaladebugger.api.lowlevel.events.data.requests
 
-import org.senkbeil.debugger.api.lowlevel.events.JDIEventProcessor
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataRequest
-import org.senkbeil.debugger.api.lowlevel.events.data.processors.CustomPropertyDataRequestProcessor
+import org.scaladebugger.api.lowlevel.events.JDIEventProcessor
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataRequest
+import org.scaladebugger.api.lowlevel.events.data.processors.CustomPropertyDataRequestProcessor
 
 /**
  * Represents a local data request that will retrieve a custom property from

@@ -1,8 +1,8 @@
 package test
 
 import com.sun.jdi.request.MonitorContendedEnteredRequest
-import org.senkbeil.debugger.api.lowlevel.monitors.{MonitorContendedEnteredRequestInfo, MonitorContendedEnteredManager}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.monitors.{MonitorContendedEnteredRequestInfo, MonitorContendedEnteredManager}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 
 import scala.util.Try
 

@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.profiles.pure.info
+package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi.{Location, VirtualMachine}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.classes.ClassManager
+import org.scaladebugger.api.lowlevel.classes.ClassManager
 import test.JDIMockHelpers
 
 class PureMiscInfoProfileSpec extends FunSpec with Matchers

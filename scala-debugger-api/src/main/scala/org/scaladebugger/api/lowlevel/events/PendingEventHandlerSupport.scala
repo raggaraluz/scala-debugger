@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.events
+package org.scaladebugger.api.lowlevel.events
 
-import org.senkbeil.debugger.api.lowlevel.PendingRequestSupport
-import org.senkbeil.debugger.api.lowlevel.events.EventType.EventType
-import org.senkbeil.debugger.api.utils.PendingActionManager
+import org.scaladebugger.api.lowlevel.PendingRequestSupport
+import org.scaladebugger.api.lowlevel.events.EventType.EventType
+import org.scaladebugger.api.utils.PendingActionManager
 
 /**
  * Provides pending event capabilities to an existing event manager. Note that

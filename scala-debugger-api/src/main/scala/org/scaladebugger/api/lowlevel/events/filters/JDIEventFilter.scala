@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.events.filters
+package org.scaladebugger.api.lowlevel.events.filters
 
-import org.senkbeil.debugger.api.lowlevel.events.JDIEventArgument
+import org.scaladebugger.api.lowlevel.events.JDIEventArgument
 
 /** Represents a filter for a JDI Event. */
 trait JDIEventFilter extends JDIEventArgument {

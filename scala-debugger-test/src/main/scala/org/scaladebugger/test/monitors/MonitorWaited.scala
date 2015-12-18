@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.test.monitors
+package org.scaladebugger.test.monitors
 
 /**
  * Provides test of monitor waited used to verify reception of monitor waited

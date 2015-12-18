@@ -1,6 +1,6 @@
-package org.senkbeil.debugger.api.lowlevel.vm
+package org.scaladebugger.api.lowlevel.vm
 
-import org.senkbeil.debugger.api.utils.PendingActionManager
+import org.scaladebugger.api.utils.PendingActionManager
 
 /**
  * Provides pending vm death capabilities to an existing vm death

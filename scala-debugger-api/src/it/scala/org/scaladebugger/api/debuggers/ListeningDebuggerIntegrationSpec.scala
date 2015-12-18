@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.debuggers
+package org.scaladebugger.api.debuggers
 
 import java.net.ServerSocket
 import java.util.concurrent.atomic.AtomicInteger
@@ -64,7 +64,7 @@ class ListeningDebuggerIntegrationSpec  extends FunSpec with Matchers
 
   private def createProcess(): Unit = {
     jvmProcesses +:= spawn(
-      className = "org.senkbeil.debugger.test.misc.ListeningMain",
+      className = "org.scaladebugger.test.misc.ListeningMain",
       server = false,
       suspend = true,
       port = port

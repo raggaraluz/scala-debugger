@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.api.profiles.pure.classes
+package org.scaladebugger.api.profiles.pure.classes
 
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureClassUnloadProfileIntegrationSpec extends FunSpec with Matchers
@@ -22,7 +22,7 @@ class PureClassUnloadProfileIntegrationSpec extends FunSpec with Matchers
     // NOTE: It is not possible to trigger a class unload accurately due to the
     //       JVM's non-deterministic nature with garbage collection.
     ignore("should trigger when a class is unloaded") {
-      val testClass = "org.senkbeil.debugger.test.classes.ClassUnload"
+      val testClass = "org.scaladebugger.test.classes.ClassUnload"
 
       val detectedUnload = new AtomicBoolean(false)
 

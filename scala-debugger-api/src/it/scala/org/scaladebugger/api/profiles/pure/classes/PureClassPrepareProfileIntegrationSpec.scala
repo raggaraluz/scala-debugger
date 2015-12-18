@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.api.profiles.pure.classes
+package org.scaladebugger.api.profiles.pure.classes
 
 import java.util.concurrent.atomic.{AtomicInteger, AtomicBoolean}
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureClassPrepareProfileIntegrationSpec extends FunSpec with Matchers
@@ -20,9 +20,9 @@ class PureClassPrepareProfileIntegrationSpec extends FunSpec with Matchers
 
   describe("PureClassPrepareProfile") {
     it("should trigger when a class is loaded") {
-      val testClass = "org.senkbeil.debugger.test.classes.ClassPrepare"
+      val testClass = "org.scaladebugger.test.classes.ClassPrepare"
 
-      val expectedClassName = "org.senkbeil.debugger.test.classes.CustomClass"
+      val expectedClassName = "org.scaladebugger.test.classes.CustomClass"
       val classPrepareHit = new AtomicInteger(0)
 
       val s = DummyScalaVirtualMachine.newInstance()

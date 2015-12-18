@@ -1,21 +1,21 @@
-package org.senkbeil.debugger.api.profiles.pure.watchpoints
+package org.scaladebugger.api.profiles.pure.watchpoints
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 import com.sun.jdi.event.ModificationWatchpointEvent
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.events.EventType.ModificationWatchpointEventType
-import org.senkbeil.debugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
-import org.senkbeil.debugger.api.lowlevel.events.{EventManager, JDIEventArgument}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.properties.UniqueIdProperty
-import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
-import org.senkbeil.debugger.api.lowlevel.watchpoints.{ModificationWatchpointManager, StandardModificationWatchpointManager}
-import org.senkbeil.debugger.api.pipelines.Pipeline
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
-import org.senkbeil.debugger.api.profiles.traits.watchpoints.ModificationWatchpointProfile
-import org.senkbeil.debugger.api.utils.Memoization
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.lowlevel.events.EventType.ModificationWatchpointEventType
+import org.scaladebugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
+import org.scaladebugger.api.lowlevel.events.{EventManager, JDIEventArgument}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.properties.UniqueIdProperty
+import org.scaladebugger.api.lowlevel.utils.JDIArgumentGroup
+import org.scaladebugger.api.lowlevel.watchpoints.{ModificationWatchpointManager, StandardModificationWatchpointManager}
+import org.scaladebugger.api.pipelines.Pipeline
+import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.profiles.traits.watchpoints.ModificationWatchpointProfile
+import org.scaladebugger.api.utils.Memoization
 
 import scala.collection.JavaConverters._
 import scala.util.Try

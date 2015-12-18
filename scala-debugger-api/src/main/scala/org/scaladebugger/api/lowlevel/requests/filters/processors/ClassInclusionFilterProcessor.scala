@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.requests.filters.processors
+package org.scaladebugger.api.lowlevel.requests.filters.processors
 
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.lowlevel.requests.filters.{JDIRequestFilterProcessor, JDIRequestFilter, ClassInclusionFilter}
+import org.scaladebugger.api.lowlevel.requests.filters.{JDIRequestFilterProcessor, JDIRequestFilter, ClassInclusionFilter}
 
 /**
  * Represents a processor for the class exclusion filter.

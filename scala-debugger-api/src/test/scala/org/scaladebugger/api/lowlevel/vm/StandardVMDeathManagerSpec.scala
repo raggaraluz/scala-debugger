@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.vm
+package org.scaladebugger.api.lowlevel.vm
 
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -6,7 +6,7 @@ import com.sun.jdi.VirtualMachine
 import com.sun.jdi.request.{EventRequest, EventRequestManager, VMDeathRequest}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.requests.{JDIRequestArgument, JDIRequestProcessor}
+import org.scaladebugger.api.lowlevel.requests.{JDIRequestArgument, JDIRequestProcessor}
 
 import scala.util.{Failure, Success}
 

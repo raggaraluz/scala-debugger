@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.profiles.swappable.classes
+package org.scaladebugger.api.profiles.swappable.classes
 
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
-import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
-import org.senkbeil.debugger.api.profiles.traits.classes.ClassUnloadProfile
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
+import org.scaladebugger.api.profiles.traits.classes.ClassUnloadProfile
 
 import scala.util.Try
 

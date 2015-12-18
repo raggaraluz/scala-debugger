@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.test.events
+package org.scaladebugger.test.events
 
 /**
  * Provides test of hitting a breakpoint event in a loop, used to verify

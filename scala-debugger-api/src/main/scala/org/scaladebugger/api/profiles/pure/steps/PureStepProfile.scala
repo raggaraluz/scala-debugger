@@ -1,17 +1,17 @@
-package org.senkbeil.debugger.api.profiles.pure.steps
+package org.scaladebugger.api.profiles.pure.steps
 
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.event.StepEvent
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager}
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
-import org.senkbeil.debugger.api.lowlevel.requests.filters.ThreadFilter
-import org.senkbeil.debugger.api.lowlevel.steps.{StepManager, StandardStepManager}
-import org.senkbeil.debugger.api.lowlevel.utils.JDIArgumentGroup
-import org.senkbeil.debugger.api.pipelines.Pipeline.IdentityPipeline
-import org.senkbeil.debugger.api.profiles.traits.steps.StepProfile
-import org.senkbeil.debugger.api.lowlevel.events.EventType.StepEventType
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
+import org.scaladebugger.api.lowlevel.events.{JDIEventArgument, EventManager}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.filters.ThreadFilter
+import org.scaladebugger.api.lowlevel.steps.{StepManager, StandardStepManager}
+import org.scaladebugger.api.lowlevel.utils.JDIArgumentGroup
+import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.profiles.traits.steps.StepProfile
+import org.scaladebugger.api.lowlevel.events.EventType.StepEventType
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}

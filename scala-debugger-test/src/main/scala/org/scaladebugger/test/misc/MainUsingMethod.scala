@@ -1,10 +1,10 @@
-package org.senkbeil.debugger.test.misc
+package org.scaladebugger.test.misc
 
 /**
  * Provides an example of a main entrypoint using Scala's App instead of a
  * main method.
  *
- * @note Should have a class name of org.senkbeil.test.misc.MainUsingMethod
+ * @note Should have a class name of org.scaladebugger.test.misc.MainUsingMethod
  * @note Should have breakpoint lines on 10, 13, and 16
  */
 object MainUsingMethod {

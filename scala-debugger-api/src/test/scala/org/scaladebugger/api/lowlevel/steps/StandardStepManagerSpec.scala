@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.steps
+package org.scaladebugger.api.lowlevel.steps
 
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.request.{EventRequest, StepRequest, EventRequestManager}

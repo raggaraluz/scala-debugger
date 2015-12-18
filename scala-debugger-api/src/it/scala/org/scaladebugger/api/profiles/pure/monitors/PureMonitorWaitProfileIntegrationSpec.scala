@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.api.profiles.pure.monitors
+package org.scaladebugger.api.profiles.pure.monitors
 
 import java.util.concurrent.atomic.AtomicBoolean
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureMonitorWaitProfileIntegrationSpec extends FunSpec with Matchers
@@ -20,7 +20,7 @@ class PureMonitorWaitProfileIntegrationSpec extends FunSpec with Matchers
 
   describe("PureMonitorWaitProfile") {
     it("should trigger when a thread is about to wait on a monitor object") {
-      val testClass = "org.senkbeil.debugger.test.monitors.MonitorWait"
+      val testClass = "org.scaladebugger.test.monitors.MonitorWait"
 
       val detectedWait = new AtomicBoolean(false)
 

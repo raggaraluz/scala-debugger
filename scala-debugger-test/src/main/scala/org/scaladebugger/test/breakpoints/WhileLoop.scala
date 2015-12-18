@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.test.breakpoints
+package org.scaladebugger.test.breakpoints
 
 /**
  * Provides test of iterating through a while loop.
  *
- * @note Should have a class name of org.senkbeil.test.breakpoints.WhileLoop
+ * @note Should have a class name of org.scaladebugger.test.breakpoints.WhileLoop
  */
 object WhileLoop {
   def main(args: Array[String]) = {

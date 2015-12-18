@@ -1,11 +1,11 @@
-package org.senkbeil.debugger.api.debuggers
+package org.scaladebugger.api.debuggers
 
 import java.util.concurrent.atomic.AtomicBoolean
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers}
-import org.senkbeil.debugger.api.utils.Logging
+import org.scaladebugger.api.utils.Logging
 import test.TestUtilities
 
 class LaunchingDebuggerIntegrationSpec  extends FunSpec with Matchers
@@ -20,7 +20,7 @@ class LaunchingDebuggerIntegrationSpec  extends FunSpec with Matchers
     it("should be able to start a JVM and connect to it") {
       val launchedJvmConnected = new AtomicBoolean(false)
 
-      val className = "org.senkbeil.debugger.test.misc.LaunchingMain"
+      val className = "org.scaladebugger.test.misc.LaunchingMain"
       val classpath = jvmClasspath
       val jvmOptions = Seq("-classpath", classpath)
       val launchingDebugger = LaunchingDebugger(

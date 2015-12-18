@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.requests.filters.processors
+package org.scaladebugger.api.lowlevel.requests.filters.processors
 
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.lowlevel.requests.filters.{JDIRequestFilter, JDIRequestFilterProcessor, ThreadFilter}
+import org.scaladebugger.api.lowlevel.requests.filters.{JDIRequestFilter, JDIRequestFilterProcessor, ThreadFilter}
 
 /**
  * Represents a processor for the thread filter.

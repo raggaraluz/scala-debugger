@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.pipelines
+package org.scaladebugger.api.pipelines
 
 /**
  * Represents a single operation to be applied to data in a pipeline.

@@ -1,3 +1,3 @@
-package org.senkbeil.debugger.test.classes
+package org.scaladebugger.test.classes
 
 class CustomClass

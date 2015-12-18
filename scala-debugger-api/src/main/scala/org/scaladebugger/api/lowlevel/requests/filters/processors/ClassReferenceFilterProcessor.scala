@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.requests.filters.processors
+package org.scaladebugger.api.lowlevel.requests.filters.processors
 
 import com.sun.jdi.ReferenceType
 import com.sun.jdi.request._
-import org.senkbeil.debugger.api.lowlevel.requests.filters.{JDIRequestFilterProcessor, JDIRequestFilter, ClassReferenceFilter}
+import org.scaladebugger.api.lowlevel.requests.filters.{JDIRequestFilterProcessor, JDIRequestFilter, ClassReferenceFilter}
 
 /**
  * Represents a processor for the class reference filter.

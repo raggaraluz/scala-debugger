@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.threads
+package org.scaladebugger.api.lowlevel.threads
 
-import org.senkbeil.debugger.api.lowlevel.RequestInfo
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.RequestInfo
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 
 /**
  * Represents information about a thread death request.

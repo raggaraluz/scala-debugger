@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.test.steps
+package org.scaladebugger.test.steps
 
-import org.senkbeil.debugger.test.helpers.Stubs._
+import org.scaladebugger.test.helpers.Stubs._
 
 /**
  * Provides test of performing basic step in/out/over in Scala situations
  * involving iterations.
  *
- * @note Should have a class name of org.senkbeil.test.steps.BasicIterations
+ * @note Should have a class name of org.scaladebugger.test.steps.BasicIterations
  */
 object BasicIterations {
   def main(args: Array[String]) = {

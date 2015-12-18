@@ -1,11 +1,11 @@
-package org.senkbeil.debugger.api.lowlevel.events.data.processors
+package org.scaladebugger.api.lowlevel.events.data.processors
 
 import com.sun.jdi.event.Event
 import com.sun.jdi.request.EventRequest
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.data.requests.CustomPropertyDataRequest
-import org.senkbeil.debugger.api.lowlevel.events.data.results.CustomPropertyDataResult
+import org.scaladebugger.api.lowlevel.events.data.requests.CustomPropertyDataRequest
+import org.scaladebugger.api.lowlevel.events.data.results.CustomPropertyDataResult
 
 class CustomPropertyDataRequestProcessorSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory

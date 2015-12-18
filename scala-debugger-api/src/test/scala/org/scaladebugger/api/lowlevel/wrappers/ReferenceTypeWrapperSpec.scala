@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.wrappers
+package org.scaladebugger.api.lowlevel.wrappers
 
 import com.sun.jdi.{Field, ClassNotPreparedException, ReferenceType}
 import org.scalamock.scalatest.MockFactory

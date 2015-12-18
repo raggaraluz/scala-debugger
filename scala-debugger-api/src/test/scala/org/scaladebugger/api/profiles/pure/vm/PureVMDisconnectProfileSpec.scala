@@ -1,13 +1,13 @@
-package org.senkbeil.debugger.api.profiles.pure.vm
+package org.scaladebugger.api.profiles.pure.vm
 
 import com.sun.jdi.event.{EventQueue, Event, VMDisconnectEvent}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.{JDIEventArgument, EventManager}
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
-import org.senkbeil.debugger.api.pipelines.Pipeline
-import org.senkbeil.debugger.api.utils.LoopingTaskRunner
-import org.senkbeil.debugger.api.lowlevel.events.EventType.VMDisconnectEventType
+import org.scaladebugger.api.lowlevel.events.{JDIEventArgument, EventManager}
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
+import org.scaladebugger.api.pipelines.Pipeline
+import org.scaladebugger.api.utils.LoopingTaskRunner
+import org.scaladebugger.api.lowlevel.events.EventType.VMDisconnectEventType
 import test.JDIMockHelpers
 
 class PureVMDisconnectProfileSpec extends FunSpec with Matchers

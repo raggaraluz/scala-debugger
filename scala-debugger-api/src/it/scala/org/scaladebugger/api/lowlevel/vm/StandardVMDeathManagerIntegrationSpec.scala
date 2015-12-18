@@ -1,13 +1,13 @@
-package org.senkbeil.debugger.api.lowlevel.vm
+package org.scaladebugger.api.lowlevel.vm
 
 import java.util.concurrent.atomic.AtomicBoolean
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
+import org.scaladebugger.api.lowlevel.events.EventType._
 
 class StandardVMDeathManagerIntegrationSpec extends FunSpec with Matchers
   with ParallelTestExecution with VirtualMachineFixtures
@@ -20,7 +20,7 @@ class StandardVMDeathManagerIntegrationSpec extends FunSpec with Matchers
 
   describe("StandardVMDeathManager") {
     it("should trigger when a virtual machine dies") {
-      val testClass = "org.senkbeil.debugger.test.misc.MainUsingApp"
+      val testClass = "org.scaladebugger.test.misc.MainUsingApp"
 
       val detectedDeath = new AtomicBoolean(false)
 

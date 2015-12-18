@@ -1,7 +1,7 @@
-package org.senkbeil.debugger.api.lowlevel.classes
+package org.scaladebugger.api.lowlevel.classes
 
-import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
-import org.senkbeil.debugger.api.utils.Logging
+import org.scaladebugger.api.lowlevel.utils.JDIHelperMethods
+import org.scaladebugger.api.utils.Logging
 import com.sun.jdi.{Location, ReferenceType, VirtualMachine}
 
 import scala.collection.JavaConverters._

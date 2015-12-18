@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.test.misc
+package org.scaladebugger.test.misc
 
 /**
  * Used by the listening debugger to verify it can receive JVM connections.

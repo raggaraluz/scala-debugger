@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.utils
+package org.scaladebugger.api.lowlevel.utils
 
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.lowlevel.events.JDIEventArgument
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.lowlevel.events.JDIEventArgument
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 
 /**
  * Represents a collection of JDI arguments grouped based on whether they are

@@ -1,8 +1,8 @@
-package org.senkbeil.debugger.api.lowlevel.vm
+package org.scaladebugger.api.lowlevel.vm
 
 import com.sun.jdi.request.VMDeathRequest
-import org.senkbeil.debugger.api.lowlevel.DummyOperationException
-import org.senkbeil.debugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.DummyOperationException
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 
 import scala.util.{Failure, Try}
 

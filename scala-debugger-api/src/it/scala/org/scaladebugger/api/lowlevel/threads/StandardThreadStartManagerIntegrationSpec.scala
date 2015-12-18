@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.lowlevel.threads
+package org.scaladebugger.api.lowlevel.threads
 
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
@@ -6,8 +6,8 @@ import com.sun.jdi.event.ThreadStartEvent
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.EventType._
-import org.senkbeil.debugger.api.virtualmachines.DummyScalaVirtualMachine
+import org.scaladebugger.api.lowlevel.events.EventType._
+import org.scaladebugger.api.virtualmachines.DummyScalaVirtualMachine
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class StandardThreadStartManagerIntegrationSpec extends FunSpec with Matchers
@@ -21,7 +21,7 @@ class StandardThreadStartManagerIntegrationSpec extends FunSpec with Matchers
 
   describe("StandardThreadStartManager") {
     it("should trigger when a thread starts") {
-      val testClass = "org.senkbeil.debugger.test.threads.ThreadStart"
+      val testClass = "org.scaladebugger.test.threads.ThreadStart"
       val testFile = scalaClassStringToFileString(testClass)
 
       val threadStartCount = new AtomicInteger(0)

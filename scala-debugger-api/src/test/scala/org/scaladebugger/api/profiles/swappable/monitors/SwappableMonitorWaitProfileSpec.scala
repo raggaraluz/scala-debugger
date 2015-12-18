@@ -1,11 +1,11 @@
-package org.senkbeil.debugger.api.profiles.swappable.monitors
+package org.scaladebugger.api.profiles.swappable.monitors
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.JDIArgument
-import org.senkbeil.debugger.api.profiles.ProfileManager
-import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
-import org.senkbeil.debugger.api.profiles.traits.DebugProfile
+import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.profiles.ProfileManager
+import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
+import org.scaladebugger.api.profiles.traits.DebugProfile
 
 class SwappableMonitorWaitProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory

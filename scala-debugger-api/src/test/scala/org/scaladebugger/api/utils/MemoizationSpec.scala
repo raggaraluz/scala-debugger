@@ -1,4 +1,4 @@
-package org.senkbeil.debugger.api.utils
+package org.scaladebugger.api.utils
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{ParallelTestExecution, FunSpec, Matchers}

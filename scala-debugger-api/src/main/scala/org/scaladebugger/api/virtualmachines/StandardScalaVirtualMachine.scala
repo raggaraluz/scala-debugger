@@ -1,17 +1,17 @@
-package org.senkbeil.debugger.api.virtualmachines
+package org.scaladebugger.api.virtualmachines
 
 import java.util.concurrent.atomic.AtomicBoolean
 
-import org.senkbeil.debugger.api.lowlevel.ManagerContainer
-import org.senkbeil.debugger.api.lowlevel.breakpoints.PendingBreakpointSupport
-import org.senkbeil.debugger.api.lowlevel.exceptions.PendingExceptionSupport
-import org.senkbeil.debugger.api.lowlevel.methods.{PendingMethodExitSupport, PendingMethodEntrySupport}
-import org.senkbeil.debugger.api.lowlevel.utils.JDIHelperMethods
-import org.senkbeil.debugger.api.lowlevel.watchpoints.{PendingModificationWatchpointSupport, PendingAccessWatchpointSupport}
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
-import org.senkbeil.debugger.api.profiles.ProfileManager
-import org.senkbeil.debugger.api.profiles.swappable.SwappableDebugProfile
-import org.senkbeil.debugger.api.utils.{LoopingTaskRunner, Logging}
+import org.scaladebugger.api.lowlevel.ManagerContainer
+import org.scaladebugger.api.lowlevel.breakpoints.PendingBreakpointSupport
+import org.scaladebugger.api.lowlevel.exceptions.PendingExceptionSupport
+import org.scaladebugger.api.lowlevel.methods.{PendingMethodExitSupport, PendingMethodEntrySupport}
+import org.scaladebugger.api.lowlevel.utils.JDIHelperMethods
+import org.scaladebugger.api.lowlevel.watchpoints.{PendingModificationWatchpointSupport, PendingAccessWatchpointSupport}
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.profiles.ProfileManager
+import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
+import org.scaladebugger.api.utils.{LoopingTaskRunner, Logging}
 import com.sun.jdi._
 
 import scala.util.Try

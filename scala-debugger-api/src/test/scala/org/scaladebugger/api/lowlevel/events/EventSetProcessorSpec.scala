@@ -1,9 +1,9 @@
-package org.senkbeil.debugger.api.lowlevel.events
+package org.scaladebugger.api.lowlevel.events
 
 import com.sun.jdi.event.{EventIterator, EventSet, Event}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.senkbeil.debugger.api.lowlevel.events.data.JDIEventDataResult
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
 import EventType.EventType
 
 class EventSetProcessorSpec extends FunSpec with Matchers with MockFactory

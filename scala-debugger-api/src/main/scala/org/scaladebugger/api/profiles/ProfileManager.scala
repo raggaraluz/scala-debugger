@@ -1,12 +1,12 @@
-package org.senkbeil.debugger.api.profiles
+package org.scaladebugger.api.profiles
 
 import java.util.concurrent.ConcurrentHashMap
-import org.senkbeil.debugger.api.lowlevel.ManagerContainer
-import org.senkbeil.debugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.lowlevel.ManagerContainer
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
 
 import scala.collection.JavaConverters._
 
-import org.senkbeil.debugger.api.profiles.traits.DebugProfile
+import org.scaladebugger.api.profiles.traits.DebugProfile
 
 /**
  * Represents a manger for available debug profiles.
