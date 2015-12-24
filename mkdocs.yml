@@ -6,6 +6,8 @@ site_favicon: /img/favicon.ico
 
 repo_url: https://github.com/chipsenkbeil/scala-debugger-api/
 
+google_analytics: ['UA-71733200-1', 'scala-debugger.org']
+
 pages:
     - Home: index.md
     - Getting Started:
