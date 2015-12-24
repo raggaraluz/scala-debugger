@@ -3,3 +3,8 @@
     display: none;
 }
 
+/* Reshow the search option in the navbar */
+.nav.navbar-nav.navbar-right>li:first-child{
+    display: block;
+}
+
