@@ -1,0 +1,5 @@
+/* Hide the "Home" navigation link */
+.nav.navbar-nav>li:first-child{
+    display: none;
+}
+

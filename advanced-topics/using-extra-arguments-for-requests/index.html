@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Chip Senkbeil">
+        <link rel="canonical" href="http://www.scala-debugger.org/advanced-topics/using-extra-arguments-for-requests/">
+        <link rel="shortcut icon" href="../../../../img/favicon.ico">
+        
+
+	<title>Using Extra Arguments for Requests - Scala Debugger</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
+        <link href="../../css/extra.css" rel="stylesheet">
+        <link href="../../css/no-home.css" rel="stylesheet">
+        <link href="../../css/font-mfizz-2.2/font-mfizz.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">Scala Debugger</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="../..">Home</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Getting Started <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../../getting-started/what-is-a-debugger/">What is a Debugger?</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../getting-started/installation/">Installation</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../getting-started/available-debugger-connections/">Available Debugger Connections</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../getting-started/event-pipelines/">Event Pipelines</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../getting-started/working-with-breakpoints/">Working with Breakpoints</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../getting-started/stepping-through-code/">Stepping through Code</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../getting-started/watching-class-variables/">Watching class variables</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown active">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Advanced Topics <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../what-is-the-profile-system/">What is the Profile System?</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../what-is-the-low-level-api/">What is the Low-Level API?</a>
+</li>
+
+                        
+                            
+<li class="active">
+    <a href="./">Using Extra Arguments for Requests</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../making-requests-early/">Making Requests Early</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Cookbook <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../../cookbook/creating-a-launching-debugger/">Creating a Launching Debugger</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../cookbook/creating-an-attaching-debugger/">Creating an Attaching Debugger</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../cookbook/creating-a-listening-debugger/">Creating a Listening Debugger</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../cookbook/creating-a-breakpoint/">Creating a Breakpoint</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../cookbook/stepping-over-a-line-of-code/">Stepping over a Line of Code</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../cookbook/watching-modification-of-a-class-variable/">Watching Modification of a Class Variable</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Scaladoc <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../../external/scaladoc-2.10/">Scaladoc 2.10</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../external/scaladoc-2.11/">Scaladoc 2.11</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../../about/roadmap/">Roadmap</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../about/release-notes/">Release Notes</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../about/contributing/">Contributing</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../about/license/">License</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                </ul>
+            
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                
+                    <li >
+                        <a rel="next" href="../what-is-the-low-level-api/">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="../making-requests-early/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a href="https://github.com/chipsenkbeil/scala-debugger-api/">
+                            
+                                <i class="fa fa-github"></i>
+                            
+                            GitHub
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#using-extra-arguments-for-requests">Using Extra Arguments for Requests</a></li>
+        
+            <li><a href="#overview">Overview</a></li>
+        
+            <li><a href="#request-arguments">Request Arguments</a></li>
+        
+            <li><a href="#event-arguments">Event Arguments</a></li>
+        
+    
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="using-extra-arguments-for-requests">Using Extra Arguments for Requests<a class="headerlink" href="#using-extra-arguments-for-requests" title="Permanent link">&para;</a></h1>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>With both profiles and the low-level API, you are able to provide extra
+arguments in the form of <code>JDIArgument</code> or one of its derivatives:
+<code>JDIRequestArgument</code> or <code>JDIEventArgument</code>. The extra arguments are used to
+set additional configuration options on requests as well as provide additional
+filtering and logic when receiving events.</p>
+<p>Methods like <code>onBreakpoint</code> and <code>createBreakpointRequest</code> accept a variable
+number of extra arguments at the end of the method (defaulting to no extra
+arguments).</p>
+<pre><code class="scala">val s: ScalaVirtualMachine = /* some virtual machine */
+
+// Set a custom property accessible on the request object AND limit reporting
+// to the first three occurrences
+s.onBreakpoint(&quot;file.scala&quot;, 37, CustomProperty(&quot;key&quot;, &quot;value&quot;), MaxTriggerFilter(3))
+</code></pre>
+
+<h2 id="request-arguments">Request Arguments<a class="headerlink" href="#request-arguments" title="Permanent link">&para;</a></h2>
+<p><code>JDIRequestArgument</code> instances come in two flavors: <code>JDIRequestProperty</code> and
+<code>JDIRequestFilter</code>.</p>
+<p>Properties are used to configure information about a request such as its
+suspension level.</p>
+<p>Filters are used to narrow down what a request reports. In the case of a
+breakpoint request, you might limit the thread where the breakpoint can
+occur or the specific instance of a class that can trigger the event.</p>
+<h3 id="request-properties">Request Properties<a class="headerlink" href="#request-properties" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Case Class</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EnabledProperty</td>
+<td>Sets whether or not the request is enabled.</td>
+</tr>
+<tr>
+<td>SuspendPolicyProperty</td>
+<td>Sets the suspend policy of the request.</td>
+</tr>
+<tr>
+<td>CustomProperty</td>
+<td>Adds a key/value pair to the request that can be referenced when receiving events for that request.</td>
+</tr>
+<tr>
+<td>UniqueIdProperty</td>
+<td>Adds a unique id to the request via a custom property.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="request-filters">Request Filters<a class="headerlink" href="#request-filters" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Case Class</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ClassExclusionFilter</td>
+<td>Limits reporting of events to only classes not specified by this filter.</td>
+</tr>
+<tr>
+<td>ClassInclusionFilter</td>
+<td>Limits reporting of events to only classes specified by this filter.</td>
+</tr>
+<tr>
+<td>ClassReferenceFilter</td>
+<td>Similar to <code>ClassInclusionFilter</code>, but takes a <abbr title="Java Debugger Interface">JDI</abbr> <code>ReferenceType</code> instead of a string name.</td>
+</tr>
+<tr>
+<td>CountFilter</td>
+<td>Limits reporting to only occur after N-1 occurrences of the event. Furthermore, the event is only reported once.</td>
+</tr>
+<tr>
+<td>InstanceFilter</td>
+<td>Limits reporting of events to a specific instance of a class.</td>
+</tr>
+<tr>
+<td>SourceNameFilter</td>
+<td>Limits reporting of events to classes whose source name matches the specified pattern.</td>
+</tr>
+<tr>
+<td>ThreadFilter</td>
+<td>Limits reporting of events to the specific thread.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="event-arguments">Event Arguments<a class="headerlink" href="#event-arguments" title="Permanent link">&para;</a></h2>
+<p><code>JDIEventArgument</code> instances come in two flavors: <code>JDIEventDataRequest</code> and
+<code>JDIEventFilter</code>.</p>
+<p>Data requests are used to collect information from an event and its
+associated request and include it in callbacks and pipelines that expect
+event data.</p>
+<p>Filters are used to narrow down which events trigger callbacks and get fed to
+pipelines. Common use cases include filtering based on a provided unique id
+or custom property to a request (as the associated request is available in an
+event).</p>
+<h3 id="event-data-request">Event Data Request<a class="headerlink" href="#event-data-request" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Case Class</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CustomPropertyDataRequest</td>
+<td>Retrieves a custom property from the request associated with the event.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="event-filter">Event Filter<a class="headerlink" href="#event-filter" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Case Class</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MaxTriggerFilter</td>
+<td>Limits triggering of event callbacks and pipelines to the first N events.</td>
+</tr>
+<tr>
+<td>MinTriggerFilter</td>
+<td>Limits triggering of event callbacks and pipelines to all but the first N events.</td>
+</tr>
+<tr>
+<td>MethodNameFilter</td>
+<td>Limits triggering of event callbacks and pipelines if they are locatable to only those whose method name matches.</td>
+</tr>
+<tr>
+<td>CustomPropertyFilter</td>
+<td>Limits triggering of event callbacks and pipelines to events whose requests contain a matching custom property.</td>
+</tr>
+<tr>
+<td>UniquePRopertyFilter</td>
+<td>Limits triggering of event callbacks and pipelines to events whose requests contain a matching unique id.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Case Class</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AndFilter</td>
+<td>Combines the truthiness of two other filters such that BOTH must allow the event.</td>
+</tr>
+<tr>
+<td>OrFilter</td>
+<td>Combines the truthiness of two other filters such that EITHER must allow the event.</td>
+</tr>
+<tr>
+<td>NotFilter</td>
+<td>Flips a filter such that an event is allowed only if the filter disallows the event.</td>
+</tr>
+</tbody>
+</table></div>
+            
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+                <p>Copyright &copy; 2015 <a href="http://chipsenkbeil.com">Chip Senkbeil</a>.</p>
+            
+            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Chip Senkbeil">
+        <link rel="canonical" href="http://www.scala-debugger.org/advanced-topics/what-is-the-profile-system/">
+        <link rel="shortcut icon" href="../../../../img/favicon.ico">
+        
+
+	<title>What is the Profile System? - Scala Debugger</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
+        <link href="../../css/extra.css" rel="stylesheet">
+        <link href="../../css/no-home.css" rel="stylesheet">
+        <link href="../../css/font-mfizz-2.2/font-mfizz.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">Scala Debugger</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="../..">Home</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Getting Started <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../../getting-started/what-is-a-debugger/">What is a Debugger?</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../getting-started/installation/">Installation</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../getting-started/available-debugger-connections/">Available Debugger Connections</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../getting-started/event-pipelines/">Event Pipelines</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../getting-started/working-with-breakpoints/">Working with Breakpoints</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../getting-started/stepping-through-code/">Stepping through Code</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../getting-started/watching-class-variables/">Watching class variables</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown active">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Advanced Topics <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li class="active">
+    <a href="./">What is the Profile System?</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../what-is-the-low-level-api/">What is the Low-Level API?</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../using-extra-arguments-for-requests/">Using Extra Arguments for Requests</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../making-requests-early/">Making Requests Early</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Cookbook <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../../cookbook/creating-a-launching-debugger/">Creating a Launching Debugger</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../cookbook/creating-an-attaching-debugger/">Creating an Attaching Debugger</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../cookbook/creating-a-listening-debugger/">Creating a Listening Debugger</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../cookbook/creating-a-breakpoint/">Creating a Breakpoint</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../cookbook/stepping-over-a-line-of-code/">Stepping over a Line of Code</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../cookbook/watching-modification-of-a-class-variable/">Watching Modification of a Class Variable</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Scaladoc <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../../external/scaladoc-2.10/">Scaladoc 2.10</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../external/scaladoc-2.11/">Scaladoc 2.11</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../../about/roadmap/">Roadmap</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../about/release-notes/">Release Notes</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../about/contributing/">Contributing</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../../about/license/">License</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                </ul>
+            
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                
+                    <li >
+                        <a rel="next" href="../../getting-started/watching-class-variables/">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="../what-is-the-low-level-api/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a href="https://github.com/chipsenkbeil/scala-debugger-api/">
+                            
+                                <i class="fa fa-github"></i>
+                            
+                            GitHub
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#what-is-the-profile-system">What is the Profile System?</a></li>
+        
+            <li><a href="#overview">Overview</a></li>
+        
+            <li><a href="#available-functionality">Available Functionality</a></li>
+        
+            <li><a href="#pure-profile">Pure Profile</a></li>
+        
+            <li><a href="#swappable-profile">Swappable Profile</a></li>
+        
+            <li><a href="#adding-your-own-profile">Adding your own profile</a></li>
+        
+    
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="what-is-the-profile-system">What is the Profile System?<a class="headerlink" href="#what-is-the-profile-system" title="Permanent link">&para;</a></h1>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The profile system in the Scala debugger API's way of distinguishing specific
+logic to handle breakpoints, steps, and other requests in Scala 2.10, Scala
+2.11, Scala 2.12, the Scala REPL, Java, and other scenarios.</p>
+<p>Currently, there are no specific profiles for Scala versions. Future plans
+include adding logic to better handle closures in Scala 2.10, 2.11, etc.</p>
+<h2 id="available-functionality">Available Functionality<a class="headerlink" href="#available-functionality" title="Permanent link">&para;</a></h2>
+<p>The <code>DebugProfile</code> trait provides a collection of higher-level methods that
+can be used to create <abbr title="Java Debugger Interface">JDI</abbr> requests and process incoming events using the
+<code>Pipeline</code> construct. Each profile implements the <code>DebugProfile</code> trait.</p>
+<h3 id="breakpoints">Breakpoints<a class="headerlink" href="#breakpoints" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onBreakpoint</td>
+<td>Attempts to create a breakpoint with the provided file and line number, returning a Try containing a pipeline of breakpoint events.</td>
+</tr>
+<tr>
+<td>onBreakpointWithData</td>
+<td>Attempts to create a breakpoint with the provided file and line number, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeBreakpoint</td>
+<td>Same as <code>onBreakpoint</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeBreakpointWithData</td>
+<td>Same as <code>onBreakpointWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="classes">Classes<a class="headerlink" href="#classes" title="Permanent link">&para;</a></h3>
+<h4 id="class-loading">Class Loading<a class="headerlink" href="#class-loading" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onClassPrepare</td>
+<td>Attempts to create a class prepare request (to receive an event whenever a class is loaded into the target JVM), returning a Try containing a pipeline of class prepare events.</td>
+</tr>
+<tr>
+<td>onClassPrepareWithData</td>
+<td>Attempts to create a class prepare request, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeClassPrepare</td>
+<td>Same as <code>onClassPrepare</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeClassPrepareWithData</td>
+<td>Same as <code>onClassPrepareWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note:</p>
+<p>The standard <code>ScalaVirtualMachine</code> already creates this request <strong>without</strong>
+any extra arguments; so, use of <code>onClassPrepare</code> will already be cached.</p>
+</div>
+<h4 id="class-unloading">Class Unloading<a class="headerlink" href="#class-unloading" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onClassUnload</td>
+<td>Attempts to create a class unload request (to receive an event whenever a class is unloaded from the target JVM), returning a Try containing a pipeline of class unload events.</td>
+</tr>
+<tr>
+<td>onClassUnloadWithData</td>
+<td>Attempts to create a class unload request, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeClassUnload</td>
+<td>Same as <code>onClassUnload</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeClassUnloadWithData</td>
+<td>Same as <code>onClassUnloadWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="event-only-listening">Event-only Listening<a class="headerlink" href="#event-only-listening" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onEvent</td>
+<td>Attempts to create a resuming event handler for the specified event type that feeds a pipeline of events for the specified event type.</td>
+</tr>
+<tr>
+<td>onEventWithData</td>
+<td>Attempts to create an event handler, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeEvent</td>
+<td>Same as <code>onEvent</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeEventWithData</td>
+<td>Same as <code>onEventWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Warning:</p>
+<p>There is currently no caching of event handler creation; so, each call to
+<code>onEvent</code> or its associated functions will create a new underlying event
+handler.</p>
+</div>
+<h3 id="exceptions">Exceptions<a class="headerlink" href="#exceptions" title="Permanent link">&para;</a></h3>
+<h4 id="specific-exceptions">Specific Exceptions<a class="headerlink" href="#specific-exceptions" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onException</td>
+<td>Attempts to create a exception request (to receive an event whenever the specified exception or subclass is thrown), returning a Try containing a pipeline of exception events.</td>
+</tr>
+<tr>
+<td>onExceptionWithData</td>
+<td>Attempts to create a exception request, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeException</td>
+<td>Same as <code>onException</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeExceptionWithData</td>
+<td>Same as <code>onExceptionWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="all-exceptions">All Exceptions<a class="headerlink" href="#all-exceptions" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onAllExceptions</td>
+<td>Attempts to create a exception request (to receive an event whenever any exception is thrown), returning a Try containing a pipeline of exception events.</td>
+</tr>
+<tr>
+<td>onAllExceptionsWithData</td>
+<td>Attempts to create a exception request, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeAllExceptions</td>
+<td>Same as <code>onAllExceptions</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeAllExceptionsWithData</td>
+<td>Same as <code>onAllExceptionsWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="info">Info<a class="headerlink" href="#info" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>availableLinesForFile</td>
+<td>Retrieves the line numbers that are breakpointable in the target JVM for the specified file.</td>
+</tr>
+<tr>
+<td>mainClassName</td>
+<td>Retrieves the name of the class that served as the entrypoint for the target JVM.</td>
+</tr>
+<tr>
+<td>commandLineArguments</td>
+<td>Retrieves the collection of arguments provided to the target JVM at startup.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h3>
+<h4 id="method-entry">Method Entry<a class="headerlink" href="#method-entry" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onMethodEntry</td>
+<td>Attempts to create a method entry request using the provided class and method name, returning a Try containing a pipeline of method entry events.</td>
+</tr>
+<tr>
+<td>onMethodEntryWithData</td>
+<td>Attempts to create a method entry request, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeMethodEntry</td>
+<td>Same as <code>onMethodEntry</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeMethodEntryWithData</td>
+<td>Same as <code>onMethodEntryWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="method-exit">Method Exit<a class="headerlink" href="#method-exit" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onMethodExit</td>
+<td>Attempts to create a method exit request using the provided class and method name, returning a Try containing a pipeline of method exit events.</td>
+</tr>
+<tr>
+<td>onMethodExitWithData</td>
+<td>Attempts to create a method exit request, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeMethodExit</td>
+<td>Same as <code>onMethodExit</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeMethodExitWithData</td>
+<td>Same as <code>onMethodExitWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="monitors">Monitors<a class="headerlink" href="#monitors" title="Permanent link">&para;</a></h3>
+<h4 id="monitor-contended-entered">Monitor Contended Entered<a class="headerlink" href="#monitor-contended-entered" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onMonitorContendedEntered</td>
+<td>Attempts to create a monitor contended entered request, returning a Try containing a pipeline of monitor contended entered events.</td>
+</tr>
+<tr>
+<td>onMonitorContendedEnteredWithData</td>
+<td>Attempts to create a monitor contended entered request, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeMonitorContendedEntered</td>
+<td>Same as <code>onMonitorContendedEntered</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeMonitorContendedEnteredWithData</td>
+<td>Same as <code>onMonitorContendedEnteredWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="monitor-contended-enter">Monitor Contended Enter<a class="headerlink" href="#monitor-contended-enter" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onMonitorContendedEnter</td>
+<td>Attempts to create a monitor contended enter request, returning a Try containing a pipeline of monitor contended enter events.</td>
+</tr>
+<tr>
+<td>onMonitorContendedEnterWithData</td>
+<td>Attempts to create a monitor contended enter request, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeMonitorContendedEnter</td>
+<td>Same as <code>onMonitorContendedEnter</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeMonitorContendedEnterWithData</td>
+<td>Same as <code>onMonitorContendedEnterWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="monitor-waited">Monitor Waited<a class="headerlink" href="#monitor-waited" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onMonitorWaited</td>
+<td>Attempts to create a monitor waited request, returning a Try containing a pipeline of monitor waited events.</td>
+</tr>
+<tr>
+<td>onMonitorWaitedWithData</td>
+<td>Attempts to create a monitor waited request, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeMonitorWaited</td>
+<td>Same as <code>onMonitorWaited</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeMonitorWaitedWithData</td>
+<td>Same as <code>onMonitorWaitedWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="monitor-wait">Monitor Wait<a class="headerlink" href="#monitor-wait" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onMonitorWait</td>
+<td>Attempts to create a monitor wait request, returning a Try containing a pipeline of monitor wait events.</td>
+</tr>
+<tr>
+<td>onMonitorWaitWithData</td>
+<td>Attempts to create a monitor wait request, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeMonitorWait</td>
+<td>Same as <code>onMonitorWait</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeMonitorWaitWithData</td>
+<td>Same as <code>onMonitorWaitWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="steps">Steps<a class="headerlink" href="#steps" title="Permanent link">&para;</a></h3>
+<h4 id="line-specific-steps">Line-specific steps<a class="headerlink" href="#line-specific-steps" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stepIntoLine</td>
+<td>Attempts to create a step request to step into the next line of code, returning a future with the result.</td>
+</tr>
+<tr>
+<td>stepIntoLineWithData</td>
+<td>Attempts to create a step request to step into the next line of code, returning a future with a tuple of (event, collection of data) where data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>stepOverLine</td>
+<td>Attempts to create a step request to step over the next line of code, returning a future with the result.</td>
+</tr>
+<tr>
+<td>stepOverLineWithData</td>
+<td>Attempts to create a step request to step over the next line of code, returning a future with a tuple of (event, collection of data) where data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>stepOutLine</td>
+<td>Attempts to create a step request to step out of the next line of code, returning a future with the result.</td>
+</tr>
+<tr>
+<td>stepOutLineWithData</td>
+<td>Attempts to create a step request to step out of the next line of code, returning a future with a tuple of (event, collection of data) where data is collected based on provided extra arguments.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="next-available-location-steps">Next available location steps<a class="headerlink" href="#next-available-location-steps" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stepIntoMin</td>
+<td>Attempts to create a step request to step into the next location, returning a future with the result.</td>
+</tr>
+<tr>
+<td>stepIntoMinWithData</td>
+<td>Attempts to create a step request to step into the next location, returning a future with a tuple of (event, collection of data) where data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>stepOverMin</td>
+<td>Attempts to create a step request to step over the next location, returning a future with the result.</td>
+</tr>
+<tr>
+<td>stepOverMinWithData</td>
+<td>Attempts to create a step request to step over the next location, returning a future with a tuple of (event, collection of data) where data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>stepOutMin</td>
+<td>Attempts to create a step request to step out of the next location, returning a future with the result.</td>
+</tr>
+<tr>
+<td>stepOutMinWithData</td>
+<td>Attempts to create a step request to step out of the next location, returning a future with a tuple of (event, collection of data) where data is collected based on provided extra arguments.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="event-only-listening_1">Event-only listening<a class="headerlink" href="#event-only-listening_1" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onStep</td>
+<td>Attempts to create a resuming event handler for the step events that feeds a pipeline of step events.</td>
+</tr>
+<tr>
+<td>onStepWithData</td>
+<td>Attempts to create a resumingevent handler for step events, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeStep</td>
+<td>Same as <code>onStep</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeStepWithData</td>
+<td>Same as <code>onStepWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Warning:</p>
+<p>There is currently no caching of event handler creation; so, each call to
+<code>onStep</code> or its associated functions will create a new underlying event
+handler.</p>
+</div>
+<h3 id="threads">Threads<a class="headerlink" href="#threads" title="Permanent link">&para;</a></h3>
+<h4 id="thread-death">Thread Death<a class="headerlink" href="#thread-death" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onThreadDeath</td>
+<td>Attempts to create a thread death request, returning a Try containing a pipeline of thread death events.</td>
+</tr>
+<tr>
+<td>onThreadDeathWithData</td>
+<td>Attempts to create a thread death request, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeThreadDeath</td>
+<td>Same as <code>onThreadDeath</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeThreadDeathWithData</td>
+<td>Same as <code>onThreadDeathWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="thread-start">Thread Start<a class="headerlink" href="#thread-start" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onThreadStart</td>
+<td>Attempts to create a thread start request, returning a Try containing a pipeline of thread start events.</td>
+</tr>
+<tr>
+<td>onThreadStartWithData</td>
+<td>Attempts to create a thread start request, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeThreadStart</td>
+<td>Same as <code>onThreadStart</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeThreadStartWithData</td>
+<td>Same as <code>onThreadStartWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="virtual-machine-status">Virtual Machine Status<a class="headerlink" href="#virtual-machine-status" title="Permanent link">&para;</a></h3>
+<h4 id="vm-start">VM Start<a class="headerlink" href="#vm-start" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onVMStart</td>
+<td>Attempts to create an event handler for vm start events, returning a Try containing a pipeline of vm start events.</td>
+</tr>
+<tr>
+<td>onVMStartWithData</td>
+<td>Attempts to create an event handler for vm start events, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeVMStart</td>
+<td>Same as <code>onVMStart</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeVMStartWithData</td>
+<td>Same as <code>onVMStartWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="vm-disconnect">VM Disconnect<a class="headerlink" href="#vm-disconnect" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onVMDisconnect</td>
+<td>Attempts to create an event handler for vm disconnect events, returning a Try containing a pipeline of vm disconnect events.</td>
+</tr>
+<tr>
+<td>onVMDisconnectWithData</td>
+<td>Attempts to create an event handler for vm disconnect events, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeVMDisconnect</td>
+<td>Same as <code>onVMDisconnect</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeVMDisconnectWithData</td>
+<td>Same as <code>onVMDisconnectWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="vm-death">VM Death<a class="headerlink" href="#vm-death" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onVMDeath</td>
+<td>Attempts to create a vm death request, returning a Try containing a pipeline of vm death events.</td>
+</tr>
+<tr>
+<td>onVMDeathWithData</td>
+<td>Attempts to create a vm death request, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeVMDeath</td>
+<td>Same as <code>onVMDeath</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeVMDeathWithData</td>
+<td>Same as <code>onVMDeathWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="watchpoints">Watchpoints<a class="headerlink" href="#watchpoints" title="Permanent link">&para;</a></h3>
+<h4 id="access-watchpoint">Access Watchpoint<a class="headerlink" href="#access-watchpoint" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onAccessWatchpoint</td>
+<td>Attempts to create a access watchpoint request for the specified class' field, returning a Try containing a pipeline of access watchpoint events.</td>
+</tr>
+<tr>
+<td>onAccessWatchpointWithData</td>
+<td>Attempts to create a access watchpoint request for the specified class' field, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeAccessWatchpoint</td>
+<td>Same as <code>onAccessWatchpoint</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeAccessWatchpointWithData</td>
+<td>Same as <code>onAccessWatchpointWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="modification-watchpoint">Modification Watchpoint<a class="headerlink" href="#modification-watchpoint" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onModificationWatchpoint</td>
+<td>Attempts to create a modification watchpoint request for the specified class' field, returning a Try containing a pipeline of modification watchpoint events.</td>
+</tr>
+<tr>
+<td>onModificationWatchpointWithData</td>
+<td>Attempts to create a modification watchpoint request for the specified class' field, returning a Try containing a pipeline of tuples in the form of (event, collection of data) where the data is collected based on provided extra arguments.</td>
+</tr>
+<tr>
+<td>onUnsafeModificationWatchpoint</td>
+<td>Same as <code>onModificationWatchpoint</code>, but throws an exception if an error occurs.</td>
+</tr>
+<tr>
+<td>onUnsafeModificationWatchpointWithData</td>
+<td>Same as <code>onModificationWatchpointWithData</code>, but throws an exception if an error occurs.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pure-profile">Pure Profile<a class="headerlink" href="#pure-profile" title="Permanent link">&para;</a></h2>
+<p>The pure profile is the default profile for the <code>ScalaVirtualMachine</code>. It adds
+no custom logic for any of the Scala versions; therefore, it should be able to
+work with Java code.</p>
+<p>The pure profile adds support for caching requests, which means calls to
+<code>onBreakpoint</code>, <code>onUnsafeBreakpoint</code>, etc. with the same arguments will use the
+same <abbr title="Java Debugger Interface">JDI</abbr> request underneath. This allows you to refer to the breakpoint in a
+more flowing manner like the following:</p>
+<pre><code class="scala">val s: ScalaVirtualMachine = /* some virtual machine */
+
+// Creates the breakpoint request for the first time, creates a pipeline to
+// receive breakpoint events
+s.onBreakpoint(&quot;myfile.scala&quot;, 37)
+  .map(_.location().lineNumber())
+  .foreach(l =&gt; println(s&quot;Reached line number $l&quot;))
+
+// Reuses the same breakpoint request, creates a pipeline to receive
+// breakpoint events
+s.onBreakpoint(&quot;myfile.scala&quot;, 37)
+  .map(_.location().sourcePath())
+  .foreach(p =&gt; println(s&quot;Breakpoint occurred in $p&quot;))
+</code></pre>
+
+<p>You can specifically reference the profile using its name:</p>
+<pre><code class="scala">val s: ScalaVirtualMachine = /* some virtual machine */
+
+// Use the ScalaVirtualMachine with the pure profile
+import org.scaladebugger.api.profiles.pure.PureDebugProfile
+s.withProfile(PureDebugProfile.Name).onBreakpoint(&quot;myfile.scala&quot;, 37)
+</code></pre>
+
+<h2 id="swappable-profile">Swappable Profile<a class="headerlink" href="#swappable-profile" title="Permanent link">&para;</a></h2>
+<p>The swappable profile is a different profile abstraction. Rather than
+providing specific debugger logic, this profile allows you to change which
+profile you are using automatically. The <code>ScalaVirtualMachine</code> class inherits
+from the <code>SwappableDebugProfile</code> trait, which is why <code>ScalaVirtualMachine</code> can
+change between different profiles.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>use</td>
+<td>Changes the current profile to the specified profile.</td>
+</tr>
+<tr>
+<td>withCurrentProfile</td>
+<td>Returns the current underlying profile.</td>
+</tr>
+<tr>
+<td>withProfile</td>
+<td>Returns the profile with the specified name.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="scala">// Inherits the SwappableDebugProfile trait
+val s: ScalaVirtualMachine = /* some virtual machine */
+
+// All future calls to the profile will route to the pure debug profile
+s.use(PureDebugProfile.Name)
+
+// This will be handled by the pure debug profile
+s.onBreakpoint(&quot;file.scala&quot;, 37)
+</code></pre>
+
+<h2 id="adding-your-own-profile">Adding your own profile<a class="headerlink" href="#adding-your-own-profile" title="Permanent link">&para;</a></h2>
+<p>While default profiles are available in the <code>ScalaVirtualMachine</code> by default,
+there may be times where you want/need to provide your own profile. This can be
+done by invoking the <code>register</code> function on the <code>ScalaVirtualMachine</code> class.</p>
+<pre><code class="scala">// Inherits the ProfileManager trait
+val s: ScalaVirtualMachine = /* some virtual machine */
+
+s.register(&quot;profile name&quot;, /* profile instance */)
+</code></pre></div>
+            
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+                <p>Copyright &copy; 2015 <a href="http://chipsenkbeil.com">Chip Senkbeil</a>.</p>
+            
+            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
