@@ -3,6 +3,7 @@ package org.scaladebugger.api.lowlevel.threads
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
 import com.sun.jdi.event.ThreadStartEvent
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -22,7 +23,7 @@ class StandardThreadStartManagerIntegrationSpec extends FunSpec with Matchers
   describe("StandardThreadStartManager") {
     it("should trigger when a thread starts") {
       val testClass = "org.scaladebugger.test.threads.ThreadStart"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val threadStartCount = new AtomicInteger(0)
 

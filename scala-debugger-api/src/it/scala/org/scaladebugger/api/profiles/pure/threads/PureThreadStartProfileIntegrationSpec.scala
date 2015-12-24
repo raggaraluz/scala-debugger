@@ -2,6 +2,7 @@ package org.scaladebugger.api.profiles.pure.threads
 
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -21,7 +22,7 @@ class PureThreadStartProfileIntegrationSpec extends FunSpec with Matchers
   describe("PureThreadStartProfile") {
     it("should trigger when a thread starts") {
       val testClass = "org.scaladebugger.test.threads.ThreadStart"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val threadStartCount = new AtomicInteger(0)
 

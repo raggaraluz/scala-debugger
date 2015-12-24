@@ -3,6 +3,7 @@ package org.scaladebugger.api.debuggers
 import java.net.ServerSocket
 import java.util.concurrent.atomic.AtomicInteger
 
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
@@ -41,7 +42,7 @@ class ListeningDebuggerIntegrationSpec  extends FunSpec with Matchers
       val currentConnectedCount = new AtomicInteger(0)
 
       // Start listening for JVM connections
-      val listeningDebugger = ListeningDebugger(address = address, port = port)
+      val listeningDebugger = ListeningDebugger(hostname = address, port = port)
       listeningDebugger.start(_ => currentConnectedCount.incrementAndGet())
 
       // Verify that our listening debugger can actually support multiple
@@ -63,7 +64,7 @@ class ListeningDebuggerIntegrationSpec  extends FunSpec with Matchers
   }
 
   private def createProcess(): Unit = {
-    jvmProcesses +:= spawn(
+    jvmProcesses +:= JDITools.spawn(
       className = "org.scaladebugger.test.misc.ListeningMain",
       server = false,
       suspend = true,

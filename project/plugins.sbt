@@ -16,3 +16,6 @@ addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
 // Used to ensure proper publish process is followed
 addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "0.5.0")
 
+// Used to provide unified documentation across modules
+addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.3")
+

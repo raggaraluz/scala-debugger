@@ -21,6 +21,12 @@ object EventManager {
    * Represents a JDI event and any associated data retrieved from it.
    */
   type EventAndData = (Event, Seq[JDIEventDataResult])
+
+  /**
+   * Represents the field in pipelines that contains the id of the event handler
+   * that is used to feed the event pipelines.
+   */
+  val EventHandlerIdMetadataField = "event-handler-id"
 }
 
 /**
@@ -131,7 +137,8 @@ trait EventManager {
   ): IdentityPipeline[EventAndData] = {
     val eventPipeline = Pipeline.newPipeline(
       classOf[EventAndData],
-      () => removeEventHandler(eventHandlerId)
+      () => removeEventHandler(eventHandlerId),
+      Map(EventManager.EventHandlerIdMetadataField -> eventHandlerId)
     )
 
     // Create a resuming event handler while providing our own id

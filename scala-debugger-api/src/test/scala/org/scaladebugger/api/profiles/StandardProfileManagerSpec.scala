@@ -4,13 +4,13 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
 import org.scaladebugger.api.profiles.traits.DebugProfile
 
-class ProfileManagerSpec extends FunSpec with Matchers with ParallelTestExecution
+class StandardProfileManagerSpec extends FunSpec with Matchers with ParallelTestExecution
   with MockFactory
 {
 
-  private val profileManager = new ProfileManager
+  private val profileManager = new StandardProfileManager
 
-  describe("ProfileManager") {
+  describe("StandardProfileManager") {
     describe("#register") {
       it("should return Some(profile) if the profile was registered") {
         val expected = Some(mock[DebugProfile])

@@ -1,6 +1,7 @@
 package org.scaladebugger.api.lowlevel.events.filters
 
 import com.sun.jdi.event.BreakpointEvent
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -21,7 +22,7 @@ class MaxTriggerFilterIntegrationSpec extends FunSpec with Matchers
   describe("MaxTriggerFilter") {
     it("should ignore all events for a handler after the first N using MaxTriggerFilter(N)") {
       val testClass = "org.scaladebugger.test.filters.MaxTriggerFilter"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       // The filter to apply (should ignore breakpoints after first three)
       val filter = MaxTriggerFilter(count = 3)

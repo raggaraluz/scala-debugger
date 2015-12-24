@@ -2,6 +2,7 @@ package org.scaladebugger.api.profiles.pure.threads
 
 import com.sun.jdi.event.{Event, EventQueue}
 import com.sun.jdi.request.EventRequestManager
+import org.scaladebugger.api.profiles.Constants
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.lowlevel.events.EventManager
@@ -249,6 +250,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
         pureThreadDeathProfile.setRequestId(TestRequestId)
 
         inSequence {
+          val eventHandlerIds = Seq("a", "b")
           inAnyOrder {
             val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
             val uniqueIdPropertyFilter =
@@ -273,15 +275,23 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
               .expects(TestRequestId, uniqueIdProperty +: arguments)
               .returning(Success(TestRequestId)).once()
 
-            (mockEventManager.addEventDataStream _)
-              .expects(ThreadDeathEventType, Seq(uniqueIdPropertyFilter))
-              .returning(Pipeline.newPipeline(
-                classOf[(Event, Seq[JDIEventDataResult])]
-              )).twice()
+            // NOTE: Pipeline adds an event handler id to its metadata
+            def newEventPipeline(id: String) = Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            ).withMetadata(Map(EventManager.EventHandlerIdMetadataField -> id))
+
+            eventHandlerIds.foreach(id => {
+              (mockEventManager.addEventDataStream _)
+                .expects(ThreadDeathEventType, Seq(uniqueIdPropertyFilter))
+                .returning(newEventPipeline(id)).once()
+            })
           }
 
           (mockThreadDeathManager.removeThreadDeathRequest _)
             .expects(TestRequestId).once()
+          eventHandlerIds.foreach(id => {
+            (mockEventManager.removeEventHandler _).expects(id).once()
+          })
         }
 
         val p1 = pureThreadDeathProfile.onThreadDeathWithData(arguments: _*)
@@ -289,6 +299,64 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
         p1.foreach(_.close())
         p2.foreach(_.close())
+      }
+
+      it("should remove the underlying request if close data says to do so") {
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureThreadDeathProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          val eventHandlerIds = Seq("a", "b")
+          inAnyOrder {
+            val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+            val uniqueIdPropertyFilter =
+              UniqueIdPropertyFilter(id = TestRequestId)
+
+            // Memoized request function first checks to make sure the cache
+            // has not been invalidated underneath (first call will always be
+            // empty since we have never created the request)
+            (mockThreadDeathManager.threadDeathRequestList _)
+              .expects()
+              .returning(Nil).once()
+            (mockThreadDeathManager.threadDeathRequestList _)
+              .expects()
+              .returning(Seq(TestRequestId)).once()
+
+            (mockThreadDeathManager.getThreadDeathRequestInfo _)
+              .expects(TestRequestId)
+              .returning(Some(ThreadDeathRequestInfo(TestRequestId, arguments))).once()
+
+            // NOTE: Expect the request to be created with a unique id
+            (mockThreadDeathManager.createThreadDeathRequestWithId _)
+              .expects(TestRequestId, uniqueIdProperty +: arguments)
+              .returning(Success(TestRequestId)).once()
+
+            // NOTE: Pipeline adds an event handler id to its metadata
+            def newEventPipeline(id: String) = Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            ).withMetadata(Map(EventManager.EventHandlerIdMetadataField -> id))
+
+            eventHandlerIds.foreach(id => {
+              (mockEventManager.addEventDataStream _)
+                .expects(ThreadDeathEventType, Seq(uniqueIdPropertyFilter))
+                .returning(newEventPipeline(id)).once()
+            })
+          }
+
+          (mockThreadDeathManager.removeThreadDeathRequest _)
+            .expects(TestRequestId).once()
+          eventHandlerIds.foreach(id => {
+            (mockEventManager.removeEventHandler _).expects(id).once()
+          })
+        }
+
+        val p1 = pureThreadDeathProfile.onThreadDeathWithData(arguments: _*)
+        val p2 = pureThreadDeathProfile.onThreadDeathWithData(arguments: _*)
+
+        p1.foreach(_.close(now = true, data = Constants.CloseRemoveAll))
       }
     }
   }

@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers}
-import org.scaladebugger.api.utils.Logging
+import org.scaladebugger.api.utils.{JDITools, Logging}
 import test.TestUtilities
 
 class LaunchingDebuggerIntegrationSpec  extends FunSpec with Matchers
@@ -21,7 +21,7 @@ class LaunchingDebuggerIntegrationSpec  extends FunSpec with Matchers
       val launchedJvmConnected = new AtomicBoolean(false)
 
       val className = "org.scaladebugger.test.misc.LaunchingMain"
-      val classpath = jvmClasspath
+      val classpath = JDITools.jvmClassPath
       val jvmOptions = Seq("-classpath", classpath)
       val launchingDebugger = LaunchingDebugger(
         className = className,

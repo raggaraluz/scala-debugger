@@ -2,6 +2,7 @@ package org.scaladebugger.api.profiles.pure.events
 
 import java.util.concurrent.atomic.AtomicInteger
 import com.sun.jdi.event.BreakpointEvent
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -22,7 +23,7 @@ class PureEventProfileIntegrationSpec extends FunSpec with Matchers
   describe("PureEventProfile") {
     it("should receive events for the specified event type") {
       val testClass = "org.scaladebugger.test.events.LoopingEvent"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
       val lineNumber1 = 13
       val lineNumber2 = 16
       val lineNumber3 = 19
@@ -57,7 +58,7 @@ class PureEventProfileIntegrationSpec extends FunSpec with Matchers
 
     it("should stop receiving events upon being closed") {
       val testClass = "org.scaladebugger.test.events.LoopingEvent"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
       val lineNumber1 = 13
       val lineNumber2 = 16
       val lineNumber3 = 19

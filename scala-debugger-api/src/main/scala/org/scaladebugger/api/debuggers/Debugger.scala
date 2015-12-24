@@ -3,7 +3,7 @@ package org.scaladebugger.api.debuggers
 import java.util.concurrent.ConcurrentHashMap
 
 import org.scaladebugger.api.utils.JDILoader
-import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
+import org.scaladebugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine}
 
 import scala.collection.JavaConverters._
 
@@ -87,7 +87,8 @@ trait Debugger {
    *
    * @return The new dummy (no-op) Scala virtual machine instance
    */
-  def newDummyScalaVirtualMachine(): ScalaVirtualMachine
+  def newDummyScalaVirtualMachine(): ScalaVirtualMachine =
+    DummyScalaVirtualMachine.newInstance()
 
   /**
    * Adds a new Scala virtual machine to use for pending operations. Essentially

@@ -3,6 +3,7 @@ package org.scaladebugger.api.profiles.pure.exceptions
 import java.util.concurrent.atomic.{AtomicInteger, AtomicBoolean}
 
 import com.sun.jdi.event.{BreakpointEvent, ExceptionEvent}
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -24,7 +25,7 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
     it("should be able to detect exceptions in try blocks") {
       val testClass =
         "org.scaladebugger.test.exceptions.InsideTryBlockException"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val detectedException = new AtomicBoolean(false)
       val expectedExceptionName =
@@ -52,7 +53,7 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
     it("should be able to detect exceptions in functional try calls") {
       val testClass =
         "org.scaladebugger.test.exceptions.InsideFunctionalTryException"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val detectedException = new AtomicBoolean(false)
       val expectedExceptionName =
@@ -80,7 +81,7 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
     it("should be able to detect exceptions outside of try blocks") {
       val testClass =
         "org.scaladebugger.test.exceptions.OutsideTryException"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val detectedException = new AtomicBoolean(false)
       val expectedExceptionName =

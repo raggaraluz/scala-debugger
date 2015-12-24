@@ -1,3 +1,4 @@
+import UnidocKeys._
 
 //
 // DEBUGGER API PROJECT CONFIGURATION
@@ -66,11 +67,9 @@ lazy val scalaDebuggerMacros = project
   .in(file("scala-debugger-macros"))
   .settings(Common.settings: _*)
   .settings(Macro.settings: _*)
-  .settings(
-    // Do not publish the macro project
-    publishArtifact := false,
-    publishLocal := {}
-  )
+  .settings(Seq(
+    name := "scala-debugger-macros"
+  ))
 
 //
 // MAIN PROJECT CONFIGURATION
@@ -78,10 +77,14 @@ lazy val scalaDebuggerMacros = project
 lazy val root = project
   .in(file("."))
   .settings(Common.settings: _*)
+  .settings(unidocSettings: _*)
   .settings(
     name := "scala-debugger",
     // Do not publish the aggregation project
     publishArtifact := false,
-    publishLocal := {}
+    publishLocal := {},
+    unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(
+      scalaDebuggerTest
+    )
   ).aggregate(scalaDebuggerApi, scalaDebuggerTest, scalaDebuggerMacros)
 

@@ -1,6 +1,7 @@
 package org.scaladebugger.api.profiles.pure.exceptions
 
 import com.sun.jdi.event.Event
+import org.scaladebugger.api.profiles.Constants
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.lowlevel.events.EventManager
@@ -384,6 +385,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
         pureExceptionProfile.setRequestId(TestRequestId)
 
         inSequence {
+          val eventHandlerIds = Seq("a", "b")
           inAnyOrder {
             val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
             val uniqueIdPropertyFilter =
@@ -406,15 +408,23 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
               uniqueIdProperty +: arguments
             ).returning(Success("")).once()
 
-            (mockEventManager.addEventDataStream _)
-              .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
-              .returning(Pipeline.newPipeline(
-                classOf[(Event, Seq[JDIEventDataResult])]
-              )).twice()
+            // NOTE: Pipeline adds an event handler id to its metadata
+            def newEventPipeline(id: String) = Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            ).withMetadata(Map(EventManager.EventHandlerIdMetadataField -> id))
+
+            eventHandlerIds.foreach(id => {
+              (mockEventManager.addEventDataStream _)
+                .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
+                .returning(newEventPipeline(id)).once()
+            })
           }
 
           (mockExceptionManager.removeExceptionRequestWithId _)
             .expects(TestRequestId).once()
+          eventHandlerIds.foreach(id => {
+            (mockEventManager.removeEventHandler _).expects(id).once()
+          })
         }
 
         val p1 = pureExceptionProfile.onExceptionWithData(
@@ -432,6 +442,75 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
 
         p1.foreach(_.close())
         p2.foreach(_.close())
+      }
+
+      it("should remove the underlying request if close data says to do so") {
+        val exceptionName = "some.exception"
+        val notifyCaught = true
+        val notifyUncaught = true
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureExceptionProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          val eventHandlerIds = Seq("a", "b")
+          inAnyOrder {
+            val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+            val uniqueIdPropertyFilter =
+              UniqueIdPropertyFilter(id = TestRequestId)
+
+            // Memoized request function first checks to make sure the cache
+            // has not been invalidated underneath (first call will always be
+            // empty since we have never created the request)
+            (mockExceptionManager.hasExceptionRequest _).expects(exceptionName)
+              .returning(false).once()
+            (mockExceptionManager.hasExceptionRequest _).expects(exceptionName)
+              .returning(true).once()
+
+            // NOTE: Expect the request to be created with a unique id
+            (mockExceptionManager.createExceptionRequestWithId _).expects(
+              TestRequestId,
+              exceptionName,
+              notifyCaught,
+              notifyUncaught,
+              uniqueIdProperty +: arguments
+            ).returning(Success("")).once()
+
+            // NOTE: Pipeline adds an event handler id to its metadata
+            def newEventPipeline(id: String) = Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            ).withMetadata(Map(EventManager.EventHandlerIdMetadataField -> id))
+
+            eventHandlerIds.foreach(id => {
+              (mockEventManager.addEventDataStream _)
+                .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
+                .returning(newEventPipeline(id)).once()
+            })
+          }
+
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(TestRequestId).once()
+          eventHandlerIds.foreach(id => {
+            (mockEventManager.removeEventHandler _).expects(id).once()
+          })
+        }
+
+        val p1 = pureExceptionProfile.onExceptionWithData(
+          exceptionName,
+          notifyCaught,
+          notifyUncaught,
+          arguments: _*
+        )
+        val p2 = pureExceptionProfile.onExceptionWithData(
+          exceptionName,
+          notifyCaught,
+          notifyUncaught,
+          arguments: _*
+        )
+
+        p1.foreach(_.close(now = true, data = Constants.CloseRemoveAll))
       }
     }
 
@@ -678,6 +757,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
         pureExceptionProfile.setRequestId(TestRequestId)
 
         inSequence {
+          val eventHandlerIds = Seq("a", "b")
           inAnyOrder {
             val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
             val uniqueIdPropertyFilter =
@@ -701,15 +781,23 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
               )
               .returning(Success("")).once()
 
-            (mockEventManager.addEventDataStream _)
-              .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
-              .returning(Pipeline.newPipeline(
-                classOf[(Event, Seq[JDIEventDataResult])]
-              )).twice()
+            // NOTE: Pipeline adds an event handler id to its metadata
+            def newEventPipeline(id: String) = Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            ).withMetadata(Map(EventManager.EventHandlerIdMetadataField -> id))
+
+            eventHandlerIds.foreach(id => {
+              (mockEventManager.addEventDataStream _)
+                .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
+                .returning(newEventPipeline(id)).once()
+            })
           }
 
           (mockExceptionManager.removeExceptionRequestWithId _)
             .expects(TestRequestId).once()
+          eventHandlerIds.foreach(id => {
+            (mockEventManager.removeEventHandler _).expects(id).once()
+          })
         }
 
         val p1 = pureExceptionProfile.onAllExceptionsWithData(
@@ -725,6 +813,73 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
 
         p1.foreach(_.close())
         p2.foreach(_.close())
+      }
+
+      it("should remove the underlying request if close data says to do so") {
+        val notifyCaught = true
+        val notifyUncaught = true
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureExceptionProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          val eventHandlerIds = Seq("a", "b")
+          inAnyOrder {
+            val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+            val uniqueIdPropertyFilter =
+              UniqueIdPropertyFilter(id = TestRequestId)
+
+            // Memoized request function first checks to make sure the cache
+            // has not been invalidated underneath (first call will always be
+            // empty since we have never created the request)
+            (mockExceptionManager.hasCatchallExceptionRequest _).expects()
+              .returning(false).once()
+            (mockExceptionManager.hasCatchallExceptionRequest _).expects()
+              .returning(true).once()
+
+            // NOTE: Expect the request to be created with a unique id
+            (mockExceptionManager.createCatchallExceptionRequestWithId _)
+              .expects(
+                TestRequestId,
+                notifyCaught,
+                notifyUncaught,
+                uniqueIdProperty +: arguments
+              )
+              .returning(Success("")).once()
+
+            // NOTE: Pipeline adds an event handler id to its metadata
+            def newEventPipeline(id: String) = Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            ).withMetadata(Map(EventManager.EventHandlerIdMetadataField -> id))
+
+            eventHandlerIds.foreach(id => {
+              (mockEventManager.addEventDataStream _)
+                .expects(ExceptionEventType, Seq(uniqueIdPropertyFilter))
+                .returning(newEventPipeline(id)).once()
+            })
+          }
+
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(TestRequestId).once()
+          eventHandlerIds.foreach(id => {
+            (mockEventManager.removeEventHandler _).expects(id).once()
+          })
+        }
+
+        val p1 = pureExceptionProfile.onAllExceptionsWithData(
+          notifyCaught,
+          notifyUncaught,
+          arguments: _*
+        )
+        val p2 = pureExceptionProfile.onAllExceptionsWithData(
+          notifyCaught,
+          notifyUncaught,
+          arguments: _*
+        )
+
+        p1.foreach(_.close(now = true, data = Constants.CloseRemoveAll))
       }
     }
   }

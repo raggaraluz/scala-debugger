@@ -2,9 +2,9 @@ package org.scaladebugger.api.debuggers
 
 import com.sun.jdi._
 import com.sun.jdi.connect.LaunchingConnector
-import org.scaladebugger.api.profiles.ProfileManager
-import org.scaladebugger.api.utils.{LoopingTaskRunner, Logging}
-import org.scaladebugger.api.virtualmachines.{DummyScalaVirtualMachine, ScalaVirtualMachine, StandardScalaVirtualMachine}
+import org.scaladebugger.api.profiles.{ProfileManager, StandardProfileManager}
+import org.scaladebugger.api.utils.{Logging, LoopingTaskRunner}
+import org.scaladebugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
 
 import scala.collection.JavaConverters._
 
@@ -30,7 +30,7 @@ object LaunchingDebugger {
     Bootstrap.virtualMachineManager()
   ) = new LaunchingDebugger(
     virtualMachineManager,
-    new ProfileManager,
+    new StandardProfileManager,
     new LoopingTaskRunner(),
     className,
     commandLineArguments,
@@ -184,14 +184,4 @@ class LaunchingDebugger private[api] (
     virtualMachineManager.launchingConnectors().asScala
       .find(_.name() == ConnectorClassString)
   }
-
-  /**
-   * Creates a new dummy Scala virtual machine instance that can be used to
-   * prepare pending requests to apply to the Scala virtual machines generated
-   * by the debugger once it starts.
-   *
-   * @return The new dummy (no-op) Scala virtual machine instance
-   */
-  override def newDummyScalaVirtualMachine(): ScalaVirtualMachine =
-    new DummyScalaVirtualMachine(profileManager)
 }

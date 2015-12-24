@@ -3,6 +3,7 @@ package org.scaladebugger.api.lowlevel.watchpoints
 import java.util.concurrent.atomic.AtomicBoolean
 
 import com.sun.jdi.event.{ClassPrepareEvent, BreakpointEvent, AccessWatchpointEvent}
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.lowlevel.events.EventType._
@@ -22,7 +23,7 @@ class StandardAccessWatchpointManagerIntegrationSpec extends FunSpec with Matche
   describe("StandardAccessWatchpointManager") {
     it("should be able to detect access to a field") {
       val testClass = "org.scaladebugger.test.watchpoints.AccessWatchpoint"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
 
       val className = "org.scaladebugger.test.watchpoints.SomeAccessClass"
       val fieldName = "field"

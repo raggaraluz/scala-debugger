@@ -3,6 +3,7 @@ package org.scaladebugger.api.debuggers
 import java.net.ServerSocket
 import java.util.concurrent.atomic.AtomicBoolean
 
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
@@ -53,7 +54,7 @@ class AttachingDebuggerIntegrationSpec  extends FunSpec with Matchers
       _port
     }
 
-    (port, spawn(
+    (port, JDITools.spawn(
       className = "org.scaladebugger.test.misc.AttachingMain",
       server = true,
       suspend = true,

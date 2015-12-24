@@ -3,6 +3,7 @@ package org.scaladebugger.api.profiles.pure.watchpoints
 import com.sun.jdi.VirtualMachine
 import com.sun.jdi.event.{Event, EventQueue}
 import com.sun.jdi.request.EventRequestManager
+import org.scaladebugger.api.profiles.Constants
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.lowlevel.classes.ClassManager
@@ -369,6 +370,7 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
         pureModificationWatchpointProfile.setRequestId(TestRequestId)
 
         inSequence {
+          val eventHandlerIds = Seq("a", "b")
           inAnyOrder {
             val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
             val uniqueIdPropertyFilter =
@@ -392,15 +394,23 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
               uniqueIdProperty +: arguments
             ).returning(Success("")).once()
 
-            (mockEventManager.addEventDataStream _)
-              .expects(ModificationWatchpointEventType, Seq(uniqueIdPropertyFilter))
-              .returning(Pipeline.newPipeline(
-                classOf[(Event, Seq[JDIEventDataResult])]
-              )).twice()
+            // NOTE: Pipeline adds an event handler id to its metadata
+            def newEventPipeline(id: String) = Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            ).withMetadata(Map(EventManager.EventHandlerIdMetadataField -> id))
+
+            eventHandlerIds.foreach(id => {
+              (mockEventManager.addEventDataStream _)
+                .expects(ModificationWatchpointEventType, Seq(uniqueIdPropertyFilter))
+                .returning(newEventPipeline(id)).once()
+            })
           }
 
           (mockModificationWatchpointManager.removeModificationWatchpointRequestWithId _)
             .expects(TestRequestId).once()
+          eventHandlerIds.foreach(id => {
+            (mockEventManager.removeEventHandler _).expects(id).once()
+          })
         }
 
         val p1 = pureModificationWatchpointProfile.onModificationWatchpointWithData(
@@ -416,6 +426,73 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
 
         p1.foreach(_.close())
         p2.foreach(_.close())
+      }
+
+      it("should remove the underlying request if close data says to do so") {
+        val className = "full.class.name"
+        val fieldName = "fieldName"
+        val arguments = Seq(mock[JDIRequestArgument])
+
+        // Set a known test id so we can validate the unique property is added
+        import scala.language.reflectiveCalls
+        pureModificationWatchpointProfile.setRequestId(TestRequestId)
+
+        inSequence {
+          val eventHandlerIds = Seq("a", "b")
+          inAnyOrder {
+            val uniqueIdProperty = UniqueIdProperty(id = TestRequestId)
+            val uniqueIdPropertyFilter =
+              UniqueIdPropertyFilter(id = TestRequestId)
+
+            // Memoized request function first checks to make sure the cache
+            // has not been invalidated underneath (first call will always be
+            // empty since we have never created the request)
+            (mockModificationWatchpointManager.hasModificationWatchpointRequest _)
+              .expects(className, fieldName)
+              .returning(false).once()
+            (mockModificationWatchpointManager.hasModificationWatchpointRequest _)
+              .expects(className, fieldName)
+              .returning(true).once()
+
+            // NOTE: Expect the request to be created with a unique id
+            (mockModificationWatchpointManager.createModificationWatchpointRequestWithId _).expects(
+              TestRequestId,
+              className,
+              fieldName,
+              uniqueIdProperty +: arguments
+            ).returning(Success("")).once()
+
+            // NOTE: Pipeline adds an event handler id to its metadata
+            def newEventPipeline(id: String) = Pipeline.newPipeline(
+              classOf[(Event, Seq[JDIEventDataResult])]
+            ).withMetadata(Map(EventManager.EventHandlerIdMetadataField -> id))
+
+            eventHandlerIds.foreach(id => {
+              (mockEventManager.addEventDataStream _)
+                .expects(ModificationWatchpointEventType, Seq(uniqueIdPropertyFilter))
+                .returning(newEventPipeline(id)).once()
+            })
+          }
+
+          (mockModificationWatchpointManager.removeModificationWatchpointRequestWithId _)
+            .expects(TestRequestId).once()
+          eventHandlerIds.foreach(id => {
+            (mockEventManager.removeEventHandler _).expects(id).once()
+          })
+        }
+
+        val p1 = pureModificationWatchpointProfile.onModificationWatchpointWithData(
+          className,
+          fieldName,
+          arguments: _*
+        )
+        val p2 = pureModificationWatchpointProfile.onModificationWatchpointWithData(
+          className,
+          fieldName,
+          arguments: _*
+        )
+
+        p1.foreach(_.close(now = true, data = Constants.CloseRemoveAll))
       }
     }
   }

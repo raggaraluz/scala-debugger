@@ -4,6 +4,7 @@ import org.scaladebugger.api.lowlevel.events.EventType
 import EventType.BreakpointEventType
 import com.sun.jdi.Value
 import com.sun.jdi.event.BreakpointEvent
+import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -24,7 +25,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
   describe("StackFrameWrapper") {
     it("should be able to analyze this object variables") {
       val testClass = "org.scaladebugger.test.misc.Variables"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
       val lastLine = 30
 
       val s = DummyScalaVirtualMachine.newInstance()
@@ -69,7 +70,7 @@ class StackFrameWrapperIntegrationSpec extends FunSpec with Matchers
 
     it("should be able to analyze local variables") {
       val testClass = "org.scaladebugger.test.misc.Variables"
-      val testFile = scalaClassStringToFileString(testClass)
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
       val lastLine = 30
 
       val s = DummyScalaVirtualMachine.newInstance()
