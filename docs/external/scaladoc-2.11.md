@@ -1,4 +1,4 @@
-# Scaladoc 2.10
+# Scaladoc 2.11
 
 ---
 
@@ -6,9 +6,9 @@
 
 Redirecting you to [here][redirect].
 
-[redirect]: http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.10/
+[redirect]: http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.11/
 
 <script>
-    window.location = "http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.10/"
+    window.location = "http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.11/"
 </script>
 
