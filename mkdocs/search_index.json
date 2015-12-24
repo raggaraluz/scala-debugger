@@ -492,17 +492,17 @@
         }, 
         {
             "location": "/external/scaladoc-2.11/", 
-            "text": "Scaladoc 2.10\n\n\n\n\nPlease Wait\n\n\nRedirecting you to \nhere\n.\n\n\n\n    window.location = \"http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.10/\"", 
+            "text": "Scaladoc 2.11\n\n\n\n\nPlease Wait\n\n\nRedirecting you to \nhere\n.\n\n\n\n    window.location = \"http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.11/\"", 
             "title": "Scaladoc 2.11"
         }, 
         {
-            "location": "/external/scaladoc-2.11/#scaladoc-210", 
+            "location": "/external/scaladoc-2.11/#scaladoc-211", 
             "text": "", 
-            "title": "Scaladoc 2.10"
+            "title": "Scaladoc 2.11"
         }, 
         {
             "location": "/external/scaladoc-2.11/#please-wait", 
-            "text": "Redirecting you to  here .  \n    window.location = \"http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.10/\"", 
+            "text": "Redirecting you to  here .  \n    window.location = \"http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.11/\"", 
             "title": "Please Wait"
         }, 
         {
