@@ -2,7 +2,7 @@
 
 ---
 
-## Version 1.0.0 (2015-??-??)
+## Version 1.0.0 (2015-12-23)
 
 - Added high-level pure profile
     - Implemented caching in pure profile traits
