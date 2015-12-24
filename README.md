@@ -7,7 +7,7 @@ Scala Debugger
 
 A simple debugger library for Scala. Tested on OpenJDK 7, Oracle JDK 7, and Oracle JDK 8. 
 - Visit the [main site](http://scala-debugger.org/) for more documentation.
-- Check out the [wiki](https://github.com/chipsenkbeil/scala-debugger-api/wiki) the current roadmap.
+- Check out the [wiki](https://github.com/chipsenkbeil/scala-debugger-api/wiki) for the current roadmap.
 
 Installing with SBT
 -------------------
