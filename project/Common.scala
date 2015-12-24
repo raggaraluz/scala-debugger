@@ -19,7 +19,7 @@ object Common {
       url("https://www.apache.org/licenses/LICENSE-2.0.html")
     ),
 
-    homepage := Some(url("http://www.senkbeil.org/")),
+    homepage := Some(url("http://scala-debugger.org")),
 
     // Default version when not cross-compiling
     scalaVersion := "2.10.5",
@@ -77,7 +77,7 @@ object Common {
         <developer>
           <id>senkwich</id>
           <name>Chip Senkbeil</name>
-          <url>http://www.senkbeil.org</url>
+          <url>http://www.chipsenkbeil.org</url>
         </developer>
       </developers>,
 
