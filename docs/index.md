@@ -105,7 +105,8 @@ See the [contributing][contributing] page for more information.
 ---
 
 <div class="h-center">
-    Site main page inspired by content from <a href="http://scalamock.org">ScalaMock</a>.
+    <p>Site main page inspired by content from <a href="http://scalamock.org">ScalaMock</a>.</p>
+    <p>Project proudly a member of <a href="https://github.com/ensime">ENSIME</a>.</p>
 </div>
 
 [installation]: /getting-started/installation/
