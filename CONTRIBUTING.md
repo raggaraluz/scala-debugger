@@ -22,6 +22,6 @@ All contributions are welcome! As a reminder, project is licensed under the
 6. Push your fork and [submit a pull request][pull_request].
 
 [license]: http://choosealicense.com/licenses/apache-2.0/
-[fork]: https://github.com/chipsenkbeil/scala-debugger#fork-destination-box
-[pull_request]: https://github.com/chipsenkbeil/scala-debugger/compare/
+[fork]: https://github.com/ensime/scala-debugger#fork-destination-box
+[pull_request]: https://github.com/ensime/scala-debugger/compare/
 
