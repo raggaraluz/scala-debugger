@@ -19,6 +19,6 @@ indicates new features, and a revision update indicates bug fixes.
 - Architect "extra argument" system
 - Create documentation website
 
-[wiki]: https://github.com/chipsenkbeil/scala-debugger-api/wiki
+[wiki]: https://github.com/ensime/scala-debugger/wiki
 *[JDI]: Java Debugger Interface
 

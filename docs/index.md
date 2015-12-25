@@ -81,7 +81,7 @@ All contributions are welcome! As a reminder, the project is licensed under the
     </div>
 
     <div class="col-md-3 col-md-offset-1 link-container v-center h-center spaced-col">
-        <a href="https://github.com/chipsenkbeil/scala-debugger-api/issues">
+        <a href="https://github.com/ensime/scala-debugger/issues">
             <i class="fa fa-thumbs-o-up large-icon vertical-center"></i>
             <i class="fa fa-thumbs-o-down large-icon vertical-center"></i>
             <h4>Issues</h4>
@@ -90,7 +90,7 @@ All contributions are welcome! As a reminder, the project is licensed under the
     </div>
 
     <div class="col-md-3 col-md-offset-1 link-container v-center h-center spaced-col">
-        <a href="https://github.com/chipsenkbeil/scala-debugger-api/pulls">
+        <a href="https://github.com/ensime/scala-debugger/pulls">
             <i class="fa fa-github-alt large-icon vertical-center"></i>
             <h4>Pull Requests</h4>
             <p class="black-text">Submit your own fixes and features here.</p>

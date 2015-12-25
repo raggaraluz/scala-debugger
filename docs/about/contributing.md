@@ -41,6 +41,6 @@ All contributions are welcome! As a reminder, project is licensed under the
   (and telnet) to connect and use the JVM process.
 
 [license]: http://choosealicense.com/licenses/apache-2.0/
-[fork]: https://github.com/chipsenkbeil/scala-debugger#fork-destination-box
-[pull_request]: https://github.com/chipsenkbeil/scala-debugger/compare/
+[fork]: https://github.com/ensime/scala-debugger#fork-destination-box
+[pull_request]: https://github.com/ensime/scala-debugger/compare/
 
