@@ -1,4 +1,5 @@
 package org.scaladebugger.api.lowlevel.events
+import acyclic.file
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
@@ -51,6 +52,16 @@ class DummyEventManagerSpec extends FunSpec with Matchers
         val expected = None
 
         val actual = eventManager.getEventHandler(TestHandlerId)
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#getAllEventHandlerInfo") {
+      it("should return an empty list") {
+        val expected = Nil
+
+        val actual = eventManager.getAllEventHandlerInfo
 
         actual should be (expected)
       }

@@ -1,16 +1,16 @@
 package org.scaladebugger.api.lowlevel.vm
+import acyclic.file
 
-import org.scaladebugger.api.lowlevel.PendingRequestSupport
 import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 import org.scaladebugger.api.utils.PendingActionManager
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{Success, Try}
 
 /**
  * Provides pending vm death capabilities to an existing
  * vm death manager.
  */
-trait PendingVMDeathSupport extends VMDeathManager with PendingRequestSupport {
+trait PendingVMDeathSupport extends PendingVMDeathSupportLike {
   /**
    * Represents the manager used to store pending vm death requests and
    * process them later.
@@ -22,7 +22,7 @@ trait PendingVMDeathSupport extends VMDeathManager with PendingRequestSupport {
    *
    * @return The collection of successfully-processed vm death requests
    */
-  def processAllPendingVMDeathRequests(): Seq[VMDeathRequestInfo] = {
+  override def processAllPendingVMDeathRequests(): Seq[VMDeathRequestInfo] = {
     pendingActionManager.processAllActions().map(_.data)
   }
 
@@ -31,7 +31,7 @@ trait PendingVMDeathSupport extends VMDeathManager with PendingRequestSupport {
    *
    * @return The collection of vm death requests
    */
-  def pendingVMDeathRequests: Seq[VMDeathRequestInfo] = {
+  override def pendingVMDeathRequests: Seq[VMDeathRequestInfo] = {
     pendingActionManager.getPendingActionData(_ => true)
   }
 

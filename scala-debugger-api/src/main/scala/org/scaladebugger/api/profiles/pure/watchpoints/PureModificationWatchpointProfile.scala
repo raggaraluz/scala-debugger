@@ -1,4 +1,5 @@
 package org.scaladebugger.api.profiles.pure.watchpoints
+import acyclic.file
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -11,12 +12,12 @@ import org.scaladebugger.api.lowlevel.events.{EventManager, JDIEventArgument}
 import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 import org.scaladebugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.scaladebugger.api.lowlevel.utils.JDIArgumentGroup
-import org.scaladebugger.api.lowlevel.watchpoints.{ModificationWatchpointManager, StandardModificationWatchpointManager}
+import org.scaladebugger.api.lowlevel.watchpoints._
 import org.scaladebugger.api.pipelines.Pipeline
 import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
-import org.scaladebugger.api.profiles.traits.watchpoints.ModificationWatchpointProfile
-import org.scaladebugger.api.utils.{MultiMap, Memoization}
 import org.scaladebugger.api.profiles.Constants._
+import org.scaladebugger.api.profiles.traits.watchpoints.ModificationWatchpointProfile
+import org.scaladebugger.api.utils.{Memoization, MultiMap}
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -28,6 +29,18 @@ import scala.util.Try
 trait PureModificationWatchpointProfile extends ModificationWatchpointProfile {
   protected val modificationWatchpointManager: ModificationWatchpointManager
   protected val eventManager: EventManager
+
+  /**
+   * Retrieves the collection of active and pending modification watchpoint requests.
+   *
+   * @return The collection of information on modification watchpoint requests
+   */
+  override def modificationWatchpointRequests: Seq[ModificationWatchpointRequestInfo] = {
+    modificationWatchpointManager.modificationWatchpointRequestList ++ (modificationWatchpointManager match {
+      case p: PendingModificationWatchpointSupportLike  => p.pendingModificationWatchpointRequests
+      case _                                            => Nil
+    })
+  }
 
   /**
    * Contains a mapping of request ids to associated event handler ids.

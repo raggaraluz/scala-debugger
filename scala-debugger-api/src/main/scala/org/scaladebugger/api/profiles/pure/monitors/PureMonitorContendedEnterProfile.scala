@@ -1,22 +1,23 @@
 package org.scaladebugger.api.profiles.pure.monitors
+import acyclic.file
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 import com.sun.jdi.event.MonitorContendedEnterEvent
 import org.scaladebugger.api.lowlevel.JDIArgument
-import org.scaladebugger.api.lowlevel.events.{EventManager, JDIEventArgument}
+import org.scaladebugger.api.lowlevel.events.EventType._
 import org.scaladebugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
-import org.scaladebugger.api.lowlevel.monitors.{MonitorContendedEnterManager, StandardMonitorContendedEnterManager}
+import org.scaladebugger.api.lowlevel.events.{EventManager, JDIEventArgument}
+import org.scaladebugger.api.lowlevel.monitors._
 import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 import org.scaladebugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.scaladebugger.api.lowlevel.utils.JDIArgumentGroup
 import org.scaladebugger.api.pipelines.Pipeline
 import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
-import org.scaladebugger.api.profiles.traits.monitors.MonitorContendedEnterProfile
-import org.scaladebugger.api.utils.{MultiMap, Memoization}
-import org.scaladebugger.api.lowlevel.events.EventType._
 import org.scaladebugger.api.profiles.Constants._
+import org.scaladebugger.api.profiles.traits.monitors.MonitorContendedEnterProfile
+import org.scaladebugger.api.utils.{Memoization, MultiMap}
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -42,6 +43,23 @@ trait PureMonitorContendedEnterProfile extends MonitorContendedEnterProfile {
     Seq[JDIArgument],
     AtomicInteger
   ]().asScala
+
+  /**
+   * Retrieves the collection of active and pending monitor contended enter
+   * requests.
+   *
+   * @return The collection of information on monitor contended enter requests
+   */
+  override def monitorContendedEnterRequests: Seq[MonitorContendedEnterRequestInfo] = {
+    val activeRequests = monitorContendedEnterManager.monitorContendedEnterRequestList.flatMap(
+      monitorContendedEnterManager.getMonitorContendedEnterRequestInfo
+    )
+
+    activeRequests ++ (monitorContendedEnterManager match {
+      case p: PendingMonitorContendedEnterSupportLike => p.pendingMonitorContendedEnterRequests
+      case _                                          => Nil
+    })
+  }
 
   /**
    * Constructs a stream of monitor contended enter events.

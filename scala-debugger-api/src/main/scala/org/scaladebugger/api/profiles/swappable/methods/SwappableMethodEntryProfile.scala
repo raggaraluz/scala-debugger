@@ -1,8 +1,10 @@
 package org.scaladebugger.api.profiles.swappable.methods
+import acyclic.file
 
 import org.scaladebugger.api.lowlevel.JDIArgument
+import org.scaladebugger.api.lowlevel.methods.MethodEntryRequestInfo
 import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
-import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
+import org.scaladebugger.api.profiles.swappable.SwappableDebugProfileManagement
 import org.scaladebugger.api.profiles.traits.methods.MethodEntryProfile
 
 import scala.util.Try
@@ -12,7 +14,7 @@ import scala.util.Try
  * invocation to another profile.
  */
 trait SwappableMethodEntryProfile extends MethodEntryProfile {
-  this: SwappableDebugProfile =>
+  this: SwappableDebugProfileManagement =>
 
   override def onMethodEntryWithData(
     className: String,
@@ -24,5 +26,9 @@ trait SwappableMethodEntryProfile extends MethodEntryProfile {
       methodName,
       extraArguments: _*
     )
+  }
+
+  override def methodEntryRequests: Seq[MethodEntryRequestInfo] = {
+    withCurrentProfile.methodEntryRequests
   }
 }

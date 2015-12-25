@@ -1,4 +1,5 @@
 package org.scaladebugger.api.profiles.swappable.classes
+import acyclic.file
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -18,6 +19,25 @@ class SwappableClassUnloadProfileSpec extends FunSpec with Matchers
   }
 
   describe("SwappableClassUnloadProfile") {
+    describe("#classUnloadRequests") {
+      it("should invoke the method on the underlying profile") {
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.classUnloadRequests _).expects().once()
+
+        swappableDebugProfile.classUnloadRequests
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.classUnloadRequests
+        }
+      }
+    }
+
     describe("#onClassUnloadWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])

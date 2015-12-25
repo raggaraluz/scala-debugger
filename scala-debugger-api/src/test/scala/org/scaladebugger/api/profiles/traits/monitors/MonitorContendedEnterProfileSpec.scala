@@ -1,6 +1,8 @@
 package org.scaladebugger.api.profiles.traits.monitors
+import acyclic.file
 
 import com.sun.jdi.event.MonitorContendedEnterEvent
+import org.scaladebugger.api.lowlevel.monitors.MonitorContendedEnterRequestInfo
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.lowlevel.JDIArgument
@@ -26,6 +28,8 @@ class MonitorContendedEnterProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[MonitorContendedEnterEventAndData]] = {
       Success(TestPipelineWithData)
     }
+
+    override def monitorContendedEnterRequests: Seq[MonitorContendedEnterRequestInfo] = ???
   }
 
   private val failMonitorContendedEnterProfile = new Object with MonitorContendedEnterProfile {
@@ -34,6 +38,8 @@ class MonitorContendedEnterProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[MonitorContendedEnterEventAndData]] = {
       Failure(TestThrowable)
     }
+
+    override def monitorContendedEnterRequests: Seq[MonitorContendedEnterRequestInfo] = ???
   }
 
   describe("MonitorContendedEnterProfile") {

@@ -1,4 +1,5 @@
 package org.scaladebugger.api.lowlevel.events
+//import acyclic.file
 
 import org.scaladebugger.api.lowlevel.events.EventType.EventType
 
@@ -88,4 +89,11 @@ class DummyEventManager extends EventManager {
    * Begins the processing of events from the virtual machine.
    */
   override def start(): Unit = {}
+
+  /**
+   * Retrieves information on all event handlers.
+   *
+   * @return The collection of information on all event handlers
+   */
+  override def getAllEventHandlerInfo: Seq[EventHandlerInfo] = Nil
 }

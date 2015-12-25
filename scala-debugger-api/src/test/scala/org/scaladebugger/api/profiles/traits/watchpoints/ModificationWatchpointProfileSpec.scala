@@ -1,6 +1,8 @@
 package org.scaladebugger.api.profiles.traits.watchpoints
+import acyclic.file
 
 import com.sun.jdi.event.ModificationWatchpointEvent
+import org.scaladebugger.api.lowlevel.watchpoints.ModificationWatchpointRequestInfo
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.lowlevel.JDIArgument
@@ -28,6 +30,8 @@ class ModificationWatchpointProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[ModificationWatchpointEventAndData]] = {
       Success(TestPipelineWithData)
     }
+
+    override def modificationWatchpointRequests: Seq[ModificationWatchpointRequestInfo] = ???
   }
 
   private val failModificationWatchpointProfile = new Object with ModificationWatchpointProfile {
@@ -38,6 +42,8 @@ class ModificationWatchpointProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[ModificationWatchpointEventAndData]] = {
       Failure(TestThrowable)
     }
+
+    override def modificationWatchpointRequests: Seq[ModificationWatchpointRequestInfo] = ???
   }
 
   describe("ModificationWatchpointProfile") {

@@ -1,4 +1,5 @@
 package org.scaladebugger.api.profiles.pure.exceptions
+import acyclic.file
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -7,7 +8,7 @@ import com.sun.jdi.event.ExceptionEvent
 import org.scaladebugger.api.lowlevel.JDIArgument
 import org.scaladebugger.api.lowlevel.events.{EventManager, JDIEventArgument}
 import org.scaladebugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
-import org.scaladebugger.api.lowlevel.exceptions.ExceptionManager
+import org.scaladebugger.api.lowlevel.exceptions.{PendingExceptionSupportLike, PendingExceptionSupport, ExceptionRequestInfo, ExceptionManager}
 import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 import org.scaladebugger.api.lowlevel.requests.properties.UniqueIdProperty
 import org.scaladebugger.api.lowlevel.utils.JDIArgumentGroup
@@ -44,6 +45,18 @@ trait PureExceptionProfile extends ExceptionProfile {
   ]().asScala
 
   /**
+   * Retrieves the collection of active and pending exceptions requests.
+   *
+   * @return The collection of information on exception requests
+   */
+  override def exceptionRequests: Seq[ExceptionRequestInfo] = {
+    exceptionManager.exceptionRequestList ++ (exceptionManager match {
+      case p: PendingExceptionSupportLike => p.pendingExceptionRequests
+      case _                              => Nil
+    })
+  }
+
+  /**
    * Constructs a stream of exception events for all exceptions.
    *
    * @param notifyCaught If true, exception events will be streamed when an
@@ -66,9 +79,11 @@ trait PureExceptionProfile extends ExceptionProfile {
       notifyUncaught,
       rArgs
     ))
+
+    val exceptionName = ExceptionRequestInfo.DefaultCatchallExceptionName
     newExceptionPipeline(
       requestId,
-      (null, notifyCaught, notifyUncaught, eArgs)
+      (exceptionName, notifyCaught, notifyUncaught, eArgs)
     )
   }
 
@@ -167,7 +182,26 @@ trait PureExceptionProfile extends ExceptionProfile {
         requestId
       },
       cacheInvalidFunc = (key: Key) => {
-        !exceptionManager.hasCatchallExceptionRequest
+        // Key notifyCaught, key notifyUncaught
+        val knc = key._1
+        val knu = key._2
+
+        // TODO: Remove hack to exclude unique id property for matches
+        val kea = key._3.filterNot(_.isInstanceOf[UniqueIdProperty])
+        val keas = kea.toSet
+
+        !exceptionRequests.exists {
+          case ExceptionRequestInfo(_, cn, nc, nu, ea) =>
+            // TODO: Support denying when same element multiple times as set
+            //       removes duplicates
+            val eas = ea.filterNot(_.isInstanceOf[UniqueIdProperty]).toSet
+            cn == ExceptionRequestInfo.DefaultCatchallExceptionName &&
+            nc == knc &&
+            nu == knu &&
+            // TODO: Improve checking elements
+            // Same elements in any order
+            eas == keas
+        }
       }
     )
   }

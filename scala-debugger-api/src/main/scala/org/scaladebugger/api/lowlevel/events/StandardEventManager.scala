@@ -1,15 +1,12 @@
 package org.scaladebugger.api.lowlevel.events
+//import acyclic.file
 
 import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
-import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
-import org.scaladebugger.api.pipelines.Pipeline
+import org.scaladebugger.api.lowlevel.events.misc.Resume
 import org.scaladebugger.api.utils.{MultiMap, LoopingTaskRunner, Logging}
 import com.sun.jdi.event.{EventQueue, EventSet, Event}
 
-import java.util.concurrent.ConcurrentHashMap
-
 import EventType._
-import scala.collection.JavaConverters._
 
 /**
  * Represents a manager for events coming in from a virtual machine.
@@ -28,7 +25,7 @@ class StandardEventManager(
   private val onExceptionResume: Boolean = true
 ) extends EventManager with Logging {
   /** Contains the events, associated handlers and their ids. */
-  private val eventHandlers = new MultiMap[EventType, EventHandler]
+  private val eventHandlers = new MultiMap[EventType, EventHandlerInfo]
 
   private var eventTaskId: Option[String] = None
 
@@ -69,7 +66,6 @@ class StandardEventManager(
    * Creates a new event set processor. Can be overridden.
    *
    * @param eventSet The event set to process
-   *
    * @return The new event set processor instance
    */
   protected def newEventSetProcessor(
@@ -101,7 +97,6 @@ class StandardEventManager(
    *                     a collection of retrieved data from the event
    * @param eventArguments The arguments used when determining whether or not to
    *                       invoke the event handler
-   *
    * @return The id associated with the event handler
    */
   override def addEventHandlerWithId(
@@ -126,7 +121,6 @@ class StandardEventManager(
    * @param eventHandler The event handler function to be wrapped
    * @param eventArguments The arguments used when determining whether or not to
    *                       invoke the event handler
-   *
    * @return The id associated with the wrapped event handler
    */
   protected def wrapAndAddEventHandler(
@@ -140,7 +134,16 @@ class StandardEventManager(
       newWrapperEventHandler(eventHandler, eventArguments)
 
     // Store the event handler with the filtering logic
-    eventHandlers.putWithId(eventHandlerId, eventType, wrapperEventHandler)
+    eventHandlers.putWithId(
+      eventHandlerId,
+      eventType,
+      EventHandlerInfo(
+        eventHandlerId,
+        eventType,
+        wrapperEventHandler,
+        eventArguments
+      )
+    )
 
     eventHandlerId
   }
@@ -154,7 +157,6 @@ class StandardEventManager(
    * @param eventArguments The arguments to use when determining if the event
    *                       handler should be invoked and what data to be
    *                       retrieved
-   *
    * @return The wrapper around the event handler
    */
   protected def newWrapperEventHandler(
@@ -167,9 +169,16 @@ class StandardEventManager(
     // Create a wrapper function that invokes the event handler only if the
     // filter processor yields a positive result, otherwise skip this handler
     (event: Event, data: Seq[JDIEventDataResult]) => {
+      val resumeFlag = eventArguments.collect {
+        case r: Resume => r
+      }.lastOption.map(_.value)
+
       val (passesFilters, data, _) = jdiEventArgumentProcessor.processAll(event)
-      if (passesFilters) eventHandler(event, data)
-      else true
+
+      if (passesFilters) {
+        val result = eventHandler(event, data)
+        resumeFlag.getOrElse(result)
+      } else true
     }
   }
 
@@ -178,13 +187,12 @@ class StandardEventManager(
    * event class.
    *
    * @param eventType The type of event whose functions to retrieve
-   *
    * @return The collection of event functions
    */
   override def getHandlersForEventType(
     eventType: EventType
   ) : Seq[EventHandler] = {
-    eventHandlers.get(eventType).getOrElse(Nil)
+    eventHandlers.get(eventType).map(_.map(_.eventHandler)).getOrElse(Nil)
   }
 
   /**
@@ -192,7 +200,6 @@ class StandardEventManager(
    * event class.
    *
    * @param eventType The type of event whose functions to retrieve
-   *
    * @return The collection of event functions
    */
   override def getHandlerIdsForEventType(eventType: EventType): Seq[String] = {
@@ -203,22 +210,29 @@ class StandardEventManager(
    * Retrieves the handler with the specified id.
    *
    * @param id The id of the handler to retrieve
-   *
    * @return Some event handler if found, otherwise None
    */
   override def getEventHandler(id: String): Option[EventHandler] = {
-    eventHandlers.getWithId(id)
+    eventHandlers.getWithId(id).map(_.eventHandler)
+  }
+
+  /**
+   * Retrieves information on all event handlers.
+   *
+   * @return The collection of information on all event handlers
+   */
+  override def getAllEventHandlerInfo: Seq[EventHandlerInfo] = {
+    eventHandlers.values
   }
 
   /**
    * Removes the event function from this manager.
    *
    * @param id The id of the event handler to remove
-   *
    * @return Some event handler if removed, otherwise None
    */
   override def removeEventHandler(id: String): Option[EventHandler] = {
-    eventHandlers.removeWithId(id)
+    eventHandlers.removeWithId(id).map(_.eventHandler)
   }
 
   // ==========================================================================

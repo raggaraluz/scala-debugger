@@ -1,6 +1,8 @@
 package org.scaladebugger.api.profiles.traits.classes
+import acyclic.file
 
 import com.sun.jdi.event.ClassUnloadEvent
+import org.scaladebugger.api.lowlevel.classes.ClassUnloadRequestInfo
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.lowlevel.JDIArgument
@@ -26,6 +28,8 @@ class ClassUnloadProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[ClassUnloadEventAndData]] = {
       Success(TestPipelineWithData)
     }
+
+    override def classUnloadRequests: Seq[ClassUnloadRequestInfo] = ???
   }
 
   private val failClassUnloadProfile = new Object with ClassUnloadProfile {
@@ -34,6 +38,8 @@ class ClassUnloadProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[ClassUnloadEventAndData]] = {
       Failure(TestThrowable)
     }
+
+    override def classUnloadRequests: Seq[ClassUnloadRequestInfo] = ???
   }
 
   describe("ClassUnloadProfile") {

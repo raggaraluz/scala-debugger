@@ -1,17 +1,19 @@
 package org.scaladebugger.api.lowlevel.events
+import acyclic.file
 
-import com.sun.jdi.event.{Event, EventSet, EventQueue}
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.{ParallelTestExecution, Matchers, FunSpec}
-
-import EventType._
+import com.sun.jdi.event.{Event, EventQueue, EventSet}
+import org.scaladebugger.api.lowlevel.events.EventType._
 import org.scaladebugger.api.lowlevel.events.data.{JDIEventDataProcessor, JDIEventDataRequest, JDIEventDataResult}
-import org.scaladebugger.api.lowlevel.events.filters.{JDIEventFilterProcessor, JDIEventFilter}
+import org.scaladebugger.api.lowlevel.events.filters.{JDIEventFilter, JDIEventFilterProcessor}
+import org.scaladebugger.api.lowlevel.events.misc.YesResume
 import org.scaladebugger.api.utils.LoopingTaskRunner
+import org.scalamock.scalatest.MockFactory
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class StandardEventManagerSpec extends FunSpec with Matchers with MockFactory
   with ParallelTestExecution with org.scalamock.matchers.Matchers
 {
+  private val TestHandlerId = java.util.UUID.randomUUID().toString
   private val mockEventQueue = mock[EventQueue]
   private val mockLoopingTaskRunner = mock[LoopingTaskRunner]
 
@@ -364,6 +366,36 @@ class StandardEventManagerSpec extends FunSpec with Matchers with MockFactory
       }
     }
 
+    describe("#getAllEventHandlerInfo") {
+      it("should return an empty collection if no handlers are found") {
+        val expected = Nil
+
+        val actual = eventManager.getAllEventHandlerInfo
+
+        actual should be (expected)
+      }
+
+      it("should return a collection of handler info for all available handlers") {
+        val expected = EventHandlerInfo(
+          TestHandlerId,
+          stub[EventType],
+          stub[EventManager#EventHandler]
+        )
+
+        eventManager.addEventHandlerFromInfo(expected)
+
+        val eventHandlerInfoList = eventManager.getAllEventHandlerInfo
+        val actual = eventHandlerInfoList.head
+
+        // NOTE: The event handler is wrapped, so we cannot use a simple
+        //       direct comparison
+        eventHandlerInfoList should have length (1)
+        actual.eventHandlerId should be (expected.eventHandlerId)
+        actual.eventType should be (expected.eventType)
+        actual.extraArguments should be (expected.extraArguments)
+      }
+    }
+
     describe("#removeEventHandler") {
       it("should return None if the handler is not found") {
         val expected = None
@@ -468,6 +500,35 @@ class StandardEventManagerSpec extends FunSpec with Matchers with MockFactory
         Seq(mockJdiEventFilter)
       )
 
+      val actual = wrapperEventHandler(mock[Event], Nil)
+
+      actual should be (expected)
+    }
+
+    it("should generate a wrapper that invokes the handler and uses the resume value if provided") {
+      val expected = true
+
+      val mockEventHandler = mock[EventManager#EventHandler]
+      val mockJdiEventFilterProcessor = mock[JDIEventFilterProcessor]
+      val mockJdiEventFilter = mock[JDIEventFilter]
+
+      // Filter -> processor, process() == true,
+      // invoke handler and return result of false
+      inSequence {
+        (mockJdiEventFilter.toProcessor _).expects()
+          .returning(mockJdiEventFilterProcessor).once()
+        (mockJdiEventFilterProcessor.process _).expects(*)
+          .returning(true).once()
+        (mockEventHandler.apply _).expects(*, *).returning(false).once()
+      }
+
+      val wrapperEventHandler = eventManager.newWrapperEventHandler(
+        mockEventHandler,
+        Seq(mockJdiEventFilter, YesResume)
+      )
+
+      // Result of invocation would normally be false, but overriden
+      // with YesResume
       val actual = wrapperEventHandler(mock[Event], Nil)
 
       actual should be (expected)
