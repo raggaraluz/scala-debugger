@@ -15,7 +15,16 @@ Installing with SBT
 
 Hosted on Maven Central and can be installed via the following:
 
-    libraryDependencies += "org.scala-debugger" %% "scala-debugger-api" % "1.0.0"
+```scala
+libraryDependencies += "org.scala-debugger" %% "scala-debugger-api" % "1.0.0"
+```
+    
+You also need to install the sbt plugin to make the Java Debugger Interface jar (tools.jar) available
+on your classpath when you are compiling and testing:
+
+```scala
+addSbtPlugin("org.scala-debugger" % "sbt-jdi-tools" % "1.0.0")
+```
 
 License
 -------
