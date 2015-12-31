@@ -325,6 +325,11 @@ scalaVirtualMachine.onUnsafeBreakpoint(fileName, lineNumber).foreach(breakpointE
 <pre><code class="scala">libraryDependencies += &quot;org.scala-debugger&quot; %% &quot;scala-debugger-api&quot; % &quot;1.0.0&quot;
 </code></pre>
 
+<p>To be able to compile code using the Java Debugger Interface, you need to also
+add this plugin to your <code>project/plugins.sbt</code> file:</p>
+<pre><code class="scala">addSbtPlugin(&quot;org.scala-debugger&quot; % &quot;sbt-jdi-tools&quot; % &quot;1.0.0&quot;)
+</code></pre>
+
 <p>See the <a href="./getting-started/installation/">installation page</a> for more information.</p>
 <hr />
 <h2 class="logo" id="documentation"><i class="fa fa-gears large-icon vertical-center"></i> Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
@@ -450,5 +455,5 @@ scalaVirtualMachine.onUnsafeBreakpoint(fileName, lineNumber).foreach(breakpointE
 
 <!--
 MkDocs version : 0.14.0
-Build Date UTC : 2015-12-25 03:55:08.536832
+Build Date UTC : 2015-12-31 16:23:25.808111
 -->
