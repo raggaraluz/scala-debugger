@@ -19,3 +19,5 @@ addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "0.5.0")
 // Used to provide unified documentation across modules
 addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.3")
 
+// Used to add tools.jar to sbt classpath
+addSbtPlugin("org.scala-debugger" % "sbt-jdi-tools" % "1.0.0")

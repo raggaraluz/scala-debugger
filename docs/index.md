@@ -22,6 +22,13 @@ When using sbt:
 libraryDependencies += "org.scala-debugger" %% "scala-debugger-api" % "1.0.0"
 ```
 
+To be able to compile code using the Java Debugger Interface, you need to also
+add this plugin to your `project/plugins.sbt` file:
+
+```scala
+addSbtPlugin("org.scala-debugger" % "sbt-jdi-tools" % "1.0.0")
+```
+
 See the [installation page][installation] for more information.
 
 ---
