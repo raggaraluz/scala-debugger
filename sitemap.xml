@@ -4,7 +4,7 @@
     
     <url>
      <loc>http://www.scala-debugger.org/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -13,43 +13,43 @@
         
     <url>
      <loc>http://www.scala-debugger.org/getting-started/what-is-a-debugger/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/getting-started/installation/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/getting-started/available-debugger-connections/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/getting-started/event-pipelines/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/getting-started/working-with-breakpoints/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/getting-started/stepping-through-code/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/getting-started/watching-class-variables/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -59,25 +59,25 @@
         
     <url>
      <loc>http://www.scala-debugger.org/advanced-topics/what-is-the-profile-system/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/advanced-topics/what-is-the-low-level-api/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/advanced-topics/using-extra-arguments-for-requests/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/advanced-topics/making-requests-early/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -87,37 +87,37 @@
         
     <url>
      <loc>http://www.scala-debugger.org/cookbook/creating-a-launching-debugger/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/cookbook/creating-an-attaching-debugger/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/cookbook/creating-a-listening-debugger/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/cookbook/creating-a-breakpoint/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/cookbook/stepping-over-a-line-of-code/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/cookbook/watching-modification-of-a-class-variable/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -127,13 +127,13 @@
         
     <url>
      <loc>http://www.scala-debugger.org/external/scaladoc-2.10/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/external/scaladoc-2.11/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -143,25 +143,25 @@
         
     <url>
      <loc>http://www.scala-debugger.org/about/roadmap/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/about/release-notes/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/about/contributing/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>http://www.scala-debugger.org/about/license/</loc>
-     <lastmod>2016-02-04</lastmod>
+     <lastmod>2016-02-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
