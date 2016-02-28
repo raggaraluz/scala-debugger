@@ -7,7 +7,7 @@ Scala Debugger
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ensime/scala-debugger)
 
 A simple debugger library for Scala. Tested on OpenJDK 7, Oracle JDK 7, and Oracle JDK 8. 
-- Visit the [main site](http://scala-debugger.org/) for more documentation.
+- Visit the [main site](https://scala-debugger.org/) for more documentation.
 - Check out the [wiki](https://github.com/ensime/scala-debugger/wiki) for the current roadmap.
 
 Installing with SBT
