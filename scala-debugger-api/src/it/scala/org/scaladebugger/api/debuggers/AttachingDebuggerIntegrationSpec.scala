@@ -7,12 +7,13 @@ import java.util.concurrent.atomic.AtomicBoolean
 import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Seconds, Span}
-import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.scalatest.{ParallelTestExecution, BeforeAndAfter, FunSpec, Matchers}
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class AttachingDebuggerIntegrationSpec extends FunSpec with Matchers
   with BeforeAndAfter with VirtualMachineFixtures
   with TestUtilities with Eventually
+  with ParallelTestExecution
 {
   implicit override val patienceConfig = PatienceConfig(
     timeout = scaled(Span(5, Seconds)),
