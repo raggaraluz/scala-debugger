@@ -13,17 +13,20 @@ cache:
     - /drone/.sbt/launchers
 
 build:
-  image: ensime/ensime:latest
+  image: ensime/ensime:v2.x
   pull: true
   environment:
+    - CACHE_DIR="/drone"
     - SCALATEST_SPAN_SCALE_FACTOR=10
-    - EXTRA_SBT_OPT=""
   commands:
-    - cp -a /drone/.coursier /root
-    - cp -a /drone/.sbt /root
-    - rm -rf /drone/.coursier
-    - rm -rf /drone/.sbt
-    - sbt ++$SCALA_VERSION $EXTRA_SBT_OPT "$TEST_SUITE"
-    - cp -a /root/.coursier /root
-    - cp -a /root/.sbt /root
+    - mkdir -p $CACHE_DIR/.coursier
+    - mkdir -p $CACHE_DIR/.sbt
+    - cp -a $CACHE_DIR/.coursier $HOME
+    - cp -a $CACHE_DIR/.sbt $HOME
+    - rm -rf $CACHE_DIR/.coursier
+    - rm -rf $CACHE_DIR/.sbt
+    - javac -version
+    - /usr/bin/sbt ++$SCALA_VERSION "$TEST_SUITE"
+    - cp -a $HOME/.coursier $CACHE_DIR
+    - cp -a $HOME/.sbt $CACHE_DIR
 
