@@ -1,0 +1,29 @@
+matrix:
+  SCALA_VERSION:
+    - 2.10.5
+    - 2.11.6
+  TEST_SUITE:
+    - test
+    - it:test
+
+cache:
+  mount:
+    - /drone/.coursier/cache/v1
+    - /drone/.sbt/boot
+    - /drone/.sbt/launchers
+
+build:
+  image: ensime/ensime:latest
+  pull: true
+  environment:
+    - SCALATEST_SPAN_SCALE_FACTOR=10
+    - EXTRA_SBT_OPT=""
+  commands:
+    - cp -a /drone/.coursier /root
+    - cp -a /drone/.sbt /root
+    - rm -rf /drone/.coursier
+    - rm -rf /drone/.sbt
+    - sbt ++$SCALA_VERSION $EXTRA_SBT_OPT "$TEST_SUITE"
+    - cp -a /root/.coursier /root
+    - cp -a /root/.sbt /root
+

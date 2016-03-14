@@ -14,8 +14,6 @@ object Api {
     parallelExecution in Test := true,
     testForkedParallel in Test := true,
 
-    // TODO: Determine why this causes multiple tests to fail (maybe processes
-    //       spawned are clashing?)
     // Run integration tests in parallel
     parallelExecution in IntegrationTest := true,
     testForkedParallel in IntegrationTest := true,
