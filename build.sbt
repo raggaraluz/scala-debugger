@@ -7,6 +7,7 @@ lazy val scalaDebuggerApi = project
   .in(file("scala-debugger-api"))
   .configs(IntegrationTest)
   .settings(Common.settings: _*)
+  .settings(Acyclic.settings: _*)
   .settings(Defaults.itSettings: _*)
   .settings(Api.settings: _*)
   .settings(name := "scala-debugger-api")
@@ -19,6 +20,7 @@ lazy val scalaDebuggerApi = project
 lazy val scalaDebuggerTest = project
   .in(file("scala-debugger-test"))
   .settings(Common.settings: _*)
+  .settings(Acyclic.settings: _*)
   .settings(
     // Do not publish the test project
     publishArtifact := false,
@@ -31,10 +33,9 @@ lazy val scalaDebuggerTest = project
 lazy val scalaDebuggerMacros = project
   .in(file("scala-debugger-macros"))
   .settings(Common.settings: _*)
-  .settings(Macro.settings: _*)
-  .settings(Seq(
-    name := "scala-debugger-macros"
-  ))
+  .settings(Acyclic.settings: _*)
+  .settings(Macros.settings: _*)
+  .settings(name := "scala-debugger-macros")
 
 //
 // MAIN PROJECT CONFIGURATION
@@ -42,6 +43,7 @@ lazy val scalaDebuggerMacros = project
 lazy val root = project
   .in(file("."))
   .settings(Common.settings: _*)
+  .settings(Acyclic.settings: _*)
   .settings(unidocSettings: _*)
   .settings(
     name := "scala-debugger",

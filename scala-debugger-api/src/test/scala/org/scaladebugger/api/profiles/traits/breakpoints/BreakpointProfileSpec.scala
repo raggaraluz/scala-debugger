@@ -1,6 +1,8 @@
 package org.scaladebugger.api.profiles.traits.breakpoints
+import acyclic.file
 
 import com.sun.jdi.event.BreakpointEvent
+import org.scaladebugger.api.lowlevel.breakpoints.BreakpointRequestInfo
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.lowlevel.JDIArgument
@@ -28,6 +30,8 @@ class BreakpointProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[BreakpointEventAndData]] = {
       Success(TestPipelineWithData)
     }
+
+    override def breakpointRequests: Seq[BreakpointRequestInfo] = ???
   }
 
   private val failBreakpointProfile = new Object with BreakpointProfile {
@@ -38,6 +42,8 @@ class BreakpointProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[BreakpointEventAndData]] = {
       Failure(TestThrowable)
     }
+
+    override def breakpointRequests: Seq[BreakpointRequestInfo] = ???
   }
 
   describe("BreakpointProfile") {

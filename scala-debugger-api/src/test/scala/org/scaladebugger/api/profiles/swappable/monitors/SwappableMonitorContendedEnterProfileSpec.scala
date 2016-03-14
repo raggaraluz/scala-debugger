@@ -1,4 +1,5 @@
 package org.scaladebugger.api.profiles.swappable.monitors
+import acyclic.file
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -18,6 +19,25 @@ class SwappableMonitorContendedEnterProfileSpec extends FunSpec with Matchers
   }
 
   describe("SwappableMonitorContendedEnterProfile") {
+    describe("#monitorContendedEnterRequests") {
+      it("should invoke the method on the underlying profile") {
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.monitorContendedEnterRequests _).expects().once()
+
+        swappableDebugProfile.monitorContendedEnterRequests
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.monitorContendedEnterRequests
+        }
+      }
+    }
+
     describe("#onMonitorContendedEnterWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])

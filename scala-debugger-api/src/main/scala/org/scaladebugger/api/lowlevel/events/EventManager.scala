@@ -1,4 +1,5 @@
 package org.scaladebugger.api.lowlevel.events
+//import acyclic.file
 
 import com.sun.jdi.event.{Event, EventQueue, EventSet}
 import org.scaladebugger.api.lowlevel.events.EventType._
@@ -391,6 +392,13 @@ trait EventManager {
    * @return Some event handler if found, otherwise None
    */
   def getEventHandler(eventHandlerId: String): Option[EventHandler]
+
+  /**
+   * Retrieves information on all event handlers.
+   *
+   * @return The collection of information on all event handlers
+   */
+  def getAllEventHandlerInfo: Seq[EventHandlerInfo]
 
   /**
    * Removes the event function from this manager.

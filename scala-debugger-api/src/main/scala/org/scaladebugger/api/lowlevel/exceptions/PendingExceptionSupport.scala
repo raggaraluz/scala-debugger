@@ -1,6 +1,6 @@
 package org.scaladebugger.api.lowlevel.exceptions
+import acyclic.file
 
-import org.scaladebugger.api.lowlevel.PendingRequestSupport
 import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 import org.scaladebugger.api.utils.PendingActionManager
 
@@ -9,10 +9,7 @@ import scala.util.{Success, Try}
 /**
  * Provides pending exception capabilities to an existing exception manager.
  */
-trait PendingExceptionSupport
-  extends ExceptionManager
-  with PendingRequestSupport
-{
+trait PendingExceptionSupport extends PendingExceptionSupportLike {
   /**
    * Represents the manager used to store pending exception requests and process
    * them later.
@@ -24,7 +21,7 @@ trait PendingExceptionSupport
    *
    * @return The collection of successfully-processed exception requests
    */
-  def processAllPendingExceptionRequests(): Seq[ExceptionRequestInfo] = {
+  override def processAllPendingExceptionRequests(): Seq[ExceptionRequestInfo] = {
     pendingActionManager.processAllActions().map(_.data)
   }
 
@@ -33,7 +30,7 @@ trait PendingExceptionSupport
    *
    * @return The collection of exception request information
    */
-  def pendingExceptionRequests: Seq[ExceptionRequestInfo] = {
+  override def pendingExceptionRequests: Seq[ExceptionRequestInfo] = {
     pendingActionManager.getPendingActionData(_ => true)
   }
 
@@ -45,7 +42,7 @@ trait PendingExceptionSupport
    *
    * @return The collection of successfully-processed exception requests
    */
-  def processPendingExceptionRequestsForClass(
+  override def processPendingExceptionRequestsForClass(
     className: String
   ): Seq[ExceptionRequestInfo] = {
     pendingActionManager.processActions(_.data.className == className)
@@ -60,7 +57,7 @@ trait PendingExceptionSupport
    *
    * @return The collection of successfully-processed exception requests
    */
-  def pendingExceptionRequestsForClass(
+  override def pendingExceptionRequestsForClass(
     className: String
   ): Seq[ExceptionRequestInfo] = {
     pendingActionManager.getPendingActionData(_.data.className == className)
@@ -163,24 +160,6 @@ trait PendingExceptionSupport
         Success(requestId)
       case _: Throwable => result
     }
-  }
-
-  /**
-   * Removes the exception request used to catch all exceptions.
-   *
-   * @return True if the exception request was removed (if it existed),
-   *         otherwise false
-   */
-  abstract override def removeCatchallExceptionRequest(): Boolean = {
-    val result = super.removeCatchallExceptionRequest()
-
-    // Null is the class name for catchall exception requests
-    val pendingResult = pendingActionManager.removePendingActions(a =>
-      a.data.className == null
-    )
-
-    // True if we removed a real exception or any pending exceptions
-    result || pendingResult.nonEmpty
   }
 
   /**

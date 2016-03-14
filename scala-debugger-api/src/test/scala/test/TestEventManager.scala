@@ -1,6 +1,7 @@
 package test
+import acyclic.file
 
-import org.scaladebugger.api.lowlevel.events.{JDIEventArgument, EventManager}
+import org.scaladebugger.api.lowlevel.events.{EventHandlerInfo, JDIEventArgument, EventManager}
 import org.scaladebugger.api.lowlevel.events.EventType.EventType
 
 /**
@@ -29,4 +30,6 @@ class TestEventManager(
     eventManager.getEventHandler(eventHandlerId)
   override def start(): Unit =
     eventManager.start()
+  override def getAllEventHandlerInfo: Seq[EventHandlerInfo] =
+    eventManager.getAllEventHandlerInfo
 }

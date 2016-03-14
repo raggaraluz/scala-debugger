@@ -1,11 +1,12 @@
 package org.scaladebugger.api.profiles.pure.classes
+import acyclic.file
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 import com.sun.jdi.event.ClassPrepareEvent
 import org.scaladebugger.api.lowlevel.JDIArgument
-import org.scaladebugger.api.lowlevel.classes.ClassPrepareManager
+import org.scaladebugger.api.lowlevel.classes.{ClassPrepareManager, ClassPrepareRequestInfo, PendingClassPrepareSupportLike}
 import org.scaladebugger.api.lowlevel.events.EventType._
 import org.scaladebugger.api.lowlevel.events.filters.UniqueIdPropertyFilter
 import org.scaladebugger.api.lowlevel.events.{EventManager, JDIEventArgument}
@@ -42,6 +43,22 @@ trait PureClassPrepareProfile extends ClassPrepareProfile {
     Seq[JDIArgument],
     AtomicInteger
   ]().asScala
+
+  /**
+   * Retrieves the collection of active and pending class prepare requests.
+   *
+   * @return The collection of information on class prepare requests
+   */
+  override def classPrepareRequests: Seq[ClassPrepareRequestInfo] = {
+    val activeRequests = classPrepareManager.classPrepareRequestList.flatMap(
+      classPrepareManager.getClassPrepareRequestInfo
+    )
+
+    activeRequests ++ (classPrepareManager match {
+      case p: PendingClassPrepareSupportLike  => p.pendingClassPrepareRequests
+      case _                                  => Nil
+    })
+  }
 
   /**
    * Constructs a stream of class prepare events.

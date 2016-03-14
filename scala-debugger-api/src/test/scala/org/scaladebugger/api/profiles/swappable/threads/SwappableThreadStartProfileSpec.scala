@@ -1,4 +1,5 @@
 package org.scaladebugger.api.profiles.swappable.threads
+import acyclic.file
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -18,6 +19,25 @@ class SwappableThreadStartProfileSpec extends FunSpec with Matchers
   }
 
   describe("SwappableThreadStartProfile") {
+    describe("#threadStartRequests") {
+      it("should invoke the method on the underlying profile") {
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.threadStartRequests _).expects().once()
+
+        swappableDebugProfile.threadStartRequests
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.threadStartRequests
+        }
+      }
+    }
+
     describe("#onThreadStartWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])

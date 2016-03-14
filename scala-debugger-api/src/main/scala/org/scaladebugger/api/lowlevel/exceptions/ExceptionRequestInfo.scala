@@ -1,7 +1,9 @@
 package org.scaladebugger.api.lowlevel.exceptions
+import acyclic.file
 
 import org.scaladebugger.api.lowlevel.RequestInfo
 import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import ExceptionRequestInfo._
 
 /**
  * Represents information about an exception request.
@@ -26,6 +28,11 @@ case class ExceptionRequestInfo(
    * @return True if all exceptions are intended to be reported with this
    *         request, otherwise false
    */
-  def isCatchall: Boolean = className == null
+  def isCatchall: Boolean = className == DefaultCatchallExceptionName
+}
+
+object ExceptionRequestInfo {
+  /** Represents the standard name for an request to catch all exceptions. */
+  val DefaultCatchallExceptionName = "<CATCHALL>"
 }
 

@@ -1,7 +1,7 @@
 Scala Debugger
 ==============
 
-[![Build Status](https://travis-ci.org/ensime/scala-debugger.svg?branch=master)](https://travis-ci.org/ensime/scala-debugger)
+[![Build Status](http://fommil.com/api/badges/ensime/scala-debugger/status.svg)](http://fommil.com/ensime/scala-debugger)
 [![Scaladoc 2.10](https://img.shields.io/badge/Scaladoc-2.10-34B6A8.svg?style=flat)](http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.10)
 [![Scaladoc 2.11](https://img.shields.io/badge/Scaladoc-2.11-34B6A8.svg?style=flat)](http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.11)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ensime/scala-debugger)

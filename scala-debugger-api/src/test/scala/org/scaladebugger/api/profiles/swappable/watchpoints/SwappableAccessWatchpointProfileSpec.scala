@@ -1,4 +1,5 @@
 package org.scaladebugger.api.profiles.swappable.watchpoints
+import acyclic.file
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -18,6 +19,25 @@ class SwappableAccessWatchpointProfileSpec extends FunSpec with Matchers
   }
 
   describe("SwappableAccessWatchpointProfile") {
+    describe("#accessWatchpointRequests") {
+      it("should invoke the method on the underlying profile") {
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.accessWatchpointRequests _).expects().once()
+
+        swappableDebugProfile.accessWatchpointRequests
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.accessWatchpointRequests
+        }
+      }
+    }
+
     describe("#onAccessWatchpointWithData") {
       it("should invoke the method on the underlying profile") {
         val className = "some class"

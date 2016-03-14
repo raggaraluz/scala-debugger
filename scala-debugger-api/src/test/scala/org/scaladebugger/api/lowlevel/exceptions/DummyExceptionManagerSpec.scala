@@ -1,4 +1,5 @@
 package org.scaladebugger.api.lowlevel.exceptions
+import acyclic.file
 
 import com.sun.jdi.request.{EventRequest, EventRequestManager, ExceptionRequest}
 import com.sun.jdi.{ReferenceType, VirtualMachine}
@@ -29,46 +30,6 @@ class DummyExceptionManagerSpec extends FunSpec with Matchers with MockFactory
 
         result.isFailure should be (true)
         result.failed.get shouldBe a [DummyOperationException]
-      }
-    }
-
-    describe("#hasCatchallExceptionRequest") {
-      it("should return false") {
-        val expected = false
-
-        val actual = exceptionManager.hasCatchallExceptionRequest
-
-        actual should be (expected)
-      }
-    }
-
-    describe("#getCatchallExceptionRequestId") {
-      it("should return None") {
-        val expected = None
-
-        val actual = exceptionManager.getCatchallExceptionRequestId
-
-        actual should be (expected)
-      }
-    }
-
-    describe("#getCatchallExceptionRequest") {
-      it("should return None") {
-        val expected = None
-
-        val actual = exceptionManager.getCatchallExceptionRequest
-
-        actual should be (expected)
-      }
-    }
-
-    describe("#removeCatchallExceptionRequest") {
-      it("should return false") {
-        val expected = false
-
-        val actual = exceptionManager.removeCatchallExceptionRequest()
-
-        actual should be (expected)
       }
     }
 
