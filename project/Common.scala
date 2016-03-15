@@ -10,7 +10,7 @@ object Common {
   )
 
   def settings = Seq(
-    version := "1.0.1-SNAPSHOT",
+    version := "1.1.0-SNAPSHOT",
 
     organization := "org.scala-debugger",
 
@@ -22,9 +22,9 @@ object Common {
     homepage := Some(url("https://scala-debugger.org")),
 
     // Default version when not cross-compiling
-    scalaVersion := "2.10.5",
+    scalaVersion := "2.10.6",
 
-    crossScalaVersions := Seq("2.10.5", "2.11.6"),
+    crossScalaVersions := Seq("2.10.6", "2.11.8"),
 
     scalacOptions ++= Seq(
       "-encoding", "UTF-8", "-target:jvm-1.6",
@@ -77,7 +77,7 @@ object Common {
         <developer>
           <id>senkwich</id>
           <name>Chip Senkbeil</name>
-          <url>http://www.chipsenkbeil.org</url>
+          <url>https://www.chipsenkbeil.org</url>
         </developer>
       </developers>,
 

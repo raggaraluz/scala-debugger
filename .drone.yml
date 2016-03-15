@@ -1,10 +1,9 @@
 matrix:
   SCALA_VERSION:
-    - 2.10.5
-    - 2.11.6
+    - 2.10.6
+    - 2.11.8
   TEST_SUITE:
-    - test
-    - it:test
+    - test it:test
 
 cache:
   mount:
@@ -26,7 +25,7 @@ build:
     - rm -rf $CACHE_DIR/.coursier
     - rm -rf $CACHE_DIR/.sbt
     - javac -version
-    - /usr/bin/sbt ++$SCALA_VERSION "$TEST_SUITE"
+    - /usr/bin/sbt ++$SCALA_VERSION $TEST_SUITE
     - cp -a $HOME/.coursier $CACHE_DIR
     - cp -a $HOME/.sbt $CACHE_DIR
 
