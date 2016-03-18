@@ -6,7 +6,7 @@ Scala Debugger
 [![Scaladoc 2.11](https://img.shields.io/badge/Scaladoc-2.11-34B6A8.svg?style=flat)](http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.11)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ensime/scala-debugger)
 
-A simple debugger library for Scala. Tested on OpenJDK 7, Oracle JDK 7, and Oracle JDK 8. 
+A simple debugger library for Scala. Tested on OpenJDK 7.
 - Visit the [main site](https://scala-debugger.org/) for more documentation.
 - Check out the [wiki](https://github.com/ensime/scala-debugger/wiki) for the current roadmap.
 
