@@ -11,26 +11,26 @@ class ThreadInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   describe("ThreadInfoProfile") {
-    describe("#frames") {
+    describe("#tryGetFrames") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Seq[FrameInfoProfile]]
 
         val threadInfoProfile = new TestThreadInfoProfile {
-          override def unsafeFrames: Seq[FrameInfoProfile] = mockUnsafeMethod()
+          override def getFrames: Seq[FrameInfoProfile] = mockUnsafeMethod()
         }
 
         val r = Seq(mock[FrameInfoProfile])
         mockUnsafeMethod.expects().returning(r).once()
-        threadInfoProfile.frames.get should be (r)
+        threadInfoProfile.tryGetFrames.get should be (r)
       }
     }
 
-    describe("#withFrame") {
+    describe("#tryGetFrame") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Int, FrameInfoProfile]
 
         val threadInfoProfile = new TestThreadInfoProfile {
-          override def withUnsafeFrame(index: Int): FrameInfoProfile =
+          override def getFrame(index: Int): FrameInfoProfile =
             mockUnsafeMethod(index)
         }
 
@@ -38,39 +38,39 @@ class ThreadInfoProfileSpec extends FunSpec with Matchers
         val r = mock[FrameInfoProfile]
 
         mockUnsafeMethod.expects(a1).returning(r).once()
-        threadInfoProfile.withFrame(a1).get should be (r)
+        threadInfoProfile.tryGetFrame(a1).get should be (r)
       }
     }
 
-    describe("#withTopFrame") {
+    describe("#tryGetTopFrame") {
       it("should invoke withFrame(0) underneath") {
         val mockUnsafeMethod = mockFunction[Int, Try[FrameInfoProfile]]
 
         val threadInfoProfile = new TestThreadInfoProfile {
-          override def withFrame(index: Int): Try[FrameInfoProfile] =
+          override def tryGetFrame(index: Int): Try[FrameInfoProfile] =
             mockUnsafeMethod(index)
         }
 
         val r = Success(mock[FrameInfoProfile])
 
         mockUnsafeMethod.expects(0).returning(r).once()
-        threadInfoProfile.withTopFrame should be (r)
+        threadInfoProfile.tryGetTopFrame should be (r)
       }
     }
 
-    describe("#withUnsafeTopFrame") {
+    describe("#getTopFrame") {
       it("should invoke withUnsafeFrame(0) underneath") {
         val mockUnsafeMethod = mockFunction[Int, FrameInfoProfile]
 
         val threadInfoProfile = new TestThreadInfoProfile {
-          override def withUnsafeFrame(index: Int): FrameInfoProfile =
+          override def getFrame(index: Int): FrameInfoProfile =
             mockUnsafeMethod(index)
         }
 
         val r = mock[FrameInfoProfile]
 
         mockUnsafeMethod.expects(0).returning(r).once()
-        threadInfoProfile.withUnsafeTopFrame should be (r)
+        threadInfoProfile.getTopFrame should be (r)
       }
     }
   }

@@ -34,7 +34,7 @@ class PureThreadInfoProfile(
    *
    * @return The collection of frame profiles
    */
-  override def unsafeFrames: Seq[FrameInfoProfile] = {
+  override def getFrames: Seq[FrameInfoProfile] = {
     import scala.collection.JavaConverters._
     threadReference.frames().asScala.toSeq.map(newFrameProfile)
   }
@@ -46,7 +46,7 @@ class PureThreadInfoProfile(
    *              profile to retrieve
    * @return The new frame profile instance
    */
-  override def withUnsafeFrame(index: Int): FrameInfoProfile = {
+  override def getFrame(index: Int): FrameInfoProfile = {
     newFrameProfile(threadReference.frame(index))
   }
 
@@ -55,7 +55,7 @@ class PureThreadInfoProfile(
    *
    * @return The total number of frames
    */
-  override def unsafeTotalFrames: Int = threadReference.frameCount()
+  override def getTotalFrames: Int = threadReference.frameCount()
 
   protected def newFrameProfile(stackFrame: StackFrame): FrameInfoProfile =
     new PureFrameInfoProfile(stackFrame)

@@ -38,16 +38,16 @@ class SwappableClassUnloadProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onClassUnloadWithData") {
+    describe("#tryGetOrCreateClassUnloadRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])
 
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.onClassUnloadWithData _).expects(arguments).once()
+        (mockDebugProfile.tryGetOrCreateClassUnloadRequestWithData _).expects(arguments).once()
 
-        swappableDebugProfile.onClassUnloadWithData(arguments: _*)
+        swappableDebugProfile.tryGetOrCreateClassUnloadRequestWithData(arguments: _*)
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -56,7 +56,7 @@ class SwappableClassUnloadProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onClassUnloadWithData(arguments: _*)
+          swappableDebugProfile.tryGetOrCreateClassUnloadRequestWithData(arguments: _*)
         }
       }
     }

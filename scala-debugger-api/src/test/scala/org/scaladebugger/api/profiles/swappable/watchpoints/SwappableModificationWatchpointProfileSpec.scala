@@ -38,7 +38,7 @@ class SwappableModificationWatchpointProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onModificationWatchpointWithData") {
+    describe("#tryGetOrCreateModificationWatchpointRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val className = "some class"
         val fieldName = "some field"
@@ -49,7 +49,7 @@ class SwappableModificationWatchpointProfileSpec extends FunSpec with Matchers
 
         // NOTE: Forced to use onCall with product due to issues with ScalaMock
         //       casting and inability to work with varargs directly
-        (mockDebugProfile.onModificationWatchpointWithData(
+        (mockDebugProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           _: String,
           _: String,
           _: JDIArgument)
@@ -59,7 +59,7 @@ class SwappableModificationWatchpointProfileSpec extends FunSpec with Matchers
           null
         })
 
-        swappableDebugProfile.onModificationWatchpointWithData(
+        swappableDebugProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -74,7 +74,7 @@ class SwappableModificationWatchpointProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onModificationWatchpointWithData(
+          swappableDebugProfile.tryGetOrCreateModificationWatchpointRequestWithData(
             className,
             fieldName,
             arguments: _*

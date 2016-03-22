@@ -68,7 +68,7 @@ trait PureBreakpointProfile extends BreakpointProfile {
    * @return The stream of breakpoint events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onBreakpointWithData(
+  override def tryGetOrCreateBreakpointRequestWithData(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*

@@ -24,10 +24,10 @@ trait VMStartProfile {
    *
    * @return The stream of vm start events
    */
-  def onVMStart(
+  def tryGetOrCreateVMStartRequest(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[VMStartEvent]] = {
-    onVMStartWithData(extraArguments: _*).map(_.map(_._1).noop())
+    tryGetOrCreateVMStartRequestWithData(extraArguments: _*).map(_.map(_._1).noop())
   }
 
   /**
@@ -38,7 +38,7 @@ trait VMStartProfile {
    * @return The stream of vm start events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onVMStartWithData(
+  def tryGetOrCreateVMStartRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[VMStartEventAndData]]
 
@@ -49,10 +49,10 @@ trait VMStartProfile {
    *
    * @return The stream of vm start events
    */
-  def onUnsafeVMStart(
+  def getOrCreateVMStartRequest(
     extraArguments: JDIArgument*
   ): IdentityPipeline[VMStartEvent] = {
-    onVMStart(extraArguments: _*).get
+    tryGetOrCreateVMStartRequest(extraArguments: _*).get
   }
 
   /**
@@ -63,10 +63,10 @@ trait VMStartProfile {
    * @return The stream of vm start events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeVMStartWithData(
+  def getOrCreateVMStartRequestWithData(
     extraArguments: JDIArgument*
   ): IdentityPipeline[VMStartEventAndData] = {
-    onVMStartWithData(extraArguments: _*).get
+    tryGetOrCreateVMStartRequestWithData(extraArguments: _*).get
   }
 }
 

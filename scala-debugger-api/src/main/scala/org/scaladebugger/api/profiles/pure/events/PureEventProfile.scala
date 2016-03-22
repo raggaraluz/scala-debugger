@@ -27,7 +27,7 @@ trait PureEventProfile extends EventProfile {
    * @return The stream of events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onEventWithData(
+  override def tryCreateEventListenerWithData(
     eventType: EventType,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[EventAndData]] = Try {

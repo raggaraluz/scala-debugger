@@ -32,10 +32,10 @@ trait ThreadStartProfile {
    *
    * @return The stream of thread start events
    */
-  def onThreadStart(
+  def tryGetOrCreateThreadStartRequest(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ThreadStartEvent]] = {
-    onThreadStartWithData(extraArguments: _*).map(_.map(_._1).noop())
+    tryGetOrCreateThreadStartRequestWithData(extraArguments: _*).map(_.map(_._1).noop())
   }
 
   /**
@@ -46,7 +46,7 @@ trait ThreadStartProfile {
    * @return The stream of thread start events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onThreadStartWithData(
+  def tryGetOrCreateThreadStartRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ThreadStartEventAndData]]
 
@@ -57,10 +57,10 @@ trait ThreadStartProfile {
    *
    * @return The stream of thread start events
    */
-  def onUnsafeThreadStart(
+  def getOrCreateThreadStartRequest(
     extraArguments: JDIArgument*
   ): IdentityPipeline[ThreadStartEvent] = {
-    onThreadStart(extraArguments: _*).get
+    tryGetOrCreateThreadStartRequest(extraArguments: _*).get
   }
 
   /**
@@ -71,9 +71,9 @@ trait ThreadStartProfile {
    * @return The stream of thread start events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeThreadStartWithData(
+  def getOrCreateThreadStartRequestWithData(
     extraArguments: JDIArgument*
   ): IdentityPipeline[ThreadStartEventAndData] = {
-    onThreadStartWithData(extraArguments: _*).get
+    tryGetOrCreateThreadStartRequestWithData(extraArguments: _*).get
   }
 }

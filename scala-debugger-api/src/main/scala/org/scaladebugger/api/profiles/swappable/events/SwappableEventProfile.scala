@@ -17,11 +17,11 @@ import scala.util.Try
 trait SwappableEventProfile extends EventProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onEventWithData(
+  override def tryCreateEventListenerWithData(
     eventType: EventType,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[EventAndData]] = {
-    withCurrentProfile.onEventWithData(eventType, extraArguments: _*)
+    withCurrentProfile.tryCreateEventListenerWithData(eventType, extraArguments: _*)
   }
 
   override def eventHandlers: Seq[EventHandlerInfo] = {

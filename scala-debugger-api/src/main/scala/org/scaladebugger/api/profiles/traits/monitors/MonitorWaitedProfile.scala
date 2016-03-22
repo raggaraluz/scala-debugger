@@ -33,10 +33,10 @@ trait MonitorWaitedProfile {
    *
    * @return The stream of monitor waited events
    */
-  def onMonitorWaited(
+  def tryGetOrCreateMonitorWaitedRequest(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MonitorWaitedEvent]] = {
-    onMonitorWaitedWithData(extraArguments: _*).map(_.map(_._1).noop())
+    tryGetOrCreateMonitorWaitedRequestWithData(extraArguments: _*).map(_.map(_._1).noop())
   }
 
   /**
@@ -47,7 +47,7 @@ trait MonitorWaitedProfile {
    * @return The stream of monitor waited events and any retrieved
    *         data based on requests from extra arguments
    */
-  def onMonitorWaitedWithData(
+  def tryGetOrCreateMonitorWaitedRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MonitorWaitedEventAndData]]
 
@@ -58,10 +58,10 @@ trait MonitorWaitedProfile {
    *
    * @return The stream of monitor waited events
    */
-  def onUnsafeMonitorWaited(
+  def getOrCreateMonitorWaitedRequest(
     extraArguments: JDIArgument*
   ): IdentityPipeline[MonitorWaitedEvent] = {
-    onMonitorWaited(extraArguments: _*).get
+    tryGetOrCreateMonitorWaitedRequest(extraArguments: _*).get
   }
 
   /**
@@ -72,9 +72,9 @@ trait MonitorWaitedProfile {
    * @return The stream of monitor waited events and any retrieved
    *         data based on requests from extra arguments
    */
-  def onUnsafeMonitorWaitedWithData(
+  def getOrCreateMonitorWaitedRequestWithData(
     extraArguments: JDIArgument*
   ): IdentityPipeline[MonitorWaitedEventAndData] = {
-    onMonitorWaitedWithData(extraArguments: _*).get
+    tryGetOrCreateMonitorWaitedRequestWithData(extraArguments: _*).get
   }
 }

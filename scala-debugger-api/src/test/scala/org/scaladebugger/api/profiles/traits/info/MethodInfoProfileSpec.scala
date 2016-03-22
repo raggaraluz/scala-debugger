@@ -8,31 +8,31 @@ class MethodInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   describe("MethodInfoProfile") {
-    describe("#returnTypeName") {
+    describe("#tryGetReturnTypeName") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[String]
 
         val methodInfoProfile = new TestMethodInfoProfile {
-          override def unsafeReturnTypeName: String = mockUnsafeMethod()
+          override def getReturnTypeName: String = mockUnsafeMethod()
         }
 
         val r = "some.return.type"
         mockUnsafeMethod.expects().returning(r).once()
-        methodInfoProfile.returnTypeName.get should be (r)
+        methodInfoProfile.tryGetReturnTypeName.get should be (r)
       }
     }
 
-    describe("#parameterTypeNames") {
+    describe("#tryGetParameterTypeNames") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Seq[String]]
 
         val methodInfoProfile = new TestMethodInfoProfile {
-          override def unsafeParameterTypeNames: Seq[String] = mockUnsafeMethod()
+          override def getParameterTypeNames: Seq[String] = mockUnsafeMethod()
         }
 
         val r = Seq("some.param.type")
         mockUnsafeMethod.expects().returning(r).once()
-        methodInfoProfile.parameterTypeNames.get should be (r)
+        methodInfoProfile.tryGetParameterTypeNames.get should be (r)
       }
     }
   }

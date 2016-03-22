@@ -39,7 +39,7 @@ class SwappableEventProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onEventWithData") {
+    describe("#tryCreateEventListenerWithData") {
       // TODO: ScalaMock is causing a stack overflow exception
       ignore("should invoke the method on the underlying profile") {
         val eventType = mock[EventType]
@@ -48,10 +48,10 @@ class SwappableEventProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.onEventWithData _)
+        (mockDebugProfile.tryCreateEventListenerWithData _)
           .expects(eventType, arguments).once()
 
-        swappableDebugProfile.onEventWithData(eventType, arguments: _*)
+        swappableDebugProfile.tryCreateEventListenerWithData(eventType, arguments: _*)
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -61,7 +61,7 @@ class SwappableEventProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onEventWithData(eventType, arguments: _*)
+          swappableDebugProfile.tryCreateEventListenerWithData(eventType, arguments: _*)
         }
       }
     }

@@ -31,7 +31,7 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#getUnsafeValue") {
+    describe("#getValue") {
       it("should return a new value profile wrapping the value at the position") {
         val expected = mock[ValueInfoProfile]
         val mockValue = mock[Value]
@@ -47,13 +47,13 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
         }
 
         (mockArrayReference.getValue _).expects(0).returning(mockValue).once()
-        val actual = pureArrayInfoProfile.getUnsafeValue(0)
+        val actual = pureArrayInfoProfile.getValue(0)
 
         actual should be (expected)
       }
     }
 
-    describe("#getUnsafeValues(index, totalElements)") {
+    describe("#getValues(index, totalElements)") {
       it("should return value profiles wrapping the return values") {
         val expected = Seq(mock[ValueInfoProfile])
         val mockValues = Seq(mock[Value])
@@ -71,13 +71,13 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
         import scala.collection.JavaConverters._
         (mockArrayReference.getValues(_: Int, _: Int)).expects(0, 0)
           .returning(mockValues.asJava).once()
-        val actual = pureArrayInfoProfile.getUnsafeValues(0, 0)
+        val actual = pureArrayInfoProfile.getValues(0, 0)
 
         actual should be (expected)
       }
     }
 
-    describe("#getUnsafeValues") {
+    describe("#getValues") {
       it("should return value profiles wrapping the return values") {
         val expected = Seq(mock[ValueInfoProfile])
         val mockValues = Seq(mock[Value])
@@ -95,13 +95,13 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
         import scala.collection.JavaConverters._
         (mockArrayReference.getValues: Function0[java.util.List[Value]]).expects()
           .returning(mockValues.asJava).once()
-        val actual = pureArrayInfoProfile.getUnsafeValues
+        val actual = pureArrayInfoProfile.getValues
 
         actual should be (expected)
       }
     }
 
-    describe("#setUnsafeValue") {
+    describe("#setValue") {
       it("should set and return the provided value at the specified position") {
         val expected = "some value"
         val index = 999
@@ -111,13 +111,13 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
           .returning(mockValue).once()
         (mockArrayReference.setValue _).expects(index, mockValue).once()
 
-        val actual = pureArrayInfoProfile.setUnsafeValue(index, expected)
+        val actual = pureArrayInfoProfile.setValue(index, expected)
 
         actual should be (expected)
       }
     }
 
-    describe("#setUnsafeValues(index, values, srcIndex, totalElements)") {
+    describe("#setValues(index, values, srcIndex, totalElements)") {
       it("should set and return the values starting from the src index to total elements") {
         val expected: Seq[AnyVal] = true :: 0.5f :: Nil
 
@@ -150,7 +150,7 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
           testArrayReference
         )(mockVirtualMachine)
 
-        val actual = pureArrayInfoProfile.setUnsafeValues(
+        val actual = pureArrayInfoProfile.setValues(
           index,
           values,
           srcIndex,
@@ -161,7 +161,7 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#setUnsafeValues(values)") {
+    describe("#setValues(values)") {
       it("should set and return the provided values") {
         val expected = Seq("some value", 3, 0.5f)
 
@@ -188,7 +188,7 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
           testArrayReference
         )(mockVirtualMachine)
 
-        val actual = pureArrayInfoProfile.setUnsafeValues(expected)
+        val actual = pureArrayInfoProfile.setValues(expected)
 
         actual should be (expected)
       }

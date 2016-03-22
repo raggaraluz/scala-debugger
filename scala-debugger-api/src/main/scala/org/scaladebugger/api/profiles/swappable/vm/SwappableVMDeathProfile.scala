@@ -16,10 +16,10 @@ import scala.util.Try
 trait SwappableVMDeathProfile extends VMDeathProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onVMDeathWithData(
+  override def tryGetOrCreateVMDeathRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[VMDeathEventAndData]] = {
-    withCurrentProfile.onVMDeathWithData(extraArguments: _*)
+    withCurrentProfile.tryGetOrCreateVMDeathRequestWithData(extraArguments: _*)
   }
 
   override def vmDeathRequests: Seq[VMDeathRequestInfo] = {

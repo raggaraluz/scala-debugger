@@ -15,12 +15,12 @@ class VariableInfoProfileSpec extends FunSpec with Matchers
         val mockUnsafeMethod = mockFunction[ValueInfoProfile]
 
         val variableInfoProfile = new TestVariableInfoProfile {
-          override def toUnsafeValue: ValueInfoProfile = mockUnsafeMethod()
+          override def toValue: ValueInfoProfile = mockUnsafeMethod()
         }
 
         val r = mock[ValueInfoProfile]
         mockUnsafeMethod.expects().returning(r).once()
-        variableInfoProfile.toValue.get should be (r)
+        variableInfoProfile.tryToValue.get should be (r)
       }
     }
   }

@@ -23,7 +23,7 @@ class MonitorWaitProfileSpec extends FunSpec with Matchers
   )
 
   private val successMonitorWaitProfile = new Object with MonitorWaitProfile {
-    override def onMonitorWaitWithData(
+    override def tryGetOrCreateMonitorWaitRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[MonitorWaitEventAndData]] = {
       Success(TestPipelineWithData)
@@ -33,7 +33,7 @@ class MonitorWaitProfileSpec extends FunSpec with Matchers
   }
 
   private val failMonitorWaitProfile = new Object with MonitorWaitProfile {
-    override def onMonitorWaitWithData(
+    override def tryGetOrCreateMonitorWaitRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[MonitorWaitEventAndData]] = {
       Failure(TestThrowable)
@@ -43,7 +43,7 @@ class MonitorWaitProfileSpec extends FunSpec with Matchers
   }
 
   describe("MonitorWaitProfile") {
-    describe("#onMonitorWait") {
+    describe("#tryGetOrCreateMonitorWaitRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[MonitorWaitEvent]
 
@@ -52,7 +52,7 @@ class MonitorWaitProfileSpec extends FunSpec with Matchers
 
         var actual: MonitorWaitEvent = null
         successMonitorWaitProfile
-          .onMonitorWait()
+          .tryGetOrCreateMonitorWaitRequest()
           .get
           .foreach(actual = _)
 
@@ -69,7 +69,7 @@ class MonitorWaitProfileSpec extends FunSpec with Matchers
 
         var actual: Throwable = null
         failMonitorWaitProfile
-          .onMonitorWait()
+          .tryGetOrCreateMonitorWaitRequest()
           .failed
           .foreach(actual = _)
 
@@ -77,7 +77,7 @@ class MonitorWaitProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onUnsafeMonitorWait") {
+    describe("#getOrCreateMonitorWaitRequest") {
       it("should return a pipeline of events if successful") {
         val expected = mock[MonitorWaitEvent]
 
@@ -86,7 +86,7 @@ class MonitorWaitProfileSpec extends FunSpec with Matchers
 
         var actual: MonitorWaitEvent = null
         successMonitorWaitProfile
-          .onUnsafeMonitorWait()
+          .getOrCreateMonitorWaitRequest()
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -99,19 +99,19 @@ class MonitorWaitProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failMonitorWaitProfile.onUnsafeMonitorWait()
+          failMonitorWaitProfile.getOrCreateMonitorWaitRequest()
         }
       }
     }
 
-    describe("#onUnsafeMonitorWaitWithData") {
+    describe("#getOrCreateMonitorWaitRequestWithData") {
       it("should return a pipeline of events and data if successful") {
         // Data to be run through pipeline
         val expected = (mock[MonitorWaitEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (MonitorWaitEvent, Seq[JDIEventDataResult]) = null
         successMonitorWaitProfile
-          .onUnsafeMonitorWaitWithData()
+          .getOrCreateMonitorWaitRequestWithData()
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -124,7 +124,7 @@ class MonitorWaitProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failMonitorWaitProfile.onUnsafeMonitorWaitWithData()
+          failMonitorWaitProfile.getOrCreateMonitorWaitRequestWithData()
         }
       }
     }

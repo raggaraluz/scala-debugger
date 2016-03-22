@@ -32,10 +32,10 @@ trait VMDeathProfile {
    *
    * @return The stream of vm death events
    */
-  def onVMDeath(
+  def tryGetOrCreateVMDeathRequest(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[VMDeathEvent]] = {
-    onVMDeathWithData(extraArguments: _*).map(_.map(_._1).noop())
+    tryGetOrCreateVMDeathRequestWithData(extraArguments: _*).map(_.map(_._1).noop())
   }
 
   /**
@@ -46,7 +46,7 @@ trait VMDeathProfile {
    * @return The stream of vm death events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onVMDeathWithData(
+  def tryGetOrCreateVMDeathRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[VMDeathEventAndData]]
 
@@ -57,10 +57,10 @@ trait VMDeathProfile {
    *
    * @return The stream of vm death events
    */
-  def onUnsafeVMDeath(
+  def getOrCreateVMDeathRequest(
     extraArguments: JDIArgument*
   ): IdentityPipeline[VMDeathEvent] = {
-    onVMDeath(extraArguments: _*).get
+    tryGetOrCreateVMDeathRequest(extraArguments: _*).get
   }
 
   /**
@@ -71,9 +71,9 @@ trait VMDeathProfile {
    * @return The stream of vm death events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeVMDeathWithData(
+  def getOrCreateVMDeathRequestWithData(
     extraArguments: JDIArgument*
   ): IdentityPipeline[VMDeathEventAndData] = {
-    onVMDeathWithData(extraArguments: _*).get
+    tryGetOrCreateVMDeathRequestWithData(extraArguments: _*).get
   }
 }

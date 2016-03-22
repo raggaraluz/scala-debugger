@@ -102,7 +102,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
       }
     }
 
-    describe("#onMonitorContendedEnteredWithData") {
+    describe("#tryGetOrCreateMonitorContendedEnteredRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val arguments = Seq(mock[JDIRequestArgument])
 
@@ -133,7 +133,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           )).once()
         }
 
-        pureMonitorContendedEnteredProfile.onMonitorContendedEnteredWithData(
+        pureMonitorContendedEnteredProfile.tryGetOrCreateMonitorContendedEnteredRequestWithData(
           arguments: _*
         )
       }
@@ -162,7 +162,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             .throwing(expected.failed.get).once()
         }
 
-        val actual = pureMonitorContendedEnteredProfile.onMonitorContendedEnteredWithData(
+        val actual = pureMonitorContendedEnteredProfile.tryGetOrCreateMonitorContendedEnteredRequestWithData(
           arguments: _*
         )
 
@@ -204,7 +204,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           )).once()
         }
 
-        pureMonitorContendedEnteredProfile.onMonitorContendedEnteredWithData(
+        pureMonitorContendedEnteredProfile.tryGetOrCreateMonitorContendedEnteredRequestWithData(
           arguments: _*
         )
 
@@ -235,7 +235,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           )).once()
         }
 
-        pureMonitorContendedEnteredProfile.onMonitorContendedEnteredWithData(
+        pureMonitorContendedEnteredProfile.tryGetOrCreateMonitorContendedEnteredRequestWithData(
           arguments: _*
         )
       }
@@ -271,7 +271,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           )).once()
         }
 
-        pureMonitorContendedEnteredProfile.onMonitorContendedEnteredWithData(
+        pureMonitorContendedEnteredProfile.tryGetOrCreateMonitorContendedEnteredRequestWithData(
           arguments: _*
         )
 
@@ -300,7 +300,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           )).once()
         }
 
-        pureMonitorContendedEnteredProfile.onMonitorContendedEnteredWithData(
+        pureMonitorContendedEnteredProfile.tryGetOrCreateMonitorContendedEnteredRequestWithData(
           arguments: _*
         )
       }
@@ -357,8 +357,8 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           })
         }
 
-        val p1 = pureMonitorContendedEnteredProfile.onMonitorContendedEnteredWithData(arguments: _*)
-        val p2 = pureMonitorContendedEnteredProfile.onMonitorContendedEnteredWithData(arguments: _*)
+        val p1 = pureMonitorContendedEnteredProfile.tryGetOrCreateMonitorContendedEnteredRequestWithData(arguments: _*)
+        val p2 = pureMonitorContendedEnteredProfile.tryGetOrCreateMonitorContendedEnteredRequestWithData(arguments: _*)
 
         p1.foreach(_.close())
         p2.foreach(_.close())
@@ -416,8 +416,8 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           })
         }
 
-        val p1 = pureMonitorContendedEnteredProfile.onMonitorContendedEnteredWithData(arguments: _*)
-        val p2 = pureMonitorContendedEnteredProfile.onMonitorContendedEnteredWithData(arguments: _*)
+        val p1 = pureMonitorContendedEnteredProfile.tryGetOrCreateMonitorContendedEnteredRequestWithData(arguments: _*)
+        val p2 = pureMonitorContendedEnteredProfile.tryGetOrCreateMonitorContendedEnteredRequestWithData(arguments: _*)
 
         p1.foreach(_.close(now = true, data = Constants.CloseRemoveAll))
       }

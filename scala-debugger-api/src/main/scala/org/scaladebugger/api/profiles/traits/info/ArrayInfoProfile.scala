@@ -18,28 +18,25 @@ trait ArrayInfoProfile extends ObjectInfoProfile {
    * Retrieves the value in the array at the specified index.
    *
    * @param index The location in the array to retrieve a value
-   *
    * @return Success containing the retrieved value, otherwise a failure
    */
-  def getValue(index: Int): Try[ValueInfoProfile] = Try(getUnsafeValue(index))
+  def tryGetValue(index: Int): Try[ValueInfoProfile] = Try(getValue(index))
 
   /**
    * Retrieves the value in the array at the specified index.
    *
    * @param index The location in the array to retrieve a value
-   *
    * @return The retrieved value
    */
-  def getUnsafeValue(index: Int): ValueInfoProfile
+  def getValue(index: Int): ValueInfoProfile
 
   /**
    * Retrieves the value in the array at the specified index.
    *
    * @param index The location in the array to retrieve a value
-   *
    * @return The retrieved value
    */
-  def apply(index: Int): ValueInfoProfile = getUnsafeValue(index)
+  def apply(index: Int): ValueInfoProfile = getValue(index)
 
   /**
    * Retrieves the values in the array starting from the specified index and
@@ -48,11 +45,10 @@ trait ArrayInfoProfile extends ObjectInfoProfile {
    * @param index The location in the array to begin retrieving values
    * @param length The number of values to retrieve, or -1 to retrieve all
    *               remaining values to the end of the array
-   *
    * @return Success containing the retrieved values, otherwise a failure
    */
-  def getValues(index: Int, length: Int): Try[Seq[ValueInfoProfile]] =
-    Try(getUnsafeValues(index, length))
+  def tryGetValues(index: Int, length: Int): Try[Seq[ValueInfoProfile]] =
+    Try(getValues(index, length))
 
   /**
    * Retrieves the values in the array starting from the specified index and
@@ -61,10 +57,9 @@ trait ArrayInfoProfile extends ObjectInfoProfile {
    * @param index The location in the array to begin retrieving values
    * @param length The number of values to retrieve, or -1 to retrieve
    *               all remaining values to the end of the array
-   *
    * @return The retrieved values
    */
-  def getUnsafeValues(index: Int, length: Int): Seq[ValueInfoProfile]
+  def getValues(index: Int, length: Int): Seq[ValueInfoProfile]
 
   /**
    * Retrieves the values in the array starting from the specified index and
@@ -76,59 +71,56 @@ trait ArrayInfoProfile extends ObjectInfoProfile {
    * @return The retrieved values
    */
   def apply(index: Int, length: Int): Seq[ValueInfoProfile] =
-    getUnsafeValues(index, length)
+    getValues(index, length)
 
   /**
    * Retrieves all values from the array.
    *
    * @return Success containing the retrieved values, otherwise a failure
    */
-  def getValues: Try[Seq[ValueInfoProfile]] = Try(getUnsafeValues)
+  def tryGetValues: Try[Seq[ValueInfoProfile]] = Try(getValues)
 
   /**
    * Retrieves all values from the array.
    *
    * @return The retrieved values
    */
-  def getUnsafeValues: Seq[ValueInfoProfile]
+  def getValues: Seq[ValueInfoProfile]
 
   /**
    * Retrieves all values from the array.
    *
    * @return The retrieved values
    */
-  def apply(): Seq[ValueInfoProfile] = getUnsafeValues
+  def apply(): Seq[ValueInfoProfile] = getValues
 
   /**
    * Sets the value of the array element at the specified location.
    *
    * @param index The location in the array whose value to overwrite
    * @param value The new value to place in the array
-   *
    * @return Success containing the updated value, otherwise a failure
    */
-  def setValue(index: Int, value: Any): Try[Any] =
-    Try(setUnsafeValue(index, value))
+  def trySetValue(index: Int, value: Any): Try[Any] =
+    Try(setValue(index, value))
 
   /**
    * Sets the value of the array element at the specified location.
    *
    * @param index The location in the array whose value to overwrite
    * @param value The new value to place in the array
-   *
    * @return The updated value
    */
-  def setUnsafeValue(index: Int, value: Any): Any
+  def setValue(index: Int, value: Any): Any
 
   /**
    * Sets the value of the array element at the specified location.
    *
    * @param index The location in the array whose value to overwrite
    * @param value The new value to place in the array
-   *
    * @return The updated value
    */
-  def update(index: Int, value: Any): Any = setUnsafeValue(index, value)
+  def update(index: Int, value: Any): Any = setValue(index, value)
 
   /**
    * Sets the values of the array elements starting at the specified location.
@@ -142,12 +134,12 @@ trait ArrayInfoProfile extends ObjectInfoProfile {
    *               beginning of the index
    * @return Success containing the updated values, otherwise a failure
    */
-  def setValues(
+  def trySetValues(
     index: Int,
     values: Seq[Any],
     srcIndex: Int,
     length: Int
-  ): Try[Seq[Any]] = Try(setUnsafeValues(index, values, srcIndex, length))
+  ): Try[Seq[Any]] = Try(setValues(index, values, srcIndex, length))
 
   /**
    * Sets the values of the array elements starting at the specified location.
@@ -159,10 +151,9 @@ trait ArrayInfoProfile extends ObjectInfoProfile {
    * @param length The total number of elements to overwrite, or -1 to
    *               overwrite all elements in the array from the
    *               beginning of the index
-   *
    * @return The updated values
    */
-  def setUnsafeValues(
+  def setValues(
     index: Int,
     values: Seq[Any],
     srcIndex: Int,
@@ -173,18 +164,16 @@ trait ArrayInfoProfile extends ObjectInfoProfile {
    * Sets the values of the array elements to the provided values.
    *
    * @param values The new values to use when overwriting elements in the array
-   *
    * @return Success containing the updated values, otherwise a failure
    */
-  def setValues(values: Seq[Any]): Try[Seq[Any]] =
-    Try(setUnsafeValues(values))
+  def trySetValues(values: Seq[Any]): Try[Seq[Any]] =
+    Try(setValues(values))
 
   /**
    * Sets the values of the array elements to the provided values.
    *
    * @param values The new values to use when overwriting elements in the array
-   *
    * @return The updated values
    */
-  def setUnsafeValues(values: Seq[Any]): Seq[Any]
+  def setValues(values: Seq[Any]): Seq[Any]
 }

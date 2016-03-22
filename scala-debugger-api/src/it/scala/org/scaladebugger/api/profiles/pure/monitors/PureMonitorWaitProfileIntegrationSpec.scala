@@ -30,7 +30,7 @@ class PureMonitorWaitProfileIntegrationSpec extends FunSpec with Matchers
       // Mark that we want to receive monitor wait events and
       // watch for one
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeMonitorWait()
+        .getOrCreateMonitorWaitRequest()
         .foreach(_ => detectedWait.set(true))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>

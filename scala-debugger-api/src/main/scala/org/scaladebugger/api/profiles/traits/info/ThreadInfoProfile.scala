@@ -26,28 +26,28 @@ trait ThreadInfoProfile {
    *
    * @return Success of collection of frame profiles, otherwise a failure
    */
-  def frames: Try[Seq[FrameInfoProfile]] = Try(unsafeFrames)
+  def tryGetFrames: Try[Seq[FrameInfoProfile]] = Try(getFrames)
 
   /**
    * Retrieves profiles for all frames in the stack.
    *
    * @return The collection of frame profiles
    */
-  def unsafeFrames: Seq[FrameInfoProfile]
+  def getFrames: Seq[FrameInfoProfile]
 
   /**
    * Returns the total frames held in the current frame stack.
    *
    * @return Success containing the total number of frames, otherwise a failure
    */
-  def totalFrames: Try[Int] = Try(unsafeTotalFrames)
+  def tryGetTotalFrames: Try[Int] = Try(getTotalFrames)
 
   /**
    * Returns the total frames held in the current frame stack.
    *
    * @return The total number of frames
    */
-  def unsafeTotalFrames: Int
+  def getTotalFrames: Int
 
   /**
    * Retrieves the profile for the specified frame in the stack.
@@ -57,7 +57,7 @@ trait ThreadInfoProfile {
    * @return Success containing the new frame profile instance, otherwise
    *         a failure
    */
-  def withFrame(index: Int): Try[FrameInfoProfile] = Try(withUnsafeFrame(index))
+  def tryGetFrame(index: Int): Try[FrameInfoProfile] = Try(getFrame(index))
 
   /**
    * Retrieves the profile for the specified frame in the stack.
@@ -66,7 +66,7 @@ trait ThreadInfoProfile {
    *              profile to retrieve
    * @return The new frame profile instance
    */
-  def withUnsafeFrame(index: Int): FrameInfoProfile
+  def getFrame(index: Int): FrameInfoProfile
 
   /**
    * Retrieves the profile for the top (current) frame in the stack.
@@ -74,12 +74,12 @@ trait ThreadInfoProfile {
    * @return Success containing the new frame profile instance, otherwise
    *         a failure
    */
-  def withTopFrame: Try[FrameInfoProfile] = withFrame(0)
+  def tryGetTopFrame: Try[FrameInfoProfile] = tryGetFrame(0)
 
   /**
    * Retrieves the profile for the top (current) frame in the stack.
    *
    * @return The new frame profile instance
    */
-  def withUnsafeTopFrame: FrameInfoProfile = withUnsafeFrame(0)
+  def getTopFrame: FrameInfoProfile = getFrame(0)
 }

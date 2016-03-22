@@ -28,14 +28,14 @@ class PureObjectInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 22, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 22, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val result = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame.withUnsafeThisObject
-            .unsafeInvoke("publicMethod", Seq(3, "test")).asUnsafeLocalValue
+            .getThread(t.get).getTopFrame.getThisObject
+            .invoke("publicMethod", Seq(3, "test")).toLocalValue
 
           result should be ("3test")
         })
@@ -51,14 +51,14 @@ class PureObjectInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val fieldName = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame.withUnsafeThisObject
-            .unsafeField("z1").name
+            .getThread(t.get).getTopFrame.getThisObject
+            .getField("z1").name
 
           fieldName should be ("z1")
         })
@@ -74,14 +74,14 @@ class PureObjectInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val fieldNames = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame.withUnsafeThisObject
-            .unsafeFields.map(_.name)
+            .getThread(t.get).getTopFrame.getThisObject
+            .getFields.map(_.name)
 
           fieldNames should contain theSameElementsAs Seq(
             "MODULE$", "z1", "z2", "z3"
@@ -99,14 +99,14 @@ class PureObjectInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 22, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 22, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val methodName = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame.withUnsafeThisObject
-            .unsafeMethod("publicMethod").name
+            .getThread(t.get).getTopFrame.getThisObject
+            .getMethod("publicMethod").name
 
           methodName should be ("publicMethod")
         })
@@ -122,14 +122,14 @@ class PureObjectInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 22, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 22, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val methodNames = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame.withUnsafeThisObject
-            .unsafeMethods.map(_.name)
+            .getThread(t.get).getTopFrame.getThisObject
+            .getMethods.map(_.name)
 
           methodNames should contain theSameElementsAs Seq(
             // Defined methods

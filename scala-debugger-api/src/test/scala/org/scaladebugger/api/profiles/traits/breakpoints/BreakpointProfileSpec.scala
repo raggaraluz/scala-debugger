@@ -23,7 +23,7 @@ class BreakpointProfileSpec extends FunSpec with Matchers
   )
 
   private val successBreakpointProfile = new Object with BreakpointProfile {
-    override def onBreakpointWithData(
+    override def tryGetOrCreateBreakpointRequestWithData(
       fileName: String,
       lineNumber: Int,
       extraArguments: JDIArgument*
@@ -35,7 +35,7 @@ class BreakpointProfileSpec extends FunSpec with Matchers
   }
 
   private val failBreakpointProfile = new Object with BreakpointProfile {
-    override def onBreakpointWithData(
+    override def tryGetOrCreateBreakpointRequestWithData(
       fileName: String,
       lineNumber: Int,
       extraArguments: JDIArgument*
@@ -47,7 +47,7 @@ class BreakpointProfileSpec extends FunSpec with Matchers
   }
 
   describe("BreakpointProfile") {
-    describe("#onBreakpoint") {
+    describe("#tryGetOrCreateBreakpointRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[BreakpointEvent]
 
@@ -55,7 +55,7 @@ class BreakpointProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: BreakpointEvent = null
-        successBreakpointProfile.onBreakpoint("", 0).get.foreach(actual = _)
+        successBreakpointProfile.tryGetOrCreateBreakpointRequest("", 0).get.foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -72,13 +72,13 @@ class BreakpointProfileSpec extends FunSpec with Matchers
         val data = (mock[BreakpointEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: Throwable = null
-        failBreakpointProfile.onBreakpoint("", 0).failed.foreach(actual = _)
+        failBreakpointProfile.tryGetOrCreateBreakpointRequest("", 0).failed.foreach(actual = _)
 
         actual should be (expected)
       }
     }
 
-    describe("#onUnsafeBreakpoint") {
+    describe("#getOrCreateBreakpointRequest") {
       it("should return a pipeline of events if successful") {
         val expected = mock[BreakpointEvent]
 
@@ -86,7 +86,7 @@ class BreakpointProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: BreakpointEvent = null
-        successBreakpointProfile.onUnsafeBreakpoint("", 0).foreach(actual = _)
+        successBreakpointProfile.getOrCreateBreakpointRequest("", 0).foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -98,19 +98,19 @@ class BreakpointProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failBreakpointProfile.onUnsafeBreakpoint("", 0)
+          failBreakpointProfile.getOrCreateBreakpointRequest("", 0)
         }
       }
     }
 
-    describe("#onUnsafeBreakpointWithData") {
+    describe("#getOrCreateBreakpointRequestWithData") {
       it("should return a pipeline of events and data if successful") {
         // Data to be run through pipeline
         val expected = (mock[BreakpointEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (BreakpointEvent, Seq[JDIEventDataResult]) = null
         successBreakpointProfile
-          .onUnsafeBreakpointWithData("", 0)
+          .getOrCreateBreakpointRequestWithData("", 0)
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -123,7 +123,7 @@ class BreakpointProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failBreakpointProfile.onUnsafeBreakpointWithData("", 0)
+          failBreakpointProfile.getOrCreateBreakpointRequestWithData("", 0)
         }
       }
     }

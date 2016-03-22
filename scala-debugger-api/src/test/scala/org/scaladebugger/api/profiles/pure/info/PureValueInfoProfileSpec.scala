@@ -46,7 +46,7 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#asUnsafeArray") {
+    describe("#toArray") {
       it("should throw an assertion error if the value is null") {
         val pureValueInfoProfile = new PureValueInfoProfile(
           mockStackFrame,
@@ -54,7 +54,7 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         )
 
         intercept[AssertionError] {
-          pureValueInfoProfile.asUnsafeArray
+          pureValueInfoProfile.toArray
         }
       }
 
@@ -65,7 +65,7 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         )
 
         intercept[AssertionError] {
-          pureValueInfoProfile.asUnsafeArray
+          pureValueInfoProfile.toArray
         }
       }
 
@@ -85,13 +85,13 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         mockNewArrayProfile.expects(mockArrayReference)
           .returning(expected).once()
 
-        val actual = pureValueInfoProfile.asUnsafeArray
+        val actual = pureValueInfoProfile.toArray
 
         actual should be (expected)
       }
     }
 
-    describe("#asUnsafeObject") {
+    describe("#toObject") {
       it("should throw an assertion error if the value is null") {
         val pureValueInfoProfile = new PureValueInfoProfile(
           mockStackFrame,
@@ -99,7 +99,7 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         )
 
         intercept[AssertionError] {
-          pureValueInfoProfile.asUnsafeObject
+          pureValueInfoProfile.toObject
         }
       }
 
@@ -110,7 +110,7 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         )
 
         intercept[AssertionError] {
-          pureValueInfoProfile.asUnsafeObject
+          pureValueInfoProfile.toObject
         }
       }
 
@@ -130,13 +130,13 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         mockNewObjectProfile.expects(mockObjectReference)
           .returning(expected).once()
 
-        val actual = pureValueInfoProfile.asUnsafeObject
+        val actual = pureValueInfoProfile.toObject
 
         actual should be (expected)
       }
     }
 
-    describe("#asUnsafeLocalValue") {
+    describe("#toLocalValue") {
       it("should return null if the value is null") {
         val expected: Any = null
 
@@ -145,7 +145,7 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
           null
         )
 
-        val actual = pureValueInfoProfile.asUnsafeLocalValue
+        val actual = pureValueInfoProfile.toLocalValue
 
         actual should be (expected)
       }
@@ -160,7 +160,7 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         )
 
         (mockStringReference.value _).expects().returning(expected).once()
-        val actual = pureValueInfoProfile.asUnsafeLocalValue
+        val actual = pureValueInfoProfile.toLocalValue
 
         actual should be (expected)
       }

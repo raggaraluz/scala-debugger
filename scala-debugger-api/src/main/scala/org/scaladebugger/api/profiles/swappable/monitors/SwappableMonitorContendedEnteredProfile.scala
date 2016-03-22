@@ -16,10 +16,10 @@ import scala.util.Try
 trait SwappableMonitorContendedEnteredProfile extends MonitorContendedEnteredProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onMonitorContendedEnteredWithData(
+  override def tryGetOrCreateMonitorContendedEnteredRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MonitorContendedEnteredEventAndData]] = {
-    withCurrentProfile.onMonitorContendedEnteredWithData(extraArguments: _*)
+    withCurrentProfile.tryGetOrCreateMonitorContendedEnteredRequestWithData(extraArguments: _*)
   }
 
   override def monitorContendedEnteredRequests: Seq[MonitorContendedEnteredRequestInfo] = {

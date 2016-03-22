@@ -292,15 +292,15 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
 
     scalaVirtualMachine
       .withProfile(PureDebugProfile.Name)
-      .onUnsafeBreakpoint(testFile, startingLine)
+      .getOrCreateBreakpointRequest(testFile, startingLine)
 
     // Return a function used to begin the verification
     (s: ScalaVirtualMachine, start: () => Unit, stepMethod: (ThreadReference) => T) => {
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, startingLine)
+        .getOrCreateBreakpointRequest(testFile, startingLine)
         .map(_.thread())
         .foreach(thread => {
-          s.withProfile(PureDebugProfile.Name).onUnsafeStep(thread).foreach(stepEvent => {
+          s.withProfile(PureDebugProfile.Name).createStepListener(thread).foreach(stepEvent => {
             val className = stepEvent.location().declaringType().name()
             val lineNumber = stepEvent.location().lineNumber()
 
@@ -354,20 +354,20 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
     // On receiving a breakpoint, send a step request
     scalaVirtualMachine
       .withProfile(PureDebugProfile.Name)
-      .onUnsafeBreakpoint(testFile, startingLine)
+      .getOrCreateBreakpointRequest(testFile, startingLine)
 
     // Return a function used to begin the verification
     (s: ScalaVirtualMachine, start: () => Unit, stepMethod: (ThreadReference) => T) => {
       // Add a breakpoint to get us in the right location for steps
       // On receiving a breakpoint, send a step request
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, startingLine)
+        .getOrCreateBreakpointRequest(testFile, startingLine)
         .map(_.thread())
         .foreach(thread => {
           // On receiving a step request, verify that we are in the right
           // location
           s.withProfile(PureDebugProfile.Name)
-            .onUnsafeStep(thread)
+            .createStepListener(thread)
             .foreach(stepEvent => {
               val className = stepEvent.location().declaringType().name()
               val lineNumber = stepEvent.location().lineNumber()

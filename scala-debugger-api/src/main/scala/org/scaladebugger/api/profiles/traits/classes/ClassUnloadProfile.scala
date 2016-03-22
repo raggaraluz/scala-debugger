@@ -31,10 +31,10 @@ trait ClassUnloadProfile {
    *
    * @return The stream of class unload events
    */
-  def onClassUnload(
+  def tryGetOrCreateClassUnloadRequest(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ClassUnloadEvent]] = {
-    onClassUnloadWithData(extraArguments: _*).map(_.map(_._1).noop())
+    tryGetOrCreateClassUnloadRequestWithData(extraArguments: _*).map(_.map(_._1).noop())
   }
 
   /**
@@ -44,10 +44,10 @@ trait ClassUnloadProfile {
    *
    * @return The stream of class unload events
    */
-  def onUnsafeClassUnload(
+  def getOrCreateClassUnloadRequest(
     extraArguments: JDIArgument*
   ): IdentityPipeline[ClassUnloadEvent] = {
-    onClassUnload(extraArguments: _*).get
+    tryGetOrCreateClassUnloadRequest(extraArguments: _*).get
   }
 
   /**
@@ -58,10 +58,10 @@ trait ClassUnloadProfile {
    * @return The stream of class unload events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeClassUnloadWithData(
+  def getOrCreateClassUnloadRequestWithData(
     extraArguments: JDIArgument*
   ): IdentityPipeline[ClassUnloadEventAndData] = {
-    onClassUnloadWithData(extraArguments: _*).get
+    tryGetOrCreateClassUnloadRequestWithData(extraArguments: _*).get
   }
 
   /**
@@ -72,7 +72,7 @@ trait ClassUnloadProfile {
    * @return The stream of class unload events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onClassUnloadWithData(
+  def tryGetOrCreateClassUnloadRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ClassUnloadEventAndData]]
 }

@@ -16,10 +16,10 @@ import scala.util.Try
 trait SwappableThreadDeathProfile extends ThreadDeathProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onThreadDeathWithData(
+  override def tryGetOrCreateThreadDeathRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ThreadDeathEventAndData]] = {
-    withCurrentProfile.onThreadDeathWithData(extraArguments: _*)
+    withCurrentProfile.tryGetOrCreateThreadDeathRequestWithData(extraArguments: _*)
   }
 
   override def threadDeathRequests: Seq[ThreadDeathRequestInfo] = {

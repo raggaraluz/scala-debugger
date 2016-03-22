@@ -67,7 +67,7 @@ trait PureModificationWatchpointProfile extends ModificationWatchpointProfile {
    * @return The stream of modification watchpoint events and any retrieved data
    *         based on requests from extra arguments
    */
-  override def onModificationWatchpointWithData(
+  override def tryGetOrCreateModificationWatchpointRequestWithData(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*

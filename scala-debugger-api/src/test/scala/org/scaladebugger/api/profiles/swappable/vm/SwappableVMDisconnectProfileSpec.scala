@@ -19,7 +19,7 @@ class SwappableVMDisconnectProfileSpec extends FunSpec with Matchers
   }
 
   describe("SwappableVMDisconnectProfile") {
-    describe("#onVMDisconnectWithData") {
+    describe("#tryGetOrCreateVMDisconnectRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])
 
@@ -28,14 +28,14 @@ class SwappableVMDisconnectProfileSpec extends FunSpec with Matchers
 
         // NOTE: Forced to use onCall with product due to issues with ScalaMock
         //       casting and inability to work with varargs directly
-        (mockDebugProfile.onVMDisconnectWithData _).expects(*)
+        (mockDebugProfile.tryGetOrCreateVMDisconnectRequestWithData _).expects(*)
           .onCall((t: Product) => {
             val args = t.productElement(0).asInstanceOf[Seq[JDIArgument]]
             args should be(arguments)
             null
           })
 
-        swappableDebugProfile.onVMDisconnectWithData(arguments: _*)
+        swappableDebugProfile.tryGetOrCreateVMDisconnectRequestWithData(arguments: _*)
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -44,7 +44,7 @@ class SwappableVMDisconnectProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onVMDisconnectWithData(arguments: _*)
+          swappableDebugProfile.tryGetOrCreateVMDisconnectRequestWithData(arguments: _*)
         }
       }
     }

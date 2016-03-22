@@ -68,7 +68,7 @@ trait PureClassPrepareProfile extends ClassPrepareProfile {
    * @return The stream of class prepare events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onClassPrepareWithData(
+  override def tryGetOrCreateClassPrepareRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ClassPrepareEventAndData]] = Try {
     val JDIArgumentGroup(rArgs, eArgs, _) = JDIArgumentGroup(extraArguments: _*)

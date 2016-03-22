@@ -97,7 +97,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onExceptionWithData") {
+    describe("#tryGetOrCreateExceptionRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val exceptionName = "some.exception"
         val notifyCaught = true
@@ -135,7 +135,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureExceptionProfile.onExceptionWithData(
+        pureExceptionProfile.tryGetOrCreateExceptionRequestWithData(
           exceptionName,
           notifyCaught,
           notifyUncaught,
@@ -174,7 +174,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
           ).throwing(expected.failed.get).once()
         }
 
-        val actual = pureExceptionProfile.onExceptionWithData(
+        val actual = pureExceptionProfile.tryGetOrCreateExceptionRequestWithData(
           exceptionName,
           notifyCaught,
           notifyUncaught,
@@ -226,7 +226,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureExceptionProfile.onExceptionWithData(
+        pureExceptionProfile.tryGetOrCreateExceptionRequestWithData(
           exceptionName,
           notifyCaught,
           notifyUncaught,
@@ -264,7 +264,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureExceptionProfile.onExceptionWithData(
+        pureExceptionProfile.tryGetOrCreateExceptionRequestWithData(
           exceptionName,
           notifyCaught,
           notifyUncaught,
@@ -310,7 +310,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureExceptionProfile.onExceptionWithData(
+        pureExceptionProfile.tryGetOrCreateExceptionRequestWithData(
           exceptionName,
           notifyCaught,
           notifyUncaught,
@@ -337,7 +337,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureExceptionProfile.onExceptionWithData(
+        pureExceptionProfile.tryGetOrCreateExceptionRequestWithData(
           exceptionName,
           notifyCaught,
           notifyUncaught,
@@ -387,7 +387,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureExceptionProfile.onExceptionWithData(
+        pureExceptionProfile.tryGetOrCreateExceptionRequestWithData(
           exceptionName,
           notifyCaught,
           notifyUncaught,
@@ -426,7 +426,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureExceptionProfile.onExceptionWithData(
+        pureExceptionProfile.tryGetOrCreateExceptionRequestWithData(
           exceptionName + 1,
           notifyCaught,
           notifyUncaught,
@@ -487,13 +487,13 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
           })
         }
 
-        val p1 = pureExceptionProfile.onExceptionWithData(
+        val p1 = pureExceptionProfile.tryGetOrCreateExceptionRequestWithData(
           exceptionName,
           notifyCaught,
           notifyUncaught,
           arguments: _*
         )
-        val p2 = pureExceptionProfile.onExceptionWithData(
+        val p2 = pureExceptionProfile.tryGetOrCreateExceptionRequestWithData(
           exceptionName,
           notifyCaught,
           notifyUncaught,
@@ -557,13 +557,13 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
           })
         }
 
-        val p1 = pureExceptionProfile.onExceptionWithData(
+        val p1 = pureExceptionProfile.tryGetOrCreateExceptionRequestWithData(
           exceptionName,
           notifyCaught,
           notifyUncaught,
           arguments: _*
         )
-        val p2 = pureExceptionProfile.onExceptionWithData(
+        val p2 = pureExceptionProfile.tryGetOrCreateExceptionRequestWithData(
           exceptionName,
           notifyCaught,
           notifyUncaught,
@@ -574,7 +574,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onAllExceptionsWithData") {
+    describe("#tryGetOrCreateAllExceptionsRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val notifyCaught = true
         val notifyUncaught = true
@@ -609,7 +609,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureExceptionProfile.onAllExceptionsWithData(
+        pureExceptionProfile.tryGetOrCreateAllExceptionsRequestWithData(
           notifyCaught,
           notifyUncaught,
           arguments: _*
@@ -644,7 +644,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
           ).throwing(expected.failed.get).once()
         }
 
-        val actual = pureExceptionProfile.onAllExceptionsWithData(
+        val actual = pureExceptionProfile.tryGetOrCreateAllExceptionsRequestWithData(
           notifyCaught,
           notifyUncaught,
           arguments: _*
@@ -692,7 +692,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureExceptionProfile.onAllExceptionsWithData(
+        pureExceptionProfile.tryGetOrCreateAllExceptionsRequestWithData(
           notifyCaught,
           notifyUncaught,
           arguments: _*
@@ -727,7 +727,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureExceptionProfile.onAllExceptionsWithData(
+        pureExceptionProfile.tryGetOrCreateAllExceptionsRequestWithData(
           notifyCaught,
           notifyUncaught,
           arguments: _*
@@ -769,7 +769,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureExceptionProfile.onAllExceptionsWithData(
+        pureExceptionProfile.tryGetOrCreateAllExceptionsRequestWithData(
           notifyCaught,
           notifyUncaught,
           arguments: _*
@@ -800,7 +800,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureExceptionProfile.onAllExceptionsWithData(
+        pureExceptionProfile.tryGetOrCreateAllExceptionsRequestWithData(
           notifyCaught,
           notifyUncaught,
           arguments: _*
@@ -867,12 +867,12 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
           })
         }
 
-        val p1 = pureExceptionProfile.onAllExceptionsWithData(
+        val p1 = pureExceptionProfile.tryGetOrCreateAllExceptionsRequestWithData(
           notifyCaught,
           notifyUncaught,
           arguments: _*
         )
-        val p2 = pureExceptionProfile.onAllExceptionsWithData(
+        val p2 = pureExceptionProfile.tryGetOrCreateAllExceptionsRequestWithData(
           notifyCaught,
           notifyUncaught,
           arguments: _*
@@ -942,12 +942,12 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
           })
         }
 
-        val p1 = pureExceptionProfile.onAllExceptionsWithData(
+        val p1 = pureExceptionProfile.tryGetOrCreateAllExceptionsRequestWithData(
           notifyCaught,
           notifyUncaught,
           arguments: _*
         )
-        val p2 = pureExceptionProfile.onAllExceptionsWithData(
+        val p2 = pureExceptionProfile.tryGetOrCreateAllExceptionsRequestWithData(
           notifyCaught,
           notifyUncaught,
           arguments: _*

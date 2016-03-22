@@ -24,10 +24,10 @@ trait VMDisconnectProfile {
    *
    * @return The stream of vm disconnect events
    */
-  def onVMDisconnect(
+  def tryGetOrCreateVMDisconnectRequest(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[VMDisconnectEvent]] = {
-    onVMDisconnectWithData(extraArguments: _*).map(_.map(_._1).noop())
+    tryGetOrCreateVMDisconnectRequestWithData(extraArguments: _*).map(_.map(_._1).noop())
   }
 
   /**
@@ -38,7 +38,7 @@ trait VMDisconnectProfile {
    * @return The stream of vm disconnect events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onVMDisconnectWithData(
+  def tryGetOrCreateVMDisconnectRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[VMDisconnectEventAndData]]
 
@@ -49,10 +49,10 @@ trait VMDisconnectProfile {
    *
    * @return The stream of vm disconnect events
    */
-  def onUnsafeVMDisconnect(
+  def getOrCreateVMDisconnectRequest(
     extraArguments: JDIArgument*
   ): IdentityPipeline[VMDisconnectEvent] = {
-    onVMDisconnect(extraArguments: _*).get
+    tryGetOrCreateVMDisconnectRequest(extraArguments: _*).get
   }
 
   /**
@@ -63,9 +63,9 @@ trait VMDisconnectProfile {
    * @return The stream of vm disconnect events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeVMDisconnectWithData(
+  def getOrCreateVMDisconnectRequestWithData(
     extraArguments: JDIArgument*
   ): IdentityPipeline[VMDisconnectEventAndData] = {
-    onVMDisconnectWithData(extraArguments: _*).get
+    tryGetOrCreateVMDisconnectRequestWithData(extraArguments: _*).get
   }
 }

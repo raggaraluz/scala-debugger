@@ -27,7 +27,7 @@ class PureMethodInfoProfile(
    *
    * @return The return type name
    */
-  override def unsafeReturnTypeName: String = method.returnTypeName()
+  override def getReturnTypeName: String = method.returnTypeName()
 
   /**
    * Returns the fully-qualified class names of the types for the parameters
@@ -35,7 +35,7 @@ class PureMethodInfoProfile(
    *
    * @return The collection of parameter type names
    */
-  override def unsafeParameterTypeNames: Seq[String] = {
+  override def getParameterTypeNames: Seq[String] = {
     import scala.collection.JavaConverters._
     method.argumentTypeNames().asScala
   }

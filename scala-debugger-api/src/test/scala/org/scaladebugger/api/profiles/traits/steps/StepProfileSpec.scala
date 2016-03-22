@@ -58,7 +58,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
       extraArguments: JDIArgument*
     ): Future[(StepEventAndData)] = ???
 
-    override def onStepWithData(
+    override def tryCreateStepListenerWithData(
       threadReference: ThreadReference,
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[StepEventAndData]] = {
@@ -99,7 +99,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
       extraArguments: JDIArgument*
     ): Future[(StepEventAndData)] = ???
 
-    override def onStepWithData(
+    override def tryCreateStepListenerWithData(
       threadReference: ThreadReference,
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[StepEventAndData]] = {
@@ -154,7 +154,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
-          override def onStepWithData(
+          override def tryCreateStepListenerWithData(
             threadReference: ThreadReference,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
@@ -218,7 +218,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
-          override def onStepWithData(
+          override def tryCreateStepListenerWithData(
             threadReference: ThreadReference,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
@@ -282,7 +282,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
-          override def onStepWithData(
+          override def tryCreateStepListenerWithData(
             threadReference: ThreadReference,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
@@ -346,7 +346,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
-          override def onStepWithData(
+          override def tryCreateStepListenerWithData(
             threadReference: ThreadReference,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
@@ -410,7 +410,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
             futureWithData
           }
 
-          override def onStepWithData(
+          override def tryCreateStepListenerWithData(
             threadReference: ThreadReference,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
@@ -474,7 +474,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
-          override def onStepWithData(
+          override def tryCreateStepListenerWithData(
             threadReference: ThreadReference,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
@@ -494,7 +494,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
       }
     }
 
-    describe("#onStep") {
+    describe("#tryCreateStepListener") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[StepEvent]
 
@@ -503,7 +503,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
         var actual: StepEvent = null
         successStepProfile
-          .onStep(mockThreadReference)
+          .tryCreateStepListener(mockThreadReference)
           .get
           .foreach(actual = _)
 
@@ -520,7 +520,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
         var actual: Throwable = null
         failStepProfile
-          .onStep(mockThreadReference)
+          .tryCreateStepListener(mockThreadReference)
           .failed
           .foreach(actual = _)
 
@@ -528,7 +528,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
       }
     }
 
-    describe("#onUnsafeStep") {
+    describe("#createStepListener") {
       it("should return a pipeline of events if successful") {
         val expected = mock[StepEvent]
 
@@ -537,7 +537,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
         var actual: StepEvent = null
         successStepProfile
-          .onUnsafeStep(mockThreadReference)
+          .createStepListener(mockThreadReference)
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -550,19 +550,19 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failStepProfile.onUnsafeStep(mockThreadReference)
+          failStepProfile.createStepListener(mockThreadReference)
         }
       }
     }
 
-    describe("#onUnsafeStepWithData") {
+    describe("#createStepListenerWithData") {
       it("should return a pipeline of events and data if successful") {
         // Data to be run through pipeline
         val expected = (mock[StepEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (StepEvent, Seq[JDIEventDataResult]) = null
         successStepProfile
-          .onUnsafeStepWithData(mockThreadReference)
+          .createStepListenerWithData(mockThreadReference)
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -576,7 +576,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
           failStepProfile
-            .onUnsafeStepWithData(mockThreadReference)
+            .createStepListenerWithData(mockThreadReference)
         }
       }
     }

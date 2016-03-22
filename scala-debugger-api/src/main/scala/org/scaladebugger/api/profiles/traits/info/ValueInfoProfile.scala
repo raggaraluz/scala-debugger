@@ -20,14 +20,14 @@ trait ValueInfoProfile {
    * @return Success containing the value as a local instance,
    *         otherwise a failure
    */
-  def asLocalValue: Try[Any] = Try(asUnsafeLocalValue)
+  def tryToLocalValue: Try[Any] = Try(toLocalValue)
 
   /**
    * Returns the value as a value local to this JVM.
    *
    * @return The value as a local instance
    */
-  def asUnsafeLocalValue: Any
+  def toLocalValue: Any
 
   /**
    * Returns whether or not this value represents a primitive.
@@ -70,14 +70,14 @@ trait ValueInfoProfile {
    * @return Success containing the object profile wrapping this value,
    *         otherwise a failure
    */
-  def asObject: Try[ObjectInfoProfile] = Try(asUnsafeObject)
+  def tryToObject: Try[ObjectInfoProfile] = Try(toObject)
 
   /**
    * Returns the value as an object (profile).
    *
    * @return The object profile wrapping this value
    */
-  def asUnsafeObject: ObjectInfoProfile
+  def toObject: ObjectInfoProfile
 
   /**
    * Returns the value as an array (profile).
@@ -85,12 +85,12 @@ trait ValueInfoProfile {
    * @return Success containing the array profile wrapping this value,
    *         otherwise a failure
    */
-  def asArray: Try[ArrayInfoProfile] = Try(asUnsafeArray)
+  def tryToArray: Try[ArrayInfoProfile] = Try(toArray)
 
   /**
    * Returns the value as an array (profile).
    *
    * @return The array profile wrapping this value
    */
-  def asUnsafeArray: ArrayInfoProfile
+  def toArray: ArrayInfoProfile
 }

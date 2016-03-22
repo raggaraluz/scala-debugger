@@ -39,7 +39,7 @@ class PureMethodExitProfileIntegrationSpec extends FunSpec with Matchers
       val s = DummyScalaVirtualMachine.newInstance()
 
       val methodPipeline = s.withProfile(PureDebugProfile.Name)
-        .onUnsafeMethodExit(expectedClassName, expectedMethodName)
+        .getOrCreateMethodExitRequest(expectedClassName, expectedMethodName)
         .map(_.method())
         .map(m => (m.declaringType().name(), m.name()))
 
@@ -57,7 +57,7 @@ class PureMethodExitProfileIntegrationSpec extends FunSpec with Matchers
         .foreach(_ => leftUnexpectedMethod.set(true))
 
       // Last line in test method
-      s.onUnsafeBreakpoint(testFile, 28)
+      s.getOrCreateBreakpointRequest(testFile, 28)
         .map(_.location())
         .map(l => (l.sourcePath(), l.lineNumber()))
         .foreach(t => {

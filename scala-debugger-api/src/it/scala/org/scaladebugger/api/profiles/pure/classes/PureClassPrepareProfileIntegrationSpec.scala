@@ -31,7 +31,7 @@ class PureClassPrepareProfileIntegrationSpec extends FunSpec with Matchers
       // Mark that we want to receive class prepare events and watch for one
       // NOTE: This is already set within the ScalaVirtualMachine class
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeClassPrepare()
+        .getOrCreateClassPrepareRequest()
         .map(_.referenceType().name())
         .filter(_ == expectedClassName)
         .foreach(_ => classPrepareHit.incrementAndGet())

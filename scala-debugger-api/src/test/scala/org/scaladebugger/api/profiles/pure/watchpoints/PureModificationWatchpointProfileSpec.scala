@@ -111,7 +111,7 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onModificationWatchpointWithData") {
+    describe("#tryGetOrCreateModificationWatchpointRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val className = "full.class.name"
         val fieldName = "fieldName"
@@ -147,7 +147,7 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureModificationWatchpointProfile.onModificationWatchpointWithData(
+        pureModificationWatchpointProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -183,7 +183,7 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
           ).throwing(expected.failed.get).once()
         }
 
-        val actual = pureModificationWatchpointProfile.onModificationWatchpointWithData(
+        val actual = pureModificationWatchpointProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -232,7 +232,7 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureModificationWatchpointProfile.onModificationWatchpointWithData(
+        pureModificationWatchpointProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -268,7 +268,7 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureModificationWatchpointProfile.onModificationWatchpointWithData(
+        pureModificationWatchpointProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -311,7 +311,7 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureModificationWatchpointProfile.onModificationWatchpointWithData(
+        pureModificationWatchpointProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -338,7 +338,7 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureModificationWatchpointProfile.onModificationWatchpointWithData(
+        pureModificationWatchpointProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -385,7 +385,7 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureModificationWatchpointProfile.onModificationWatchpointWithData(
+        pureModificationWatchpointProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -422,7 +422,7 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureModificationWatchpointProfile.onModificationWatchpointWithData(
+        pureModificationWatchpointProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           className,
           fieldName + 1,
           arguments: _*
@@ -482,12 +482,12 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
           })
         }
 
-        val p1 = pureModificationWatchpointProfile.onModificationWatchpointWithData(
+        val p1 = pureModificationWatchpointProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
         )
-        val p2 = pureModificationWatchpointProfile.onModificationWatchpointWithData(
+        val p2 = pureModificationWatchpointProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -550,12 +550,12 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
           })
         }
 
-        val p1 = pureModificationWatchpointProfile.onModificationWatchpointWithData(
+        val p1 = pureModificationWatchpointProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
         )
-        val p2 = pureModificationWatchpointProfile.onModificationWatchpointWithData(
+        val p2 = pureModificationWatchpointProfile.tryGetOrCreateModificationWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*

@@ -68,7 +68,7 @@ trait PureClassUnloadProfile extends ClassUnloadProfile {
    * @return The stream of class unload events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onClassUnloadWithData(
+  override def tryGetOrCreateClassUnloadRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ClassUnloadEventAndData]] = Try {
     val JDIArgumentGroup(rArgs, eArgs, _) = JDIArgumentGroup(extraArguments: _*)

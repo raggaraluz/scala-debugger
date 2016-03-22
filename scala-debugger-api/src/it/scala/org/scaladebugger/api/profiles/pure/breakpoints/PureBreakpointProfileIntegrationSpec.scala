@@ -37,7 +37,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
 
       val s = DummyScalaVirtualMachine.newInstance()
       s.withProfile(PureDebugProfile.Name)
-        .onBreakpoint(testFile, firstBreakpointLine)
+        .tryGetOrCreateBreakpointRequest(testFile, firstBreakpointLine)
         .get
         .map(_.location())
         .map(l => (l.sourcePath(), l.lineNumber()))
@@ -46,7 +46,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
         .foreach(_ => firstBreakpointCount.incrementAndGet())
 
       s.withProfile(PureDebugProfile.Name)
-        .onBreakpoint(testFile, secondBreakpointLine)
+        .tryGetOrCreateBreakpointRequest(testFile, secondBreakpointLine)
         .get
         .map(_.location())
         .map(l => (l.sourcePath(), l.lineNumber()))
@@ -74,7 +74,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
 
       val s = DummyScalaVirtualMachine.newInstance()
       s.withProfile(PureDebugProfile.Name)
-        .onBreakpoint(testFile, firstBreakpointLine)
+        .tryGetOrCreateBreakpointRequest(testFile, firstBreakpointLine)
         .get
         .map(_.location())
         .map(l => (l.sourcePath(), l.lineNumber()))
@@ -83,7 +83,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
         .foreach(_ => firstBreakpointCount.incrementAndGet())
 
       s.withProfile(PureDebugProfile.Name)
-        .onBreakpoint(testFile, secondBreakpointLine)
+        .tryGetOrCreateBreakpointRequest(testFile, secondBreakpointLine)
         .get
         .map(_.location())
         .map(l => (l.sourcePath(), l.lineNumber()))
@@ -111,7 +111,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
 
       val s = DummyScalaVirtualMachine.newInstance()
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, firstBreakpointLine)
+        .getOrCreateBreakpointRequest(testFile, firstBreakpointLine)
         .map(_.location())
         .map(l => (l.sourcePath(), l.lineNumber()))
         .filter(_._1 == testFile)
@@ -119,7 +119,7 @@ class PureBreakpointProfileIntegrationSpec extends FunSpec with Matchers
         .foreach(_ => firstBreakpoint.set(true))
 
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, secondBreakpointLine)
+        .getOrCreateBreakpointRequest(testFile, secondBreakpointLine)
         .map(_.location())
         .map(l => (l.sourcePath(), l.lineNumber()))
         .filter(_._1 == testFile)

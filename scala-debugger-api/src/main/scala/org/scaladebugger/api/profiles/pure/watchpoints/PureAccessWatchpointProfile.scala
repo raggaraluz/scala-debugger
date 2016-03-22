@@ -67,7 +67,7 @@ trait PureAccessWatchpointProfile extends AccessWatchpointProfile {
    * @return The stream of access watchpoint events and any retrieved data
    *         based on requests from extra arguments
    */
-  override def onAccessWatchpointWithData(
+  override def tryGetOrCreateAccessWatchpointRequestWithData(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*

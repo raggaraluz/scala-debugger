@@ -23,7 +23,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
   )
 
   private val successExceptionProfile = new Object with ExceptionProfile {
-    override def onExceptionWithData(
+    override def tryGetOrCreateExceptionRequestWithData(
       exceptionName: String,
       notifyCaught: Boolean,
       notifyUncaught: Boolean,
@@ -32,7 +32,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
       Success(TestPipelineWithData)
     }
 
-    override def onAllExceptionsWithData(
+    override def tryGetOrCreateAllExceptionsRequestWithData(
       notifyCaught: Boolean,
       notifyUncaught: Boolean,
       extraArguments: JDIArgument*
@@ -46,7 +46,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
   private val failExceptionProfile = new Object with ExceptionProfile {
     override def exceptionRequests: Seq[ExceptionRequestInfo] = ???
 
-    override def onExceptionWithData(
+    override def tryGetOrCreateExceptionRequestWithData(
       exceptionName: String,
       notifyCaught: Boolean,
       notifyUncaught: Boolean,
@@ -55,7 +55,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
       Failure(TestThrowable)
     }
 
-    override def onAllExceptionsWithData(
+    override def tryGetOrCreateAllExceptionsRequestWithData(
       notifyCaught: Boolean,
       notifyUncaught: Boolean,
       extraArguments: JDIArgument*
@@ -65,7 +65,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
   }
 
   describe("ExceptionProfile") {
-    describe("#onException") {
+    describe("#tryGetOrCreateExceptionRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[ExceptionEvent]
 
@@ -74,7 +74,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
 
         var actual: ExceptionEvent = null
         successExceptionProfile
-          .onException("", true, true)
+          .tryGetOrCreateExceptionRequest("", true, true)
           .get
           .foreach(actual = _)
 
@@ -91,7 +91,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
 
         var actual: Throwable = null
         failExceptionProfile
-          .onException("", true, true)
+          .tryGetOrCreateExceptionRequest("", true, true)
           .failed
           .foreach(actual = _)
 
@@ -99,7 +99,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
       }
     }
 
-    describe("#onUnsafeException") {
+    describe("#getOrCreateExceptionRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[ExceptionEvent]
 
@@ -108,7 +108,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
 
         var actual: ExceptionEvent = null
         successExceptionProfile
-          .onUnsafeException("", true, true)
+          .getOrCreateExceptionRequest("", true, true)
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -121,19 +121,19 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
 
       it("should throw an error if it occurs") {
         intercept[Throwable] {
-          failExceptionProfile.onUnsafeException("", true, true)
+          failExceptionProfile.getOrCreateExceptionRequest("", true, true)
         }
       }
     }
 
-    describe("#onUnsafeExceptionWithData") {
+    describe("#getOrCreateExceptionRequestWithData") {
       it("should return a pipeline with the event data results") {
         // Data to be run through pipeline
         val expected = (mock[ExceptionEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (ExceptionEvent, Seq[JDIEventDataResult]) = null
         successExceptionProfile
-          .onUnsafeExceptionWithData("", true, true)
+          .getOrCreateExceptionRequestWithData("", true, true)
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -146,12 +146,12 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
 
       it("should throw an error if it occurs") {
         intercept[Throwable] {
-          failExceptionProfile.onUnsafeExceptionWithData("", true, true)
+          failExceptionProfile.getOrCreateExceptionRequestWithData("", true, true)
         }
       }
     }
 
-    describe("#onAllExceptions") {
+    describe("#tryGetOrCreateAllExceptionsRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[ExceptionEvent]
 
@@ -160,7 +160,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
 
         var actual: ExceptionEvent = null
         successExceptionProfile
-          .onAllExceptions(true, true)
+          .tryGetOrCreateAllExceptionsRequest(true, true)
           .get
           .foreach(actual = _)
 
@@ -177,7 +177,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
 
         var actual: Throwable = null
         failExceptionProfile
-          .onAllExceptions(true, true)
+          .tryGetOrCreateAllExceptionsRequest(true, true)
           .failed
           .foreach(actual = _)
 
@@ -185,7 +185,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
       }
     }
 
-    describe("#onUnsafeAllExceptions") {
+    describe("#getOrCreateAllExceptionsRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[ExceptionEvent]
 
@@ -194,7 +194,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
 
         var actual: ExceptionEvent = null
         successExceptionProfile
-          .onUnsafeAllExceptions(true, true)
+          .getOrCreateAllExceptionsRequest(true, true)
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -207,19 +207,19 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
 
       it("should throw an error if it occurs") {
         intercept[Throwable] {
-          failExceptionProfile.onUnsafeAllExceptions(true, true)
+          failExceptionProfile.getOrCreateAllExceptionsRequest(true, true)
         }
       }
     }
 
-    describe("#onUnsafeAllExceptionsWithData") {
+    describe("#getOrCreateAllExceptionsRequestWithData") {
       it("should return a pipeline with the event data results") {
         // Data to be run through pipeline
         val expected = (mock[ExceptionEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (ExceptionEvent, Seq[JDIEventDataResult]) = null
         successExceptionProfile
-          .onUnsafeAllExceptionsWithData(true, true)
+          .getOrCreateAllExceptionsRequestWithData(true, true)
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -232,7 +232,7 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
 
       it("should throw an error if it occurs") {
         intercept[Throwable] {
-          failExceptionProfile.onUnsafeAllExceptionsWithData(true, true)
+          failExceptionProfile.getOrCreateAllExceptionsRequestWithData(true, true)
         }
       }
     }

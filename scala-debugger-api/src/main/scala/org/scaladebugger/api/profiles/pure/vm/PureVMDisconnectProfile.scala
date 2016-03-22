@@ -27,7 +27,7 @@ trait PureVMDisconnectProfile extends VMDisconnectProfile {
    * @return The stream of vm disconnect events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onVMDisconnectWithData(
+  override def tryGetOrCreateVMDisconnectRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[VMDisconnectEventAndData]] = Try {
     val JDIArgumentGroup(_, eArgs, _) = JDIArgumentGroup(extraArguments: _*)

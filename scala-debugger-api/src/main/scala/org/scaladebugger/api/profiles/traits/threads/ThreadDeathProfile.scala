@@ -32,10 +32,10 @@ trait ThreadDeathProfile {
    *
    * @return The stream of thread death events
    */
-  def onThreadDeath(
+  def tryGetOrCreateThreadDeathRequest(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ThreadDeathEvent]] = {
-    onThreadDeathWithData(extraArguments: _*).map(_.map(_._1).noop())
+    tryGetOrCreateThreadDeathRequestWithData(extraArguments: _*).map(_.map(_._1).noop())
   }
 
   /**
@@ -46,7 +46,7 @@ trait ThreadDeathProfile {
    * @return The stream of thread death events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onThreadDeathWithData(
+  def tryGetOrCreateThreadDeathRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ThreadDeathEventAndData]]
 
@@ -57,10 +57,10 @@ trait ThreadDeathProfile {
    *
    * @return The stream of thread death events
    */
-  def onUnsafeThreadDeath(
+  def getOrCreateThreadDeathRequest(
     extraArguments: JDIArgument*
   ): IdentityPipeline[ThreadDeathEvent] = {
-    onThreadDeath(extraArguments: _*).get
+    tryGetOrCreateThreadDeathRequest(extraArguments: _*).get
   }
 
   /**
@@ -71,9 +71,9 @@ trait ThreadDeathProfile {
    * @return The stream of thread death events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeThreadDeathWithData(
+  def getOrCreateThreadDeathRequestWithData(
     extraArguments: JDIArgument*
   ): IdentityPipeline[ThreadDeathEventAndData] = {
-    onThreadDeathWithData(extraArguments: _*).get
+    tryGetOrCreateThreadDeathRequestWithData(extraArguments: _*).get
   }
 }

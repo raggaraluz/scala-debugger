@@ -23,7 +23,7 @@ class ThreadStartProfileSpec extends FunSpec with Matchers
   )
 
   private val successThreadStartProfile = new Object with ThreadStartProfile {
-    override def onThreadStartWithData(
+    override def tryGetOrCreateThreadStartRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[ThreadStartEventAndData]] = {
       Success(TestPipelineWithData)
@@ -33,7 +33,7 @@ class ThreadStartProfileSpec extends FunSpec with Matchers
   }
 
   private val failThreadStartProfile = new Object with ThreadStartProfile {
-    override def onThreadStartWithData(
+    override def tryGetOrCreateThreadStartRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[ThreadStartEventAndData]] = {
       Failure(TestThrowable)
@@ -43,7 +43,7 @@ class ThreadStartProfileSpec extends FunSpec with Matchers
   }
 
   describe("ThreadStartProfile") {
-    describe("#onThreadStart") {
+    describe("#tryGetOrCreateThreadStartRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[ThreadStartEvent]
 
@@ -51,7 +51,7 @@ class ThreadStartProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: ThreadStartEvent = null
-        successThreadStartProfile.onThreadStart().get.foreach(actual = _)
+        successThreadStartProfile.tryGetOrCreateThreadStartRequest().get.foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -68,13 +68,13 @@ class ThreadStartProfileSpec extends FunSpec with Matchers
         val data = (mock[ThreadStartEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: Throwable = null
-        failThreadStartProfile.onThreadStart().failed.foreach(actual = _)
+        failThreadStartProfile.tryGetOrCreateThreadStartRequest().failed.foreach(actual = _)
 
         actual should be (expected)
       }
     }
 
-    describe("#onUnsafeThreadStart") {
+    describe("#getOrCreateThreadStartRequest") {
       it("should return a pipeline of events if successful") {
         val expected = mock[ThreadStartEvent]
 
@@ -82,7 +82,7 @@ class ThreadStartProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: ThreadStartEvent = null
-        successThreadStartProfile.onUnsafeThreadStart().foreach(actual = _)
+        successThreadStartProfile.getOrCreateThreadStartRequest().foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -94,19 +94,19 @@ class ThreadStartProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failThreadStartProfile.onUnsafeThreadStart()
+          failThreadStartProfile.getOrCreateThreadStartRequest()
         }
       }
     }
 
-    describe("#onUnsafeThreadStartWithData") {
+    describe("#getOrCreateThreadStartRequestWithData") {
       it("should return a pipeline of events and data if successful") {
         // Data to be run through pipeline
         val expected = (mock[ThreadStartEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (ThreadStartEvent, Seq[JDIEventDataResult]) = null
         successThreadStartProfile
-          .onUnsafeThreadStartWithData()
+          .getOrCreateThreadStartRequestWithData()
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -119,7 +119,7 @@ class ThreadStartProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failThreadStartProfile.onUnsafeThreadStartWithData()
+          failThreadStartProfile.getOrCreateThreadStartRequestWithData()
         }
       }
     }

@@ -28,7 +28,7 @@ class PureVMDisconnectProfileIntegrationSpec extends FunSpec with Matchers
       val s = DummyScalaVirtualMachine.newInstance()
 
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeVMDisconnect()
+        .getOrCreateVMDisconnectRequest()
         .foreach(_ => detectedDisconnect.set(true))
 
       // Start our VM and listen for the disconnect event

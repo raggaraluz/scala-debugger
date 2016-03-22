@@ -31,7 +31,7 @@ class PureObjectInfoProfile(
    *                          method invocation
    * @return The resulting value of the invocation
    */
-  override def unsafeInvoke(
+  override def invoke(
     methodInfoProfile: MethodInfoProfile,
     arguments: Seq[Any],
     jdiArguments: JDIArgument*
@@ -64,7 +64,7 @@ class PureObjectInfoProfile(
    *                           method invocation
    * @return The resulting value of the invocation
    */
-  override def unsafeInvoke(
+  override def invoke(
     methodName: String,
     parameterTypeNames: Seq[String],
     arguments: Seq[Any],
@@ -73,8 +73,8 @@ class PureObjectInfoProfile(
     assert(parameterTypeNames.length == arguments.length,
       "Inconsistent number of parameter types versus arguments!")
 
-    unsafeInvoke(
-      unsafeMethod(methodName, parameterTypeNames: _*),
+    invoke(
+      getMethod(methodName, parameterTypeNames: _*),
       arguments,
       jdiArguments: _*
     )
@@ -85,7 +85,7 @@ class PureObjectInfoProfile(
    *
    * @return The profiles wrapping the visible methods in this object
    */
-  override def unsafeMethods: Seq[MethodInfoProfile] = {
+  override def getMethods: Seq[MethodInfoProfile] = {
     referenceType.visibleMethods().asScala.map(newMethodProfile)
   }
 
@@ -97,7 +97,7 @@ class PureObjectInfoProfile(
    *                           of the method to find
    * @return The profile wrapping the method
    */
-  override def unsafeMethod(
+  override def getMethod(
     name: String,
     parameterTypeNames: String*
   ): MethodInfoProfile = {
@@ -112,7 +112,7 @@ class PureObjectInfoProfile(
    *
    * @return The profiles wrapping the visible fields in this object
    */
-  override def unsafeFields: Seq[VariableInfoProfile] = {
+  override def getFields: Seq[VariableInfoProfile] = {
     referenceType.visibleFields().asScala.map(newFieldProfile)
   }
 
@@ -122,7 +122,7 @@ class PureObjectInfoProfile(
    * @param name The name of the field
    * @return The profile wrapping the field
    */
-  override def unsafeField(name: String): VariableInfoProfile = {
+  override def getField(name: String): VariableInfoProfile = {
     newFieldProfile(Option(referenceType.fieldByName(name)).get)
   }
 

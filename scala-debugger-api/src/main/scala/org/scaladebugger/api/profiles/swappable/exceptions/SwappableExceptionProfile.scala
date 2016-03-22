@@ -16,13 +16,13 @@ import scala.util.Try
 trait SwappableExceptionProfile extends ExceptionProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onExceptionWithData(
+  override def tryGetOrCreateExceptionRequestWithData(
     exceptionName: String,
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ExceptionEventAndData]] = {
-    withCurrentProfile.onExceptionWithData(
+    withCurrentProfile.tryGetOrCreateExceptionRequestWithData(
       exceptionName,
       notifyCaught,
       notifyUncaught,
@@ -30,12 +30,12 @@ trait SwappableExceptionProfile extends ExceptionProfile {
     )
   }
 
-  override def onAllExceptionsWithData(
+  override def tryGetOrCreateAllExceptionsRequestWithData(
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ExceptionEventAndData]] = {
-    withCurrentProfile.onAllExceptionsWithData(
+    withCurrentProfile.tryGetOrCreateAllExceptionsRequestWithData(
       notifyCaught,
       notifyUncaught,
       extraArguments: _*

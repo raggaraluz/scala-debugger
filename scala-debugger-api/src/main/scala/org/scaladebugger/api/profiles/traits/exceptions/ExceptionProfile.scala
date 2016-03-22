@@ -36,13 +36,13 @@ trait ExceptionProfile {
    *
    * @return The stream of exception events
    */
-  def onException(
+  def tryGetOrCreateExceptionRequest(
     exceptionName: String,
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ExceptionEvent]] = {
-    onExceptionWithData(
+    tryGetOrCreateExceptionRequestWithData(
       exceptionName,
       notifyCaught,
       notifyUncaught,
@@ -62,13 +62,13 @@ trait ExceptionProfile {
    *
    * @return The stream of exception events
    */
-  def onUnsafeException(
+  def getOrCreateExceptionRequest(
     exceptionName: String,
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
   ): IdentityPipeline[ExceptionEvent] = {
-    onException(
+    tryGetOrCreateExceptionRequest(
       exceptionName,
       notifyCaught,
       notifyUncaught,
@@ -89,13 +89,13 @@ trait ExceptionProfile {
    * @return The stream of exception events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeExceptionWithData(
+  def getOrCreateExceptionRequestWithData(
     exceptionName: String,
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
   ): IdentityPipeline[ExceptionEventAndData] = {
-    onExceptionWithData(
+    tryGetOrCreateExceptionRequestWithData(
       exceptionName,
       notifyCaught,
       notifyUncaught,
@@ -116,7 +116,7 @@ trait ExceptionProfile {
    * @return The stream of exception events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onExceptionWithData(
+  def tryGetOrCreateExceptionRequestWithData(
     exceptionName: String,
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
@@ -134,12 +134,12 @@ trait ExceptionProfile {
    *
    * @return The stream of exception events
    */
-  def onAllExceptions(
+  def tryGetOrCreateAllExceptionsRequest(
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ExceptionEvent]] = {
-    onAllExceptionsWithData(
+    tryGetOrCreateAllExceptionsRequestWithData(
       notifyCaught,
       notifyUncaught,
       extraArguments: _*
@@ -157,12 +157,12 @@ trait ExceptionProfile {
    *
    * @return The stream of exception events
    */
-  def onUnsafeAllExceptions(
+  def getOrCreateAllExceptionsRequest(
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
   ): IdentityPipeline[ExceptionEvent] = {
-    onAllExceptions(
+    tryGetOrCreateAllExceptionsRequest(
       notifyCaught,
       notifyUncaught,
       extraArguments: _*
@@ -181,7 +181,7 @@ trait ExceptionProfile {
    * @return The stream of exception events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onAllExceptionsWithData(
+  def tryGetOrCreateAllExceptionsRequestWithData(
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
@@ -199,12 +199,12 @@ trait ExceptionProfile {
    * @return The stream of exception events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeAllExceptionsWithData(
+  def getOrCreateAllExceptionsRequestWithData(
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
   ): IdentityPipeline[ExceptionEventAndData] = {
-    onAllExceptionsWithData(
+    tryGetOrCreateAllExceptionsRequestWithData(
       notifyCaught,
       notifyUncaught,
       extraArguments: _*

@@ -23,7 +23,7 @@ class ThreadDeathProfileSpec extends FunSpec with Matchers
   )
 
   private val successThreadDeathProfile = new Object with ThreadDeathProfile {
-    override def onThreadDeathWithData(
+    override def tryGetOrCreateThreadDeathRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[ThreadDeathEventAndData]] = {
       Success(TestPipelineWithData)
@@ -33,7 +33,7 @@ class ThreadDeathProfileSpec extends FunSpec with Matchers
   }
 
   private val failThreadDeathProfile = new Object with ThreadDeathProfile {
-    override def onThreadDeathWithData(
+    override def tryGetOrCreateThreadDeathRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[ThreadDeathEventAndData]] = {
       Failure(TestThrowable)
@@ -43,7 +43,7 @@ class ThreadDeathProfileSpec extends FunSpec with Matchers
   }
 
   describe("ThreadDeathProfile") {
-    describe("#onThreadDeath") {
+    describe("#tryGetOrCreateThreadDeathRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[ThreadDeathEvent]
 
@@ -51,7 +51,7 @@ class ThreadDeathProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: ThreadDeathEvent = null
-        successThreadDeathProfile.onThreadDeath().get.foreach(actual = _)
+        successThreadDeathProfile.tryGetOrCreateThreadDeathRequest().get.foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -68,13 +68,13 @@ class ThreadDeathProfileSpec extends FunSpec with Matchers
         val data = (mock[ThreadDeathEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: Throwable = null
-        failThreadDeathProfile.onThreadDeath().failed.foreach(actual = _)
+        failThreadDeathProfile.tryGetOrCreateThreadDeathRequest().failed.foreach(actual = _)
 
         actual should be (expected)
       }
     }
 
-    describe("#onUnsafeThreadDeath") {
+    describe("#getOrCreateThreadDeathRequest") {
       it("should return a pipeline of events if successful") {
         val expected = mock[ThreadDeathEvent]
 
@@ -82,7 +82,7 @@ class ThreadDeathProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: ThreadDeathEvent = null
-        successThreadDeathProfile.onUnsafeThreadDeath().foreach(actual = _)
+        successThreadDeathProfile.getOrCreateThreadDeathRequest().foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -94,19 +94,19 @@ class ThreadDeathProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failThreadDeathProfile.onUnsafeThreadDeath()
+          failThreadDeathProfile.getOrCreateThreadDeathRequest()
         }
       }
     }
 
-    describe("#onUnsafeThreadDeathWithData") {
+    describe("#getOrCreateThreadDeathRequestWithData") {
       it("should return a pipeline of events and data if successful") {
         // Data to be run through pipeline
         val expected = (mock[ThreadDeathEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (ThreadDeathEvent, Seq[JDIEventDataResult]) = null
         successThreadDeathProfile
-          .onUnsafeThreadDeathWithData()
+          .getOrCreateThreadDeathRequestWithData()
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -119,7 +119,7 @@ class ThreadDeathProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failThreadDeathProfile.onUnsafeThreadDeathWithData()
+          failThreadDeathProfile.getOrCreateThreadDeathRequestWithData()
         }
       }
     }

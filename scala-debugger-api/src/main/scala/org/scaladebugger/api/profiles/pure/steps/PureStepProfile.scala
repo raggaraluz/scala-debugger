@@ -156,7 +156,7 @@ trait PureStepProfile extends StepProfile {
    * @return The stream of step events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onStepWithData(
+  override def tryCreateStepListenerWithData(
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = Try {

@@ -101,7 +101,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
       }
     }
 
-    describe("#onClassPrepareWithData") {
+    describe("#tryGetOrCreateClassPrepareRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val arguments = Seq(mock[JDIRequestArgument])
 
@@ -132,7 +132,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureClassPrepareProfile.onClassPrepareWithData(
+        pureClassPrepareProfile.tryGetOrCreateClassPrepareRequestWithData(
           arguments: _*
         )
       }
@@ -161,7 +161,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             .throwing(expected.failed.get).once()
         }
 
-        val actual = pureClassPrepareProfile.onClassPrepareWithData(
+        val actual = pureClassPrepareProfile.tryGetOrCreateClassPrepareRequestWithData(
           arguments: _*
         )
 
@@ -203,7 +203,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureClassPrepareProfile.onClassPrepareWithData(
+        pureClassPrepareProfile.tryGetOrCreateClassPrepareRequestWithData(
           arguments: _*
         )
 
@@ -234,7 +234,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureClassPrepareProfile.onClassPrepareWithData(
+        pureClassPrepareProfile.tryGetOrCreateClassPrepareRequestWithData(
           arguments: _*
         )
       }
@@ -270,7 +270,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureClassPrepareProfile.onClassPrepareWithData(
+        pureClassPrepareProfile.tryGetOrCreateClassPrepareRequestWithData(
           arguments: _*
         )
 
@@ -299,7 +299,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureClassPrepareProfile.onClassPrepareWithData(
+        pureClassPrepareProfile.tryGetOrCreateClassPrepareRequestWithData(
           arguments: _*
         )
       }
@@ -356,8 +356,8 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           })
         }
 
-        val p1 = pureClassPrepareProfile.onClassPrepareWithData(arguments: _*)
-        val p2 = pureClassPrepareProfile.onClassPrepareWithData(arguments: _*)
+        val p1 = pureClassPrepareProfile.tryGetOrCreateClassPrepareRequestWithData(arguments: _*)
+        val p2 = pureClassPrepareProfile.tryGetOrCreateClassPrepareRequestWithData(arguments: _*)
 
         p1.foreach(_.close())
         p2.foreach(_.close())
@@ -415,8 +415,8 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           })
         }
 
-        val p1 = pureClassPrepareProfile.onClassPrepareWithData(arguments: _*)
-        val p2 = pureClassPrepareProfile.onClassPrepareWithData(arguments: _*)
+        val p1 = pureClassPrepareProfile.tryGetOrCreateClassPrepareRequestWithData(arguments: _*)
+        val p2 = pureClassPrepareProfile.tryGetOrCreateClassPrepareRequestWithData(arguments: _*)
 
         p1.foreach(_.close(now = true, data = Constants.CloseRemoveAll))
       }

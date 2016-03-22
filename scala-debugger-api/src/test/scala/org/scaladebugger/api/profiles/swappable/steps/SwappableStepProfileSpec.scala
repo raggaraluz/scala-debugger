@@ -225,18 +225,18 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onStepWithData") {
+    describe("#tryCreateStepListenerWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])
 
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.onStepWithData _)
+        (mockDebugProfile.tryCreateStepListenerWithData _)
           .expects(mockThreadReference, arguments).once()
 
 
-        swappableDebugProfile.onStepWithData(
+        swappableDebugProfile.tryCreateStepListenerWithData(
           mockThreadReference,
           arguments: _*
         )
@@ -248,7 +248,7 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onStepWithData(
+          swappableDebugProfile.tryCreateStepListenerWithData(
             mockThreadReference,
             arguments: _*
           )

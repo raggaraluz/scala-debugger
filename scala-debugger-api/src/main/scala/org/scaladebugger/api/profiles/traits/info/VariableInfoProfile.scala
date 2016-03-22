@@ -41,30 +41,28 @@ trait VariableInfoProfile {
    * @return Success containing the profile representing the value, otherwise
    *         a failure
    */
-  def toValue: Try[ValueInfoProfile] = Try(toUnsafeValue)
+  def tryToValue: Try[ValueInfoProfile] = Try(toValue)
 
   /**
    * Returns a profile representing the value of this variable.
    *
    * @return The profile representing the value
    */
-  def toUnsafeValue: ValueInfoProfile
+  def toValue: ValueInfoProfile
 
   /**
    * Sets the primitive value of this variable.
    *
    * @param value The new value for the variable
-   *
    * @return Success containing the value, otherwise a failure
    */
-  def setValue(value: AnyVal): Try[AnyVal]
+  def trySetValue(value: AnyVal): Try[AnyVal]
 
   /**
    * Sets the string value of this variable.
    *
    * @param value The new value for the variable
-   *
    * @return Success containing the value, otherwise a failure
    */
-  def setValue(value: String): Try[String]
+  def trySetValue(value: String): Try[String]
 }

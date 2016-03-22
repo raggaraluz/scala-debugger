@@ -23,7 +23,7 @@ class MonitorContendedEnterProfileSpec extends FunSpec with Matchers
   )
 
   private val successMonitorContendedEnterProfile = new Object with MonitorContendedEnterProfile {
-    override def onMonitorContendedEnterWithData(
+    override def tryGetOrCreateMonitorContendedEnterRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[MonitorContendedEnterEventAndData]] = {
       Success(TestPipelineWithData)
@@ -33,7 +33,7 @@ class MonitorContendedEnterProfileSpec extends FunSpec with Matchers
   }
 
   private val failMonitorContendedEnterProfile = new Object with MonitorContendedEnterProfile {
-    override def onMonitorContendedEnterWithData(
+    override def tryGetOrCreateMonitorContendedEnterRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[MonitorContendedEnterEventAndData]] = {
       Failure(TestThrowable)
@@ -43,7 +43,7 @@ class MonitorContendedEnterProfileSpec extends FunSpec with Matchers
   }
 
   describe("MonitorContendedEnterProfile") {
-    describe("#onMonitorContendedEnter") {
+    describe("#tryGetOrCreateMonitorContendedEnterRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[MonitorContendedEnterEvent]
 
@@ -52,7 +52,7 @@ class MonitorContendedEnterProfileSpec extends FunSpec with Matchers
 
         var actual: MonitorContendedEnterEvent = null
         successMonitorContendedEnterProfile
-          .onMonitorContendedEnter()
+          .tryGetOrCreateMonitorContendedEnterRequest()
           .get
           .foreach(actual = _)
 
@@ -69,7 +69,7 @@ class MonitorContendedEnterProfileSpec extends FunSpec with Matchers
 
         var actual: Throwable = null
         failMonitorContendedEnterProfile
-          .onMonitorContendedEnter()
+          .tryGetOrCreateMonitorContendedEnterRequest()
           .failed
           .foreach(actual = _)
 
@@ -77,7 +77,7 @@ class MonitorContendedEnterProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onUnsafeMonitorContendedEnter") {
+    describe("#getOrCreateMonitorContendedEnterRequest") {
       it("should return a pipeline of events if successful") {
         val expected = mock[MonitorContendedEnterEvent]
 
@@ -86,7 +86,7 @@ class MonitorContendedEnterProfileSpec extends FunSpec with Matchers
 
         var actual: MonitorContendedEnterEvent = null
         successMonitorContendedEnterProfile
-          .onUnsafeMonitorContendedEnter()
+          .getOrCreateMonitorContendedEnterRequest()
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -99,19 +99,19 @@ class MonitorContendedEnterProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failMonitorContendedEnterProfile.onUnsafeMonitorContendedEnter()
+          failMonitorContendedEnterProfile.getOrCreateMonitorContendedEnterRequest()
         }
       }
     }
 
-    describe("#onUnsafeMonitorContendedEnterWithData") {
+    describe("#getOrCreateMonitorContendedEnterRequestWithData") {
       it("should return a pipeline of events and data if successful") {
         // Data to be run through pipeline
         val expected = (mock[MonitorContendedEnterEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (MonitorContendedEnterEvent, Seq[JDIEventDataResult]) = null
         successMonitorContendedEnterProfile
-          .onUnsafeMonitorContendedEnterWithData()
+          .getOrCreateMonitorContendedEnterRequestWithData()
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -125,7 +125,7 @@ class MonitorContendedEnterProfileSpec extends FunSpec with Matchers
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
           failMonitorContendedEnterProfile
-            .onUnsafeMonitorContendedEnterWithData()
+            .getOrCreateMonitorContendedEnterRequestWithData()
         }
       }
     }

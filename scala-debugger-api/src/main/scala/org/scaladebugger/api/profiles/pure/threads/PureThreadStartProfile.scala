@@ -68,7 +68,7 @@ trait PureThreadStartProfile extends ThreadStartProfile {
    * @return The stream of thread start events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onThreadStartWithData(
+  override def tryGetOrCreateThreadStartRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ThreadStartEventAndData]] = Try {
     val JDIArgumentGroup(rArgs, eArgs, _) = JDIArgumentGroup(extraArguments: _*)

@@ -24,14 +24,14 @@ class PureFrameInfoProfile(
    *
    * @return The profile of this object
    */
-  override def withUnsafeThisObject: ObjectInfoProfile = thisObjectProfile
+  override def getThisObject: ObjectInfoProfile = thisObjectProfile
 
   /**
    * Retrieves the thread associated with this frame.
    *
    * @return The profile of the thread
    */
-  override def withUnsafeCurrentThread: ThreadInfoProfile = currentThreadProfile
+  override def getCurrentThread: ThreadInfoProfile = currentThreadProfile
 
   /**
    * Retrieves the variable with the specified name from the frame.
@@ -39,10 +39,10 @@ class PureFrameInfoProfile(
    * @param name The name of the variable to retrieve
    * @return Profile of the variable or throws an exception
    */
-  override def forUnsafeVariable(name: String): VariableInfoProfile = {
+  override def getVariable(name: String): VariableInfoProfile = {
     Try(Option(stackFrame.visibleVariableByName(name)).get)
       .map(newLocalVariableProfile)
-      .getOrElse(thisObjectProfile.unsafeField(name))
+      .getOrElse(thisObjectProfile.getField(name))
   }
 
   /**
@@ -50,8 +50,8 @@ class PureFrameInfoProfile(
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def forUnsafeFieldVariables: Seq[VariableInfoProfile] = {
-    thisObjectProfile.unsafeFields
+  override def getFieldVariables: Seq[VariableInfoProfile] = {
+    thisObjectProfile.getFields
   }
 
   /**
@@ -59,15 +59,15 @@ class PureFrameInfoProfile(
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def forUnsafeAllVariables: Seq[VariableInfoProfile] =
-    forUnsafeLocalVariables ++ forUnsafeFieldVariables
+  override def getAllVariables: Seq[VariableInfoProfile] =
+    getLocalVariables ++ getFieldVariables
 
   /**
    * Retrieves all variables that represent local variables in this frame.
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def forUnsafeLocalVariables: Seq[VariableInfoProfile] = {
+  override def getLocalVariables: Seq[VariableInfoProfile] = {
     stackFrame.visibleVariables().asScala.map(newLocalVariableProfile)
   }
 
@@ -76,8 +76,8 @@ class PureFrameInfoProfile(
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def forUnsafeNonArguments: Seq[VariableInfoProfile] = {
-    forUnsafeLocalVariables.filterNot(_.isArgument)
+  override def getNonArguments: Seq[VariableInfoProfile] = {
+    getLocalVariables.filterNot(_.isArgument)
   }
 
   /**
@@ -85,8 +85,8 @@ class PureFrameInfoProfile(
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def forUnsafeArguments: Seq[VariableInfoProfile] = {
-    forUnsafeLocalVariables.filter(_.isArgument)
+  override def getArguments: Seq[VariableInfoProfile] = {
+    getLocalVariables.filter(_.isArgument)
   }
 
   protected def newLocalVariableProfile(localVariable: LocalVariable): VariableInfoProfile =

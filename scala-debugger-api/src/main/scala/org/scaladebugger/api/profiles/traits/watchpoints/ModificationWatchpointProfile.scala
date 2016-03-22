@@ -37,12 +37,12 @@ trait ModificationWatchpointProfile {
    *
    * @return The stream of modification watchpoint events
    */
-  def onModificationWatchpoint(
+  def tryGetOrCreateModificationWatchpointRequest(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ModificationWatchpointEvent]] = {
-    onModificationWatchpointWithData(
+    tryGetOrCreateModificationWatchpointRequestWithData(
       className: String,
       fieldName: String,
       extraArguments: _*
@@ -60,7 +60,7 @@ trait ModificationWatchpointProfile {
    * @return The stream of modification watchpoint events and any retrieved data
    *         based on requests from extra arguments
    */
-  def onModificationWatchpointWithData(
+  def tryGetOrCreateModificationWatchpointRequestWithData(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
@@ -76,12 +76,12 @@ trait ModificationWatchpointProfile {
    *
    * @return The stream of modification watchpoint events
    */
-  def onUnsafeModificationWatchpoint(
+  def getOrCreateModificationWatchpointRequest(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): IdentityPipeline[ModificationWatchpointEvent] = {
-    onModificationWatchpoint(
+    tryGetOrCreateModificationWatchpointRequest(
       className,
       fieldName,
       extraArguments: _*
@@ -99,12 +99,12 @@ trait ModificationWatchpointProfile {
    * @return The stream of modification watchpoint events and any retrieved data
    *         based on requests from extra arguments
    */
-  def onUnsafeModificationWatchpointWithData(
+  def getOrCreateModificationWatchpointRequestWithData(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): IdentityPipeline[ModificationWatchpointEventAndData] = {
-    onModificationWatchpointWithData(
+    tryGetOrCreateModificationWatchpointRequestWithData(
       className,
       fieldName,
       extraArguments: _*

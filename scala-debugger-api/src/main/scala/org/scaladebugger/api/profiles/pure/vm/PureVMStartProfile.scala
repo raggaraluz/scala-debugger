@@ -27,7 +27,7 @@ trait PureVMStartProfile extends VMStartProfile {
    * @return The stream of vm start events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onVMStartWithData(
+  override def tryGetOrCreateVMStartRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[VMStartEventAndData]] = Try {
     val JDIArgumentGroup(_, eArgs, _) = JDIArgumentGroup(extraArguments: _*)

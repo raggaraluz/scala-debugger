@@ -28,14 +28,14 @@ class PureArrayInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val array = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("i").toUnsafeValue.asUnsafeArray
+            .getThread(t.get).getTopFrame
+            .getVariable("i").toValue.toArray
 
           array.length should be (3)
         })
@@ -51,16 +51,16 @@ class PureArrayInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val array = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("i").toUnsafeValue.asUnsafeArray
+            .getThread(t.get).getTopFrame
+            .getVariable("i").toValue.toArray
 
-          array(1).asUnsafeLocalValue should be (2)
+          array(1).toLocalValue should be (2)
         })
       }
     }
@@ -74,16 +74,16 @@ class PureArrayInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val array = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("i").toUnsafeValue.asUnsafeArray
+            .getThread(t.get).getTopFrame
+            .getVariable("i").toValue.toArray
 
-          array.getUnsafeValues(1, 2).map(_.asUnsafeLocalValue) should be (Seq(2, 3))
+          array.getValues(1, 2).map(_.toLocalValue) should be (Seq(2, 3))
         })
       }
     }
@@ -97,16 +97,16 @@ class PureArrayInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val array = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("i").toUnsafeValue.asUnsafeArray
+            .getThread(t.get).getTopFrame
+            .getVariable("i").toValue.toArray
 
-          array.getUnsafeValues.map(_.asUnsafeLocalValue) should be (Seq(1, 2, 3))
+          array.getValues.map(_.toLocalValue) should be (Seq(1, 2, 3))
         })
       }
     }
@@ -120,17 +120,17 @@ class PureArrayInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val array = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("i").toUnsafeValue.asUnsafeArray
+            .getThread(t.get).getTopFrame
+            .getVariable("i").toValue.toArray
 
           array(1) = 999
-          array(1).asUnsafeLocalValue should be (999)
+          array(1).toLocalValue should be (999)
         })
       }
     }
@@ -144,17 +144,17 @@ class PureArrayInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val array = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("i").toUnsafeValue.asUnsafeArray
+            .getThread(t.get).getTopFrame
+            .getVariable("i").toValue.toArray
 
           // Set element at position 1 to source element 2 (12)
-          array.setUnsafeValues(1, Seq(10, 11, 12), 2, 1) should be (Seq(12))
+          array.setValues(1, Seq(10, 11, 12), 2, 1) should be (Seq(12))
         })
       }
     }
@@ -168,16 +168,16 @@ class PureArrayInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val array = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("i").toUnsafeValue.asUnsafeArray
+            .getThread(t.get).getTopFrame
+            .getVariable("i").toValue.toArray
 
-          array.setUnsafeValues(Seq(10, 11, 12)) should be (Seq(10, 11, 12))
+          array.setValues(Seq(10, 11, 12)) should be (Seq(10, 11, 12))
         })
       }
     }

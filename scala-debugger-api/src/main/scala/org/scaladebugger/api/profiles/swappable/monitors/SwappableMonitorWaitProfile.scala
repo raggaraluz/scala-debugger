@@ -16,10 +16,10 @@ import scala.util.Try
 trait SwappableMonitorWaitProfile extends MonitorWaitProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onMonitorWaitWithData(
+  override def tryGetOrCreateMonitorWaitRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MonitorWaitEventAndData]] = {
-    withCurrentProfile.onMonitorWaitWithData(extraArguments: _*)
+    withCurrentProfile.tryGetOrCreateMonitorWaitRequestWithData(extraArguments: _*)
   }
 
   override def monitorWaitRequests: Seq[MonitorWaitRequestInfo] = {

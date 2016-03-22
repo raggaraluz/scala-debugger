@@ -34,10 +34,10 @@ trait MonitorContendedEnteredProfile {
    *
    * @return The stream of monitor contended entered events
    */
-  def onMonitorContendedEntered(
+  def tryGetOrCreateMonitorContendedEnteredRequest(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MonitorContendedEnteredEvent]] = {
-    onMonitorContendedEnteredWithData(extraArguments: _*)
+    tryGetOrCreateMonitorContendedEnteredRequestWithData(extraArguments: _*)
       .map(_.map(_._1).noop())
   }
 
@@ -49,7 +49,7 @@ trait MonitorContendedEnteredProfile {
    * @return The stream of monitor contended entered events and any retrieved
    *         data based on requests from extra arguments
    */
-  def onMonitorContendedEnteredWithData(
+  def tryGetOrCreateMonitorContendedEnteredRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MonitorContendedEnteredEventAndData]]
 
@@ -60,10 +60,10 @@ trait MonitorContendedEnteredProfile {
    *
    * @return The stream of monitor contended entered events
    */
-  def onUnsafeMonitorContendedEntered(
+  def getOrCreateMonitorContendedEnteredRequest(
     extraArguments: JDIArgument*
   ): IdentityPipeline[MonitorContendedEnteredEvent] = {
-    onMonitorContendedEntered(extraArguments: _*).get
+    tryGetOrCreateMonitorContendedEnteredRequest(extraArguments: _*).get
   }
 
   /**
@@ -74,9 +74,9 @@ trait MonitorContendedEnteredProfile {
    * @return The stream of monitor contended entered events and any retrieved
    *         data based on requests from extra arguments
    */
-  def onUnsafeMonitorContendedEnteredWithData(
+  def getOrCreateMonitorContendedEnteredRequestWithData(
     extraArguments: JDIArgument*
   ): IdentityPipeline[MonitorContendedEnteredEventAndData] = {
-    onMonitorContendedEnteredWithData(extraArguments: _*).get
+    tryGetOrCreateMonitorContendedEnteredRequestWithData(extraArguments: _*).get
   }
 }

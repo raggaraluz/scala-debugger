@@ -15,9 +15,9 @@ import scala.util.Try
 trait SwappableVMDisconnectProfile extends VMDisconnectProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onVMDisconnectWithData(
+  override def tryGetOrCreateVMDisconnectRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[VMDisconnectEventAndData]] = {
-    withCurrentProfile.onVMDisconnectWithData(extraArguments: _*)
+    withCurrentProfile.tryGetOrCreateVMDisconnectRequestWithData(extraArguments: _*)
   }
 }

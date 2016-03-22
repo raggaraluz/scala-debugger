@@ -37,7 +37,7 @@ class SwappableExceptionProfileSpec extends FunSpec with Matchers
         }
       }
     }
-    describe("#onExceptionWithData") {
+    describe("#tryGetOrCreateExceptionRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val exceptionName = "some exception"
         val notifyCaught = true
@@ -47,14 +47,14 @@ class SwappableExceptionProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.onExceptionWithData _).expects(
+        (mockDebugProfile.tryGetOrCreateExceptionRequestWithData _).expects(
           exceptionName,
           notifyCaught,
           notifyUncaught,
           arguments
         ).once()
 
-        swappableDebugProfile.onExceptionWithData(
+        swappableDebugProfile.tryGetOrCreateExceptionRequestWithData(
           exceptionName,
           notifyCaught,
           notifyUncaught,
@@ -71,7 +71,7 @@ class SwappableExceptionProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onExceptionWithData(
+          swappableDebugProfile.tryGetOrCreateExceptionRequestWithData(
             exceptionName,
             notifyCaught,
             notifyUncaught,
@@ -81,7 +81,7 @@ class SwappableExceptionProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onAllExceptionsWithData") {
+    describe("#tryGetOrCreateAllExceptionsRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val notifyCaught = true
         val notifyUncaught = true
@@ -90,13 +90,13 @@ class SwappableExceptionProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.onAllExceptionsWithData _).expects(
+        (mockDebugProfile.tryGetOrCreateAllExceptionsRequestWithData _).expects(
           notifyCaught,
           notifyUncaught,
           arguments
         ).once()
 
-        swappableDebugProfile.onAllExceptionsWithData(
+        swappableDebugProfile.tryGetOrCreateAllExceptionsRequestWithData(
           notifyCaught,
           notifyUncaught,
           arguments: _*
@@ -111,7 +111,7 @@ class SwappableExceptionProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onAllExceptionsWithData(
+          swappableDebugProfile.tryGetOrCreateAllExceptionsRequestWithData(
             notifyCaught,
             notifyUncaught,
             arguments: _*

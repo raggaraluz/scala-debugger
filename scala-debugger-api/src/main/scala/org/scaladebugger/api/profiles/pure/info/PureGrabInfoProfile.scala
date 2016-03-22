@@ -20,7 +20,7 @@ trait PureGrabInfoProfile extends GrabInfoProfile {
    *                        a thread info profile
    * @return The new thread info profile
    */
-  override def forUnsafeThread(
+  override def getThread(
     threadReference: ThreadReference
   ): ThreadInfoProfile = newThreadProfile(threadReference)
 
@@ -31,7 +31,7 @@ trait PureGrabInfoProfile extends GrabInfoProfile {
    * @param threadId The id of the thread
    * @return The profile of the matching thread, or throws an exception
    */
-  override def forUnsafeThread(threadId: Long): ThreadInfoProfile = {
+  override def getThread(threadId: Long): ThreadInfoProfile = {
     import scala.collection.JavaConverters._
     _virtualMachine.allThreads().asScala
       .find(_.uniqueID() == threadId)

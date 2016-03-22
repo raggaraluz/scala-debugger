@@ -36,12 +36,12 @@ trait MethodExitProfile {
    *
    * @return The stream of method exit events
    */
-  def onMethodExit(
+  def tryGetOrCreateMethodExitRequest(
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MethodExitEvent]] = {
-    onMethodExitWithData(
+    tryGetOrCreateMethodExitRequestWithData(
       className: String,
       methodName: String,
       extraArguments: _*
@@ -59,12 +59,12 @@ trait MethodExitProfile {
    *
    * @return The stream of method exit events
    */
-  def onUnsafeMethodExit(
+  def getOrCreateMethodExitRequest(
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
   ): IdentityPipeline[MethodExitEvent] = {
-    onMethodExit(
+    tryGetOrCreateMethodExitRequest(
       className,
       methodName,
       extraArguments: _*
@@ -83,12 +83,12 @@ trait MethodExitProfile {
    * @return The stream of method exit events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeMethodExitWithData(
+  def getOrCreateMethodExitRequestWithData(
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
   ): IdentityPipeline[MethodExitEventAndData] = {
-    onMethodExitWithData(
+    tryGetOrCreateMethodExitRequestWithData(
       className,
       methodName,
       extraArguments: _*
@@ -107,7 +107,7 @@ trait MethodExitProfile {
    * @return The stream of method exit events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onMethodExitWithData(
+  def tryGetOrCreateMethodExitRequestWithData(
     className: String,
     methodName: String,
     extraArguments: JDIArgument*

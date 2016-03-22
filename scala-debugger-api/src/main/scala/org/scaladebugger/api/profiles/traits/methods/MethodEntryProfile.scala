@@ -36,12 +36,12 @@ trait MethodEntryProfile {
    *
    * @return The stream of method entry events
    */
-  def onMethodEntry(
+  def tryGetOrCreateMethodEntryRequest(
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MethodEntryEvent]] = {
-    onMethodEntryWithData(
+    tryGetOrCreateMethodEntryRequestWithData(
       className: String,
       methodName: String,
       extraArguments: _*
@@ -59,12 +59,12 @@ trait MethodEntryProfile {
    *
    * @return The stream of method entry events
    */
-  def onUnsafeMethodEntry(
+  def getOrCreateMethodEntryRequest(
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
   ): IdentityPipeline[MethodEntryEvent] = {
-    onMethodEntry(
+    tryGetOrCreateMethodEntryRequest(
       className,
       methodName,
       extraArguments: _*
@@ -83,12 +83,12 @@ trait MethodEntryProfile {
    * @return The stream of method entry events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeMethodEntryWithData(
+  def getOrCreateMethodEntryRequestWithData(
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
   ): IdentityPipeline[MethodEntryEventAndData] = {
-    onMethodEntryWithData(
+    tryGetOrCreateMethodEntryRequestWithData(
       className,
       methodName,
       extraArguments: _*
@@ -107,7 +107,7 @@ trait MethodEntryProfile {
    * @return The stream of method entry events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onMethodEntryWithData(
+  def tryGetOrCreateMethodEntryRequestWithData(
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
