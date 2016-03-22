@@ -23,7 +23,7 @@ class AccessWatchpointProfileSpec extends FunSpec with Matchers
   )
 
   private val successAccessWatchpointProfile = new Object with AccessWatchpointProfile {
-    override def onAccessWatchpointWithData(
+    override def tryGetOrCreateAccessWatchpointRequestWithData(
       className: String,
       fieldName: String,
       extraArguments: JDIArgument*
@@ -35,7 +35,7 @@ class AccessWatchpointProfileSpec extends FunSpec with Matchers
   }
 
   private val failAccessWatchpointProfile = new Object with AccessWatchpointProfile {
-    override def onAccessWatchpointWithData(
+    override def tryGetOrCreateAccessWatchpointRequestWithData(
       className: String,
       fieldName: String,
       extraArguments: JDIArgument*
@@ -47,7 +47,7 @@ class AccessWatchpointProfileSpec extends FunSpec with Matchers
   }
 
   describe("AccessWatchpointProfile") {
-    describe("#onAccessWatchpoint") {
+    describe("#tryGetOrCreateAccessWatchpointRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[AccessWatchpointEvent]
 
@@ -56,7 +56,7 @@ class AccessWatchpointProfileSpec extends FunSpec with Matchers
 
         var actual: AccessWatchpointEvent = null
         successAccessWatchpointProfile
-          .onAccessWatchpoint("", "")
+          .tryGetOrCreateAccessWatchpointRequest("", "")
           .get
           .foreach(actual = _)
 
@@ -73,7 +73,7 @@ class AccessWatchpointProfileSpec extends FunSpec with Matchers
 
         var actual: Throwable = null
         failAccessWatchpointProfile
-          .onAccessWatchpoint("", "")
+          .tryGetOrCreateAccessWatchpointRequest("", "")
           .failed
           .foreach(actual = _)
 
@@ -81,7 +81,7 @@ class AccessWatchpointProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onUnsafeAccessWatchpoint") {
+    describe("#getOrCreateAccessWatchpointRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[AccessWatchpointEvent]
 
@@ -90,7 +90,7 @@ class AccessWatchpointProfileSpec extends FunSpec with Matchers
 
         var actual: AccessWatchpointEvent = null
         successAccessWatchpointProfile
-          .onUnsafeAccessWatchpoint("", "")
+          .getOrCreateAccessWatchpointRequest("", "")
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -103,19 +103,19 @@ class AccessWatchpointProfileSpec extends FunSpec with Matchers
 
       it("should throw an error if it occurs") {
         intercept[Throwable] {
-          failAccessWatchpointProfile.onUnsafeAccessWatchpoint("", "")
+          failAccessWatchpointProfile.getOrCreateAccessWatchpointRequest("", "")
         }
       }
     }
 
-    describe("#onUnsafeAccessWatchpointWithData") {
+    describe("#getOrCreateAccessWatchpointRequestWithData") {
       it("should return a pipeline with the event data results") {
         // Data to be run through pipeline
         val expected = (mock[AccessWatchpointEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (AccessWatchpointEvent, Seq[JDIEventDataResult]) = null
         successAccessWatchpointProfile
-          .onUnsafeAccessWatchpointWithData("", "")
+          .getOrCreateAccessWatchpointRequestWithData("", "")
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -129,7 +129,7 @@ class AccessWatchpointProfileSpec extends FunSpec with Matchers
       it("should throw an error if it occurs") {
         intercept[Throwable] {
           failAccessWatchpointProfile
-            .onUnsafeAccessWatchpointWithData("", "")
+            .getOrCreateAccessWatchpointRequestWithData("", "")
         }
       }
     }

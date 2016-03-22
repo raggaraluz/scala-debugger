@@ -35,7 +35,7 @@ class PureArrayInfoProfile(
    * @param index The location in the array to retrieve a value
    * @return The retrieved value
    */
-  override def getUnsafeValue(index: Int): ValueInfoProfile = {
+  override def getValue(index: Int): ValueInfoProfile = {
     newValueProfile(arrayReference.getValue(index))
   }
 
@@ -50,7 +50,7 @@ class PureArrayInfoProfile(
    *                 all elements in the array from the beginning of the index
    * @return The updated values
    */
-  override def setUnsafeValues(
+  override def setValues(
     index: Int,
     values: Seq[Any],
     srcIndex: Int,
@@ -69,7 +69,7 @@ class PureArrayInfoProfile(
    * @param values The new values to use when overwriting elements in the array
    * @return The updated values
    */
-  override def setUnsafeValues(values: Seq[Any]): Seq[Any] = {
+  override def setValues(values: Seq[Any]): Seq[Any] = {
     val v = values.map(virtualMachine.mirrorOf(_: Any)).asJava
     arrayReference.setValues(v)
     values
@@ -84,7 +84,7 @@ class PureArrayInfoProfile(
    *               remaining values to the end of the array
    * @return The retrieved values
    */
-  override def getUnsafeValues(
+  override def getValues(
     index: Int,
     length: Int
   ): Seq[ValueInfoProfile] = {
@@ -96,7 +96,7 @@ class PureArrayInfoProfile(
    *
    * @return The retrieved values
    */
-  override def getUnsafeValues: Seq[ValueInfoProfile] = {
+  override def getValues: Seq[ValueInfoProfile] = {
     arrayReference.getValues.asScala.map(newValueProfile)
   }
 
@@ -107,7 +107,7 @@ class PureArrayInfoProfile(
    * @param value The new value to place in the array
    * @return The updated value
    */
-  override def setUnsafeValue(index: Int, value: Any): Any = {
+  override def setValue(index: Int, value: Any): Any = {
     arrayReference.setValue(index, virtualMachine.mirrorOf(value))
     value
   }

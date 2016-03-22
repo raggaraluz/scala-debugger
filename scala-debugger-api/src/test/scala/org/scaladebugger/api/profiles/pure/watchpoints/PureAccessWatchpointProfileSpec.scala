@@ -111,7 +111,7 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onAccessWatchpointWithData") {
+    describe("#tryGetOrCreateAccessWatchpointRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val className = "full.class.name"
         val fieldName = "fieldName"
@@ -147,7 +147,7 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureAccessWatchpointProfile.onAccessWatchpointWithData(
+        pureAccessWatchpointProfile.tryGetOrCreateAccessWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -183,7 +183,7 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
           ).throwing(expected.failed.get).once()
         }
 
-        val actual = pureAccessWatchpointProfile.onAccessWatchpointWithData(
+        val actual = pureAccessWatchpointProfile.tryGetOrCreateAccessWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -232,7 +232,7 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureAccessWatchpointProfile.onAccessWatchpointWithData(
+        pureAccessWatchpointProfile.tryGetOrCreateAccessWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -268,7 +268,7 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureAccessWatchpointProfile.onAccessWatchpointWithData(
+        pureAccessWatchpointProfile.tryGetOrCreateAccessWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -311,7 +311,7 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureAccessWatchpointProfile.onAccessWatchpointWithData(
+        pureAccessWatchpointProfile.tryGetOrCreateAccessWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -338,7 +338,7 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureAccessWatchpointProfile.onAccessWatchpointWithData(
+        pureAccessWatchpointProfile.tryGetOrCreateAccessWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -385,7 +385,7 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureAccessWatchpointProfile.onAccessWatchpointWithData(
+        pureAccessWatchpointProfile.tryGetOrCreateAccessWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -422,7 +422,7 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureAccessWatchpointProfile.onAccessWatchpointWithData(
+        pureAccessWatchpointProfile.tryGetOrCreateAccessWatchpointRequestWithData(
           className,
           fieldName + 1,
           arguments: _*
@@ -482,12 +482,12 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
           })
         }
 
-        val p1 = pureAccessWatchpointProfile.onAccessWatchpointWithData(
+        val p1 = pureAccessWatchpointProfile.tryGetOrCreateAccessWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
         )
-        val p2 = pureAccessWatchpointProfile.onAccessWatchpointWithData(
+        val p2 = pureAccessWatchpointProfile.tryGetOrCreateAccessWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
@@ -550,12 +550,12 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
           })
         }
 
-        val p1 = pureAccessWatchpointProfile.onAccessWatchpointWithData(
+        val p1 = pureAccessWatchpointProfile.tryGetOrCreateAccessWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*
         )
-        val p2 = pureAccessWatchpointProfile.onAccessWatchpointWithData(
+        val p2 = pureAccessWatchpointProfile.tryGetOrCreateAccessWatchpointRequestWithData(
           className,
           fieldName,
           arguments: _*

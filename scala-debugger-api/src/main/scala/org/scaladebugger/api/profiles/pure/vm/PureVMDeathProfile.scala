@@ -67,7 +67,7 @@ trait PureVMDeathProfile extends VMDeathProfile {
    * @return The stream of vm death events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onVMDeathWithData(
+  override def tryGetOrCreateVMDeathRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[VMDeathEventAndData]] = Try {
     val JDIArgumentGroup(rArgs, eArgs, _) = JDIArgumentGroup(extraArguments: _*)

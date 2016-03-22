@@ -36,7 +36,7 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
 
       // Mark the exception we want to watch (now that the class
       // is available)
-      s.withProfile(PureDebugProfile.Name).onUnsafeException(
+      s.withProfile(PureDebugProfile.Name).getOrCreateExceptionRequest(
         exceptionName = expectedExceptionName,
         notifyCaught = true,
         notifyUncaught = false
@@ -64,7 +64,7 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
 
       // Mark the exception we want to watch (now that the class
       // is available)
-      s.withProfile(PureDebugProfile.Name).onUnsafeException(
+      s.withProfile(PureDebugProfile.Name).getOrCreateExceptionRequest(
         exceptionName = expectedExceptionName,
         notifyCaught = true,
         notifyUncaught = false
@@ -92,7 +92,7 @@ class PureExceptionProfileIntegrationSpec extends FunSpec with Matchers
 
       // Mark the exception we want to watch (now that the class
       // is available)
-      s.withProfile(PureDebugProfile.Name).onUnsafeException(
+      s.withProfile(PureDebugProfile.Name).getOrCreateExceptionRequest(
         exceptionName = expectedExceptionName,
         notifyCaught = false,
         notifyUncaught = true

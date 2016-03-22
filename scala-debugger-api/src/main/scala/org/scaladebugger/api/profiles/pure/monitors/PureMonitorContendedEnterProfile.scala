@@ -69,7 +69,7 @@ trait PureMonitorContendedEnterProfile extends MonitorContendedEnterProfile {
    * @return The stream of monitor contended enter events and any retrieved
    *         data based on requests from extra arguments
    */
-  override def onMonitorContendedEnterWithData(
+  override def tryGetOrCreateMonitorContendedEnterRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MonitorContendedEnterEventAndData]] = Try {
     val JDIArgumentGroup(rArgs, eArgs, _) = JDIArgumentGroup(extraArguments: _*)

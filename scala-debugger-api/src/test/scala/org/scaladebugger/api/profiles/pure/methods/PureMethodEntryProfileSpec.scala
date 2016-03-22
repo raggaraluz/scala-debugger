@@ -109,7 +109,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
       }
     }
 
-    describe("#onMethodEntryWithData") {
+    describe("#tryGetOrCreateMethodEntryRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val className = "some.class.name"
         val methodName = "someMethodName"
@@ -149,7 +149,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureMethodEntryProfile.onMethodEntryWithData(
+        pureMethodEntryProfile.tryGetOrCreateMethodEntryRequestWithData(
           className,
           methodName,
           arguments: _*
@@ -185,7 +185,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           ).throwing(expected.failed.get).once()
         }
 
-        val actual = pureMethodEntryProfile.onMethodEntryWithData(
+        val actual = pureMethodEntryProfile.tryGetOrCreateMethodEntryRequestWithData(
           className,
           methodName,
           arguments: _*
@@ -238,7 +238,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureMethodEntryProfile.onMethodEntryWithData(
+        pureMethodEntryProfile.tryGetOrCreateMethodEntryRequestWithData(
           className,
           methodName,
           arguments: _*
@@ -278,7 +278,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureMethodEntryProfile.onMethodEntryWithData(
+        pureMethodEntryProfile.tryGetOrCreateMethodEntryRequestWithData(
           className,
           methodName,
           arguments: _*
@@ -325,7 +325,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureMethodEntryProfile.onMethodEntryWithData(
+        pureMethodEntryProfile.tryGetOrCreateMethodEntryRequestWithData(
           className,
           methodName,
           arguments: _*
@@ -356,7 +356,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureMethodEntryProfile.onMethodEntryWithData(
+        pureMethodEntryProfile.tryGetOrCreateMethodEntryRequestWithData(
           className,
           methodName,
           arguments: _*
@@ -407,7 +407,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureMethodEntryProfile.onMethodEntryWithData(
+        pureMethodEntryProfile.tryGetOrCreateMethodEntryRequestWithData(
           className,
           methodName,
           arguments: _*
@@ -448,7 +448,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureMethodEntryProfile.onMethodEntryWithData(
+        pureMethodEntryProfile.tryGetOrCreateMethodEntryRequestWithData(
           className,
           methodName + 1,
           arguments: _*
@@ -513,12 +513,12 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           })
         }
 
-        val p1 = pureMethodEntryProfile.onMethodEntryWithData(
+        val p1 = pureMethodEntryProfile.tryGetOrCreateMethodEntryRequestWithData(
           className,
           methodName,
           arguments: _*
         )
-        val p2 = pureMethodEntryProfile.onMethodEntryWithData(
+        val p2 = pureMethodEntryProfile.tryGetOrCreateMethodEntryRequestWithData(
           className,
           methodName,
           arguments: _*
@@ -586,12 +586,12 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           })
         }
 
-        val p1 = pureMethodEntryProfile.onMethodEntryWithData(
+        val p1 = pureMethodEntryProfile.tryGetOrCreateMethodEntryRequestWithData(
           className,
           methodName,
           arguments: _*
         )
-        val p2 = pureMethodEntryProfile.onMethodEntryWithData(
+        val p2 = pureMethodEntryProfile.tryGetOrCreateMethodEntryRequestWithData(
           className,
           methodName,
           arguments: _*

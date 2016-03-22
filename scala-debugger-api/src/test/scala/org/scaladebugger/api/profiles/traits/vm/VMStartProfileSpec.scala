@@ -22,7 +22,7 @@ class VMStartProfileSpec extends FunSpec with Matchers
   )
 
   private val successVMStartProfile = new Object with VMStartProfile {
-    override def onVMStartWithData(
+    override def tryGetOrCreateVMStartRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[VMStartEventAndData]] = {
       Success(TestPipelineWithData)
@@ -30,7 +30,7 @@ class VMStartProfileSpec extends FunSpec with Matchers
   }
 
   private val failVMStartProfile = new Object with VMStartProfile {
-    override def onVMStartWithData(
+    override def tryGetOrCreateVMStartRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[VMStartEventAndData]] = {
       Failure(TestThrowable)
@@ -38,7 +38,7 @@ class VMStartProfileSpec extends FunSpec with Matchers
   }
 
   describe("VMStartProfile") {
-    describe("#onVMStart") {
+    describe("#tryGetOrCreateVMStartRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[VMStartEvent]
 
@@ -46,7 +46,7 @@ class VMStartProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: VMStartEvent = null
-        successVMStartProfile.onVMStart().get.foreach(actual = _)
+        successVMStartProfile.tryGetOrCreateVMStartRequest().get.foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -63,13 +63,13 @@ class VMStartProfileSpec extends FunSpec with Matchers
         val data = (mock[VMStartEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: Throwable = null
-        failVMStartProfile.onVMStart().failed.foreach(actual = _)
+        failVMStartProfile.tryGetOrCreateVMStartRequest().failed.foreach(actual = _)
 
         actual should be (expected)
       }
     }
 
-    describe("#onUnsafeVMStart") {
+    describe("#getOrCreateVMStartRequest") {
       it("should return a pipeline of events if successful") {
         val expected = mock[VMStartEvent]
 
@@ -77,7 +77,7 @@ class VMStartProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: VMStartEvent = null
-        successVMStartProfile.onUnsafeVMStart().foreach(actual = _)
+        successVMStartProfile.getOrCreateVMStartRequest().foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -89,19 +89,19 @@ class VMStartProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failVMStartProfile.onUnsafeVMStart()
+          failVMStartProfile.getOrCreateVMStartRequest()
         }
       }
     }
 
-    describe("#onUnsafeVMStartWithData") {
+    describe("#getOrCreateVMStartRequestWithData") {
       it("should return a pipeline of events and data if successful") {
         // Data to be run through pipeline
         val expected = (mock[VMStartEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (VMStartEvent, Seq[JDIEventDataResult]) = null
         successVMStartProfile
-          .onUnsafeVMStartWithData()
+          .getOrCreateVMStartRequestWithData()
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -114,7 +114,7 @@ class VMStartProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failVMStartProfile.onUnsafeVMStartWithData()
+          failVMStartProfile.getOrCreateVMStartRequestWithData()
         }
       }
     }

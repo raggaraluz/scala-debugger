@@ -28,7 +28,7 @@ class PureVMStartProfileIntegrationSpec extends FunSpec with Matchers
       val s = DummyScalaVirtualMachine.newInstance()
 
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeVMStart()
+        .getOrCreateVMStartRequest()
         .foreach(_ => detectedStart.set(true))
 
       // Start our VM and listen for the start event

@@ -23,7 +23,7 @@ class ClassUnloadProfileSpec extends FunSpec with Matchers
   )
 
   private val successClassUnloadProfile = new Object with ClassUnloadProfile {
-    override def onClassUnloadWithData(
+    override def tryGetOrCreateClassUnloadRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[ClassUnloadEventAndData]] = {
       Success(TestPipelineWithData)
@@ -33,7 +33,7 @@ class ClassUnloadProfileSpec extends FunSpec with Matchers
   }
 
   private val failClassUnloadProfile = new Object with ClassUnloadProfile {
-    override def onClassUnloadWithData(
+    override def tryGetOrCreateClassUnloadRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[ClassUnloadEventAndData]] = {
       Failure(TestThrowable)
@@ -43,7 +43,7 @@ class ClassUnloadProfileSpec extends FunSpec with Matchers
   }
 
   describe("ClassUnloadProfile") {
-    describe("#onClassUnload") {
+    describe("#tryGetOrCreateClassUnloadRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[ClassUnloadEvent]
 
@@ -51,7 +51,7 @@ class ClassUnloadProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: ClassUnloadEvent = null
-        successClassUnloadProfile.onClassUnload().get.foreach(actual = _)
+        successClassUnloadProfile.tryGetOrCreateClassUnloadRequest().get.foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -68,13 +68,13 @@ class ClassUnloadProfileSpec extends FunSpec with Matchers
         val data = (mock[ClassUnloadEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: Throwable = null
-        failClassUnloadProfile.onClassUnload().failed.foreach(actual = _)
+        failClassUnloadProfile.tryGetOrCreateClassUnloadRequest().failed.foreach(actual = _)
 
         actual should be (expected)
       }
     }
 
-    describe("#onUnsafeClassUnload") {
+    describe("#getOrCreateClassUnloadRequest") {
       it("should return a pipeline of events if successful") {
         val expected = mock[ClassUnloadEvent]
 
@@ -82,7 +82,7 @@ class ClassUnloadProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: ClassUnloadEvent = null
-        successClassUnloadProfile.onUnsafeClassUnload().foreach(actual = _)
+        successClassUnloadProfile.getOrCreateClassUnloadRequest().foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -94,19 +94,19 @@ class ClassUnloadProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failClassUnloadProfile.onUnsafeClassUnload()
+          failClassUnloadProfile.getOrCreateClassUnloadRequest()
         }
       }
     }
 
-    describe("#onUnsafeClassUnloadWithData") {
+    describe("#getOrCreateClassUnloadRequestWithData") {
       it("should return a pipeline of events and data if successful") {
         // Data to be run through pipeline
         val expected = (mock[ClassUnloadEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (ClassUnloadEvent, Seq[JDIEventDataResult]) = null
         successClassUnloadProfile
-          .onUnsafeClassUnloadWithData()
+          .getOrCreateClassUnloadRequestWithData()
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -119,7 +119,7 @@ class ClassUnloadProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failClassUnloadProfile.onUnsafeClassUnloadWithData()
+          failClassUnloadProfile.getOrCreateClassUnloadRequestWithData()
         }
       }
     }

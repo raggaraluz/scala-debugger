@@ -68,7 +68,7 @@ trait PureExceptionProfile extends ExceptionProfile {
    * @return The stream of exception events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onAllExceptionsWithData(
+  override def tryGetOrCreateAllExceptionsRequestWithData(
     notifyCaught: Boolean,
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
@@ -100,7 +100,7 @@ trait PureExceptionProfile extends ExceptionProfile {
    * @return The stream of exception events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onExceptionWithData(
+  override def tryGetOrCreateExceptionRequestWithData(
     exceptionName: String,
     notifyCaught: Boolean,
     notifyUncaught: Boolean,

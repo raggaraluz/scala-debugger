@@ -82,7 +82,7 @@ class StandardScalaVirtualMachine(
     logger.debug(vmString("Adding custom event handlers!"))
 
     // Mark start event to load all of our system classes
-    this.withProfile(PureDebugProfile.Name).onUnsafeVMStart().foreach(_ => {
+    this.withProfile(PureDebugProfile.Name).getOrCreateVMStartRequest().foreach(_ => {
       // Mark the VM as started
       started.set(true)
 
@@ -95,7 +95,7 @@ class StandardScalaVirtualMachine(
 
     // Mark class prepare events to signal refreshing our classes
     this.withProfile(PureDebugProfile.Name)
-      .onUnsafeClassPrepare().foreach(classPrepareEvent => {
+      .getOrCreateClassPrepareRequest().foreach(classPrepareEvent => {
       val referenceType = classPrepareEvent.referenceType()
       val referenceTypeName = referenceType.name()
       val fileName =

@@ -16,10 +16,10 @@ import scala.util.Try
 trait SwappableThreadStartProfile extends ThreadStartProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onThreadStartWithData(
+  override def tryGetOrCreateThreadStartRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ThreadStartEventAndData]] = {
-    withCurrentProfile.onThreadStartWithData(extraArguments: _*)
+    withCurrentProfile.tryGetOrCreateThreadStartRequestWithData(extraArguments: _*)
   }
 
   override def threadStartRequests: Seq[ThreadStartRequestInfo] = {

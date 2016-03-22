@@ -62,11 +62,11 @@ trait SwappableStepProfile extends StepProfile {
     withCurrentProfile.stepOutMinWithData(threadReference, extraArguments: _*)
   }
 
-  override def onStepWithData(
+  override def tryCreateStepListenerWithData(
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = {
-    withCurrentProfile.onStepWithData(threadReference, extraArguments: _*)
+    withCurrentProfile.tryCreateStepListenerWithData(threadReference, extraArguments: _*)
   }
 
   override def stepRequests: Seq[StepRequestInfo] = {

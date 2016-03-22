@@ -38,16 +38,16 @@ class SwappableClassPrepareProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onClassPrepareWithData") {
+    describe("#tryGetOrCreateClassPrepareRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])
 
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.onClassPrepareWithData _).expects(arguments).once()
+        (mockDebugProfile.tryGetOrCreateClassPrepareRequestWithData _).expects(arguments).once()
 
-        swappableDebugProfile.onClassPrepareWithData(arguments: _*)
+        swappableDebugProfile.tryGetOrCreateClassPrepareRequestWithData(arguments: _*)
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -56,7 +56,7 @@ class SwappableClassPrepareProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onClassPrepareWithData(arguments: _*)
+          swappableDebugProfile.tryGetOrCreateClassPrepareRequestWithData(arguments: _*)
         }
       }
     }

@@ -30,7 +30,7 @@ class PureVMDeathProfileIntegrationSpec extends FunSpec with Matchers
 
       // Mark that we want to receive vm death events and watch for one
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeVMDeath()
+        .getOrCreateVMDeathRequest()
         .foreach(_ => detectedDeath.set(true))
 
       // Start our VM and listen for the start event

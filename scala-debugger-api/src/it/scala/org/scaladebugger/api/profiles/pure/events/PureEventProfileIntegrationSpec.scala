@@ -35,13 +35,13 @@ class PureEventProfileIntegrationSpec extends FunSpec with Matchers
       val s = DummyScalaVirtualMachine.newInstance()
 
       // Set our breakpoints
-      s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber1)
-      s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber2)
-      s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber3)
+      s.withProfile(PureDebugProfile.Name).tryGetOrCreateBreakpointRequest(testFile, lineNumber1)
+      s.withProfile(PureDebugProfile.Name).tryGetOrCreateBreakpointRequest(testFile, lineNumber2)
+      s.withProfile(PureDebugProfile.Name).tryGetOrCreateBreakpointRequest(testFile, lineNumber3)
 
       // Set a separate event pipeline to receive events
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeEvent(BreakpointEventType)
+        .createEventListener(BreakpointEventType)
         .map(_.asInstanceOf[BreakpointEvent])
         .map(_.location().lineNumber())
         .foreach(lineNumber => {
@@ -72,14 +72,14 @@ class PureEventProfileIntegrationSpec extends FunSpec with Matchers
 
       withVirtualMachine(testClass) { (s) =>
         // Set our breakpoints
-        s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber1)
-        s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber2)
-        s.withProfile(PureDebugProfile.Name).onBreakpoint(testFile, lineNumber3)
+        s.withProfile(PureDebugProfile.Name).tryGetOrCreateBreakpointRequest(testFile, lineNumber1)
+        s.withProfile(PureDebugProfile.Name).tryGetOrCreateBreakpointRequest(testFile, lineNumber2)
+        s.withProfile(PureDebugProfile.Name).tryGetOrCreateBreakpointRequest(testFile, lineNumber3)
 
         // Set a separate event pipeline to receive events
         val eventPipeline = s
           .withProfile(PureDebugProfile.Name)
-          .onUnsafeEvent(BreakpointEventType)
+          .createEventListener(BreakpointEventType)
 
         // Receive events
         eventPipeline
@@ -95,7 +95,7 @@ class PureEventProfileIntegrationSpec extends FunSpec with Matchers
           eventCount.get() should be > 0
         })
 
-        /* Should have four breakpoint handlers from onBreakpoint and event */ {
+        /* Should have four breakpoint handlers from tryGetOrCreateBreakpointRequest and event */ {
           val currentBreakpointHandlers =
             s.lowlevel.eventManager.getHandlersForEventType(BreakpointEventType)
           currentBreakpointHandlers should have length (4)
@@ -105,7 +105,7 @@ class PureEventProfileIntegrationSpec extends FunSpec with Matchers
         eventPipeline.close(now = true)
         eventCount.set(0)
 
-        // Should now only have breakpoint handlers for the onBreakpoint
+        // Should now only have breakpoint handlers for the tryGetOrCreateBreakpointRequest
         // calls and not the raw event pipeline
         {
           val currentBreakpointHandlers =

@@ -31,7 +31,7 @@ class PureClassUnloadProfileIntegrationSpec extends FunSpec with Matchers
 
       // Mark that we want to receive class unload events and watch for one
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeClassUnload()
+        .getOrCreateClassUnloadRequest()
         .foreach(_ => detectedUnload.set(true))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>

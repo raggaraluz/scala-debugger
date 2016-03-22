@@ -23,7 +23,7 @@ class MonitorContendedEnteredProfileSpec extends FunSpec with Matchers
   )
 
   private val successMonitorContendedEnteredProfile = new Object with MonitorContendedEnteredProfile {
-    override def onMonitorContendedEnteredWithData(
+    override def tryGetOrCreateMonitorContendedEnteredRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[MonitorContendedEnteredEventAndData]] = {
       Success(TestPipelineWithData)
@@ -33,7 +33,7 @@ class MonitorContendedEnteredProfileSpec extends FunSpec with Matchers
   }
 
   private val failMonitorContendedEnteredProfile = new Object with MonitorContendedEnteredProfile {
-    override def onMonitorContendedEnteredWithData(
+    override def tryGetOrCreateMonitorContendedEnteredRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[MonitorContendedEnteredEventAndData]] = {
       Failure(TestThrowable)
@@ -43,7 +43,7 @@ class MonitorContendedEnteredProfileSpec extends FunSpec with Matchers
   }
 
   describe("MonitorContendedEnteredProfile") {
-    describe("#onMonitorContendedEntered") {
+    describe("#tryGetOrCreateMonitorContendedEnteredRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[MonitorContendedEnteredEvent]
 
@@ -52,7 +52,7 @@ class MonitorContendedEnteredProfileSpec extends FunSpec with Matchers
 
         var actual: MonitorContendedEnteredEvent = null
         successMonitorContendedEnteredProfile
-          .onMonitorContendedEntered()
+          .tryGetOrCreateMonitorContendedEnteredRequest()
           .get
           .foreach(actual = _)
 
@@ -69,7 +69,7 @@ class MonitorContendedEnteredProfileSpec extends FunSpec with Matchers
 
         var actual: Throwable = null
         failMonitorContendedEnteredProfile
-          .onMonitorContendedEntered()
+          .tryGetOrCreateMonitorContendedEnteredRequest()
           .failed
           .foreach(actual = _)
 
@@ -77,7 +77,7 @@ class MonitorContendedEnteredProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onUnsafeMonitorContendedEntered") {
+    describe("#getOrCreateMonitorContendedEnteredRequest") {
       it("should return a pipeline of events if successful") {
         val expected = mock[MonitorContendedEnteredEvent]
 
@@ -86,7 +86,7 @@ class MonitorContendedEnteredProfileSpec extends FunSpec with Matchers
 
         var actual: MonitorContendedEnteredEvent = null
         successMonitorContendedEnteredProfile
-          .onUnsafeMonitorContendedEntered()
+          .getOrCreateMonitorContendedEnteredRequest()
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -99,19 +99,19 @@ class MonitorContendedEnteredProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failMonitorContendedEnteredProfile.onUnsafeMonitorContendedEntered()
+          failMonitorContendedEnteredProfile.getOrCreateMonitorContendedEnteredRequest()
         }
       }
     }
 
-    describe("#onUnsafeMonitorContendedEnteredWithData") {
+    describe("#getOrCreateMonitorContendedEnteredRequestWithData") {
       it("should return a pipeline of events and data if successful") {
         // Data to be run through pipeline
         val expected = (mock[MonitorContendedEnteredEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (MonitorContendedEnteredEvent, Seq[JDIEventDataResult]) = null
         successMonitorContendedEnteredProfile
-          .onUnsafeMonitorContendedEnteredWithData()
+          .getOrCreateMonitorContendedEnteredRequestWithData()
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -125,7 +125,7 @@ class MonitorContendedEnteredProfileSpec extends FunSpec with Matchers
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
           failMonitorContendedEnteredProfile
-            .onUnsafeMonitorContendedEnteredWithData()
+            .getOrCreateMonitorContendedEnteredRequestWithData()
         }
       }
     }

@@ -23,7 +23,7 @@ class MethodExitProfileSpec extends FunSpec with Matchers
   )
 
   private val successMethodExitProfile = new Object with MethodExitProfile {
-    override def onMethodExitWithData(
+    override def tryGetOrCreateMethodExitRequestWithData(
       className: String,
       methodName: String,
       extraArguments: JDIArgument*
@@ -35,7 +35,7 @@ class MethodExitProfileSpec extends FunSpec with Matchers
   }
 
   private val failMethodExitProfile = new Object with MethodExitProfile {
-    override def onMethodExitWithData(
+    override def tryGetOrCreateMethodExitRequestWithData(
       className: String,
       methodName: String,
       extraArguments: JDIArgument*
@@ -47,7 +47,7 @@ class MethodExitProfileSpec extends FunSpec with Matchers
   }
 
   describe("MethodExitProfile") {
-    describe("#onMethodExit") {
+    describe("#tryGetOrCreateMethodExitRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[MethodExitEvent]
 
@@ -55,7 +55,7 @@ class MethodExitProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: MethodExitEvent = null
-        successMethodExitProfile.onMethodExit("", "").get.foreach(actual = _)
+        successMethodExitProfile.tryGetOrCreateMethodExitRequest("", "").get.foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -72,13 +72,13 @@ class MethodExitProfileSpec extends FunSpec with Matchers
         val data = (mock[MethodExitEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: Throwable = null
-        failMethodExitProfile.onMethodExit("", "").failed.foreach(actual = _)
+        failMethodExitProfile.tryGetOrCreateMethodExitRequest("", "").failed.foreach(actual = _)
 
         actual should be (expected)
       }
     }
 
-    describe("#onUnsafeMethodExit") {
+    describe("#getOrCreateMethodExitRequest") {
       it("should return a pipeline of events if successful") {
         val expected = mock[MethodExitEvent]
 
@@ -87,7 +87,7 @@ class MethodExitProfileSpec extends FunSpec with Matchers
 
         var actual: MethodExitEvent = null
         successMethodExitProfile
-          .onUnsafeMethodExit("", "")
+          .getOrCreateMethodExitRequest("", "")
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -100,19 +100,19 @@ class MethodExitProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failMethodExitProfile.onUnsafeMethodExit("", "")
+          failMethodExitProfile.getOrCreateMethodExitRequest("", "")
         }
       }
     }
 
-    describe("#onUnsafeMethodExitWithData") {
+    describe("#getOrCreateMethodExitRequestWithData") {
       it("should return a pipeline of events and data if successful") {
         // Data to be run through pipeline
         val expected = (mock[MethodExitEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (MethodExitEvent, Seq[JDIEventDataResult]) = null
         successMethodExitProfile
-          .onUnsafeMethodExitWithData("", "")
+          .getOrCreateMethodExitRequestWithData("", "")
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -125,7 +125,7 @@ class MethodExitProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failMethodExitProfile.onUnsafeMethodExitWithData("", "")
+          failMethodExitProfile.getOrCreateMethodExitRequestWithData("", "")
         }
       }
     }

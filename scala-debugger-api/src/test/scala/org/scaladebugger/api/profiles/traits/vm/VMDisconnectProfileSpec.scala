@@ -22,7 +22,7 @@ class VMDisconnectProfileSpec extends FunSpec with Matchers
   )
 
   private val successVMDisconnectProfile = new Object with VMDisconnectProfile {
-    override def onVMDisconnectWithData(
+    override def tryGetOrCreateVMDisconnectRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[VMDisconnectEventAndData]] = {
       Success(TestPipelineWithData)
@@ -30,7 +30,7 @@ class VMDisconnectProfileSpec extends FunSpec with Matchers
   }
 
   private val failVMDisconnectProfile = new Object with VMDisconnectProfile {
-    override def onVMDisconnectWithData(
+    override def tryGetOrCreateVMDisconnectRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[VMDisconnectEventAndData]] = {
       Failure(TestThrowable)
@@ -38,7 +38,7 @@ class VMDisconnectProfileSpec extends FunSpec with Matchers
   }
 
   describe("VMDisconnectProfile") {
-    describe("#onVMDisconnect") {
+    describe("#tryGetOrCreateVMDisconnectRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[VMDisconnectEvent]
 
@@ -46,7 +46,7 @@ class VMDisconnectProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: VMDisconnectEvent = null
-        successVMDisconnectProfile.onVMDisconnect().get.foreach(actual = _)
+        successVMDisconnectProfile.tryGetOrCreateVMDisconnectRequest().get.foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -63,13 +63,13 @@ class VMDisconnectProfileSpec extends FunSpec with Matchers
         val data = (mock[VMDisconnectEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: Throwable = null
-        failVMDisconnectProfile.onVMDisconnect().failed.foreach(actual = _)
+        failVMDisconnectProfile.tryGetOrCreateVMDisconnectRequest().failed.foreach(actual = _)
 
         actual should be (expected)
       }
     }
 
-    describe("#onUnsafeVMDisconnect") {
+    describe("#getOrCreateVMDisconnectRequest") {
       it("should return a pipeline of events if successful") {
         val expected = mock[VMDisconnectEvent]
 
@@ -77,7 +77,7 @@ class VMDisconnectProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: VMDisconnectEvent = null
-        successVMDisconnectProfile.onUnsafeVMDisconnect().foreach(actual = _)
+        successVMDisconnectProfile.getOrCreateVMDisconnectRequest().foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -89,19 +89,19 @@ class VMDisconnectProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failVMDisconnectProfile.onUnsafeVMDisconnect()
+          failVMDisconnectProfile.getOrCreateVMDisconnectRequest()
         }
       }
     }
 
-    describe("#onUnsafeVMDisconnectWithData") {
+    describe("#getOrCreateVMDisconnectRequestWithData") {
       it("should return a pipeline of events and data if successful") {
         // Data to be run through pipeline
         val expected = (mock[VMDisconnectEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (VMDisconnectEvent, Seq[JDIEventDataResult]) = null
         successVMDisconnectProfile
-          .onUnsafeVMDisconnectWithData()
+          .getOrCreateVMDisconnectRequestWithData()
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -114,7 +114,7 @@ class VMDisconnectProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failVMDisconnectProfile.onUnsafeVMDisconnectWithData()
+          failVMDisconnectProfile.getOrCreateVMDisconnectRequestWithData()
         }
       }
     }

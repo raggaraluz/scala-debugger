@@ -8,123 +8,123 @@ class FrameInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   describe("FrameInfoProfile") {
-    describe("#withThisObject") {
+    describe("#tryGetThisObject") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[ObjectInfoProfile]
 
         val frameInfoProfile = new TestFrameInfoProfile {
-          override def withUnsafeThisObject: ObjectInfoProfile = mockUnsafeMethod()
+          override def getThisObject: ObjectInfoProfile = mockUnsafeMethod()
         }
 
         val r = mock[ObjectInfoProfile]
         mockUnsafeMethod.expects().returning(r).once()
-        frameInfoProfile.withThisObject.get should be (r)
+        frameInfoProfile.tryGetThisObject.get should be (r)
       }
     }
 
-    describe("#withCurrentThread") {
+    describe("#tryGetCurrentThread") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[ThreadInfoProfile]
 
         val frameInfoProfile = new TestFrameInfoProfile {
-          override def withUnsafeCurrentThread: ThreadInfoProfile =
+          override def getCurrentThread: ThreadInfoProfile =
             mockUnsafeMethod()
         }
 
         val r = mock[ThreadInfoProfile]
         mockUnsafeMethod.expects().returning(r).once()
-        frameInfoProfile.withCurrentThread.get should be (r)
+        frameInfoProfile.tryGetCurrentThread.get should be (r)
       }
     }
 
-    describe("#forVariable") {
+    describe("#tryGetVariable") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[String, VariableInfoProfile]
 
         val frameInfoProfile = new TestFrameInfoProfile {
-          override def forUnsafeVariable(name: String): VariableInfoProfile =
+          override def getVariable(name: String): VariableInfoProfile =
             mockUnsafeMethod(name)
         }
 
         val a1 = "someName"
         val r = mock[VariableInfoProfile]
         mockUnsafeMethod.expects(a1).returning(r).once()
-        frameInfoProfile.forVariable(a1).get should be (r)
+        frameInfoProfile.tryGetVariable(a1).get should be (r)
       }
     }
 
-    describe("#forFieldVariables") {
+    describe("#tryGetFieldVariables") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Seq[VariableInfoProfile]]
 
         val frameInfoProfile = new TestFrameInfoProfile {
-          override def forUnsafeFieldVariables: Seq[VariableInfoProfile] =
+          override def getFieldVariables: Seq[VariableInfoProfile] =
             mockUnsafeMethod()
         }
 
         val r = Seq(mock[VariableInfoProfile])
         mockUnsafeMethod.expects().returning(r).once()
-        frameInfoProfile.forFieldVariables.get should be (r)
+        frameInfoProfile.tryGetFieldVariables.get should be (r)
       }
     }
 
-    describe("#forLocalVariables") {
+    describe("#tryGetLocalVariables") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Seq[VariableInfoProfile]]
 
         val frameInfoProfile = new TestFrameInfoProfile {
-          override def forUnsafeLocalVariables: Seq[VariableInfoProfile] =
+          override def getLocalVariables: Seq[VariableInfoProfile] =
             mockUnsafeMethod()
         }
 
         val r = Seq(mock[VariableInfoProfile])
         mockUnsafeMethod.expects().returning(r).once()
-        frameInfoProfile.forLocalVariables.get should be (r)
+        frameInfoProfile.tryGetLocalVariables.get should be (r)
       }
     }
 
-    describe("#forAllVariables") {
+    describe("#tryGetAllVariables") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Seq[VariableInfoProfile]]
 
         val frameInfoProfile = new TestFrameInfoProfile {
-          override def forUnsafeAllVariables: Seq[VariableInfoProfile] =
+          override def getAllVariables: Seq[VariableInfoProfile] =
             mockUnsafeMethod()
         }
 
         val r = Seq(mock[VariableInfoProfile])
         mockUnsafeMethod.expects().returning(r).once()
-        frameInfoProfile.forAllVariables.get should be (r)
+        frameInfoProfile.tryGetAllVariables.get should be (r)
       }
     }
 
-    describe("#forArguments") {
+    describe("#tryGetArguments") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Seq[VariableInfoProfile]]
 
         val frameInfoProfile = new TestFrameInfoProfile {
-          override def forUnsafeArguments: Seq[VariableInfoProfile] =
+          override def getArguments: Seq[VariableInfoProfile] =
             mockUnsafeMethod()
         }
 
         val r = Seq(mock[VariableInfoProfile])
         mockUnsafeMethod.expects().returning(r).once()
-        frameInfoProfile.forArguments.get should be (r)
+        frameInfoProfile.tryGetArguments.get should be (r)
       }
     }
 
-    describe("#forNonArguments") {
+    describe("#tryGetNonArguments") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Seq[VariableInfoProfile]]
 
         val frameInfoProfile = new TestFrameInfoProfile {
-          override def forUnsafeNonArguments: Seq[VariableInfoProfile] =
+          override def getNonArguments: Seq[VariableInfoProfile] =
             mockUnsafeMethod()
         }
 
         val r = Seq(mock[VariableInfoProfile])
         mockUnsafeMethod.expects().returning(r).once()
-        frameInfoProfile.forNonArguments.get should be (r)
+        frameInfoProfile.tryGetNonArguments.get should be (r)
       }
     }
   }

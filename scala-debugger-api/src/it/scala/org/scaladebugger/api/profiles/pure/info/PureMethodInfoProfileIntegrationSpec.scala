@@ -28,14 +28,14 @@ class PureMethodInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 22, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 22, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val method = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame.withUnsafeThisObject
-            .unsafeMethod("publicMethod")
+            .getThread(t.get).getTopFrame.getThisObject
+            .getMethod("publicMethod")
 
           method.name should be ("publicMethod")
         })
@@ -51,16 +51,16 @@ class PureMethodInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 22, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 22, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val method = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame.withUnsafeThisObject
-            .unsafeMethod("publicMethod")
+            .getThread(t.get).getTopFrame.getThisObject
+            .getMethod("publicMethod")
 
-          method.unsafeParameterTypeNames should be (Seq("int", "java.lang.String"))
+          method.getParameterTypeNames should be (Seq("int", "java.lang.String"))
         })
       }
     }
@@ -74,16 +74,16 @@ class PureMethodInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 22, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 22, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val method = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame.withUnsafeThisObject
-            .unsafeMethod("publicMethod")
+            .getThread(t.get).getTopFrame.getThisObject
+            .getMethod("publicMethod")
 
-          method.unsafeReturnTypeName should be ("java.lang.String")
+          method.getReturnTypeName should be ("java.lang.String")
         })
       }
     }

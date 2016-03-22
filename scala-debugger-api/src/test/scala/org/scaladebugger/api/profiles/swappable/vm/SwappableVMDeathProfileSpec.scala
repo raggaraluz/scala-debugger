@@ -38,16 +38,16 @@ class SwappableVMDeathProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onVMDeathWithData") {
+    describe("#tryGetOrCreateVMDeathRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])
 
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.onVMDeathWithData _).expects(arguments).once()
+        (mockDebugProfile.tryGetOrCreateVMDeathRequestWithData _).expects(arguments).once()
 
-        swappableDebugProfile.onVMDeathWithData(arguments: _*)
+        swappableDebugProfile.tryGetOrCreateVMDeathRequestWithData(arguments: _*)
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -56,7 +56,7 @@ class SwappableVMDeathProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onVMDeathWithData(arguments: _*)
+          swappableDebugProfile.tryGetOrCreateVMDeathRequestWithData(arguments: _*)
         }
       }
     }

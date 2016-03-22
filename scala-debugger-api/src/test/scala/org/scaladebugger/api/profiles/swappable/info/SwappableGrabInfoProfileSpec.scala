@@ -20,32 +20,32 @@ class SwappableGrabInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("SwappableGrabInfoProfile") {
-    describe("#forUnsafeThread") {
+    describe("#getThread") {
       it("should invoke the method on the underlying profile") {
         val expected = mock[ThreadInfoProfile]
 
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).twice()
 
-        (mockDebugProfile.forUnsafeThread(_: Long)).expects(*)
+        (mockDebugProfile.getThread(_: Long)).expects(*)
           .returning(expected).once()
 
-        (mockDebugProfile.forUnsafeThread(_: ThreadReference)).expects(*)
+        (mockDebugProfile.getThread(_: ThreadReference)).expects(*)
           .returning(expected).once()
 
-        swappableDebugProfile.forUnsafeThread(0L) should be(expected)
-        swappableDebugProfile.forUnsafeThread(mock[ThreadReference]) should be(expected)
+        swappableDebugProfile.getThread(0L) should be(expected)
+        swappableDebugProfile.getThread(mock[ThreadReference]) should be(expected)
       }
 
       it("should throw an exception of there is no underlying profile") {
         intercept[AssertionError] {
           (mockProfileManager.retrieve _).expects(*).returning(None).once()
-          swappableDebugProfile.forUnsafeThread(0L)
+          swappableDebugProfile.getThread(0L)
         }
 
         intercept[AssertionError] {
           (mockProfileManager.retrieve _).expects(*).returning(None).once()
-          swappableDebugProfile.forUnsafeThread(mock[ThreadReference])
+          swappableDebugProfile.getThread(mock[ThreadReference])
         }
       }
     }

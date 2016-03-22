@@ -68,7 +68,7 @@ trait PureMethodEntryProfile extends MethodEntryProfile {
    * @return The stream of method entry events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onMethodEntryWithData(
+  override def tryGetOrCreateMethodEntryRequestWithData(
     className: String,
     methodName: String,
     extraArguments: JDIArgument*

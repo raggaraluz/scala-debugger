@@ -13,18 +13,18 @@ class PureGrabInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureGrabInfoProfile") {
-    describe("#forUnsafeThread(threadReference)") {
+    describe("#getThread(threadReference)") {
       it("should return a pure thread info profile wrapping the thread") {
         val expected = mock[ThreadReference]
 
-        val actual = pureGrabInfoProfile.forUnsafeThread(expected)
+        val actual = pureGrabInfoProfile.getThread(expected)
 
         (expected.uniqueID _).expects().returning(999L).twice()
         actual.uniqueId should be (expected.uniqueID())
       }
     }
 
-    describe("#forUnsafeThread(threadId)") {
+    describe("#getThread(threadId)") {
       it("should return a new profile if a thread with matching unique id is found") {
         val expected = mock[ThreadReference]
 
@@ -33,7 +33,7 @@ class PureGrabInfoProfileSpec extends FunSpec with Matchers
           .returning(Seq(expected).asJava).once()
 
         (expected.uniqueID _).expects().returning(999L).repeated(3).times()
-        val actual = pureGrabInfoProfile.forUnsafeThread(999L)
+        val actual = pureGrabInfoProfile.getThread(999L)
 
         actual.uniqueId should be (expected.uniqueID())
       }
@@ -47,7 +47,7 @@ class PureGrabInfoProfileSpec extends FunSpec with Matchers
 
         intercept[NoSuchElementException] {
           (mockThreadReference.uniqueID _).expects().returning(998L).once()
-          pureGrabInfoProfile.forUnsafeThread(999L)
+          pureGrabInfoProfile.getThread(999L)
         }
       }
     }

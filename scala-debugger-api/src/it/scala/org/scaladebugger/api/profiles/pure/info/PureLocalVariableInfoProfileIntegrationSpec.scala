@@ -29,14 +29,14 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variable = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("h")
+            .getThread(t.get).getTopFrame
+            .getVariable("h")
 
           variable.name should be ("h")
         })
@@ -52,14 +52,14 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variable = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("h")
+            .getThread(t.get).getTopFrame
+            .getVariable("h")
 
           variable.isField should be (false)
         })
@@ -75,14 +75,14 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variable = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("h")
+            .getThread(t.get).getTopFrame
+            .getVariable("h")
 
           variable.isLocal should be (true)
         })
@@ -98,19 +98,19 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("h")
+            .getThread(t.get).getTopFrame
+            .getVariable("h")
             .isArgument should be (false)
 
           s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("args")
+            .getThread(t.get).getTopFrame
+            .getVariable("args")
             .isArgument should be (true)
         })
       }
@@ -125,16 +125,16 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variable = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("g")
+            .getThread(t.get).getTopFrame
+            .getVariable("g")
 
-          variable.setValue(888.0).get should be (888.0)
+          variable.trySetValue(888.0).get should be (888.0)
         })
       }
     }
@@ -148,17 +148,17 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val field = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("h")
+            .getThread(t.get).getTopFrame
+            .getVariable("h")
 
           intercept[InvalidTypeException] {
-            field.setValue("some value").get
+            field.trySetValue("some value").get
           }
         })
       }

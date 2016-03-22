@@ -28,7 +28,7 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureFrameInfoProfile") {
-    describe("#withUnsafeThisObject") {
+    describe("#getThisObject") {
       it("should return the stack frame's 'this' object wrapped in a profile") {
         val expected = mock[ObjectInfoProfile]
         val mockObjectReference = mock[ObjectReference]
@@ -41,7 +41,7 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         mockNewObjectProfile.expects(mockObjectReference)
           .returning(expected).once()
 
-        val actual = pureFrameInfoProfile.withUnsafeThisObject
+        val actual = pureFrameInfoProfile.getThisObject
         actual should be (expected)
       }
 
@@ -55,12 +55,12 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         // New object profile created once using helper method
         mockNewObjectProfile.expects(*).returning(mockObjectProfile).once()
 
-        pureFrameInfoProfile.withUnsafeThisObject should
-          be (pureFrameInfoProfile.withUnsafeThisObject)
+        pureFrameInfoProfile.getThisObject should
+          be (pureFrameInfoProfile.getThisObject)
       }
     }
 
-    describe("#withUnsafeCurrentThread") {
+    describe("#getCurrentThread") {
       it("should return the stack frame's thread wrapped in a profile") {
         val expected = mock[ThreadInfoProfile]
         val mockThreadReference = mock[ThreadReference]
@@ -73,7 +73,7 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         mockNewThreadProfile.expects(mockThreadReference)
           .returning(expected).once()
 
-        val actual = pureFrameInfoProfile.withUnsafeCurrentThread
+        val actual = pureFrameInfoProfile.getCurrentThread
         actual should be (expected)
       }
 
@@ -87,12 +87,12 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         // New thread profile created once using helper method
         mockNewThreadProfile.expects(*).returning(mockThreadProfile).once()
 
-        pureFrameInfoProfile.withUnsafeCurrentThread should
-          be (pureFrameInfoProfile.withUnsafeCurrentThread)
+        pureFrameInfoProfile.getCurrentThread should
+          be (pureFrameInfoProfile.getCurrentThread)
       }
     }
 
-    describe("#forUnsafeVariable") {
+    describe("#getVariable") {
       it("should return a local variable wrapped in a profile if it exists") {
         val expected = mock[VariableInfoProfile]
 
@@ -105,7 +105,7 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         mockNewLocalVariableProfile.expects(mockLocalVariable)
           .returning(expected).once()
 
-        val actual = pureFrameInfoProfile.forUnsafeVariable(name)
+        val actual = pureFrameInfoProfile.getVariable(name)
 
         actual should be (expected)
       }
@@ -126,10 +126,10 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         mockNewObjectProfile.expects(*).returning(mockObjectProfile).once()
 
         // unsafeField used to find object profile field
-        (mockObjectProfile.unsafeField _).expects(name)
+        (mockObjectProfile.getField _).expects(name)
           .returning(expected).once()
 
-        val actual = pureFrameInfoProfile.forUnsafeVariable(name)
+        val actual = pureFrameInfoProfile.getVariable(name)
 
         actual should be (expected)
       }
@@ -148,16 +148,16 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         mockNewObjectProfile.expects(*).returning(mockObjectProfile).once()
 
         // unsafeField does not find a field and throws a NoSuchElement exception
-        (mockObjectProfile.unsafeField _).expects(name)
+        (mockObjectProfile.getField _).expects(name)
           .throwing(new NoSuchElementException).once()
 
         intercept[NoSuchElementException] {
-          pureFrameInfoProfile.forUnsafeVariable(name)
+          pureFrameInfoProfile.getVariable(name)
         }
       }
     }
 
-    describe("#forUnsafeFieldVariables") {
+    describe("#getFieldVariables") {
       it("should return a collection of profiles wrapping 'this' object's fields") {
         val expected = Seq(mock[VariableInfoProfile])
 
@@ -168,34 +168,34 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         mockNewObjectProfile.expects(*).returning(mockObjectProfile).once()
 
         // Field variable profiles are accessed
-        (mockObjectProfile.unsafeFields _).expects().returning(expected).once()
+        (mockObjectProfile.getFields _).expects().returning(expected).once()
 
-        val actual = pureFrameInfoProfile.forUnsafeFieldVariables
+        val actual = pureFrameInfoProfile.getFieldVariables
 
         actual should be (expected)
       }
     }
 
-    describe("#forUnsafeAllVariables") {
+    describe("#getAllVariables") {
       it("should return a combination of local and field variables") {
         val fieldVariables = Seq(mock[VariableInfoProfile])
         val localVariables = Seq(mock[VariableInfoProfile])
         val expected = localVariables ++ fieldVariables
 
         val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame) {
-          override def forUnsafeFieldVariables: Seq[VariableInfoProfile] =
+          override def getFieldVariables: Seq[VariableInfoProfile] =
             fieldVariables
-          override def forUnsafeLocalVariables: Seq[VariableInfoProfile] =
+          override def getLocalVariables: Seq[VariableInfoProfile] =
             localVariables
         }
 
-        val actual = pureFrameInfoProfile.forUnsafeAllVariables
+        val actual = pureFrameInfoProfile.getAllVariables
 
         actual should be (expected)
       }
     }
 
-    describe("#forUnsafeLocalVariables") {
+    describe("#getLocalVariables") {
       it("should return all visible variables wrapped in profiles") {
         val expected = Seq(mock[VariableInfoProfile])
         val mockLocalVariables = Seq(mock[LocalVariable])
@@ -210,45 +210,45 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
           mockNewLocalVariableProfile.expects(lv).returning(e).once()
         }
 
-        val actual = pureFrameInfoProfile.forUnsafeLocalVariables
+        val actual = pureFrameInfoProfile.getLocalVariables
 
         actual should be (expected)
       }
     }
 
-    describe("#forUnsafeNonArguments") {
+    describe("#getNonArguments") {
       it("should return only non-argument visible variable profiles") {
         val expected = Seq(mock[VariableInfoProfile])
         val other = Seq(mock[VariableInfoProfile])
 
         val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame) {
-          override def forUnsafeLocalVariables: Seq[VariableInfoProfile] =
+          override def getLocalVariables: Seq[VariableInfoProfile] =
             expected ++ other
         }
 
         expected.foreach(v => (v.isArgument _).expects().returning(false).once())
         other.foreach(v => (v.isArgument _).expects().returning(true).once())
 
-        val actual = pureFrameInfoProfile.forUnsafeNonArguments
+        val actual = pureFrameInfoProfile.getNonArguments
 
         actual should be (expected)
       }
     }
 
-    describe("#forUnsafeArguments") {
+    describe("#getArguments") {
       it("should return only argument visible variable profiles") {
         val expected = Seq(mock[VariableInfoProfile])
         val other = Seq(mock[VariableInfoProfile])
 
         val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame) {
-          override def forUnsafeLocalVariables: Seq[VariableInfoProfile] =
+          override def getLocalVariables: Seq[VariableInfoProfile] =
             expected ++ other
         }
 
         expected.foreach(v => (v.isArgument _).expects().returning(true).once())
         other.foreach(v => (v.isArgument _).expects().returning(false).once())
 
-        val actual = pureFrameInfoProfile.forUnsafeArguments
+        val actual = pureFrameInfoProfile.getArguments
 
         actual should be (expected)
       }

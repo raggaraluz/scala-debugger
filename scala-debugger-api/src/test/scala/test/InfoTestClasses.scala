@@ -18,19 +18,19 @@ object InfoTestClasses {
 
   class TestThreadInfoProfile extends ThreadInfoProfile {
     override def uniqueId: Long = throwException()
-    override def unsafeFrames: Seq[FrameInfoProfile] = throwException()
+    override def getFrames: Seq[FrameInfoProfile] = throwException()
     override def name: String = throwException()
-    override def withUnsafeFrame(index: Int): FrameInfoProfile = throwException()
-    override def unsafeTotalFrames: Int = throwException()
+    override def getFrame(index: Int): FrameInfoProfile = throwException()
+    override def getTotalFrames: Int = throwException()
   }
 
   class TestValueInfoProfile extends ValueInfoProfile {
     override def typeName: String = throwException()
     override def isObject: Boolean = throwException()
     override def isPrimitive: Boolean = throwException()
-    override def asUnsafeObject: ObjectInfoProfile = throwException()
-    override def asUnsafeLocalValue: Any = throwException()
-    override def asUnsafeArray: ArrayInfoProfile = throwException()
+    override def toObject: ObjectInfoProfile = throwException()
+    override def toLocalValue: Any = throwException()
+    override def toArray: ArrayInfoProfile = throwException()
     override def isString: Boolean = throwException()
     override def isArray: Boolean = throwException()
     override def isNull: Boolean = throwException()
@@ -38,52 +38,52 @@ object InfoTestClasses {
 
   class TestVariableInfoProfile extends VariableInfoProfile {
     override def name: String = throwException()
-    override def toUnsafeValue: ValueInfoProfile = throwException()
-    override def setValue(value: AnyVal): Try[AnyVal] = throwException()
-    override def setValue(value: String): Try[String] = throwException()
+    override def toValue: ValueInfoProfile = throwException()
+    override def trySetValue(value: AnyVal): Try[AnyVal] = throwException()
+    override def trySetValue(value: String): Try[String] = throwException()
     override def isArgument: Boolean = throwException()
     override def isLocal: Boolean = throwException()
     override def isField: Boolean = throwException()
   }
 
   class TestObjectInfoProfile extends TestValueInfoProfile with ObjectInfoProfile {
-    override def unsafeInvoke(methodInfoProfile: MethodInfoProfile, arguments: Seq[Any], jdiArguments: JDIArgument*): ValueInfoProfile = throwException()
-    override def unsafeInvoke(methodName: String, parameterTypeNames: Seq[String], arguments: Seq[Any], jdiArguments: JDIArgument*): ValueInfoProfile = throwException()
-    override def unsafeMethod(name: String, parameterTypeNames: String*): MethodInfoProfile = throwException()
-    override def unsafeFields: Seq[VariableInfoProfile] = throwException()
-    override def unsafeField(name: String): VariableInfoProfile = throwException()
-    override def unsafeMethods: Seq[MethodInfoProfile] = throwException()
+    override def invoke(methodInfoProfile: MethodInfoProfile, arguments: Seq[Any], jdiArguments: JDIArgument*): ValueInfoProfile = throwException()
+    override def invoke(methodName: String, parameterTypeNames: Seq[String], arguments: Seq[Any], jdiArguments: JDIArgument*): ValueInfoProfile = throwException()
+    override def getMethod(name: String, parameterTypeNames: String*): MethodInfoProfile = throwException()
+    override def getFields: Seq[VariableInfoProfile] = throwException()
+    override def getField(name: String): VariableInfoProfile = throwException()
+    override def getMethods: Seq[MethodInfoProfile] = throwException()
   }
 
   class TestMethodInfoProfile extends MethodInfoProfile {
     override def name: String = throwException()
-    override def unsafeReturnTypeName: String = throwException()
-    override def unsafeParameterTypeNames: Seq[String] = throwException()
+    override def getReturnTypeName: String = throwException()
+    override def getParameterTypeNames: Seq[String] = throwException()
   }
 
   class TestGrabInfoProfile extends GrabInfoProfile {
-    override def forUnsafeThread(threadReference: ThreadReference): ThreadInfoProfile = throwException()
-    override def forUnsafeThread(threadId: Long): ThreadInfoProfile = throwException()
+    override def getThread(threadReference: ThreadReference): ThreadInfoProfile = throwException()
+    override def getThread(threadId: Long): ThreadInfoProfile = throwException()
   }
 
   class TestFrameInfoProfile extends FrameInfoProfile {
-    override def withUnsafeThisObject: ObjectInfoProfile = throwException()
-    override def withUnsafeCurrentThread: ThreadInfoProfile = throwException()
-    override def forUnsafeFieldVariables: Seq[VariableInfoProfile] = throwException()
-    override def forUnsafeVariable(name: String): VariableInfoProfile = throwException()
-    override def forUnsafeAllVariables: Seq[VariableInfoProfile] = throwException()
-    override def forUnsafeLocalVariables: Seq[VariableInfoProfile] = throwException()
-    override def forUnsafeNonArguments: Seq[VariableInfoProfile] = throwException()
-    override def forUnsafeArguments: Seq[VariableInfoProfile] = throwException()
+    override def getThisObject: ObjectInfoProfile = throwException()
+    override def getCurrentThread: ThreadInfoProfile = throwException()
+    override def getFieldVariables: Seq[VariableInfoProfile] = throwException()
+    override def getVariable(name: String): VariableInfoProfile = throwException()
+    override def getAllVariables: Seq[VariableInfoProfile] = throwException()
+    override def getLocalVariables: Seq[VariableInfoProfile] = throwException()
+    override def getNonArguments: Seq[VariableInfoProfile] = throwException()
+    override def getArguments: Seq[VariableInfoProfile] = throwException()
   }
 
   class TestArrayInfoProfile extends TestObjectInfoProfile with ArrayInfoProfile {
     override def length: Int = throwException()
-    override def getUnsafeValue(index: Int): ValueInfoProfile = throwException()
-    override def setUnsafeValues(index: Int, values: Seq[Any], srcIndex: Int, length: Int): Seq[Any] = throwException()
-    override def setUnsafeValues(values: Seq[Any]): Seq[Any] = throwException()
-    override def getUnsafeValues(index: Int, length: Int): Seq[ValueInfoProfile] = throwException()
-    override def getUnsafeValues: Seq[ValueInfoProfile] = throwException()
-    override def setUnsafeValue(index: Int, value: Any): Any = throwException()
+    override def getValue(index: Int): ValueInfoProfile = throwException()
+    override def setValues(index: Int, values: Seq[Any], srcIndex: Int, length: Int): Seq[Any] = throwException()
+    override def setValues(values: Seq[Any]): Seq[Any] = throwException()
+    override def getValues(index: Int, length: Int): Seq[ValueInfoProfile] = throwException()
+    override def getValues: Seq[ValueInfoProfile] = throwException()
+    override def setValue(index: Int, value: Any): Any = throwException()
   }
 }

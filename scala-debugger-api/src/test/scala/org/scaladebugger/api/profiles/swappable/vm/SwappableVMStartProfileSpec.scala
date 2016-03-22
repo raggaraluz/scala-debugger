@@ -19,7 +19,7 @@ class SwappableVMStartProfileSpec extends FunSpec with Matchers
   }
 
   describe("SwappableVMStartProfile") {
-    describe("#onVMStartWithData") {
+    describe("#tryGetOrCreateVMStartRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])
 
@@ -28,14 +28,14 @@ class SwappableVMStartProfileSpec extends FunSpec with Matchers
 
         // NOTE: Forced to use onCall with product due to issues with ScalaMock
         //       casting and inability to work with varargs directly
-        (mockDebugProfile.onVMStartWithData _).expects(*)
+        (mockDebugProfile.tryGetOrCreateVMStartRequestWithData _).expects(*)
           .onCall((t: Product) => {
             val args = t.productElement(0).asInstanceOf[Seq[JDIArgument]]
             args should be(arguments)
             null
           })
 
-        swappableDebugProfile.onVMStartWithData(arguments: _*)
+        swappableDebugProfile.tryGetOrCreateVMStartRequestWithData(arguments: _*)
       }
 
       it("should throw an exception if there is no underlying profile") {
@@ -44,7 +44,7 @@ class SwappableVMStartProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onVMStartWithData(arguments: _*)
+          swappableDebugProfile.tryGetOrCreateVMStartRequestWithData(arguments: _*)
         }
       }
     }

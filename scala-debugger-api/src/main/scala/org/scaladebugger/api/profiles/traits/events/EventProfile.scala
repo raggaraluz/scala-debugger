@@ -34,11 +34,11 @@ trait EventProfile {
    *
    * @return The stream of events
    */
-  def onEvent(
+  def tryCreateEventListener(
     eventType: EventType,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[Event]] = {
-    onEventWithData(eventType, extraArguments: _*).map(_.map(_._1).noop())
+    tryCreateEventListenerWithData(eventType, extraArguments: _*).map(_.map(_._1).noop())
   }
 
   /**
@@ -49,11 +49,11 @@ trait EventProfile {
    *
    * @return The stream of events
    */
-  def onUnsafeEvent(
+  def createEventListener(
     eventType: EventType,
     extraArguments: JDIArgument*
   ): IdentityPipeline[Event] = {
-    onEvent(eventType, extraArguments: _*).get
+    tryCreateEventListener(eventType, extraArguments: _*).get
   }
 
   /**
@@ -65,11 +65,11 @@ trait EventProfile {
    * @return The stream of events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeEventWithData(
+  def createEventListenerWithData(
     eventType: EventType,
     extraArguments: JDIArgument*
   ): IdentityPipeline[EventAndData] = {
-    onEventWithData(eventType, extraArguments: _*).get
+    tryCreateEventListenerWithData(eventType, extraArguments: _*).get
   }
 
   /**
@@ -81,7 +81,7 @@ trait EventProfile {
    * @return The stream of events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onEventWithData(
+  def tryCreateEventListenerWithData(
     eventType: EventType,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[EventAndData]]

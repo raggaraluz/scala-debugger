@@ -38,7 +38,7 @@ class SwappableBreakpointProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onBreakpointWithData") {
+    describe("#tryGetOrCreateBreakpointRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val fileName = "some file"
         val lineNumber = 999
@@ -47,13 +47,13 @@ class SwappableBreakpointProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.onBreakpointWithData _).expects(
+        (mockDebugProfile.tryGetOrCreateBreakpointRequestWithData _).expects(
           fileName,
           lineNumber,
           arguments
         ).once()
 
-        swappableDebugProfile.onBreakpointWithData(
+        swappableDebugProfile.tryGetOrCreateBreakpointRequestWithData(
           fileName,
           lineNumber,
           arguments: _*
@@ -68,7 +68,7 @@ class SwappableBreakpointProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onBreakpointWithData(
+          swappableDebugProfile.tryGetOrCreateBreakpointRequestWithData(
             fileName,
             lineNumber,
             arguments: _*

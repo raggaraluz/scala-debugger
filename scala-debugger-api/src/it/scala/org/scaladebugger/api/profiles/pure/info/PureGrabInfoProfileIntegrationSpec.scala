@@ -32,17 +32,17 @@ class PureGrabInfoProfileIntegrationSpec extends FunSpec with Matchers
       @volatile var t: Option[ThreadReference] = None
       val s = DummyScalaVirtualMachine.newInstance()
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 7).foreach(e => t = Some(e.thread()))
+        .getOrCreateBreakpointRequest(testFile, 7).foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val id = t.get.uniqueID()
 
           s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(id).uniqueId should be (id)
+            .getThread(id).uniqueId should be (id)
 
           s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).uniqueId should be (id)
+            .getThread(t.get).uniqueId should be (id)
         })
       }
     }

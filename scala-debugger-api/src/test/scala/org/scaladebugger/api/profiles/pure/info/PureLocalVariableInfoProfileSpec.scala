@@ -71,7 +71,7 @@ class PureLocalVariableInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#setValue") {
+    describe("#trySetValue") {
       it("should set strings directly on the object") {
         val expected = "some value"
 
@@ -85,7 +85,7 @@ class PureLocalVariableInfoProfileSpec extends FunSpec with Matchers
           .expects(mockLocalVariable, mockStringReference)
           .once()
 
-        pureLocalVariableInfoProfile.setValue(expected).get should be (expected)
+        pureLocalVariableInfoProfile.trySetValue(expected).get should be (expected)
       }
 
       it("should set primitive values directly on the object") {
@@ -101,11 +101,11 @@ class PureLocalVariableInfoProfileSpec extends FunSpec with Matchers
           .expects(mockLocalVariable, mockByteValue)
           .once()
 
-        pureLocalVariableInfoProfile.setValue(expected).get should be (expected)
+        pureLocalVariableInfoProfile.trySetValue(expected).get should be (expected)
       }
     }
 
-    describe("#toUnsafeValue") {
+    describe("#toValue") {
       it("should return a wrapper around the value of the localVariable") {
         val expected = mock[ValueInfoProfile]
         val mockValue = mock[Value]
@@ -124,7 +124,7 @@ class PureLocalVariableInfoProfileSpec extends FunSpec with Matchers
         }
 
         mockNewValueProfile.expects(mockValue).returning(expected).once()
-        pureLocalVariableInfoProfile.toUnsafeValue should be (expected)
+        pureLocalVariableInfoProfile.toValue should be (expected)
       }
     }
   }

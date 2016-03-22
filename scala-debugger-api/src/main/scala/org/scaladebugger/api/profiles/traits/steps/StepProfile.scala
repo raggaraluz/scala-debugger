@@ -210,11 +210,11 @@ trait StepProfile {
    *
    * @return The stream of step events
    */
-  def onStep(
+  def tryCreateStepListener(
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[StepEvent]] = {
-    onStepWithData(threadReference, extraArguments: _*).map(_.map(_._1).noop())
+    tryCreateStepListenerWithData(threadReference, extraArguments: _*).map(_.map(_._1).noop())
   }
 
   /**
@@ -226,7 +226,7 @@ trait StepProfile {
    * @return The stream of step events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onStepWithData(
+  def tryCreateStepListenerWithData(
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[StepEventAndData]]
@@ -239,11 +239,11 @@ trait StepProfile {
    *
    * @return The stream of step events
    */
-  def onUnsafeStep(
+  def createStepListener(
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): IdentityPipeline[StepEvent] = {
-    onStep(threadReference, extraArguments: _*).get
+    tryCreateStepListener(threadReference, extraArguments: _*).get
   }
 
   /**
@@ -255,10 +255,10 @@ trait StepProfile {
    * @return The stream of step events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeStepWithData(
+  def createStepListenerWithData(
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): IdentityPipeline[StepEventAndData] = {
-    onStepWithData(threadReference, extraArguments: _*).get
+    tryCreateStepListenerWithData(threadReference, extraArguments: _*).get
   }
 }

@@ -23,7 +23,7 @@ class ClassPrepareProfileSpec extends FunSpec with Matchers
   )
 
   private val successClassPrepareProfile = new Object with ClassPrepareProfile {
-    override def onClassPrepareWithData(
+    override def tryGetOrCreateClassPrepareRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[ClassPrepareEventAndData]] = {
       Success(TestPipelineWithData)
@@ -33,7 +33,7 @@ class ClassPrepareProfileSpec extends FunSpec with Matchers
   }
 
   private val failClassPrepareProfile = new Object with ClassPrepareProfile {
-    override def onClassPrepareWithData(
+    override def tryGetOrCreateClassPrepareRequestWithData(
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[ClassPrepareEventAndData]] = {
       Failure(TestThrowable)
@@ -43,7 +43,7 @@ class ClassPrepareProfileSpec extends FunSpec with Matchers
   }
 
   describe("ClassPrepareProfile") {
-    describe("#onClassPrepare") {
+    describe("#tryGetOrCreateClassPrepareRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[ClassPrepareEvent]
 
@@ -51,7 +51,7 @@ class ClassPrepareProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: ClassPrepareEvent = null
-        successClassPrepareProfile.onClassPrepare().get.foreach(actual = _)
+        successClassPrepareProfile.tryGetOrCreateClassPrepareRequest().get.foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -68,13 +68,13 @@ class ClassPrepareProfileSpec extends FunSpec with Matchers
         val data = (mock[ClassPrepareEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: Throwable = null
-        failClassPrepareProfile.onClassPrepare().failed.foreach(actual = _)
+        failClassPrepareProfile.tryGetOrCreateClassPrepareRequest().failed.foreach(actual = _)
 
         actual should be (expected)
       }
     }
 
-    describe("#onUnsafeClassPrepare") {
+    describe("#getOrCreateClassPrepareRequest") {
       it("should return a pipeline of events if successful") {
         val expected = mock[ClassPrepareEvent]
 
@@ -82,7 +82,7 @@ class ClassPrepareProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: ClassPrepareEvent = null
-        successClassPrepareProfile.onUnsafeClassPrepare().foreach(actual = _)
+        successClassPrepareProfile.getOrCreateClassPrepareRequest().foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -94,19 +94,19 @@ class ClassPrepareProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failClassPrepareProfile.onUnsafeClassPrepare()
+          failClassPrepareProfile.getOrCreateClassPrepareRequest()
         }
       }
     }
 
-    describe("#onUnsafeClassPrepareWithData") {
+    describe("#getOrCreateClassPrepareRequestWithData") {
       it("should return a pipeline of events and data if successful") {
         // Data to be run through pipeline
         val expected = (mock[ClassPrepareEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (ClassPrepareEvent, Seq[JDIEventDataResult]) = null
         successClassPrepareProfile
-          .onUnsafeClassPrepareWithData()
+          .getOrCreateClassPrepareRequestWithData()
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -119,7 +119,7 @@ class ClassPrepareProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failClassPrepareProfile.onUnsafeClassPrepareWithData()
+          failClassPrepareProfile.getOrCreateClassPrepareRequestWithData()
         }
       }
     }

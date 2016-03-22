@@ -29,14 +29,14 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val thisTypeName = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .withUnsafeThisObject.typeName
+            .getThread(t.get).getTopFrame
+            .getThisObject.typeName
 
           thisTypeName should be ("org.scaladebugger.test.info.Variables$")
         })
@@ -52,15 +52,15 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val thread = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get)
+            .getThread(t.get)
 
-          thread.uniqueId should be (thread.withUnsafeTopFrame.withUnsafeCurrentThread.uniqueId)
+          thread.uniqueId should be (thread.getTopFrame.getCurrentThread.uniqueId)
         })
       }
     }
@@ -74,14 +74,14 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeAllVariables.map(_.name)
+            .getThread(t.get).getTopFrame
+            .getAllVariables.map(_.name)
 
           variableNames should contain theSameElementsAs Seq(
             // Scala-specific variable
@@ -109,14 +109,14 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeArguments.map(_.name)
+            .getThread(t.get).getTopFrame
+            .getArguments.map(_.name)
 
           variableNames should contain theSameElementsAs Seq(
             // Local argument variables
@@ -135,14 +135,14 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeNonArguments.map(_.name)
+            .getThread(t.get).getTopFrame
+            .getNonArguments.map(_.name)
 
           variableNames should contain theSameElementsAs Seq(
             // Local non-argument variables
@@ -161,14 +161,14 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeFieldVariables.map(_.name)
+            .getThread(t.get).getTopFrame
+            .getFieldVariables.map(_.name)
 
           variableNames should contain theSameElementsAs Seq(
             // Scala-specific variable
@@ -190,14 +190,14 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeLocalVariables.map(_.name)
+            .getThread(t.get).getTopFrame
+            .getLocalVariables.map(_.name)
 
           variableNames should contain theSameElementsAs Seq(
             // Local argument variables
@@ -219,30 +219,30 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           // Scala specific
           s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("MODULE$").name should be ("MODULE$")
+            .getThread(t.get).getTopFrame
+            .getVariable("MODULE$").name should be ("MODULE$")
 
           // Argument
           s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("args").name should be ("args")
+            .getThread(t.get).getTopFrame
+            .getVariable("args").name should be ("args")
 
           // Local
           s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("a").name should be ("a")
+            .getThread(t.get).getTopFrame
+            .getVariable("a").name should be ("a")
 
           // Field
           s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeVariable("z1").name should be ("z1")
+            .getThread(t.get).getTopFrame
+            .getVariable("z1").name should be ("z1")
         })
       }
     }
@@ -256,14 +256,14 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 41, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 41, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeAllVariables.map(_.name)
+            .getThread(t.get).getTopFrame
+            .getAllVariables.map(_.name)
 
           // NOTE: As there is no custom logic, this depicts the raw, top-level
           //       variables seen within the closure

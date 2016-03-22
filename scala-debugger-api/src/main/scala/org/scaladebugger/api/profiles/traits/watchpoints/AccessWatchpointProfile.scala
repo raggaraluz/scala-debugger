@@ -36,12 +36,12 @@ trait AccessWatchpointProfile {
    *
    * @return The stream of access watchpoint events
    */
-  def onAccessWatchpoint(
+  def tryGetOrCreateAccessWatchpointRequest(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[AccessWatchpointEvent]] = {
-    onAccessWatchpointWithData(
+    tryGetOrCreateAccessWatchpointRequestWithData(
       className,
       fieldName,
       extraArguments: _*
@@ -59,7 +59,7 @@ trait AccessWatchpointProfile {
    * @return The stream of access watchpoint events and any retrieved data
    *         based on requests from extra arguments
    */
-  def onAccessWatchpointWithData(
+  def tryGetOrCreateAccessWatchpointRequestWithData(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
@@ -75,12 +75,12 @@ trait AccessWatchpointProfile {
    *
    * @return The stream of access watchpoint events
    */
-  def onUnsafeAccessWatchpoint(
+  def getOrCreateAccessWatchpointRequest(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): IdentityPipeline[AccessWatchpointEvent] = {
-    onAccessWatchpoint(
+    tryGetOrCreateAccessWatchpointRequest(
       className,
       fieldName,
       extraArguments: _*
@@ -98,12 +98,12 @@ trait AccessWatchpointProfile {
    * @return The stream of access watchpoint events and any retrieved data
    *         based on requests from extra arguments
    */
-  def onUnsafeAccessWatchpointWithData(
+  def getOrCreateAccessWatchpointRequestWithData(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): IdentityPipeline[AccessWatchpointEventAndData] = {
-    onAccessWatchpointWithData(
+    tryGetOrCreateAccessWatchpointRequestWithData(
       className,
       fieldName,
       extraArguments: _*

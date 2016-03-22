@@ -79,7 +79,7 @@ class PureEventProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onEventWithData") {
+    describe("#tryCreateEventListenerWithData") {
       it("should set a low-level event and stream its events") {
         val expected = Success(Pipeline.newPipeline(
           classOf[PureEventProfile#EventAndData]
@@ -93,7 +93,7 @@ class PureEventProfileSpec extends FunSpec with Matchers
           .expects(eventType, eventArguments)
           .returning(expected.get).once()
 
-        val actual = pureEventProfile.onEventWithData(
+        val actual = pureEventProfile.tryCreateEventListenerWithData(
           eventType,
           arguments: _*
         )

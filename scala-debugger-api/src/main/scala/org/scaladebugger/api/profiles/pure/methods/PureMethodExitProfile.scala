@@ -68,7 +68,7 @@ trait PureMethodExitProfile extends MethodExitProfile {
    * @return The stream of method exit events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onMethodExitWithData(
+  override def tryGetOrCreateMethodExitRequestWithData(
     className: String,
     methodName: String,
     extraArguments: JDIArgument*

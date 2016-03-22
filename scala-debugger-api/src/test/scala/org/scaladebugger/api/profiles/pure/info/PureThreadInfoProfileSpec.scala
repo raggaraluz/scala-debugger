@@ -43,7 +43,7 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#unsafeFrames") {
+    describe("#getFrames") {
       it("should return a collection of profiles wrapping the frames of the suspended thread") {
         val expected = Seq(mock[FrameInfoProfile])
 
@@ -61,13 +61,13 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
           mockNewFrameProfile.expects(sf).returning(e).once()
         }
 
-        val actual = pureThreadInfoProfile.unsafeFrames
+        val actual = pureThreadInfoProfile.getFrames
 
         actual should be (expected)
       }
     }
 
-    describe("#withUnsafeFrame") {
+    describe("#getFrame") {
       it("should return a profile wrapping the frame at the specified position in the stack") {
         val expected = mock[FrameInfoProfile]
 
@@ -81,19 +81,19 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
         // Wrap stack frame in profile instance
         mockNewFrameProfile.expects(mockStackFrame).returning(expected).once()
 
-        val actual = pureThreadInfoProfile.withUnsafeFrame(index)
+        val actual = pureThreadInfoProfile.getFrame(index)
 
         actual should be (expected)
       }
     }
 
-    describe("#unsafeTotalFrames") {
+    describe("#getTotalFrames") {
       it("should return the total number of frames available in the stack of the suspended thread") {
         val expected = 999
 
         (mockThreadReference.frameCount _).expects().returning(expected).once()
 
-        val actual = pureThreadInfoProfile.unsafeTotalFrames
+        val actual = pureThreadInfoProfile.getTotalFrames
 
         actual should be (expected)
       }

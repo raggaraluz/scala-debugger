@@ -16,12 +16,12 @@ import scala.util.Try
 trait SwappableAccessWatchpointProfile extends AccessWatchpointProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onAccessWatchpointWithData(
+  override def tryGetOrCreateAccessWatchpointRequestWithData(
     className: String,
     fieldName: String,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[AccessWatchpointEventAndData]] = {
-    withCurrentProfile.onAccessWatchpointWithData(
+    withCurrentProfile.tryGetOrCreateAccessWatchpointRequestWithData(
       className,
       fieldName,
       extraArguments: _*

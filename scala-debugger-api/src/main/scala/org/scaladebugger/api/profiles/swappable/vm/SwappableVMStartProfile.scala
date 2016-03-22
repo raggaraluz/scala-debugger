@@ -15,9 +15,9 @@ import scala.util.Try
 trait SwappableVMStartProfile extends VMStartProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onVMStartWithData(
+  override def tryGetOrCreateVMStartRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[VMStartEventAndData]] = {
-    withCurrentProfile.onVMStartWithData(extraArguments: _*)
+    withCurrentProfile.tryGetOrCreateVMStartRequestWithData(extraArguments: _*)
   }
 }

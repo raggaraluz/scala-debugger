@@ -38,7 +38,7 @@ class SwappableMethodExitProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onMethodExitWithData") {
+    describe("#tryGetOrCreateMethodExitRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val className = "some class"
         val methodName = "some method"
@@ -47,10 +47,10 @@ class SwappableMethodExitProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.onMethodExitWithData _)
+        (mockDebugProfile.tryGetOrCreateMethodExitRequestWithData _)
           .expects(className, methodName, arguments).once()
 
-        swappableDebugProfile.onMethodExitWithData(
+        swappableDebugProfile.tryGetOrCreateMethodExitRequestWithData(
           className,
           methodName,
           arguments: _*
@@ -65,7 +65,7 @@ class SwappableMethodExitProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onMethodExitWithData(
+          swappableDebugProfile.tryGetOrCreateMethodExitRequestWithData(
             className,
             methodName,
             arguments: _*

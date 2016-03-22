@@ -30,14 +30,14 @@ class PureValueInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNamesAndTypes = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeAllVariables.map(v => v.name -> v.toUnsafeValue.typeName)
+            .getThread(t.get).getTopFrame
+            .getAllVariables.map(v => v.name -> v.toValue.typeName)
             .toMap
 
           variableNamesAndTypes should contain theSameElementsAs Map(
@@ -79,14 +79,14 @@ class PureValueInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNamesAndTypes = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeAllVariables.map(v => v.name -> v.toUnsafeValue.isPrimitive)
+            .getThread(t.get).getTopFrame
+            .getAllVariables.map(v => v.name -> v.toValue.isPrimitive)
             .toMap
 
           variableNamesAndTypes should contain theSameElementsAs Map(
@@ -128,14 +128,14 @@ class PureValueInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNamesAndTypes = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeAllVariables.map(v => v.name -> v.toUnsafeValue.isArray)
+            .getThread(t.get).getTopFrame
+            .getAllVariables.map(v => v.name -> v.toValue.isArray)
             .toMap
 
           variableNamesAndTypes should contain theSameElementsAs Map(
@@ -177,14 +177,14 @@ class PureValueInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNamesAndTypes = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeAllVariables.map(v => v.name -> v.toUnsafeValue.isObject)
+            .getThread(t.get).getTopFrame
+            .getAllVariables.map(v => v.name -> v.toValue.isObject)
             .toMap
 
           variableNamesAndTypes should contain theSameElementsAs Map(
@@ -226,14 +226,14 @@ class PureValueInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       // NOTE: Do not resume so we can check the variables at the stack frame
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeBreakpoint(testFile, 32, NoResume)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
         .foreach(e => t = Some(e.thread()))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNamesAndTypes = s.withProfile(PureDebugProfile.Name)
-            .forUnsafeThread(t.get).withUnsafeTopFrame
-            .forUnsafeAllVariables.map(v => v.name -> v.toUnsafeValue.isString)
+            .getThread(t.get).getTopFrame
+            .getAllVariables.map(v => v.name -> v.toValue.isString)
             .toMap
 
           variableNamesAndTypes should contain theSameElementsAs Map(

@@ -36,12 +36,12 @@ trait BreakpointProfile {
    *
    * @return The stream of breakpoint events
    */
-  def onBreakpoint(
+  def tryGetOrCreateBreakpointRequest(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[BreakpointEvent]] = {
-    onBreakpointWithData(
+    tryGetOrCreateBreakpointRequestWithData(
       fileName,
       lineNumber,
       extraArguments: _*
@@ -59,12 +59,12 @@ trait BreakpointProfile {
    *
    * @return The stream of breakpoint events
    */
-  def onUnsafeBreakpoint(
+  def getOrCreateBreakpointRequest(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*
   ): IdentityPipeline[BreakpointEvent] = {
-    onBreakpoint(
+    tryGetOrCreateBreakpointRequest(
       fileName,
       lineNumber,
       extraArguments: _*
@@ -83,12 +83,12 @@ trait BreakpointProfile {
    * @return The stream of breakpoint events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeBreakpointWithData(
+  def getOrCreateBreakpointRequestWithData(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*
   ): IdentityPipeline[BreakpointEventAndData] = {
-    onBreakpointWithData(
+    tryGetOrCreateBreakpointRequestWithData(
       fileName,
       lineNumber,
       extraArguments: _*
@@ -107,7 +107,7 @@ trait BreakpointProfile {
    * @return The stream of breakpoint events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onBreakpointWithData(
+  def tryGetOrCreateBreakpointRequestWithData(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*

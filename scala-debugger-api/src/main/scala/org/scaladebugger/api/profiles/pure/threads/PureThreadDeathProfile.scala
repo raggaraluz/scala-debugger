@@ -68,7 +68,7 @@ trait PureThreadDeathProfile extends ThreadDeathProfile {
    * @return The stream of thread start events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onThreadDeathWithData(
+  override def tryGetOrCreateThreadDeathRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ThreadDeathEventAndData]] = Try {
     val JDIArgumentGroup(rArgs, eArgs, _) = JDIArgumentGroup(extraArguments: _*)

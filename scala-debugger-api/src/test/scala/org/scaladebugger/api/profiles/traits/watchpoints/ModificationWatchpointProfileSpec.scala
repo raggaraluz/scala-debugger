@@ -23,7 +23,7 @@ class ModificationWatchpointProfileSpec extends FunSpec with Matchers
   )
 
   private val successModificationWatchpointProfile = new Object with ModificationWatchpointProfile {
-    override def onModificationWatchpointWithData(
+    override def tryGetOrCreateModificationWatchpointRequestWithData(
       className: String,
       fieldName: String,
       extraArguments: JDIArgument*
@@ -35,7 +35,7 @@ class ModificationWatchpointProfileSpec extends FunSpec with Matchers
   }
 
   private val failModificationWatchpointProfile = new Object with ModificationWatchpointProfile {
-    override def onModificationWatchpointWithData(
+    override def tryGetOrCreateModificationWatchpointRequestWithData(
       className: String,
       fieldName: String,
       extraArguments: JDIArgument*
@@ -47,7 +47,7 @@ class ModificationWatchpointProfileSpec extends FunSpec with Matchers
   }
 
   describe("ModificationWatchpointProfile") {
-    describe("#onModificationWatchpoint") {
+    describe("#tryGetOrCreateModificationWatchpointRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[ModificationWatchpointEvent]
 
@@ -56,7 +56,7 @@ class ModificationWatchpointProfileSpec extends FunSpec with Matchers
 
         var actual: ModificationWatchpointEvent = null
         successModificationWatchpointProfile
-          .onModificationWatchpoint("", "")
+          .tryGetOrCreateModificationWatchpointRequest("", "")
           .get
           .foreach(actual = _)
 
@@ -73,7 +73,7 @@ class ModificationWatchpointProfileSpec extends FunSpec with Matchers
 
         var actual: Throwable = null
         failModificationWatchpointProfile
-          .onModificationWatchpoint("", "")
+          .tryGetOrCreateModificationWatchpointRequest("", "")
           .failed
           .foreach(actual = _)
 
@@ -81,7 +81,7 @@ class ModificationWatchpointProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onUnsafeModificationWatchpoint") {
+    describe("#getOrCreateModificationWatchpointRequest") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[ModificationWatchpointEvent]
 
@@ -90,7 +90,7 @@ class ModificationWatchpointProfileSpec extends FunSpec with Matchers
 
         var actual: ModificationWatchpointEvent = null
         successModificationWatchpointProfile
-          .onUnsafeModificationWatchpoint("", "")
+          .getOrCreateModificationWatchpointRequest("", "")
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -103,19 +103,19 @@ class ModificationWatchpointProfileSpec extends FunSpec with Matchers
 
       it("should throw an error if it occurs") {
         intercept[Throwable] {
-          failModificationWatchpointProfile.onUnsafeModificationWatchpoint("", "")
+          failModificationWatchpointProfile.getOrCreateModificationWatchpointRequest("", "")
         }
       }
     }
 
-    describe("#onUnsafeModificationWatchpointWithData") {
+    describe("#getOrCreateModificationWatchpointRequestWithData") {
       it("should return a pipeline with the event data results") {
         // Data to be run through pipeline
         val expected = (mock[ModificationWatchpointEvent], Seq(mock[JDIEventDataResult]))
 
         var actual: (ModificationWatchpointEvent, Seq[JDIEventDataResult]) = null
         successModificationWatchpointProfile
-          .onUnsafeModificationWatchpointWithData("", "")
+          .getOrCreateModificationWatchpointRequestWithData("", "")
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -129,7 +129,7 @@ class ModificationWatchpointProfileSpec extends FunSpec with Matchers
       it("should throw an error if it occurs") {
         intercept[Throwable] {
           failModificationWatchpointProfile
-            .onUnsafeModificationWatchpointWithData("", "")
+            .getOrCreateModificationWatchpointRequestWithData("", "")
         }
       }
     }

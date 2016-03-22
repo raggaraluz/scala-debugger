@@ -16,10 +16,10 @@ import scala.util.Try
 trait SwappableClassUnloadProfile extends ClassUnloadProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onClassUnloadWithData(
+  override def tryGetOrCreateClassUnloadRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ClassUnloadEventAndData]] = {
-    withCurrentProfile.onClassUnloadWithData(extraArguments: _*)
+    withCurrentProfile.tryGetOrCreateClassUnloadRequestWithData(extraArguments: _*)
   }
 
   override def classUnloadRequests: Seq[ClassUnloadRequestInfo] = {

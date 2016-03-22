@@ -21,7 +21,7 @@ class PureVMDisconnectProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureVMDisconnectProfile") {
-    describe("#onVMDisconnectWithData") {
+    describe("#tryGetOrCreateVMDisconnectRequestWithData") {
       it("should create a stream of events with data for disconnections") {
         val expected = (mock[VMDisconnectEvent], Seq(mock[JDIEventDataResult]))
         val arguments = Seq(mock[JDIEventArgument])
@@ -35,7 +35,7 @@ class PureVMDisconnectProfileSpec extends FunSpec with Matchers
 
         var actual: (VMDisconnectEvent, Seq[JDIEventDataResult]) = null
         val pipeline =
-          pureVMDisconnectProfile.onVMDisconnectWithData(arguments: _*)
+          pureVMDisconnectProfile.tryGetOrCreateVMDisconnectRequestWithData(arguments: _*)
         pipeline.get.foreach(actual = _)
 
         pipeline.get.process(expected)

@@ -68,7 +68,7 @@ trait PureMonitorWaitProfile extends MonitorWaitProfile {
    * @return The stream of monitor wait events and any retrieved data based on
    *         requests from extra arguments
    */
-  override def onMonitorWaitWithData(
+  override def tryGetOrCreateMonitorWaitRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MonitorWaitEventAndData]] = Try {
     val JDIArgumentGroup(rArgs, eArgs, _) = JDIArgumentGroup(extraArguments: _*)

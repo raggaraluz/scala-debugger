@@ -32,10 +32,10 @@ trait ClassPrepareProfile {
    *
    * @return The stream of class prepare events
    */
-  def onClassPrepare(
+  def tryGetOrCreateClassPrepareRequest(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ClassPrepareEvent]] = {
-    onClassPrepareWithData(extraArguments: _*).map(_.map(_._1).noop())
+    tryGetOrCreateClassPrepareRequestWithData(extraArguments: _*).map(_.map(_._1).noop())
   }
 
   /**
@@ -45,10 +45,10 @@ trait ClassPrepareProfile {
    *
    * @return The stream of class prepare events
    */
-  def onUnsafeClassPrepare(
+  def getOrCreateClassPrepareRequest(
     extraArguments: JDIArgument*
   ): IdentityPipeline[ClassPrepareEvent] = {
-    onClassPrepare(extraArguments: _*).get
+    tryGetOrCreateClassPrepareRequest(extraArguments: _*).get
   }
 
   /**
@@ -59,10 +59,10 @@ trait ClassPrepareProfile {
    * @return The stream of class prepare events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onUnsafeClassPrepareWithData(
+  def getOrCreateClassPrepareRequestWithData(
     extraArguments: JDIArgument*
   ): IdentityPipeline[ClassPrepareEventAndData] = {
-    onClassPrepareWithData(extraArguments: _*).get
+    tryGetOrCreateClassPrepareRequestWithData(extraArguments: _*).get
   }
 
   /**
@@ -73,7 +73,7 @@ trait ClassPrepareProfile {
    * @return The stream of class prepare events and any retrieved data based on
    *         requests from extra arguments
    */
-  def onClassPrepareWithData(
+  def tryGetOrCreateClassPrepareRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ClassPrepareEventAndData]]
 }

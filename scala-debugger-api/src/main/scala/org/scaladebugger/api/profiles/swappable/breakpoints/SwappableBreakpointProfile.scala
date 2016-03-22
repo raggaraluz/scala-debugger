@@ -16,12 +16,12 @@ import scala.util.Try
 trait SwappableBreakpointProfile extends BreakpointProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onBreakpointWithData(
+  override def tryGetOrCreateBreakpointRequestWithData(
     fileName: String,
     lineNumber: Int,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[BreakpointEventAndData]] = {
-    withCurrentProfile.onBreakpointWithData(
+    withCurrentProfile.tryGetOrCreateBreakpointRequestWithData(
       fileName,
       lineNumber,
       extraArguments: _*

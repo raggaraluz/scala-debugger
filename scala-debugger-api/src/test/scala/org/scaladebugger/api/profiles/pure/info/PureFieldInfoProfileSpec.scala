@@ -59,7 +59,7 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#setValue") {
+    describe("#trySetValue") {
       it("should set strings directly on the object") {
         val expected = "some value"
 
@@ -78,7 +78,7 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
         (mockStackFrame.thisObject _).expects()
           .returning(mockObjectReference).once()
 
-        pureFieldInfoProfile.setValue(expected).get should be (expected)
+        pureFieldInfoProfile.trySetValue(expected).get should be (expected)
       }
 
       it("should set primitive values directly on the object") {
@@ -99,11 +99,11 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
         (mockStackFrame.thisObject _).expects()
           .returning(mockObjectReference).once()
 
-        pureFieldInfoProfile.setValue(expected).get should be (expected)
+        pureFieldInfoProfile.trySetValue(expected).get should be (expected)
       }
     }
 
-    describe("#toUnsafeValue") {
+    describe("#toValue") {
       it("should return a wrapper around the value of the field") {
         val expected = mock[ValueInfoProfile]
         val mockValue = mock[Value]
@@ -127,7 +127,7 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
         }
 
         mockNewValueProfile.expects(mockValue).returning(expected).once()
-        pureFieldInfoProfile.toUnsafeValue should be (expected)
+        pureFieldInfoProfile.toValue should be (expected)
       }
     }
   }

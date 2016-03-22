@@ -101,7 +101,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
       }
     }
 
-    describe("#onMonitorWaitWithData") {
+    describe("#tryGetOrCreateMonitorWaitRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val arguments = Seq(mock[JDIRequestArgument])
 
@@ -132,7 +132,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureMonitorWaitProfile.onMonitorWaitWithData(
+        pureMonitorWaitProfile.tryGetOrCreateMonitorWaitRequestWithData(
           arguments: _*
         )
       }
@@ -161,7 +161,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             .throwing(expected.failed.get).once()
         }
 
-        val actual = pureMonitorWaitProfile.onMonitorWaitWithData(
+        val actual = pureMonitorWaitProfile.tryGetOrCreateMonitorWaitRequestWithData(
           arguments: _*
         )
 
@@ -203,7 +203,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureMonitorWaitProfile.onMonitorWaitWithData(
+        pureMonitorWaitProfile.tryGetOrCreateMonitorWaitRequestWithData(
           arguments: _*
         )
 
@@ -234,7 +234,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureMonitorWaitProfile.onMonitorWaitWithData(
+        pureMonitorWaitProfile.tryGetOrCreateMonitorWaitRequestWithData(
           arguments: _*
         )
       }
@@ -270,7 +270,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureMonitorWaitProfile.onMonitorWaitWithData(
+        pureMonitorWaitProfile.tryGetOrCreateMonitorWaitRequestWithData(
           arguments: _*
         )
 
@@ -299,7 +299,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             )).once()
         }
 
-        pureMonitorWaitProfile.onMonitorWaitWithData(
+        pureMonitorWaitProfile.tryGetOrCreateMonitorWaitRequestWithData(
           arguments: _*
         )
       }
@@ -356,8 +356,8 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           })
         }
 
-        val p1 = pureMonitorWaitProfile.onMonitorWaitWithData(arguments: _*)
-        val p2 = pureMonitorWaitProfile.onMonitorWaitWithData(arguments: _*)
+        val p1 = pureMonitorWaitProfile.tryGetOrCreateMonitorWaitRequestWithData(arguments: _*)
+        val p2 = pureMonitorWaitProfile.tryGetOrCreateMonitorWaitRequestWithData(arguments: _*)
 
         p1.foreach(_.close())
         p2.foreach(_.close())
@@ -415,8 +415,8 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
           })
         }
 
-        val p1 = pureMonitorWaitProfile.onMonitorWaitWithData(arguments: _*)
-        val p2 = pureMonitorWaitProfile.onMonitorWaitWithData(arguments: _*)
+        val p1 = pureMonitorWaitProfile.tryGetOrCreateMonitorWaitRequestWithData(arguments: _*)
+        val p2 = pureMonitorWaitProfile.tryGetOrCreateMonitorWaitRequestWithData(arguments: _*)
 
         p1.foreach(_.close(now = true, data = Constants.CloseRemoveAll))
       }

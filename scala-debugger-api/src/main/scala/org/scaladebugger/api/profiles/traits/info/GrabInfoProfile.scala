@@ -17,8 +17,8 @@ trait GrabInfoProfile {
    *                        a thread info profile
    * @return Success containing the thread profile, otherwise a failure
    */
-  def forThread(threadReference: ThreadReference): Try[ThreadInfoProfile] =
-    Try(forUnsafeThread(threadReference))
+  def tryGetThread(threadReference: ThreadReference): Try[ThreadInfoProfile] =
+    Try(getThread(threadReference))
 
   /**
    * Retrieves a thread profile for the given JDI thread reference.
@@ -27,7 +27,7 @@ trait GrabInfoProfile {
    *                        a thread info profile
    * @return The new thread info profile
    */
-  def forUnsafeThread(threadReference: ThreadReference): ThreadInfoProfile
+  def getThread(threadReference: ThreadReference): ThreadInfoProfile
 
   /**
    * Retrieves a thread profile for the thread reference whose unique id
@@ -37,8 +37,8 @@ trait GrabInfoProfile {
    * @return Success containing the thread profile if found, otherwise
    *         a failure
    */
-  def forThread(threadId: Long): Try[ThreadInfoProfile] =
-    Try(forUnsafeThread(threadId))
+  def tryGetThread(threadId: Long): Try[ThreadInfoProfile] =
+    Try(getThread(threadId))
 
   /**
    * Retrieves a thread profile for the thread reference whose unique id
@@ -47,5 +47,5 @@ trait GrabInfoProfile {
    * @param threadId The id of the thread
    * @return The profile of the matching thread, or throws an exception
    */
-  def forUnsafeThread(threadId: Long): ThreadInfoProfile
+  def getThread(threadId: Long): ThreadInfoProfile
 }

@@ -21,7 +21,7 @@ trait MethodInfoProfile {
    * @return Success containing the collection of parameter type names,
    *         otherwise a failure
    */
-  def parameterTypeNames: Try[Seq[String]] = Try(unsafeParameterTypeNames)
+  def tryGetParameterTypeNames: Try[Seq[String]] = Try(getParameterTypeNames)
 
   /**
    * Returns the fully-qualified class names of the types for the parameters
@@ -29,7 +29,7 @@ trait MethodInfoProfile {
    *
    * @return The collection of parameter type names
    */
-  def unsafeParameterTypeNames: Seq[String]
+  def getParameterTypeNames: Seq[String]
 
   /**
    * Returns the fully-qualified class name of the type for the return value
@@ -37,7 +37,7 @@ trait MethodInfoProfile {
    *
    * @return Success containing the return type name, otherwise a failure
    */
-  def returnTypeName: Try[String] = Try(unsafeReturnTypeName)
+  def tryGetReturnTypeName: Try[String] = Try(getReturnTypeName)
 
   /**
    * Returns the fully-qualified class name of the type for the return value
@@ -45,5 +45,5 @@ trait MethodInfoProfile {
    *
    * @return The return type name
    */
-  def unsafeReturnTypeName: String
+  def getReturnTypeName: String
 }

@@ -36,7 +36,7 @@ class PureValueInfoProfile(
    * @return The array profile wrapping this value
    */
   @throws[AssertionError]
-  override def asUnsafeArray: ArrayInfoProfile = {
+  override def toArray: ArrayInfoProfile = {
     assert(isArray, "Value must be an array!")
     newArrayProfile(value.asInstanceOf[ArrayReference])
   }
@@ -46,7 +46,7 @@ class PureValueInfoProfile(
    *
    * @return The value as a local instance
    */
-  override def asUnsafeLocalValue: Any = {
+  override def toLocalValue: Any = {
     import org.scaladebugger.api.lowlevel.wrappers.Implicits._
     if (!isNull) value.value()
     else null
@@ -58,7 +58,7 @@ class PureValueInfoProfile(
    * @return The object profile wrapping this value
    */
   @throws[AssertionError]
-  override def asUnsafeObject: ObjectInfoProfile = {
+  override def toObject: ObjectInfoProfile = {
     assert(isObject, "Value must be an object!")
     newObjectProfile(value.asInstanceOf[ObjectReference])
   }

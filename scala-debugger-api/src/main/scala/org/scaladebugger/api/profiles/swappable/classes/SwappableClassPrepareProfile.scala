@@ -16,10 +16,10 @@ import scala.util.Try
 trait SwappableClassPrepareProfile extends ClassPrepareProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onClassPrepareWithData(
+  override def tryGetOrCreateClassPrepareRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ClassPrepareEventAndData]] = {
-    withCurrentProfile.onClassPrepareWithData(extraArguments: _*)
+    withCurrentProfile.tryGetOrCreateClassPrepareRequestWithData(extraArguments: _*)
   }
 
   override def classPrepareRequests: Seq[ClassPrepareRequestInfo] = {

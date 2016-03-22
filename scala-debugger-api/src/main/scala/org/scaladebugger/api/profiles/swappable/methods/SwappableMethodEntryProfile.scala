@@ -16,12 +16,12 @@ import scala.util.Try
 trait SwappableMethodEntryProfile extends MethodEntryProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onMethodEntryWithData(
+  override def tryGetOrCreateMethodEntryRequestWithData(
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MethodEntryEventAndData]] = {
-    withCurrentProfile.onMethodEntryWithData(
+    withCurrentProfile.tryGetOrCreateMethodEntryRequestWithData(
       className,
       methodName,
       extraArguments: _*

@@ -23,19 +23,19 @@ class PureMethodInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#unsafeReturnTypeName") {
+    describe("#getReturnTypeName") {
       it("should return the name of the method's return type") {
         val expected = "some.return.type"
 
         (mockMethod.returnTypeName _).expects().returning(expected).once()
 
-        val actual = pureMethodInfoProfile.unsafeReturnTypeName
+        val actual = pureMethodInfoProfile.getReturnTypeName
 
         actual should be (expected)
       }
     }
 
-    describe("#unsafeParameterTypeNames") {
+    describe("#getParameterTypeNames") {
       it("should return an ordered collection of parameter names for the method") {
         val expected = Seq("some.parameter.type", "some.other.parameter.type")
 
@@ -43,7 +43,7 @@ class PureMethodInfoProfileSpec extends FunSpec with Matchers
         (mockMethod.argumentTypeNames _).expects()
           .returning(expected.asJava).once()
 
-        val actual = pureMethodInfoProfile.unsafeParameterTypeNames
+        val actual = pureMethodInfoProfile.getParameterTypeNames
 
         actual should be (expected)
       }

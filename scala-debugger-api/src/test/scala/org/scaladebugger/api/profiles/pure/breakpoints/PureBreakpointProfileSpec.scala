@@ -99,7 +99,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onBreakpointWithData") {
+    describe("#tryGetOrCreateBreakpointRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val fileName = "some file"
         val lineNumber = 999
@@ -135,7 +135,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureBreakpointProfile.onBreakpointWithData(
+        pureBreakpointProfile.tryGetOrCreateBreakpointRequestWithData(
           fileName,
           lineNumber,
           arguments: _*
@@ -171,7 +171,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           ).throwing(expected.failed.get).once()
         }
 
-        val actual = pureBreakpointProfile.onBreakpointWithData(
+        val actual = pureBreakpointProfile.tryGetOrCreateBreakpointRequestWithData(
           fileName,
           lineNumber,
           arguments: _*
@@ -220,7 +220,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureBreakpointProfile.onBreakpointWithData(
+        pureBreakpointProfile.tryGetOrCreateBreakpointRequestWithData(
           fileName,
           lineNumber,
           arguments: _*
@@ -256,7 +256,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureBreakpointProfile.onBreakpointWithData(
+        pureBreakpointProfile.tryGetOrCreateBreakpointRequestWithData(
           fileName,
           lineNumber,
           arguments: _*
@@ -299,7 +299,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureBreakpointProfile.onBreakpointWithData(
+        pureBreakpointProfile.tryGetOrCreateBreakpointRequestWithData(
           fileName,
           lineNumber,
           arguments: _*
@@ -326,7 +326,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureBreakpointProfile.onBreakpointWithData(
+        pureBreakpointProfile.tryGetOrCreateBreakpointRequestWithData(
           fileName,
           lineNumber,
           arguments: _*
@@ -373,7 +373,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureBreakpointProfile.onBreakpointWithData(
+        pureBreakpointProfile.tryGetOrCreateBreakpointRequestWithData(
           fileName,
           lineNumber,
           arguments: _*
@@ -410,7 +410,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
             )).once()
         }
 
-        pureBreakpointProfile.onBreakpointWithData(
+        pureBreakpointProfile.tryGetOrCreateBreakpointRequestWithData(
           fileName,
           lineNumber + 1,
           arguments: _*
@@ -470,12 +470,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           })
         }
 
-        val p1 = pureBreakpointProfile.onBreakpointWithData(
+        val p1 = pureBreakpointProfile.tryGetOrCreateBreakpointRequestWithData(
           fileName,
           lineNumber,
           arguments: _*
         )
-        val p2 = pureBreakpointProfile.onBreakpointWithData(
+        val p2 = pureBreakpointProfile.tryGetOrCreateBreakpointRequestWithData(
           fileName,
           lineNumber,
           arguments: _*
@@ -538,12 +538,12 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
           })
         }
 
-        val p1 = pureBreakpointProfile.onBreakpointWithData(
+        val p1 = pureBreakpointProfile.tryGetOrCreateBreakpointRequestWithData(
           fileName,
           lineNumber,
           arguments: _*
         )
-        val p2 = pureBreakpointProfile.onBreakpointWithData(
+        val p2 = pureBreakpointProfile.tryGetOrCreateBreakpointRequestWithData(
           fileName,
           lineNumber,
           arguments: _*

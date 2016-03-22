@@ -24,7 +24,7 @@ class EventProfileSpec extends FunSpec with Matchers
   )
 
   private val successEventProfile = new Object with EventProfile {
-    override def onEventWithData(
+    override def tryCreateEventListenerWithData(
       eventType: EventType,
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[EventAndData]] = {
@@ -35,7 +35,7 @@ class EventProfileSpec extends FunSpec with Matchers
   }
 
   private val failEventProfile = new Object with EventProfile {
-    override def onEventWithData(
+    override def tryCreateEventListenerWithData(
       eventType: EventType,
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[EventAndData]] = {
@@ -46,7 +46,7 @@ class EventProfileSpec extends FunSpec with Matchers
   }
 
   describe("EventProfile") {
-    describe("#onEvent") {
+    describe("#tryCreateEventListener") {
       it("should return a pipeline with the event data results filtered out") {
         val expected = mock[Event]
 
@@ -54,7 +54,7 @@ class EventProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: Event = null
-        successEventProfile.onEvent(mock[EventType]).get.foreach(actual = _)
+        successEventProfile.tryCreateEventListener(mock[EventType]).get.foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -71,13 +71,13 @@ class EventProfileSpec extends FunSpec with Matchers
         val data = (mock[Event], Seq(mock[JDIEventDataResult]))
 
         var actual: Throwable = null
-        failEventProfile.onEvent(mock[EventType]).failed.foreach(actual = _)
+        failEventProfile.tryCreateEventListener(mock[EventType]).failed.foreach(actual = _)
 
         actual should be (expected)
       }
     }
 
-    describe("#onUnsafeEvent") {
+    describe("#createEventListener") {
       it("should return a pipeline of events if successful") {
         val expected = mock[Event]
 
@@ -85,7 +85,7 @@ class EventProfileSpec extends FunSpec with Matchers
         val data = (expected, Seq(mock[JDIEventDataResult]))
 
         var actual: Event = null
-        successEventProfile.onUnsafeEvent(mock[EventType]).foreach(actual = _)
+        successEventProfile.createEventListener(mock[EventType]).foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
         // demonstrate that the pipeline with just the event is merely a
@@ -97,19 +97,19 @@ class EventProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failEventProfile.onUnsafeEvent(mock[EventType])
+          failEventProfile.createEventListener(mock[EventType])
         }
       }
     }
 
-    describe("#onUnsafeEventWithData") {
+    describe("#createEventListenerWithData") {
       it("should return a pipeline of events and data if successful") {
         // Data to be run through pipeline
         val expected = (mock[Event], Seq(mock[JDIEventDataResult]))
 
         var actual: (Event, Seq[JDIEventDataResult]) = null
         successEventProfile
-          .onUnsafeEventWithData(mock[EventType])
+          .createEventListenerWithData(mock[EventType])
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -122,7 +122,7 @@ class EventProfileSpec extends FunSpec with Matchers
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failEventProfile.onUnsafeEventWithData(mock[EventType])
+          failEventProfile.createEventListenerWithData(mock[EventType])
         }
       }
     }

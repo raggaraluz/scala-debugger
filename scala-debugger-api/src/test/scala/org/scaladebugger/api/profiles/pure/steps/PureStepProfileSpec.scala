@@ -394,7 +394,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onStepWithData") {
+    describe("#tryCreateStepListenerWithData") {
       it("should create a stream of events with data for steps") {
         val expected = (mock[StepEvent], Seq(mock[JDIEventDataResult]))
         val arguments = Seq(mock[JDIEventArgument])
@@ -408,7 +408,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
 
         var actual: (StepEvent, Seq[JDIEventDataResult]) = null
         val pipeline =
-          pureStepProfile.onStepWithData(mockThreadReference, arguments: _*)
+          pureStepProfile.tryCreateStepListenerWithData(mockThreadReference, arguments: _*)
         pipeline.get.foreach(actual = _)
 
         pipeline.get.process(expected)

@@ -30,7 +30,7 @@ class PureMonitorContendedEnterProfileIntegrationSpec extends FunSpec with Match
       // Mark that we want to receive monitor contended enter events and
       // watch for one
       s.withProfile(PureDebugProfile.Name)
-        .onUnsafeMonitorContendedEnter()
+        .getOrCreateMonitorContendedEnterRequest()
         .foreach(_ => detectedEnter.set(true))
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>

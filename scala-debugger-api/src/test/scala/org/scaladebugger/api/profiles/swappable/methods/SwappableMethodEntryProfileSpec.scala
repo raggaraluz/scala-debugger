@@ -38,7 +38,7 @@ class SwappableMethodEntryProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#onMethodEntryWithData") {
+    describe("#tryGetOrCreateMethodEntryRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val className = "some class"
         val methodName = "some method"
@@ -47,10 +47,10 @@ class SwappableMethodEntryProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.onMethodEntryWithData _)
+        (mockDebugProfile.tryGetOrCreateMethodEntryRequestWithData _)
           .expects(className, methodName, arguments).once()
 
-        swappableDebugProfile.onMethodEntryWithData(
+        swappableDebugProfile.tryGetOrCreateMethodEntryRequestWithData(
           className,
           methodName,
           arguments: _*
@@ -65,7 +65,7 @@ class SwappableMethodEntryProfileSpec extends FunSpec with Matchers
         (mockProfileManager.retrieve _).expects(*).returning(None).once()
 
         intercept[AssertionError] {
-          swappableDebugProfile.onMethodEntryWithData(
+          swappableDebugProfile.tryGetOrCreateMethodEntryRequestWithData(
             className,
             methodName,
             arguments: _*

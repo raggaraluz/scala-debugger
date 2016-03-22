@@ -16,12 +16,12 @@ import scala.util.Try
 trait SwappableMethodExitProfile extends MethodExitProfile {
   this: SwappableDebugProfileManagement =>
 
-  override def onMethodExitWithData(
+  override def tryGetOrCreateMethodExitRequestWithData(
     className: String,
     methodName: String,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MethodExitEventAndData]] = {
-    withCurrentProfile.onMethodExitWithData(
+    withCurrentProfile.tryGetOrCreateMethodExitRequestWithData(
       className,
       methodName,
       extraArguments: _*
