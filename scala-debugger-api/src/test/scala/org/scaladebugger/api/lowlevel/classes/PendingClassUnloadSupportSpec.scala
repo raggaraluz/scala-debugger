@@ -33,9 +33,9 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
     describe("#processAllPendingClassUnloadRequests") {
       it("should process all pending class unload requests") {
         val expected = Seq(
-          ClassUnloadRequestInfo(TestRequestId),
-          ClassUnloadRequestInfo(TestRequestId + 1),
-          ClassUnloadRequestInfo(TestRequestId + 2)
+          ClassUnloadRequestInfo(TestRequestId, true),
+          ClassUnloadRequestInfo(TestRequestId + 1, true),
+          ClassUnloadRequestInfo(TestRequestId + 2, true)
         )
 
         // Create class unload requests to use for testing
@@ -59,9 +59,9 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
     describe("#pendingClassUnloadRequests") {
       it("should return a collection of pending class unload requests") {
         val expected = Seq(
-          ClassUnloadRequestInfo(TestRequestId),
-          ClassUnloadRequestInfo(TestRequestId + 1, Seq(stub[JDIRequestArgument])),
-          ClassUnloadRequestInfo(TestRequestId + 2)
+          ClassUnloadRequestInfo(TestRequestId, true),
+          ClassUnloadRequestInfo(TestRequestId + 1, true, Seq(stub[JDIRequestArgument])),
+          ClassUnloadRequestInfo(TestRequestId + 2, true)
         )
 
         (mockClassUnloadManager.createClassUnloadRequestWithId _)
@@ -121,7 +121,7 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
         // Pending class unload should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ClassUnloadRequestInfo(TestRequestId, extraArguments),
+          ClassUnloadRequestInfo(TestRequestId, true, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -176,7 +176,7 @@ class PendingClassUnloadSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            ClassUnloadRequestInfo(TestRequestId, extraArguments),
+            ClassUnloadRequestInfo(TestRequestId, true, extraArguments),
             () => {}
           )
         )

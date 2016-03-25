@@ -51,7 +51,7 @@ class StandardMonitorWaitManager(
 
     if (request.isSuccess) monitorWaitRequests.putWithId(
       requestId,
-      MonitorWaitRequestInfo(requestId, extraArguments),
+      MonitorWaitRequestInfo(requestId, isPending = false, extraArguments),
       request.get
     )
 

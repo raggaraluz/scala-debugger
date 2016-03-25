@@ -44,6 +44,7 @@ class MethodEntryManagerSpec extends FunSpec with Matchers
     describe("#createMethodEntryRequestFromInfo") {
       it("should invoke createMethodEntryRequestWithId") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testClassName = "some.class.name"
         val testMethodName = "someMethodName"
         val testExtraArguments = Seq(stub[JDIRequestArgument])
@@ -54,6 +55,7 @@ class MethodEntryManagerSpec extends FunSpec with Matchers
 
         val info = MethodEntryRequestInfo(
           TestRequestId,
+          testIsPending,
           testClassName,
           testMethodName,
           testExtraArguments

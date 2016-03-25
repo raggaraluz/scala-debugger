@@ -139,7 +139,13 @@ trait PendingBreakpointSupport extends PendingBreakpointSupportLike {
       case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
-          BreakpointRequestInfo(requestId, fileName, lineNumber, extraArguments),
+          BreakpointRequestInfo(
+            requestId,
+            isPending = true,
+            fileName,
+            lineNumber,
+            extraArguments
+          ),
           () => createBreakpoint().get
         )
         Success(requestId)

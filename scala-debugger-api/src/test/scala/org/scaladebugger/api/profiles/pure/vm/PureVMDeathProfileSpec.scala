@@ -41,7 +41,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
     describe("#vmDeathRequests") {
       it("should include all active requests") {
         val expected = Seq(
-          VMDeathRequestInfo(TestRequestId)
+          VMDeathRequestInfo(TestRequestId, false)
         )
 
         val mockVMDeathManager = mock[PendingVMDeathSupportLike]
@@ -65,7 +65,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
       it("should include pending requests if supported") {
         val expected = Seq(
-          VMDeathRequestInfo(TestRequestId)
+          VMDeathRequestInfo(TestRequestId, true)
         )
 
         val mockVMDeathManager = mock[PendingVMDeathSupportLike]
@@ -87,7 +87,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
       it("should only include active requests if pending unsupported") {
         val expected = Seq(
-          VMDeathRequestInfo(TestRequestId)
+          VMDeathRequestInfo(TestRequestId, false)
         )
 
         (mockVMDeathManager.vmDeathRequestList _).expects()
@@ -290,7 +290,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockVMDeathManager.getVMDeathRequestInfo _)
             .expects(internalId)
-            .returning(Some(VMDeathRequestInfo(TestRequestId, arguments))).once()
+            .returning(Some(VMDeathRequestInfo(TestRequestId, false, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(VMDeathEventType, Seq(uniqueIdPropertyFilter))
@@ -330,7 +330,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
             (mockVMDeathManager.getVMDeathRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(VMDeathRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(VMDeathRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockVMDeathManager.createVMDeathRequestWithId _)
@@ -389,7 +389,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
             (mockVMDeathManager.getVMDeathRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(VMDeathRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(VMDeathRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockVMDeathManager.createVMDeathRequestWithId _)

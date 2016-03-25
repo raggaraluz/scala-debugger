@@ -28,6 +28,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create breakpoint requests if some are pending") {
         val info = BreakpointRequestInfo(
           requestId = java.util.UUID.randomUUID().toString,
+          isPending = true,
           fileName = "some/file/name",
           lineNumber = 999,
           Seq(mock[JDIRequestArgument])
@@ -45,6 +46,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create class prepare requests if some are pending") {
         val info = ClassPrepareRequestInfo(
           java.util.UUID.randomUUID().toString,
+          isPending = true,
           Seq(mock[JDIRequestArgument])
         )
         val dummyManagerContainer = ManagerContainer.usingDummyManagers()
@@ -60,6 +62,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create class unload requests if some are pending") {
         val info = ClassUnloadRequestInfo(
           java.util.UUID.randomUUID().toString,
+          isPending = true,
           Seq(mock[JDIRequestArgument])
         )
         val dummyManagerContainer = ManagerContainer.usingDummyManagers()
@@ -92,6 +95,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create exception requests if some are pending") {
         val info = ExceptionRequestInfo(
           requestId = java.util.UUID.randomUUID().toString,
+          isPending = true,
           className = "some.class.name",
           notifyCaught = true,
           notifyUncaught = false,
@@ -110,6 +114,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create method entry requests if some are pending") {
         val info = MethodEntryRequestInfo(
           java.util.UUID.randomUUID().toString,
+          isPending = true,
           "some.class.name",
           "someMethodName",
           Seq(mock[JDIRequestArgument])
@@ -127,6 +132,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create method exit requests if some are pending") {
         val info = MethodExitRequestInfo(
           java.util.UUID.randomUUID().toString,
+          isPending = true,
           "some.class.name",
           "someMethodName",
           Seq(mock[JDIRequestArgument])
@@ -144,6 +150,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create monitor contended entered requests if some are pending") {
         val info = MonitorContendedEnteredRequestInfo(
           java.util.UUID.randomUUID().toString,
+          isPending = true,
           Seq(mock[JDIRequestArgument])
         )
         val dummyManagerContainer = ManagerContainer.usingDummyManagers()
@@ -159,6 +166,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create monitor contended enter requests if some are pending") {
         val info = MonitorContendedEnterRequestInfo(
           java.util.UUID.randomUUID().toString,
+          isPending = true,
           Seq(mock[JDIRequestArgument])
         )
         val dummyManagerContainer = ManagerContainer.usingDummyManagers()
@@ -174,6 +182,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create monitor waited requests if some are pending") {
         val info = MonitorWaitedRequestInfo(
           java.util.UUID.randomUUID().toString,
+          isPending = true,
           Seq(mock[JDIRequestArgument])
         )
         val dummyManagerContainer = ManagerContainer.usingDummyManagers()
@@ -189,6 +198,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create monitor wait requests if some are pending") {
         val info = MonitorWaitRequestInfo(
           java.util.UUID.randomUUID().toString,
+          isPending = true,
           Seq(mock[JDIRequestArgument])
         )
         val dummyManagerContainer = ManagerContainer.usingDummyManagers()
@@ -204,6 +214,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create step requests if some are pending") {
         val info = StepRequestInfo(
           requestId = java.util.UUID.randomUUID().toString,
+          isPending = true,
           removeExistingRequests = false,
           threadReference = mock[ThreadReference],
           size = 0,
@@ -223,6 +234,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create thread death requests if some are pending") {
         val info = ThreadDeathRequestInfo(
           java.util.UUID.randomUUID().toString,
+          isPending = true,
           Seq(mock[JDIRequestArgument])
         )
         val dummyManagerContainer = ManagerContainer.usingDummyManagers()
@@ -238,6 +250,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create thread start requests if some are pending") {
         val info = ThreadStartRequestInfo(
           java.util.UUID.randomUUID().toString,
+          isPending = true,
           Seq(mock[JDIRequestArgument])
         )
         val dummyManagerContainer = ManagerContainer.usingDummyManagers()
@@ -253,6 +266,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create vm death requests if some are pending") {
         val info = VMDeathRequestInfo(
           java.util.UUID.randomUUID().toString,
+          isPending = true,
           Seq(mock[JDIRequestArgument])
         )
         val dummyManagerContainer = ManagerContainer.usingDummyManagers()
@@ -268,6 +282,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create access watchpoint requests if some are pending") {
         val info = AccessWatchpointRequestInfo(
           java.util.UUID.randomUUID().toString,
+          isPending = true,
           "some.class.name",
           "someFieldName",
           Seq(mock[JDIRequestArgument])
@@ -285,6 +300,7 @@ class ManagerContainerSpec extends FunSpec with Matchers
       it("should create modification watchpoint requests if some are pending") {
         val info = ModificationWatchpointRequestInfo(
           java.util.UUID.randomUUID().toString,
+          isPending = true,
           "some.class.name",
           "someFieldName",
           Seq(mock[JDIRequestArgument])

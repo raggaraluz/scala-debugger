@@ -44,6 +44,7 @@ class ModificationWatchpointManagerSpec extends FunSpec with Matchers
     describe("#createModificationWatchpointRequestFromInfo") {
       it("should invoke createModificationWatchpointRequestWithId") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testClassName = "some.class.name"
         val testFieldName = "someFieldName"
         val testExtraArguments = Seq(stub[JDIRequestArgument])
@@ -54,6 +55,7 @@ class ModificationWatchpointManagerSpec extends FunSpec with Matchers
 
         val info = ModificationWatchpointRequestInfo(
           TestRequestId,
+          testIsPending,
           testClassName,
           testFieldName,
           testExtraArguments

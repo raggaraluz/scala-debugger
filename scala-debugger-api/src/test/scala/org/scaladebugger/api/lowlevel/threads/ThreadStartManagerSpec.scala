@@ -40,6 +40,7 @@ class ThreadStartManagerSpec extends FunSpec with Matchers
     describe("#createThreadStartRequestFromInfo") {
       it("should invoke createThreadStartRequestWithId") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testExtraArguments = Seq(stub[JDIRequestArgument])
 
         (mockThreadStartManager.createThreadStartRequestWithId _)
@@ -48,6 +49,7 @@ class ThreadStartManagerSpec extends FunSpec with Matchers
 
         val info = ThreadStartRequestInfo(
           TestRequestId,
+          testIsPending,
           testExtraArguments
         )
         val actual = testThreadStartManager.createThreadStartRequestFromInfo(info)

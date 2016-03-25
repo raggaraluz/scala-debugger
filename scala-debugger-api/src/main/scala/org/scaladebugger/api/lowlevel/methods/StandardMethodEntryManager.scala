@@ -66,7 +66,13 @@ class StandardMethodEntryManager(
 
     if (request.isSuccess) methodEntryRequests.putWithId(
       requestId,
-      MethodEntryRequestInfo(requestId, className, methodName),
+      MethodEntryRequestInfo(
+        requestId,
+        isPending = false,
+        className,
+        methodName,
+        extraArguments
+      ),
       request.get
     )
 

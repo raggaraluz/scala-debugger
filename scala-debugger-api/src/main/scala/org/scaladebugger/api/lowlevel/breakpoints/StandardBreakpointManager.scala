@@ -78,9 +78,16 @@ class StandardBreakpointManager(
       eventRequestManager.createBreakpointRequest(_: Location, arguments: _*)
     ))
 
+    val isPending = false
     if (requests.isSuccess) breakpointRequests.putWithId(
       requestId,
-      BreakpointRequestInfo(requestId, fileName, lineNumber, extraArguments),
+      BreakpointRequestInfo(
+        requestId,
+        isPending,
+        fileName,
+        lineNumber,
+        extraArguments
+      ),
       requests.get
     )
 

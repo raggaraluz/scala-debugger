@@ -97,6 +97,7 @@ trait PendingMethodExitSupport extends PendingMethodExitSupportLike {
           requestId,
           MethodExitRequestInfo(
             requestId,
+            isPending = true,
             className,
             methodName,
             extraArguments

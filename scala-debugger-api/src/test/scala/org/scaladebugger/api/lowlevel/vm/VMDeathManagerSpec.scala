@@ -40,6 +40,7 @@ class VMDeathManagerSpec extends FunSpec with Matchers
     describe("#createVMDeathRequestFromInfo") {
       it("should invoke createVMDeathRequestWithId") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testExtraArguments = Seq(stub[JDIRequestArgument])
 
         (mockVMDeathManager.createVMDeathRequestWithId _)
@@ -48,6 +49,7 @@ class VMDeathManagerSpec extends FunSpec with Matchers
 
         val info = VMDeathRequestInfo(
           TestRequestId,
+          testIsPending,
           testExtraArguments
         )
         val actual = testVMDeathManager.createVMDeathRequestFromInfo(info)

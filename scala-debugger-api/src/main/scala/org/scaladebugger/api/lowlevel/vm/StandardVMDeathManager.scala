@@ -48,7 +48,7 @@ class StandardVMDeathManager(
 
     if (request.isSuccess) vmDeathRequests.putWithId(
       requestId,
-      VMDeathRequestInfo(requestId, extraArguments),
+      VMDeathRequestInfo(requestId, isPending = false, extraArguments),
       request.get
     )
 

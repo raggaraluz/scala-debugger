@@ -59,7 +59,7 @@ trait PendingMonitorWaitedSupport extends PendingMonitorWaitedSupportLike {
       case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
-          MonitorWaitedRequestInfo(requestId, extraArguments),
+          MonitorWaitedRequestInfo(requestId, isPending = true, extraArguments),
           () => createMonitorWaitedRequest().get
         )
         Success(requestId)

@@ -41,7 +41,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers {
     describe("#monitorContendedEnterRequests") {
       it("should include all active requests") {
         val expected = Seq(
-          MonitorContendedEnterRequestInfo(TestRequestId)
+          MonitorContendedEnterRequestInfo(TestRequestId, false)
         )
 
         val mockMonitorContendedEnterManager = mock[PendingMonitorContendedEnterSupportLike]
@@ -65,7 +65,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers {
 
       it("should include pending requests if supported") {
         val expected = Seq(
-          MonitorContendedEnterRequestInfo(TestRequestId)
+          MonitorContendedEnterRequestInfo(TestRequestId, true)
         )
 
         val mockMonitorContendedEnterManager = mock[PendingMonitorContendedEnterSupportLike]
@@ -87,7 +87,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers {
 
       it("should only include active requests if pending unsupported") {
         val expected = Seq(
-          MonitorContendedEnterRequestInfo(TestRequestId)
+          MonitorContendedEnterRequestInfo(TestRequestId, false)
         )
 
         (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _).expects()
@@ -290,7 +290,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers {
             .returning(Seq(internalId)).once()
           (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
             .expects(internalId)
-            .returning(Some(MonitorContendedEnterRequestInfo(TestRequestId, arguments))).once()
+            .returning(Some(MonitorContendedEnterRequestInfo(TestRequestId, false, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MonitorContendedEnterEventType, Seq(uniqueIdPropertyFilter))
@@ -330,7 +330,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers {
 
             (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(MonitorContendedEnterRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(MonitorContendedEnterRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockMonitorContendedEnterManager.createMonitorContendedEnterRequestWithId _)
@@ -389,7 +389,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers {
 
             (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(MonitorContendedEnterRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(MonitorContendedEnterRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockMonitorContendedEnterManager.createMonitorContendedEnterRequestWithId _)

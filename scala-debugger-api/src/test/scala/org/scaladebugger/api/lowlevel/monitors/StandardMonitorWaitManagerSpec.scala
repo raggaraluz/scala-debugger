@@ -126,6 +126,7 @@ class StandardMonitorWaitManagerSpec extends FunSpec with Matchers with MockFact
       it("should return Some(info) if found") {
         val expected = MonitorWaitRequestInfo(
           TestRequestId,
+          false,
           Seq(mock[JDIRequestArgument], mock[JDIRequestArgument])
         )
         expected.extraArguments.foreach(a => {

@@ -41,7 +41,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
     describe("#classPrepareRequests") {
       it("should include all active requests") {
         val expected = Seq(
-          ClassPrepareRequestInfo(TestRequestId)
+          ClassPrepareRequestInfo(TestRequestId, false)
         )
 
         val mockClassPrepareManager = mock[PendingClassPrepareSupportLike]
@@ -65,7 +65,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
       it("should include pending requests if supported") {
         val expected = Seq(
-          ClassPrepareRequestInfo(TestRequestId)
+          ClassPrepareRequestInfo(TestRequestId, true)
         )
 
         val mockClassPrepareManager = mock[PendingClassPrepareSupportLike]
@@ -87,7 +87,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
       it("should only include active requests if pending unsupported") {
         val expected = Seq(
-          ClassPrepareRequestInfo(TestRequestId)
+          ClassPrepareRequestInfo(TestRequestId, false)
         )
 
         (mockClassPrepareManager.classPrepareRequestList _).expects()
@@ -290,7 +290,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockClassPrepareManager.getClassPrepareRequestInfo _)
             .expects(internalId)
-            .returning(Some(ClassPrepareRequestInfo(TestRequestId, arguments))).once()
+            .returning(Some(ClassPrepareRequestInfo(TestRequestId, false, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ClassPrepareEventType, Seq(uniqueIdPropertyFilter))
@@ -330,7 +330,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
             (mockClassPrepareManager.getClassPrepareRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(ClassPrepareRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(ClassPrepareRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockClassPrepareManager.createClassPrepareRequestWithId _)
@@ -389,7 +389,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
             (mockClassPrepareManager.getClassPrepareRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(ClassPrepareRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(ClassPrepareRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockClassPrepareManager.createClassPrepareRequestWithId _)

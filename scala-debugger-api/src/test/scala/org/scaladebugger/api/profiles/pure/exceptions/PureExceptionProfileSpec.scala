@@ -41,7 +41,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
     describe("#exceptionRequests") {
       it("should include all active requests") {
         val expected = Seq(
-          ExceptionRequestInfo(TestRequestId, "some.exception.class", true, false)
+          ExceptionRequestInfo(TestRequestId, false, "some.exception.class", true, false)
         )
 
         val mockExceptionManager = mock[PendingExceptionSupportLike]
@@ -63,7 +63,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
 
       it("should include pending requests if supported") {
         val expected = Seq(
-          ExceptionRequestInfo(TestRequestId, "some.exception.class", true, false)
+          ExceptionRequestInfo(TestRequestId, true, "some.exception.class", true, false)
         )
 
         val mockExceptionManager = mock[PendingExceptionSupportLike]
@@ -85,7 +85,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
 
       it("should only include active requests if pending unsupported") {
         val expected = Seq(
-          ExceptionRequestInfo(TestRequestId, "some.exception.class", true, false)
+          ExceptionRequestInfo(TestRequestId, false, "some.exception.class", true, false)
         )
 
         (mockExceptionManager.exceptionRequestList _).expects()
@@ -787,6 +787,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
           (mockExceptionManager.exceptionRequestList _).expects()
             .returning(Seq(ExceptionRequestInfo(
               requestId = TestRequestId,
+              false,
               className = ExceptionRequestInfo.DefaultCatchallExceptionName,
               notifyCaught = notifyCaught,
               notifyUncaught = notifyUncaught,
@@ -832,6 +833,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             (mockExceptionManager.exceptionRequestList _).expects()
               .returning(Seq(ExceptionRequestInfo(
                 requestId = TestRequestId,
+                false,
                 className = ExceptionRequestInfo.DefaultCatchallExceptionName,
                 notifyCaught = notifyCaught,
                 notifyUncaught = notifyUncaught,
@@ -907,6 +909,7 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
             (mockExceptionManager.exceptionRequestList _).expects()
               .returning(Seq(ExceptionRequestInfo(
                 requestId = TestRequestId,
+                false,
                 className = ExceptionRequestInfo.DefaultCatchallExceptionName,
                 notifyCaught = notifyCaught,
                 notifyUncaught = notifyUncaught,

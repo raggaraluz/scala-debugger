@@ -74,6 +74,7 @@ class ExceptionManagerSpec extends FunSpec with Matchers
     describe("#createExceptionRequestFromInfo") {
       it("should invoke createCatchallExceptionRequestWithId if the class name is null") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testClassName = null
         val testNotifyCaught = true
         val testNotifyUncaught = false
@@ -88,6 +89,7 @@ class ExceptionManagerSpec extends FunSpec with Matchers
 
         val info = ExceptionRequestInfo(
           TestRequestId,
+          testIsPending,
           testClassName,
           testNotifyCaught,
           testNotifyUncaught,
@@ -100,6 +102,7 @@ class ExceptionManagerSpec extends FunSpec with Matchers
 
       it("should invoke createExceptionRequestWithId if the class name is not null") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testClassName = "some.class.name"
         val testNotifyCaught = true
         val testNotifyUncaught = false
@@ -115,6 +118,7 @@ class ExceptionManagerSpec extends FunSpec with Matchers
 
         val info = ExceptionRequestInfo(
           TestRequestId,
+          testIsPending,
           testClassName,
           testNotifyCaught,
           testNotifyUncaught,

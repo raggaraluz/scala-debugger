@@ -41,7 +41,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
     describe("#threadDeathRequests") {
       it("should include all active requests") {
         val expected = Seq(
-          ThreadDeathRequestInfo(TestRequestId)
+          ThreadDeathRequestInfo(TestRequestId, false)
         )
 
         val mockThreadDeathManager = mock[PendingThreadDeathSupportLike]
@@ -65,7 +65,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
       it("should include pending requests if supported") {
         val expected = Seq(
-          ThreadDeathRequestInfo(TestRequestId)
+          ThreadDeathRequestInfo(TestRequestId, true)
         )
 
         val mockThreadDeathManager = mock[PendingThreadDeathSupportLike]
@@ -87,7 +87,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
       it("should only include active requests if pending unsupported") {
         val expected = Seq(
-          ThreadDeathRequestInfo(TestRequestId)
+          ThreadDeathRequestInfo(TestRequestId, false)
         )
 
         (mockThreadDeathManager.threadDeathRequestList _).expects()
@@ -290,7 +290,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockThreadDeathManager.getThreadDeathRequestInfo _)
             .expects(internalId)
-            .returning(Some(ThreadDeathRequestInfo(TestRequestId, arguments))).once()
+            .returning(Some(ThreadDeathRequestInfo(TestRequestId, false, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ThreadDeathEventType, Seq(uniqueIdPropertyFilter))
@@ -330,7 +330,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
             (mockThreadDeathManager.getThreadDeathRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(ThreadDeathRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(ThreadDeathRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockThreadDeathManager.createThreadDeathRequestWithId _)
@@ -389,7 +389,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
             (mockThreadDeathManager.getThreadDeathRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(ThreadDeathRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(ThreadDeathRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockThreadDeathManager.createThreadDeathRequestWithId _)

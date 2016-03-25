@@ -33,9 +33,9 @@ class PendingMonitorContendedEnteredSupportSpec extends FunSpec with Matchers
     describe("#processAllPendingMonitorContendedEnteredRequests") {
       it("should process all pending monitor contended entered requests") {
         val expected = Seq(
-          MonitorContendedEnteredRequestInfo(TestRequestId),
-          MonitorContendedEnteredRequestInfo(TestRequestId + 1),
-          MonitorContendedEnteredRequestInfo(TestRequestId + 2)
+          MonitorContendedEnteredRequestInfo(TestRequestId, true),
+          MonitorContendedEnteredRequestInfo(TestRequestId + 1, true),
+          MonitorContendedEnteredRequestInfo(TestRequestId + 2, true)
         )
 
         // Create monitor contended entered requests to use for testing
@@ -59,9 +59,9 @@ class PendingMonitorContendedEnteredSupportSpec extends FunSpec with Matchers
     describe("#pendingMonitorContendedEnteredRequests") {
       it("should return a collection of pending monitor contended entered requests") {
         val expected = Seq(
-          MonitorContendedEnteredRequestInfo(TestRequestId),
-          MonitorContendedEnteredRequestInfo(TestRequestId + 1, Seq(stub[JDIRequestArgument])),
-          MonitorContendedEnteredRequestInfo(TestRequestId + 2)
+          MonitorContendedEnteredRequestInfo(TestRequestId, true),
+          MonitorContendedEnteredRequestInfo(TestRequestId + 1, true, Seq(stub[JDIRequestArgument])),
+          MonitorContendedEnteredRequestInfo(TestRequestId + 2, true)
         )
 
         (mockMonitorContendedEnteredManager.createMonitorContendedEnteredRequestWithId _)
@@ -121,7 +121,7 @@ class PendingMonitorContendedEnteredSupportSpec extends FunSpec with Matchers
         // Pending monitor contended entered should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          MonitorContendedEnteredRequestInfo(TestRequestId, extraArguments),
+          MonitorContendedEnteredRequestInfo(TestRequestId, true, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -176,7 +176,7 @@ class PendingMonitorContendedEnteredSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            MonitorContendedEnteredRequestInfo(TestRequestId, extraArguments),
+            MonitorContendedEnteredRequestInfo(TestRequestId, true, extraArguments),
             () => {}
           )
         )

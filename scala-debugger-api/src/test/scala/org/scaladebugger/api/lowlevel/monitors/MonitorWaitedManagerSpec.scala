@@ -40,6 +40,7 @@ class MonitorWaitedManagerSpec extends FunSpec with Matchers
     describe("#createMonitorWaitedRequestFromInfo") {
       it("should invoke createMonitorWaitedRequestWithId") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testExtraArguments = Seq(stub[JDIRequestArgument])
 
         (mockMonitorWaitedManager.createMonitorWaitedRequestWithId _)
@@ -48,6 +49,7 @@ class MonitorWaitedManagerSpec extends FunSpec with Matchers
 
         val info = MonitorWaitedRequestInfo(
           TestRequestId,
+          testIsPending,
           testExtraArguments
         )
         val actual = testMonitorWaitedManager.createMonitorWaitedRequestFromInfo(info)

@@ -44,6 +44,7 @@ class MethodExitManagerSpec extends FunSpec with Matchers
     describe("#createMethodExitRequestFromInfo") {
       it("should invoke createMethodExitRequestWithId") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testClassName = "some.class.name"
         val testMethodName = "someMethodName"
         val testExtraArguments = Seq(stub[JDIRequestArgument])
@@ -54,6 +55,7 @@ class MethodExitManagerSpec extends FunSpec with Matchers
 
         val info = MethodExitRequestInfo(
           TestRequestId,
+          testIsPending,
           testClassName,
           testMethodName,
           testExtraArguments

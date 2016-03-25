@@ -9,6 +9,7 @@ import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
  * Represents information about a step request.
  *
  * @param requestId The id of the request
+ * @param isPending Whether or not this request is pending (not on remote JVM)
  * @param removeExistingRequests If true, will first remove any existing
  *                               step requests for the specified thread
  * @param threadReference The thread monitored for steps
@@ -18,6 +19,7 @@ import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
  */
 case class StepRequestInfo(
   requestId: String,
+  isPending: Boolean,
   removeExistingRequests: Boolean,
   threadReference: ThreadReference,
   size: Int,

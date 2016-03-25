@@ -59,7 +59,7 @@ trait PendingClassPrepareSupport extends PendingClassPrepareSupportLike {
       case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
-          ClassPrepareRequestInfo(requestId, extraArguments),
+          ClassPrepareRequestInfo(requestId, isPending = true, extraArguments),
           () => createClassPrepareRequest().get
         )
         Success(requestId)

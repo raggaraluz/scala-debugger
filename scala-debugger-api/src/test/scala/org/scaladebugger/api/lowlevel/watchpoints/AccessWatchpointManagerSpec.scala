@@ -44,6 +44,7 @@ class AccessWatchpointManagerSpec extends FunSpec with Matchers
     describe("#createAccessWatchpointRequestFromInfo") {
       it("should invoke createAccessWatchpointRequestWithId") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testClassName = "some.class.name"
         val testFieldName = "someFieldName"
         val testExtraArguments = Seq(stub[JDIRequestArgument])
@@ -54,6 +55,7 @@ class AccessWatchpointManagerSpec extends FunSpec with Matchers
 
         val info = AccessWatchpointRequestInfo(
           TestRequestId,
+          testIsPending,
           testClassName,
           testFieldName,
           testExtraArguments

@@ -36,9 +36,9 @@ class PendingMethodEntrySupportSpec extends FunSpec with Matchers
         val testMethodName = "someMethodName"
 
         val expected = Seq(
-          MethodEntryRequestInfo(TestRequestId, testClassName, testMethodName),
-          MethodEntryRequestInfo(TestRequestId + 1, testClassName + 1, testMethodName),
-          MethodEntryRequestInfo(TestRequestId + 2, testClassName, testMethodName + 1)
+          MethodEntryRequestInfo(TestRequestId, true, testClassName, testMethodName),
+          MethodEntryRequestInfo(TestRequestId + 1, true, testClassName + 1, testMethodName),
+          MethodEntryRequestInfo(TestRequestId + 2, true, testClassName, testMethodName + 1)
         )
 
         (mockPendingActionManager.processAllActions _).expects()
@@ -55,10 +55,10 @@ class PendingMethodEntrySupportSpec extends FunSpec with Matchers
         val testMethodName = "someMethodName"
 
         val expected = Seq(
-          MethodEntryRequestInfo(TestRequestId, testClassName, testMethodName),
-          MethodEntryRequestInfo(TestRequestId + 1, testClassName, testMethodName + 1)
+          MethodEntryRequestInfo(TestRequestId, true, testClassName, testMethodName),
+          MethodEntryRequestInfo(TestRequestId + 1, true, testClassName, testMethodName + 1)
         )
-        val actions = (expected :+ MethodEntryRequestInfo(TestRequestId + 2, testClassName + 1, testMethodName))
+        val actions = (expected :+ MethodEntryRequestInfo(TestRequestId + 2, true, testClassName + 1, testMethodName))
           .map(ActionInfo.apply("", _: MethodEntryRequestInfo, () => {}))
 
         // Return our data that represents the processed actions
@@ -79,9 +79,9 @@ class PendingMethodEntrySupportSpec extends FunSpec with Matchers
         val testClassName = "some.class.name"
         val testMethodName = "someMethodName"
         val expected = Seq(
-          MethodEntryRequestInfo(TestRequestId, testClassName, testMethodName),
-          MethodEntryRequestInfo(TestRequestId + 1, testClassName, testMethodName + 1),
-          MethodEntryRequestInfo(TestRequestId + 2, testClassName + 1, testMethodName)
+          MethodEntryRequestInfo(TestRequestId, true, testClassName, testMethodName),
+          MethodEntryRequestInfo(TestRequestId + 1, true, testClassName, testMethodName + 1),
+          MethodEntryRequestInfo(TestRequestId + 2, true, testClassName + 1, testMethodName)
         )
 
         val actions = expected.map(ActionInfo.apply("", _: MethodEntryRequestInfo, () => {}))
@@ -113,10 +113,10 @@ class PendingMethodEntrySupportSpec extends FunSpec with Matchers
         val testClassName = "some.class.name"
         val testMethodName = "someMethodName"
         val expected = Seq(
-          MethodEntryRequestInfo(TestRequestId, testClassName, testMethodName),
-          MethodEntryRequestInfo(TestRequestId + 1, testClassName, testMethodName + 1)
+          MethodEntryRequestInfo(TestRequestId, true, testClassName, testMethodName),
+          MethodEntryRequestInfo(TestRequestId + 1, true, testClassName, testMethodName + 1)
         )
-        val actions = (expected :+ MethodEntryRequestInfo(TestRequestId + 2, testClassName + 1, testMethodName))
+        val actions = (expected :+ MethodEntryRequestInfo(TestRequestId + 2, true, testClassName + 1, testMethodName))
           .map(ActionInfo.apply("", _: MethodEntryRequestInfo, () => {}))
 
         (mockPendingActionManager.getPendingActionData _).expects(*).onCall(
@@ -177,7 +177,7 @@ class PendingMethodEntrySupportSpec extends FunSpec with Matchers
         // Pending method entry request should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          MethodEntryRequestInfo(TestRequestId, testClassName, testMethodName, Nil),
+          MethodEntryRequestInfo(TestRequestId, true, testClassName, testMethodName, Nil),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -239,7 +239,7 @@ class PendingMethodEntrySupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Some(Seq(
           ActionInfo(
             TestRequestId,
-            MethodEntryRequestInfo(TestRequestId, testClassName, testMethodName, Nil),
+            MethodEntryRequestInfo(TestRequestId, true, testClassName, testMethodName, Nil),
             () => {}
           )
         ))
@@ -311,7 +311,7 @@ class PendingMethodEntrySupportSpec extends FunSpec with Matchers
         val actions = Seq(
           ActionInfo(
             TestRequestId,
-            MethodEntryRequestInfo(TestRequestId, testClassName, testMethodName, Nil),
+            MethodEntryRequestInfo(TestRequestId, true, testClassName, testMethodName, Nil),
             () => {}
           )
         )

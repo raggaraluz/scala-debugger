@@ -35,9 +35,9 @@ class PendingExceptionSupportSpec extends FunSpec with Matchers
         val testClassName = "some.class.name"
 
         val expected = Seq(
-          ExceptionRequestInfo(TestRequestId, testClassName, true, false),
-          ExceptionRequestInfo(TestRequestId + 1, testClassName + 1, true, false),
-          ExceptionRequestInfo(TestRequestId + 2, testClassName, false, true)
+          ExceptionRequestInfo(TestRequestId, true, testClassName, true, false),
+          ExceptionRequestInfo(TestRequestId + 1, true, testClassName + 1, true, false),
+          ExceptionRequestInfo(TestRequestId + 2, true, testClassName, false, true)
         )
 
         (mockPendingActionManager.processAllActions _).expects()
@@ -53,10 +53,10 @@ class PendingExceptionSupportSpec extends FunSpec with Matchers
         val testClassName = "some.class.name"
 
         val expected = Seq(
-          ExceptionRequestInfo(TestRequestId, testClassName, true, false),
-          ExceptionRequestInfo(TestRequestId + 1, testClassName, false, true)
+          ExceptionRequestInfo(TestRequestId, true, testClassName, true, false),
+          ExceptionRequestInfo(TestRequestId + 1, true, testClassName, false, true)
         )
-        val actions = (expected :+ ExceptionRequestInfo(TestRequestId + 2, testClassName + 1, true, false))
+        val actions = (expected :+ ExceptionRequestInfo(TestRequestId + 2, true, testClassName + 1, true, false))
           .map(ActionInfo.apply("", _: ExceptionRequestInfo, () => {}))
 
         // Return our data that represents the processed actions
@@ -75,9 +75,9 @@ class PendingExceptionSupportSpec extends FunSpec with Matchers
     describe("#pendingExceptionRequests") {
       it("should return a collection of all pending exceptions") {
         val expected = Seq(
-          ExceptionRequestInfo(TestRequestId, "class1", true, false),
-          ExceptionRequestInfo(TestRequestId + 1, "class1", false, true),
-          ExceptionRequestInfo(TestRequestId + 2, "class2", true, false)
+          ExceptionRequestInfo(TestRequestId, true, "class1", true, false),
+          ExceptionRequestInfo(TestRequestId + 1, true, "class1", false, true),
+          ExceptionRequestInfo(TestRequestId + 2, true, "class2", true, false)
         )
 
         val actions = expected.map(ActionInfo.apply("", _: ExceptionRequestInfo, () => {}))
@@ -107,10 +107,10 @@ class PendingExceptionSupportSpec extends FunSpec with Matchers
     describe("#pendingExceptionRequestsForClass") {
       it("should return a collection of pending exceptions") {
         val expected = Seq(
-          ExceptionRequestInfo(TestRequestId, "class1", true, false),
-          ExceptionRequestInfo(TestRequestId + 1, "class1", false, true)
+          ExceptionRequestInfo(TestRequestId, true, "class1", true, false),
+          ExceptionRequestInfo(TestRequestId + 1, true, "class1", false, true)
         )
-        val actions = (expected :+ ExceptionRequestInfo(TestRequestId + 2, "class2", true, false))
+        val actions = (expected :+ ExceptionRequestInfo(TestRequestId + 2, true, "class2", true, false))
           .map(ActionInfo.apply("", _: ExceptionRequestInfo, () => {}))
 
         (mockPendingActionManager.getPendingActionData _).expects(*).onCall(
@@ -165,7 +165,7 @@ class PendingExceptionSupportSpec extends FunSpec with Matchers
         // Pending exception should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ExceptionRequestInfo(TestRequestId, null, true, false, Nil),
+          ExceptionRequestInfo(TestRequestId, true, null, true, false, Nil),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -239,7 +239,7 @@ class PendingExceptionSupportSpec extends FunSpec with Matchers
         // Pending exception should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ExceptionRequestInfo(TestRequestId, testClassName, true, false, Nil),
+          ExceptionRequestInfo(TestRequestId, true, testClassName, true, false, Nil),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -299,7 +299,7 @@ class PendingExceptionSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Some(Seq(
           ActionInfo(
             TestRequestId,
-            ExceptionRequestInfo(testClassName, TestRequestId, true, false, Nil),
+            ExceptionRequestInfo(testClassName, true, TestRequestId, true, false, Nil),
             () => {}
           )
         ))
@@ -368,7 +368,7 @@ class PendingExceptionSupportSpec extends FunSpec with Matchers
         val actions = Seq(
           ActionInfo(
             TestRequestId,
-            ExceptionRequestInfo(TestRequestId, testClassName, true, false, Nil),
+            ExceptionRequestInfo(TestRequestId, true, testClassName, true, false, Nil),
             () => {}
           )
         )

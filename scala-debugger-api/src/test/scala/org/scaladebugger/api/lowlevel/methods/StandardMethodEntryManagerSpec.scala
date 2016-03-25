@@ -21,8 +21,8 @@ class StandardMethodEntryManagerSpec extends FunSpec with Matchers with MockFact
     describe("#methodEntryRequestList") {
       it("should contain all method entry request information stored in the manager") {
         val methodEntryRequests = Seq(
-          MethodEntryRequestInfo(TestRequestId, "class1", "method1"),
-          MethodEntryRequestInfo(TestRequestId + 1, "class2", "method2")
+          MethodEntryRequestInfo(TestRequestId, false, "class1", "method1"),
+          MethodEntryRequestInfo(TestRequestId + 1, false, "class2", "method2")
         )
 
         // NOTE: Must create a new method entry manager that does NOT override
@@ -30,7 +30,7 @@ class StandardMethodEntryManagerSpec extends FunSpec with Matchers with MockFact
         //       duplicates of the test id when storing it
         val methodEntryManager = new StandardMethodEntryManager(mockEventRequestManager)
 
-        methodEntryRequests.foreach { case MethodEntryRequestInfo(requestId, className, methodName, _) =>
+        methodEntryRequests.foreach { case MethodEntryRequestInfo(requestId, _, className, methodName, _) =>
           (mockEventRequestManager.createMethodEntryRequest _).expects()
             .returning(stub[MethodEntryRequest]).once()
           methodEntryManager.createMethodEntryRequestWithId(requestId, className, methodName)

@@ -33,9 +33,9 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
     describe("#processAllPendingThreadDeathRequests") {
       it("should process all pending thread death requests") {
         val expected = Seq(
-          ThreadDeathRequestInfo(TestRequestId),
-          ThreadDeathRequestInfo(TestRequestId + 1),
-          ThreadDeathRequestInfo(TestRequestId + 2)
+          ThreadDeathRequestInfo(TestRequestId, true),
+          ThreadDeathRequestInfo(TestRequestId + 1, true),
+          ThreadDeathRequestInfo(TestRequestId + 2, true)
         )
 
         // Create thread death requests to use for testing
@@ -59,9 +59,9 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
     describe("#pendingThreadDeathRequests") {
       it("should return a collection of pending thread death requests") {
         val expected = Seq(
-          ThreadDeathRequestInfo(TestRequestId),
-          ThreadDeathRequestInfo(TestRequestId + 1, Seq(stub[JDIRequestArgument])),
-          ThreadDeathRequestInfo(TestRequestId + 2)
+          ThreadDeathRequestInfo(TestRequestId, true),
+          ThreadDeathRequestInfo(TestRequestId + 1, true, Seq(stub[JDIRequestArgument])),
+          ThreadDeathRequestInfo(TestRequestId + 2, true)
         )
 
         (mockThreadDeathManager.createThreadDeathRequestWithId _)
@@ -121,7 +121,7 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
         // Pending thread death should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ThreadDeathRequestInfo(TestRequestId, extraArguments),
+          ThreadDeathRequestInfo(TestRequestId, true, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -176,7 +176,7 @@ class PendingThreadDeathSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            ThreadDeathRequestInfo(TestRequestId, extraArguments),
+            ThreadDeathRequestInfo(TestRequestId, true, extraArguments),
             () => {}
           )
         )

@@ -142,10 +142,14 @@ class StandardClassUnloadManagerSpec extends FunSpec with Matchers with MockFact
 
     describe("#getClassUnloadRequestInfo") {
       it("should return Some(info) if found") {
-        val expected = ClassUnloadRequestInfo(TestRequestId, Seq(
-          mock[JDIRequestArgument],
-          mock[JDIRequestArgument]
-        ))
+        val expected = ClassUnloadRequestInfo(
+          TestRequestId,
+          false,
+            Seq(
+            mock[JDIRequestArgument],
+            mock[JDIRequestArgument]
+          )
+        )
         expected.extraArguments.foreach(a => {
           val mockRequestProcessor = mock[JDIRequestProcessor]
           (mockRequestProcessor.process _).expects(*)

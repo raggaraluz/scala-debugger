@@ -40,6 +40,7 @@ class ClassPrepareManagerSpec extends FunSpec with Matchers
     describe("#createClassPrepareRequestFromInfo") {
       it("should invoke createClassPrepareRequestWithId") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testExtraArguments = Seq(stub[JDIRequestArgument])
 
         (mockClassPrepareManager.createClassPrepareRequestWithId _)
@@ -48,6 +49,7 @@ class ClassPrepareManagerSpec extends FunSpec with Matchers
 
         val info = ClassPrepareRequestInfo(
           TestRequestId,
+          testIsPending,
           testExtraArguments
         )
         val actual = testClassPrepareManager.createClassPrepareRequestFromInfo(info)
