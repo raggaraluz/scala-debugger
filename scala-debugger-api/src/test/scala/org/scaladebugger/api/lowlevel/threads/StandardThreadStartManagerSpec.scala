@@ -126,6 +126,7 @@ class StandardThreadStartManagerSpec extends FunSpec with Matchers with MockFact
       it("should return Some(info) if found") {
         val expected = ThreadStartRequestInfo(
           TestRequestId,
+          false,
           Seq(mock[JDIRequestArgument], mock[JDIRequestArgument])
         )
         expected.extraArguments.foreach(a => {

@@ -43,6 +43,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
         val expected = Seq(
           MethodEntryRequestInfo(
             TestRequestId,
+            false,
             "some.class.name",
             "someMethodName"
           )
@@ -69,6 +70,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
         val expected = Seq(
           MethodEntryRequestInfo(
             TestRequestId,
+            true,
             "some.class.name",
             "someMethodName"
           )
@@ -95,6 +97,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
         val expected = Seq(
           MethodEntryRequestInfo(
             TestRequestId,
+            false,
             "some.class.name",
             "someMethodName"
           )

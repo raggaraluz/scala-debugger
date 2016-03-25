@@ -77,7 +77,13 @@ class StandardAccessWatchpointManager(
 
     if (request.isSuccess) accessWatchpointRequests.putWithId(
       requestId,
-      AccessWatchpointRequestInfo(requestId, className, fieldName),
+      AccessWatchpointRequestInfo(
+        requestId,
+        isPending = false,
+        className,
+        fieldName,
+        extraArguments
+      ),
       request.get
     )
 

@@ -98,6 +98,7 @@ trait PendingAccessWatchpointSupport extends PendingAccessWatchpointSupportLike 
           requestId,
           AccessWatchpointRequestInfo(
             requestId,
+            isPending = true,
             className,
             fieldName,
             extraArguments

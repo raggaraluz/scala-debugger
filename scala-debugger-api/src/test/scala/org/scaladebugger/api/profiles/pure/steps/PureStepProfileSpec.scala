@@ -47,6 +47,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
           StepRequestInfo(
             TestRequestId,
             false,
+            false,
             mock[ThreadReference],
             0,
             1
@@ -74,6 +75,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
         val expected = Seq(
           StepRequestInfo(
             TestRequestId,
+            true,
             false,
             mock[ThreadReference],
             0,
@@ -102,6 +104,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
         val expected = Seq(
           StepRequestInfo(
             TestRequestId,
+            false,
             false,
             mock[ThreadReference],
             0,

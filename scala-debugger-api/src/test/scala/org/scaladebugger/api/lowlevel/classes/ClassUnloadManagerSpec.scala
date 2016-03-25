@@ -40,6 +40,7 @@ class ClassUnloadManagerSpec extends FunSpec with Matchers
     describe("#createClassUnloadRequestFromInfo") {
       it("should invoke createClassUnloadRequestWithId") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testExtraArguments = Seq(stub[JDIRequestArgument])
 
         (mockClassUnloadManager.createClassUnloadRequestWithId _)
@@ -48,6 +49,7 @@ class ClassUnloadManagerSpec extends FunSpec with Matchers
 
         val info = ClassUnloadRequestInfo(
           TestRequestId,
+          testIsPending,
           testExtraArguments
         )
         val actual = testClassUnloadManager.createClassUnloadRequestFromInfo(info)

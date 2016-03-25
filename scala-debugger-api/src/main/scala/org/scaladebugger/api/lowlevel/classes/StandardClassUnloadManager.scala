@@ -48,7 +48,7 @@ class StandardClassUnloadManager(
 
     if (request.isSuccess) classUnloadRequests.putWithId(
       requestId,
-      ClassUnloadRequestInfo(requestId, extraArguments),
+      ClassUnloadRequestInfo(requestId, isPending = false, extraArguments),
       request.get
     )
 

@@ -66,7 +66,13 @@ class StandardMethodExitManager(
 
     if (request.isSuccess) methodExitRequests.putWithId(
       requestId,
-      MethodExitRequestInfo(requestId, className, methodName),
+      MethodExitRequestInfo(
+        requestId,
+        isPending = false,
+        className,
+        methodName,
+        extraArguments
+      ),
       request.get
     )
 

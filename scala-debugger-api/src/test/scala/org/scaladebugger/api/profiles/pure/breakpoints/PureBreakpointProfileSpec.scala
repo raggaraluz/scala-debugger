@@ -43,7 +43,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
     describe("#breakpointRequests") {
       it("should include all active requests") {
         val expected = Seq(
-          BreakpointRequestInfo(TestRequestId, "some file", 999)
+          BreakpointRequestInfo(TestRequestId, false, "some file", 999)
         )
 
         val mockBreakpointManager = mock[PendingBreakpointSupportLike]
@@ -65,7 +65,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
 
       it("should include pending requests if supported") {
         val expected = Seq(
-          BreakpointRequestInfo(TestRequestId, "some file", 999)
+          BreakpointRequestInfo(TestRequestId, true, "some file", 999)
         )
 
         val mockBreakpointManager = mock[PendingBreakpointSupportLike]
@@ -87,7 +87,7 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
 
       it("should only include active requests if pending unsupported") {
         val expected = Seq(
-          BreakpointRequestInfo(TestRequestId, "some file", 999)
+          BreakpointRequestInfo(TestRequestId, false, "some file", 999)
         )
 
         (mockBreakpointManager.breakpointRequestList _).expects()

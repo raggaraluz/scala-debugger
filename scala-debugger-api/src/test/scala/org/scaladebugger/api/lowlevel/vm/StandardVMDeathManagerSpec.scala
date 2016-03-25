@@ -124,6 +124,7 @@ class StandardVMDeathManagerSpec extends FunSpec with Matchers with MockFactory
       it("should return Some(info) if found") {
         val expected = VMDeathRequestInfo(
           TestRequestId,
+          false,
           Seq(mock[JDIRequestArgument], mock[JDIRequestArgument])
         )
         expected.extraArguments.foreach(a => {

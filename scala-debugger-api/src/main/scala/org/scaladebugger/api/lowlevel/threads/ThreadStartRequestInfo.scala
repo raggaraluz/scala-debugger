@@ -13,6 +13,7 @@ import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
  */
 case class ThreadStartRequestInfo(
   requestId: String,
+  isPending: Boolean,
   extraArguments: Seq[JDIRequestArgument] = Nil
 ) extends RequestInfo
 

@@ -33,9 +33,9 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
     describe("#processAllPendingClassPrepareRequests") {
       it("should process all pending class prepare requests") {
         val expected = Seq(
-          ClassPrepareRequestInfo(TestRequestId),
-          ClassPrepareRequestInfo(TestRequestId + 1),
-          ClassPrepareRequestInfo(TestRequestId + 2)
+          ClassPrepareRequestInfo(TestRequestId, true),
+          ClassPrepareRequestInfo(TestRequestId + 1, true),
+          ClassPrepareRequestInfo(TestRequestId + 2, true)
         )
 
         // Create class prepare requests to use for testing
@@ -59,9 +59,9 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
     describe("#pendingClassPrepareRequests") {
       it("should return a collection of pending class prepare requests") {
         val expected = Seq(
-          ClassPrepareRequestInfo(TestRequestId),
-          ClassPrepareRequestInfo(TestRequestId + 1, Seq(stub[JDIRequestArgument])),
-          ClassPrepareRequestInfo(TestRequestId + 2)
+          ClassPrepareRequestInfo(TestRequestId, true),
+          ClassPrepareRequestInfo(TestRequestId + 1, true, Seq(stub[JDIRequestArgument])),
+          ClassPrepareRequestInfo(TestRequestId + 2, true)
         )
 
         (mockClassPrepareManager.createClassPrepareRequestWithId _)
@@ -121,7 +121,7 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
         // Pending class prepare should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          ClassPrepareRequestInfo(TestRequestId, extraArguments),
+          ClassPrepareRequestInfo(TestRequestId, true, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -175,7 +175,7 @@ class PendingClassPrepareSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            ClassPrepareRequestInfo(TestRequestId, extraArguments),
+            ClassPrepareRequestInfo(TestRequestId, true, extraArguments),
             () => {}
           )
         )

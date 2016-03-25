@@ -33,9 +33,9 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
     describe("#processAllPendingVMDeathRequests") {
       it("should process all pending vm death requests") {
         val expected = Seq(
-          VMDeathRequestInfo(TestRequestId),
-          VMDeathRequestInfo(TestRequestId + 1),
-          VMDeathRequestInfo(TestRequestId + 2)
+          VMDeathRequestInfo(TestRequestId, true),
+          VMDeathRequestInfo(TestRequestId + 1, true),
+          VMDeathRequestInfo(TestRequestId + 2, true)
         )
 
         // Create vm death requests to use for testing
@@ -59,9 +59,9 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
     describe("#pendingVMDeathRequests") {
       it("should return a collection of pending vm death requests") {
         val expected = Seq(
-          VMDeathRequestInfo(TestRequestId),
-          VMDeathRequestInfo(TestRequestId + 1, Seq(stub[JDIRequestArgument])),
-          VMDeathRequestInfo(TestRequestId + 2)
+          VMDeathRequestInfo(TestRequestId, true),
+          VMDeathRequestInfo(TestRequestId + 1, true, Seq(stub[JDIRequestArgument])),
+          VMDeathRequestInfo(TestRequestId + 2, true)
         )
 
         (mockVMDeathManager.createVMDeathRequestWithId _)
@@ -121,7 +121,7 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
         // Pending vm death should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          VMDeathRequestInfo(TestRequestId, extraArguments),
+          VMDeathRequestInfo(TestRequestId, true, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -176,7 +176,7 @@ class PendingVMDeathSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            VMDeathRequestInfo(TestRequestId, extraArguments),
+            VMDeathRequestInfo(TestRequestId, true, extraArguments),
             () => {}
           )
         )

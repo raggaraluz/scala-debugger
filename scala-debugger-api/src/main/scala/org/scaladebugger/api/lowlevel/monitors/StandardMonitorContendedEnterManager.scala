@@ -52,7 +52,7 @@ class StandardMonitorContendedEnterManager(
 
     if (request.isSuccess) monitorContendedEnterRequests.putWithId(
       requestId,
-      MonitorContendedEnterRequestInfo(requestId, extraArguments),
+      MonitorContendedEnterRequestInfo(requestId, isPending = false, extraArguments),
       request.get
     )
 

@@ -36,9 +36,9 @@ class PendingAccessWatchpointSupportSpec extends FunSpec with Matchers
         val testFieldName = "someFieldName"
 
         val expected = Seq(
-          AccessWatchpointRequestInfo(TestRequestId, testClassName, testFieldName),
-          AccessWatchpointRequestInfo(TestRequestId + 1, testClassName + 1, testFieldName),
-          AccessWatchpointRequestInfo(TestRequestId + 2, testClassName, testFieldName + 1)
+          AccessWatchpointRequestInfo(TestRequestId, true, testClassName, testFieldName),
+          AccessWatchpointRequestInfo(TestRequestId + 1, true, testClassName + 1, testFieldName),
+          AccessWatchpointRequestInfo(TestRequestId + 2, true, testClassName, testFieldName + 1)
         )
 
         (mockPendingActionManager.processAllActions _).expects()
@@ -55,10 +55,10 @@ class PendingAccessWatchpointSupportSpec extends FunSpec with Matchers
         val testFieldName = "someFieldName"
 
         val expected = Seq(
-          AccessWatchpointRequestInfo(TestRequestId, testClassName, testFieldName),
-          AccessWatchpointRequestInfo(TestRequestId + 1, testClassName, testFieldName + 1)
+          AccessWatchpointRequestInfo(TestRequestId, true, testClassName, testFieldName),
+          AccessWatchpointRequestInfo(TestRequestId + 1, true, testClassName, testFieldName + 1)
         )
-        val actions = (expected :+ AccessWatchpointRequestInfo(TestRequestId + 2, testClassName + 1, testFieldName))
+        val actions = (expected :+ AccessWatchpointRequestInfo(TestRequestId + 2, true, testClassName + 1, testFieldName))
           .map(ActionInfo.apply("", _: AccessWatchpointRequestInfo, () => {}))
 
         // Return our data that represents the processed actions
@@ -79,9 +79,9 @@ class PendingAccessWatchpointSupportSpec extends FunSpec with Matchers
         val testClassName = "some.class.name"
         val testFieldName = "someFieldName"
         val expected = Seq(
-          AccessWatchpointRequestInfo(TestRequestId, testClassName, testFieldName),
-          AccessWatchpointRequestInfo(TestRequestId + 1, testClassName, testFieldName + 1),
-          AccessWatchpointRequestInfo(TestRequestId + 2, testClassName + 1, testFieldName)
+          AccessWatchpointRequestInfo(TestRequestId, true, testClassName, testFieldName),
+          AccessWatchpointRequestInfo(TestRequestId + 1, true, testClassName, testFieldName + 1),
+          AccessWatchpointRequestInfo(TestRequestId + 2, true, testClassName + 1, testFieldName)
         )
 
         val actions = expected.map(ActionInfo.apply("", _: AccessWatchpointRequestInfo, () => {}))
@@ -113,10 +113,10 @@ class PendingAccessWatchpointSupportSpec extends FunSpec with Matchers
         val testClassName = "some.class.name"
         val testFieldName = "someFieldName"
         val expected = Seq(
-          AccessWatchpointRequestInfo(TestRequestId, testClassName, testFieldName),
-          AccessWatchpointRequestInfo(TestRequestId + 1, testClassName, testFieldName + 1)
+          AccessWatchpointRequestInfo(TestRequestId, true, testClassName, testFieldName),
+          AccessWatchpointRequestInfo(TestRequestId + 1, true, testClassName, testFieldName + 1)
         )
-        val actions = (expected :+ AccessWatchpointRequestInfo(TestRequestId + 2, testClassName + 1, testFieldName))
+        val actions = (expected :+ AccessWatchpointRequestInfo(TestRequestId + 2, true, testClassName + 1, testFieldName))
           .map(ActionInfo.apply("", _: AccessWatchpointRequestInfo, () => {}))
 
         (mockPendingActionManager.getPendingActionData _).expects(*).onCall(
@@ -177,7 +177,7 @@ class PendingAccessWatchpointSupportSpec extends FunSpec with Matchers
         // Pending access watchpoint request should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          AccessWatchpointRequestInfo(TestRequestId, testClassName, testFieldName, Nil),
+          AccessWatchpointRequestInfo(TestRequestId, true, testClassName, testFieldName, Nil),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -239,7 +239,7 @@ class PendingAccessWatchpointSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Some(Seq(
           ActionInfo(
             TestRequestId,
-            AccessWatchpointRequestInfo(TestRequestId, testClassName, testFieldName, Nil),
+            AccessWatchpointRequestInfo(TestRequestId, true, testClassName, testFieldName, Nil),
             () => {}
           )
         ))
@@ -311,7 +311,7 @@ class PendingAccessWatchpointSupportSpec extends FunSpec with Matchers
         val actions = Seq(
           ActionInfo(
             TestRequestId,
-            AccessWatchpointRequestInfo(TestRequestId, testClassName, testFieldName, Nil),
+            AccessWatchpointRequestInfo(TestRequestId, true, testClassName, testFieldName, Nil),
             () => {}
           )
         )

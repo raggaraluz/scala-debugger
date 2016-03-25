@@ -40,6 +40,7 @@ class MonitorContendedEnteredManagerSpec extends FunSpec with Matchers
     describe("#createMonitorContendedEnteredRequestFromInfo") {
       it("should invoke createMonitorContendedEnteredRequestWithId") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testExtraArguments = Seq(stub[JDIRequestArgument])
 
         (mockMonitorContendedEnteredManager.createMonitorContendedEnteredRequestWithId _)
@@ -48,6 +49,7 @@ class MonitorContendedEnteredManagerSpec extends FunSpec with Matchers
 
         val info = MonitorContendedEnteredRequestInfo(
           TestRequestId,
+          testIsPending,
           testExtraArguments
         )
         val actual = testMonitorContendedEnteredManager.createMonitorContendedEnteredRequestFromInfo(info)

@@ -75,6 +75,7 @@ class StandardExceptionManager(
         requestId,
         ExceptionRequestInfo(
           requestId = requestId,
+          isPending = false,
           className = ExceptionRequestInfo.DefaultCatchallExceptionName,
           notifyCaught = notifyCaught,
           notifyUncaught = notifyUncaught,
@@ -133,6 +134,7 @@ class StandardExceptionManager(
       requestId,
       ExceptionRequestInfo(
         requestId = requestId,
+        isPending = false,
         className = exceptionName,
         notifyCaught = notifyCaught,
         notifyUncaught = notifyUncaught,

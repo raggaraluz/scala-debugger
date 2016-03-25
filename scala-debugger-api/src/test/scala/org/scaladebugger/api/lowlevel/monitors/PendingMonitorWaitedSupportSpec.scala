@@ -33,9 +33,9 @@ class PendingMonitorWaitedSupportSpec extends FunSpec with Matchers
     describe("#processAllPendingMonitorWaitedRequests") {
       it("should process all pending monitor waited requests") {
         val expected = Seq(
-          MonitorWaitedRequestInfo(TestRequestId),
-          MonitorWaitedRequestInfo(TestRequestId + 1),
-          MonitorWaitedRequestInfo(TestRequestId + 2)
+          MonitorWaitedRequestInfo(TestRequestId, true),
+          MonitorWaitedRequestInfo(TestRequestId + 1, true),
+          MonitorWaitedRequestInfo(TestRequestId + 2, true)
         )
 
         // Create monitor waited requests to use for testing
@@ -59,9 +59,9 @@ class PendingMonitorWaitedSupportSpec extends FunSpec with Matchers
     describe("#pendingMonitorWaitedRequests") {
       it("should return a collection of pending monitor waited requests") {
         val expected = Seq(
-          MonitorWaitedRequestInfo(TestRequestId),
-          MonitorWaitedRequestInfo(TestRequestId + 1, Seq(stub[JDIRequestArgument])),
-          MonitorWaitedRequestInfo(TestRequestId + 2)
+          MonitorWaitedRequestInfo(TestRequestId, true),
+          MonitorWaitedRequestInfo(TestRequestId + 1, true, Seq(stub[JDIRequestArgument])),
+          MonitorWaitedRequestInfo(TestRequestId + 2, true)
         )
 
         (mockMonitorWaitedManager.createMonitorWaitedRequestWithId _)
@@ -121,7 +121,7 @@ class PendingMonitorWaitedSupportSpec extends FunSpec with Matchers
         // Pending monitor waited should be set
         (mockPendingActionManager.addPendingActionWithId _).expects(
           TestRequestId,
-          MonitorWaitedRequestInfo(TestRequestId, extraArguments),
+          MonitorWaitedRequestInfo(TestRequestId, true, extraArguments),
           * // Don't care about checking action
         ).returning(TestRequestId).once()
 
@@ -176,7 +176,7 @@ class PendingMonitorWaitedSupportSpec extends FunSpec with Matchers
         val pendingRemovalReturn = Seq(
           ActionInfo(
             TestRequestId,
-            MonitorWaitedRequestInfo(TestRequestId, extraArguments),
+            MonitorWaitedRequestInfo(TestRequestId, true, extraArguments),
             () => {}
           )
         )

@@ -40,6 +40,7 @@ class ThreadDeathManagerSpec extends FunSpec with Matchers
     describe("#createThreadDeathRequestFromInfo") {
       it("should invoke createThreadDeathRequestWithId") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testExtraArguments = Seq(stub[JDIRequestArgument])
 
         (mockThreadDeathManager.createThreadDeathRequestWithId _)
@@ -48,6 +49,7 @@ class ThreadDeathManagerSpec extends FunSpec with Matchers
 
         val info = ThreadDeathRequestInfo(
           TestRequestId,
+          testIsPending,
           testExtraArguments
         )
         val actual = testThreadDeathManager.createThreadDeathRequestFromInfo(info)

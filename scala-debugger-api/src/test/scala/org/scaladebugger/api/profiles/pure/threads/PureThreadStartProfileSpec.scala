@@ -41,7 +41,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
     describe("#threadStartRequests") {
       it("should include all active requests") {
         val expected = Seq(
-          ThreadStartRequestInfo(TestRequestId)
+          ThreadStartRequestInfo(TestRequestId, false)
         )
 
         val mockThreadStartManager = mock[PendingThreadStartSupportLike]
@@ -65,7 +65,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
       it("should include pending requests if supported") {
         val expected = Seq(
-          ThreadStartRequestInfo(TestRequestId)
+          ThreadStartRequestInfo(TestRequestId, true)
         )
 
         val mockThreadStartManager = mock[PendingThreadStartSupportLike]
@@ -87,7 +87,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
       it("should only include active requests if pending unsupported") {
         val expected = Seq(
-          ThreadStartRequestInfo(TestRequestId)
+          ThreadStartRequestInfo(TestRequestId, false)
         )
 
         (mockThreadStartManager.threadStartRequestList _).expects()
@@ -290,7 +290,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockThreadStartManager.getThreadStartRequestInfo _)
             .expects(internalId)
-            .returning(Some(ThreadStartRequestInfo(TestRequestId, arguments))).once()
+            .returning(Some(ThreadStartRequestInfo(TestRequestId, false, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ThreadStartEventType, Seq(uniqueIdPropertyFilter))
@@ -330,7 +330,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
             (mockThreadStartManager.getThreadStartRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(ThreadStartRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(ThreadStartRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockThreadStartManager.createThreadStartRequestWithId _)
@@ -389,7 +389,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
             (mockThreadStartManager.getThreadStartRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(ThreadStartRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(ThreadStartRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockThreadStartManager.createThreadStartRequestWithId _)

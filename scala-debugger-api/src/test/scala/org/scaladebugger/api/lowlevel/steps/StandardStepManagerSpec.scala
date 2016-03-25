@@ -291,9 +291,9 @@ class StandardStepManagerSpec extends FunSpec with Matchers
         val testSize = 0
         val testDepth = 1
         val expected = Seq(
-          StepRequestInfo(TestRequestId, testRemoveExistingRequests, mock[ThreadReference], testSize, testDepth),
-          StepRequestInfo(TestRequestId + 1, testRemoveExistingRequests, mock[ThreadReference], testSize, testDepth),
-          StepRequestInfo(TestRequestId + 2, testRemoveExistingRequests, mock[ThreadReference], testSize, testDepth)
+          StepRequestInfo(TestRequestId, false, testRemoveExistingRequests, mock[ThreadReference], testSize, testDepth),
+          StepRequestInfo(TestRequestId + 1, false, testRemoveExistingRequests, mock[ThreadReference], testSize, testDepth),
+          StepRequestInfo(TestRequestId + 2, false, testRemoveExistingRequests, mock[ThreadReference], testSize, testDepth)
         )
 
         // NOTE: Must create a new step manager that does NOT override the
@@ -301,7 +301,7 @@ class StandardStepManagerSpec extends FunSpec with Matchers
         //       duplicates of the test id when storing it
         val stepManager = new StandardStepManager(mockEventRequestManager)
 
-        expected.foreach { case StepRequestInfo(i, r, t, s, d, _) =>
+        expected.foreach { case StepRequestInfo(i, _, r, t, s, d, _) =>
           (mockEventRequestManager.createStepRequest _).expects(t, s, d)
             .returning(stub[StepRequest]).once()
           stepManager.createStepRequestWithId(i, r, t, s, d)
@@ -566,9 +566,9 @@ class StandardStepManagerSpec extends FunSpec with Matchers
 
     describe("#getStepRequestInfoWithId") {
       it("should return Some(StepInfo(class name, line number)) if the id exists") {
-        val expected = Some(StepRequestInfo(TestRequestId, true, stub[ThreadReference], 0, 1))
+        val expected = Some(StepRequestInfo(TestRequestId, false, true, stub[ThreadReference], 0, 1))
 
-        expected.foreach { case StepRequestInfo(_, _, t, s, d, _) =>
+        expected.foreach { case StepRequestInfo(_, _, _, t, s, d, _) =>
           (mockEventRequestManager.createStepRequest _).expects(t, s, d)
             .returning(stub[StepRequest]).once()
 

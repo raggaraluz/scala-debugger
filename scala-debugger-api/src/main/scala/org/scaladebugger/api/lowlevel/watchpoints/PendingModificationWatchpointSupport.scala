@@ -102,6 +102,7 @@ trait PendingModificationWatchpointSupport extends PendingModificationWatchpoint
           requestId,
           ModificationWatchpointRequestInfo(
             requestId,
+            isPending = true,
             className,
             fieldName,
             extraArguments

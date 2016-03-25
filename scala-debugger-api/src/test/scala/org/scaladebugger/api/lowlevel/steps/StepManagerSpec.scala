@@ -108,6 +108,7 @@ class StepManagerSpec extends FunSpec with Matchers
     describe("#createStepRequestFromInfo") {
       it("should invoke createStepRequestWithId") {
         val expected = Success(TestRequestId)
+        val testIsPending = false
         val testRemoveExistingRequests = false
         val testThreadReference = stub[ThreadReference]
         val testSize = 0
@@ -125,6 +126,7 @@ class StepManagerSpec extends FunSpec with Matchers
 
         val info = StepRequestInfo(
           TestRequestId,
+          testIsPending,
           testRemoveExistingRequests,
           testThreadReference,
           testSize,

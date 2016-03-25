@@ -77,7 +77,13 @@ class StandardModificationWatchpointManager(
 
     if (request.isSuccess) modificationWatchpointRequests.putWithId(
       requestId,
-      ModificationWatchpointRequestInfo(requestId, className, fieldName),
+      ModificationWatchpointRequestInfo(
+        requestId,
+        isPending = false,
+        className,
+        fieldName,
+        extraArguments
+      ),
       request.get
     )
 

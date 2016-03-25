@@ -48,7 +48,7 @@ class StandardThreadStartManager(
 
     if (request.isSuccess) threadStartRequests.putWithId(
       requestId,
-      ThreadStartRequestInfo(requestId, extraArguments),
+      ThreadStartRequestInfo(requestId, isPending = false, extraArguments),
       request.get
     )
 

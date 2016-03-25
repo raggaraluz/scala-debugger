@@ -97,6 +97,7 @@ trait PendingMethodEntrySupport extends PendingMethodEntrySupportLike {
           requestId,
           MethodEntryRequestInfo(
             requestId,
+            isPending = true,
             className,
             methodName,
             extraArguments

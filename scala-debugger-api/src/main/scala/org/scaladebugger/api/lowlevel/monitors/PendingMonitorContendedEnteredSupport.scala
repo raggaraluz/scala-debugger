@@ -59,7 +59,7 @@ trait PendingMonitorContendedEnteredSupport extends PendingMonitorContendedEnter
       case _: Throwable if isPendingSupportEnabled =>
         pendingActionManager.addPendingActionWithId(
           requestId,
-          MonitorContendedEnteredRequestInfo(requestId, extraArguments),
+          MonitorContendedEnteredRequestInfo(requestId, isPending = true, extraArguments),
           () => createMonitorContendedEnteredRequest().get
         )
         Success(requestId)

@@ -99,6 +99,7 @@ trait PendingExceptionSupport extends PendingExceptionSupportLike {
           requestId,
           ExceptionRequestInfo(
             requestId,
+            isPending = true,
             null,
             notifyCaught,
             notifyUncaught,
@@ -150,6 +151,7 @@ trait PendingExceptionSupport extends PendingExceptionSupportLike {
           requestId,
           ExceptionRequestInfo(
             requestId,
+            isPending = true,
             exceptionName,
             notifyCaught,
             notifyUncaught,

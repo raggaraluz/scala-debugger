@@ -9,6 +9,7 @@ import ExceptionRequestInfo._
  * Represents information about an exception request.
  *
  * @param requestId The id of the request
+ * @param isPending Whether or not this request is pending (not on remote JVM)
  * @param className The full name of the exception class
  * @param notifyCaught Whether or not caught exceptions are reported
  * @param notifyUncaught Whether or not uncaught exceptions are reported
@@ -16,6 +17,7 @@ import ExceptionRequestInfo._
  */
 case class ExceptionRequestInfo(
   requestId: String,
+  isPending: Boolean,
   className: String,
   notifyCaught: Boolean,
   notifyUncaught: Boolean,

@@ -45,6 +45,7 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
         val expected = Seq(
           AccessWatchpointRequestInfo(
             TestRequestId,
+            false,
             "some.class.name",
             "someFieldName"
           )
@@ -71,6 +72,7 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
         val expected = Seq(
           AccessWatchpointRequestInfo(
             TestRequestId,
+            true,
             "some.class.name",
             "someFieldName"
           )
@@ -97,6 +99,7 @@ class PureAccessWatchpointProfileSpec extends FunSpec with Matchers
         val expected = Seq(
           AccessWatchpointRequestInfo(
             TestRequestId,
+            false,
             "some.class.name",
             "someFieldName"
           )

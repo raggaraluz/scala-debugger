@@ -191,7 +191,7 @@ trait PureExceptionProfile extends ExceptionProfile {
         val keas = kea.toSet
 
         !exceptionRequests.exists {
-          case ExceptionRequestInfo(_, cn, nc, nu, ea) =>
+          case ExceptionRequestInfo(_, _, cn, nc, nu, ea) =>
             // TODO: Support denying when same element multiple times as set
             //       removes duplicates
             val eas = ea.filterNot(_.isInstanceOf[UniqueIdProperty]).toSet

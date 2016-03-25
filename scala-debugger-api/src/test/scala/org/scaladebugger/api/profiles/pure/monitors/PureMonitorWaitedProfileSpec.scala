@@ -41,7 +41,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
     describe("#monitorWaitedRequests") {
       it("should include all active requests") {
         val expected = Seq(
-          MonitorWaitedRequestInfo(TestRequestId)
+          MonitorWaitedRequestInfo(TestRequestId, false)
         )
 
         val mockMonitorWaitedManager = mock[PendingMonitorWaitedSupportLike]
@@ -65,7 +65,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
       it("should include pending requests if supported") {
         val expected = Seq(
-          MonitorWaitedRequestInfo(TestRequestId)
+          MonitorWaitedRequestInfo(TestRequestId, true)
         )
 
         val mockMonitorWaitedManager = mock[PendingMonitorWaitedSupportLike]
@@ -87,7 +87,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
       it("should only include active requests if pending unsupported") {
         val expected = Seq(
-          MonitorWaitedRequestInfo(TestRequestId)
+          MonitorWaitedRequestInfo(TestRequestId, false)
         )
 
         (mockMonitorWaitedManager.monitorWaitedRequestList _).expects()
@@ -290,7 +290,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockMonitorWaitedManager.getMonitorWaitedRequestInfo _)
             .expects(internalId)
-            .returning(Some(MonitorWaitedRequestInfo(TestRequestId, arguments))).once()
+            .returning(Some(MonitorWaitedRequestInfo(TestRequestId, false, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(MonitorWaitedEventType, Seq(uniqueIdPropertyFilter))
@@ -330,7 +330,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
             (mockMonitorWaitedManager.getMonitorWaitedRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(MonitorWaitedRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(MonitorWaitedRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockMonitorWaitedManager.createMonitorWaitedRequestWithId _)
@@ -389,7 +389,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
             (mockMonitorWaitedManager.getMonitorWaitedRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(MonitorWaitedRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(MonitorWaitedRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockMonitorWaitedManager.createMonitorWaitedRequestWithId _)

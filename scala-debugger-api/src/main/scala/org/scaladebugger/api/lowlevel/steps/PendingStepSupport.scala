@@ -109,6 +109,7 @@ trait PendingStepSupport extends PendingStepSupportLike {
           requestId,
           StepRequestInfo(
             requestId,
+            isPending = true,
             removeExistingRequests,
             threadReference,
             size,

@@ -125,6 +125,7 @@ class StandardMonitorContendedEnteredManagerSpec extends FunSpec with Matchers w
       it("should return Some(info) if found") {
         val expected = MonitorContendedEnteredRequestInfo(
           TestRequestId,
+          false,
           Seq(mock[JDIRequestArgument], mock[JDIRequestArgument])
         )
         expected.extraArguments.foreach(a => {

@@ -126,6 +126,7 @@ class StandardThreadDeathManagerSpec extends FunSpec with Matchers with MockFact
       it("should return Some(info) if found") {
         val expected = ThreadDeathRequestInfo(
           TestRequestId,
+          false,
           Seq(mock[JDIRequestArgument], mock[JDIRequestArgument])
         )
         expected.extraArguments.foreach(a => {

@@ -78,6 +78,7 @@ class StandardStepManager(
       requestId,
       StepRequestInfo(
         requestId,
+        isPending = false,
         removeExistingRequests,
         threadReference,
         size,

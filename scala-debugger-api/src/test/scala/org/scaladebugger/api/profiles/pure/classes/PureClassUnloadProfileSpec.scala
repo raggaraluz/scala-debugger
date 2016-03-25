@@ -41,7 +41,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
     describe("#classUnloadRequests") {
       it("should include all active requests") {
         val expected = Seq(
-          ClassUnloadRequestInfo(TestRequestId)
+          ClassUnloadRequestInfo(TestRequestId, false)
         )
 
         val mockClassUnloadManager = mock[PendingClassUnloadSupportLike]
@@ -65,7 +65,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
       it("should include pending requests if supported") {
         val expected = Seq(
-          ClassUnloadRequestInfo(TestRequestId)
+          ClassUnloadRequestInfo(TestRequestId, true)
         )
 
         val mockClassUnloadManager = mock[PendingClassUnloadSupportLike]
@@ -87,7 +87,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
       it("should only include active requests if pending unsupported") {
         val expected = Seq(
-          ClassUnloadRequestInfo(TestRequestId)
+          ClassUnloadRequestInfo(TestRequestId, false)
         )
 
         (mockClassUnloadManager.classUnloadRequestList _).expects()
@@ -290,7 +290,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
             .returning(Seq(internalId)).once()
           (mockClassUnloadManager.getClassUnloadRequestInfo _)
             .expects(internalId)
-            .returning(Some(ClassUnloadRequestInfo(TestRequestId, arguments))).once()
+            .returning(Some(ClassUnloadRequestInfo(TestRequestId, false, arguments))).once()
 
           (mockEventManager.addEventDataStream _)
             .expects(ClassUnloadEventType, Seq(uniqueIdPropertyFilter))
@@ -330,7 +330,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
             (mockClassUnloadManager.getClassUnloadRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(ClassUnloadRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(ClassUnloadRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockClassUnloadManager.createClassUnloadRequestWithId _)
@@ -389,7 +389,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
 
             (mockClassUnloadManager.getClassUnloadRequestInfo _)
               .expects(TestRequestId)
-              .returning(Some(ClassUnloadRequestInfo(TestRequestId, arguments))).once()
+              .returning(Some(ClassUnloadRequestInfo(TestRequestId, false, arguments))).once()
 
             // NOTE: Expect the request to be created with a unique id
             (mockClassUnloadManager.createClassUnloadRequestWithId _)
