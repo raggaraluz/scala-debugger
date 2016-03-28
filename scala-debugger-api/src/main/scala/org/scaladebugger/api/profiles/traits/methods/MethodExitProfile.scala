@@ -112,4 +112,39 @@ trait MethodExitProfile {
     methodName: String,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MethodExitEventAndData]]
+
+  /**
+   * Determines if there is any method exit request for the specified class
+   * method that is pending.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param methodName The name of the method being watched
+   * @return True if there is at least one method exit request with the
+   *         specified name in the specified class that is pending,
+   *         otherwise false
+   */
+  def isMethodExitRequestPending(
+    className: String,
+    methodName: String
+  ): Boolean
+
+  /**
+   * Determines if there is any method exit request for the specified class
+   * method with matching arguments that is pending.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param methodName The name of the method being watched
+   * @param extraArguments The additional arguments provided to the specific
+   *                       method exit request
+   * @return True if there is at least one method exit request with the
+   *         specified name and arguments in the specified class that is
+   *         pending, otherwise false
+   */
+  def isMethodExitRequestWithArgsPending(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Boolean
 }

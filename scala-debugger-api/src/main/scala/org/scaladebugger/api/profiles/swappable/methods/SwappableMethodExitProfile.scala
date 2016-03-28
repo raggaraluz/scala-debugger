@@ -28,6 +28,25 @@ trait SwappableMethodExitProfile extends MethodExitProfile {
     )
   }
 
+  override def isMethodExitRequestPending(
+    className: String,
+    methodName: String
+  ): Boolean = {
+    withCurrentProfile.isMethodExitRequestPending(className, methodName)
+  }
+
+  override def isMethodExitRequestWithArgsPending(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    withCurrentProfile.isMethodExitRequestWithArgsPending(
+      className,
+      methodName,
+      extraArguments: _*
+    )
+  }
+
   override def methodExitRequests: Seq[MethodExitRequestInfo] = {
     withCurrentProfile.methodExitRequests
   }

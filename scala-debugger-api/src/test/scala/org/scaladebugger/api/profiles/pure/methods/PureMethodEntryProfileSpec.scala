@@ -129,7 +129,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
         actual should be (expected)
       }
 
-      it("should return false if no request with matching filename exists") {
+      it("should return false if no request with matching class name exists") {
         val expected = false
         val className = "some.class.name"
         val methodName = "someMethodName"
@@ -156,7 +156,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
         actual should be (expected)
       }
 
-      it("should return false if no request with matching line number exists") {
+      it("should return false if no request with matching method name exists") {
         val expected = false
         val className = "some.class.name"
         val methodName = "someMethodName"
@@ -255,7 +255,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
         actual should be (expected)
       }
 
-      it("should return false if no request with matching filename exists") {
+      it("should return false if no request with matching class name exists") {
         val expected = false
         val className = "some.class.name"
         val methodName = "someMethodName"
@@ -282,7 +282,7 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
         actual should be (expected)
       }
 
-      it("should return false if no request with matching line number exists") {
+      it("should return false if no request with matching method name exists") {
         val expected = false
         val className = "some.class.name"
         val methodName = "someMethodName"
