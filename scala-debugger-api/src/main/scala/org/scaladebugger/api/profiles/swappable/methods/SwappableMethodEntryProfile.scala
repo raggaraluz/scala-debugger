@@ -28,6 +28,25 @@ trait SwappableMethodEntryProfile extends MethodEntryProfile {
     )
   }
 
+  override def isMethodEntryRequestPending(
+    className: String,
+    methodName: String
+  ): Boolean = {
+    withCurrentProfile.isMethodEntryRequestPending(className, methodName)
+  }
+
+  override def isMethodEntryRequestWithArgsPending(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    withCurrentProfile.isMethodEntryRequestWithArgsPending(
+      className,
+      methodName,
+      extraArguments: _*
+    )
+  }
+
   override def methodEntryRequests: Seq[MethodEntryRequestInfo] = {
     withCurrentProfile.methodEntryRequests
   }

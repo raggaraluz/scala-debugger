@@ -112,4 +112,39 @@ trait MethodEntryProfile {
     methodName: String,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[MethodEntryEventAndData]]
+
+  /**
+   * Determines if there is any method entry request for the specified class
+   * method that is pending.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param methodName The name of the method being watched
+   * @return True if there is at least one method entry request with the
+   *         specified name in the specified class that is pending,
+   *         otherwise false
+   */
+  def isMethodEntryRequestPending(
+    className: String,
+    methodName: String
+  ): Boolean
+
+  /**
+   * Determines if there is any method entry request for the specified class
+   * method with matching arguments that is pending.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param methodName The name of the method being watched
+   * @param extraArguments The additional arguments provided to the specific
+   *                       method entry request
+   * @return True if there is at least one method entry request with the
+   *         specified name and arguments in the specified class that is
+   *         pending, otherwise false
+   */
+  def isMethodEntryRequestWithArgsPending(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Boolean
 }

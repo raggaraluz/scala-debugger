@@ -38,6 +38,77 @@ class SwappableMethodEntryProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#isMethodEntryRequestPending") {
+      it("should invoke the method on the underlying profile") {
+        val expected = true
+        val className = "some.class.name"
+        val methodName = "someMethod"
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.isMethodEntryRequestPending _).expects(
+          className, methodName
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.isMethodEntryRequestPending(
+          className, methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val className = "some.class.name"
+        val methodName = "someMethod"
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.isMethodEntryRequestPending(
+            className,
+            methodName
+          )
+        }
+      }
+    }
+
+    describe("#isMethodEntryRequestWithArgsPending") {
+      it("should invoke the method on the underlying profile") {
+        val expected = true
+        val className = "some.class.name"
+        val methodName = "someMethod"
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.isMethodEntryRequestWithArgsPending _).expects(
+          className, methodName, extraArguments
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.isMethodEntryRequestWithArgsPending(
+          className, methodName, extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val className = "some.class.name"
+        val methodName = "someMethod"
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.isMethodEntryRequestWithArgsPending(
+            className, methodName, extraArguments: _*
+          )
+        }
+      }
+    }
+
     describe("#tryGetOrCreateMethodEntryRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val className = "some class"

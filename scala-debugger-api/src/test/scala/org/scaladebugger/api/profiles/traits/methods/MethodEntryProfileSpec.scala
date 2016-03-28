@@ -31,6 +31,15 @@ class MethodEntryProfileSpec extends FunSpec with Matchers
       Success(TestPipelineWithData)
     }
 
+    override def isMethodEntryRequestPending(
+      className: String,
+      methodName: String
+    ): Boolean = ???
+    override def isMethodEntryRequestWithArgsPending(
+      className: String,
+      methodName: String,
+      extraArguments: JDIArgument*
+    ): Boolean = ???
     override def methodEntryRequests: Seq[MethodEntryRequestInfo] = ???
   }
 
@@ -43,6 +52,15 @@ class MethodEntryProfileSpec extends FunSpec with Matchers
       Failure(TestThrowable)
     }
 
+    override def isMethodEntryRequestPending(
+      className: String,
+      methodName: String
+    ): Boolean = ???
+    override def isMethodEntryRequestWithArgsPending(
+      className: String,
+      methodName: String,
+      extraArguments: JDIArgument*
+    ): Boolean = ???
     override def methodEntryRequests: Seq[MethodEntryRequestInfo] = ???
   }
 
