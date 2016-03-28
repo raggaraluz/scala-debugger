@@ -210,4 +210,60 @@ trait ExceptionProfile {
       extraArguments: _*
     ).get
   }
+
+  /**
+   * Determines if there is any "all exceptions" request pending.
+   *
+   * @return True if there is at least one "all exceptions" request pending,
+   *         otherwise false
+   */
+  def isAllExceptionsRequestPending: Boolean
+
+  /**
+   * Determines if there is any "all exceptions" request pending with the
+   * specified arguments.
+   *
+   * @param notifyCaught The caught notification flag provided to the request
+   * @param notifyUncaught The uncaught notification flag provided to the request
+   * @param extraArguments The additional arguments provided to the specific
+   *                       exception request
+   * @return True if there is at least one "all exceptions" request with the
+   *         specified notify caught, notify uncaught, and extra arguments that
+   *         is pending, otherwise false
+   */
+  def isAllExceptionsRequestWithArgsPending(
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Boolean
+
+  /**
+   * Determines if there is any exception with the specified class name that
+   * is pending.
+   *
+   * @param exceptionName The full class name of the exception
+   * @return True if there is at least one exception with the specified class
+   *         name that is pending, otherwise false
+   */
+  def isExceptionRequestPending(exceptionName: String): Boolean
+
+  /**
+   * Determines if there is any exception with the specified class name that
+   * is pending.
+   *
+   * @param exceptionName The full class name of the exception
+   * @param notifyCaught The caught notification flag provided to the request
+   * @param notifyUncaught The uncaught notification flag provided to the request
+   * @param extraArguments The additional arguments provided to the specific
+   *                       exception request
+   * @return True if there is at least one exception with the specified class
+   *         name, notify caught, notify uncaught, and extra arguments that is
+   *         pending, otherwise false
+   */
+  def isExceptionRequestWithArgsPending(
+    exceptionName: String,
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Boolean
 }

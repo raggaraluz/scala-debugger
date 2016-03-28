@@ -64,7 +64,6 @@ trait PureExceptionProfile extends ExceptionProfile {
    * @param notifyUncaught If true, exception events will be streamed when an
    *                       exception is not caught in a try/catch block
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The stream of exception events and any retrieved data based on
    *         requests from extra arguments
    */
@@ -96,7 +95,6 @@ trait PureExceptionProfile extends ExceptionProfile {
    * @param notifyUncaught If true, exception events will be streamed when the
    *                       exception is not caught in a try/catch block
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The stream of exception events and any retrieved data based on
    *         requests from extra arguments
    */
@@ -119,6 +117,75 @@ trait PureExceptionProfile extends ExceptionProfile {
       (exceptionName, notifyCaught, notifyUncaught, eArgs)
     )
   }
+
+  /**
+   * Determines if there is any "all exceptions" request pending.
+   *
+   * @return True if there is at least one "all exceptions" request pending,
+   *         otherwise false
+   */
+  override def isAllExceptionsRequestPending: Boolean = {
+    exceptionRequests.filter(_.isCatchall).exists(_.isPending)
+  }
+
+  /**
+   * Determines if there is any exception with the specified class name that
+   * is pending.
+   *
+   * @param exceptionName  The full class name of the exception
+   * @param notifyCaught   The caught notification flag provided to the request
+   * @param notifyUncaught The uncaught notification flag provided to the request
+   * @param extraArguments The additional arguments provided to the specific
+   *                       exception request
+   * @return True if there is at least one exception with the specified class
+   *         name, notify caught, notify uncaught, and extra arguments that is
+   *         pending, otherwise false
+   */
+  override def isExceptionRequestWithArgsPending(
+    exceptionName: String,
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Boolean = exceptionRequests.filter(e =>
+    e.className == exceptionName &&
+    e.notifyCaught == notifyCaught &&
+    e.notifyUncaught == notifyUncaught &&
+    e.extraArguments == extraArguments
+  ).exists(_.isPending)
+
+  /**
+   * Determines if there is any exception with the specified class name that
+   * is pending.
+   *
+   * @param exceptionName The full class name of the exception
+   * @return True if there is at least one exception with the specified class
+   *         name that is pending, otherwise false
+   */
+  override def isExceptionRequestPending(exceptionName: String): Boolean = {
+    exceptionRequests.filter(_.className == exceptionName).exists(_.isPending)
+  }
+
+  /**
+   * Determines if there is any "all exceptions" request pending with the
+   * specified arguments.
+   *
+   * @param notifyCaught   The caught notification flag provided to the request
+   * @param notifyUncaught The uncaught notification flag provided to the request
+   * @param extraArguments The additional arguments provided to the specific
+   *                       exception request
+   * @return True if there is at least one "all exceptions" request with the
+   *         specified notify caught, notify uncaught, and extra arguments that
+   *         is pending, otherwise false
+   */
+  override def isAllExceptionsRequestWithArgsPending(
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Boolean = exceptionRequests.filter(_.isCatchall).filter(e =>
+    e.notifyCaught == notifyCaught &&
+    e.notifyUncaught == notifyUncaught &&
+    e.extraArguments == extraArguments
+  ).exists(_.isPending)
 
   /**
    * Creates a new exception request using the given arguments. The request is
@@ -260,7 +327,6 @@ trait PureExceptionProfile extends ExceptionProfile {
    *
    * @param requestId The id of the request
    * @param args The arguments associated with the request
-   *
    * @return The new function for closing the pipeline
    */
   protected def newExceptionPipelineCloseFunc(

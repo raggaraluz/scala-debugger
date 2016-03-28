@@ -42,6 +42,40 @@ trait SwappableExceptionProfile extends ExceptionProfile {
     )
   }
 
+  override def isAllExceptionsRequestPending: Boolean = {
+    withCurrentProfile.isAllExceptionsRequestPending
+  }
+
+  override def isAllExceptionsRequestWithArgsPending(
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    withCurrentProfile.isAllExceptionsRequestWithArgsPending(
+      notifyCaught,
+      notifyUncaught,
+      extraArguments: _*
+    )
+  }
+
+  override def isExceptionRequestPending(exceptionName: String): Boolean = {
+    withCurrentProfile.isExceptionRequestPending(exceptionName)
+  }
+
+  override def isExceptionRequestWithArgsPending(
+    exceptionName: String,
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    withCurrentProfile.isExceptionRequestWithArgsPending(
+      exceptionName,
+      notifyCaught,
+      notifyUncaught,
+      extraArguments: _*
+    )
+  }
+
   override def exceptionRequests: Seq[ExceptionRequestInfo] = {
     withCurrentProfile.exceptionRequests
   }
