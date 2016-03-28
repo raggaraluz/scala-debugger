@@ -112,4 +112,32 @@ trait BreakpointProfile {
     lineNumber: Int,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[BreakpointEventAndData]]
+
+  /**
+   * Determines if there is any breakpoint on the specified file and line
+   * that is pending.
+   *
+   * @param fileName The name of the file where the breakpoint resides
+   * @param lineNumber The number of the line where the breakpoint resides
+   * @return True if there is at least one breakpoint at the specified location
+   *         that is pending, otherwise false
+   */
+  def isBreakpointRequestPending(fileName: String, lineNumber: Int): Boolean
+
+  /**
+   * Determines if the breakpoint with the specified arguments is pending.
+   *
+   * @param fileName The name of the file where the breakpoint resides
+   * @param lineNumber The number of the line where the breakpoint resides
+   * @param extraArguments The additional arguments provided to the specific
+   *                       breakpoint request
+   * @return True if there is at least one breakpoint at the specified location
+   *         and with the provided extra arguments that is pending,
+   *         otherwise false
+   */
+  def isBreakpointRequestWithArgsPending(
+    fileName: String,
+    lineNumber: Int,
+    extraArguments: JDIArgument*
+  ): Boolean
 }

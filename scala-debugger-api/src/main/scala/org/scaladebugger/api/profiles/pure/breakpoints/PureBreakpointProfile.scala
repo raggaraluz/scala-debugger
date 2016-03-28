@@ -64,7 +64,6 @@ trait PureBreakpointProfile extends BreakpointProfile {
    * @param lineNumber The line number within the file where the breakpoint
    *                   will be set
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The stream of breakpoint events and any retrieved data based on
    *         requests from extra arguments
    */
@@ -77,6 +76,42 @@ trait PureBreakpointProfile extends BreakpointProfile {
     val requestId = newBreakpointRequest((fileName, lineNumber, rArgs))
     newBreakpointPipeline(requestId, (fileName, lineNumber, eArgs))
   }
+
+  /**
+   * Determines if there is any breakpoint on the specified file and line
+   * that is pending.
+   *
+   * @param fileName   The name of the file where the breakpoint resides
+   * @param lineNumber The number of the line where the breakpoint resides
+   * @return True if there is at least one breakpoint at the specified location
+   *         that is pending, otherwise false
+   */
+  override def isBreakpointRequestPending(
+    fileName: String,
+    lineNumber: Int
+  ): Boolean = breakpointRequests.filter(b =>
+    b.fileName == fileName && b.lineNumber == lineNumber
+  ).exists(_.isPending)
+
+  /**
+   * Determines if the breakpoint with the specified arguments is pending.
+   *
+   * @param fileName       The name of the file where the breakpoint resides
+   * @param lineNumber     The number of the line where the breakpoint resides
+   * @param extraArguments The additional arguments provided to the specific
+   *                       breakpoint request
+   * @return True if there is at least one breakpoint at the specified location
+   *         and with the provided extra arguments that is pending,
+   *         otherwise false
+   */
+  override def isBreakpointRequestWithArgsPending(
+    fileName: String,
+    lineNumber: Int,
+    extraArguments: JDIArgument*
+  ): Boolean = breakpointRequests.filter(b =>
+    b.fileName == fileName && b.lineNumber == lineNumber &&
+      b.extraArguments == extraArguments
+  ).exists(_.isPending)
 
   /**
    * Creates a new breakpoint request using the given arguments. The request is
@@ -165,7 +200,6 @@ trait PureBreakpointProfile extends BreakpointProfile {
    *
    * @param requestId The id of the request
    * @param args The arguments associated with the request
-   *
    * @return The new function for closing the pipeline
    */
   protected def newBreakpointPipelineCloseFunc(

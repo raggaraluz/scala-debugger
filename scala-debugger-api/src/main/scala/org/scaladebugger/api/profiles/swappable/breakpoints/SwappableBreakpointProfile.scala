@@ -28,6 +28,25 @@ trait SwappableBreakpointProfile extends BreakpointProfile {
     )
   }
 
+  override def isBreakpointRequestPending(
+    fileName: String,
+    lineNumber: Int
+  ): Boolean = {
+    withCurrentProfile.isBreakpointRequestPending(fileName, lineNumber)
+  }
+
+  override def isBreakpointRequestWithArgsPending(
+    fileName: String,
+    lineNumber: Int,
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    withCurrentProfile.isBreakpointRequestWithArgsPending(
+      fileName,
+      lineNumber,
+      extraArguments: _*
+    )
+  }
+
   override def breakpointRequests: Seq[BreakpointRequestInfo] = {
     withCurrentProfile.breakpointRequests
   }

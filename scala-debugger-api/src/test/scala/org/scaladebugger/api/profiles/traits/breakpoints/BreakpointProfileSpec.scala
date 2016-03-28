@@ -31,6 +31,8 @@ class BreakpointProfileSpec extends FunSpec with Matchers
       Success(TestPipelineWithData)
     }
 
+    override def isBreakpointRequestPending(fileName: String, lineNumber: Int): Boolean = ???
+    override def isBreakpointRequestWithArgsPending(fileName: String, lineNumber: Int, extraArguments: JDIArgument*): Boolean = ???
     override def breakpointRequests: Seq[BreakpointRequestInfo] = ???
   }
 
@@ -43,6 +45,8 @@ class BreakpointProfileSpec extends FunSpec with Matchers
       Failure(TestThrowable)
     }
 
+    override def isBreakpointRequestPending(fileName: String, lineNumber: Int): Boolean = ???
+    override def isBreakpointRequestWithArgsPending(fileName: String, lineNumber: Int, extraArguments: JDIArgument*): Boolean = ???
     override def breakpointRequests: Seq[BreakpointRequestInfo] = ???
   }
 
