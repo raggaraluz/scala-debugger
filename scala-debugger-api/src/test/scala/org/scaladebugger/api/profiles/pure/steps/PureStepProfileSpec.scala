@@ -121,6 +121,224 @@ class PureStepProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#isStepRequestPending") {
+      it("should return false if no requests exist") {
+        val expected = false
+        val threadReference = mock[ThreadReference]
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureStepProfile.isStepRequestPending(threadReference)
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching thread exists") {
+        val expected = false
+        val threadReference = mock[ThreadReference]
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            removeExistingRequests = false,
+            threadReference = mock[ThreadReference],
+            size = 0,
+            depth = 0,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureStepProfile.isStepRequestPending(threadReference)
+
+        actual should be (expected)
+      }
+
+      it("should return false if no matching request is pending") {
+        val expected = false
+        val threadReference = mock[ThreadReference]
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            removeExistingRequests = false,
+            threadReference = threadReference,
+            size = 0,
+            depth = 0,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureStepProfile.isStepRequestPending(threadReference)
+
+        actual should be (expected)
+      }
+
+      it("should return true if at least one matching request is pending") {
+        val expected = true
+        val threadReference = mock[ThreadReference]
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            removeExistingRequests = false,
+            threadReference = threadReference,
+            size = 0,
+            depth = 0,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureStepProfile.isStepRequestPending(threadReference)
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isStepRequestWithArgsPending") {
+      it("should return false if no requests exist") {
+        val expected = false
+        val threadReference = mock[ThreadReference]
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureStepProfile.isStepRequestWithArgsPending(
+          threadReference,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching thread exists") {
+        val expected = false
+        val threadReference = mock[ThreadReference]
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            removeExistingRequests = false,
+            threadReference = mock[ThreadReference],
+            size = 0,
+            depth = 0,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureStepProfile.isStepRequestWithArgsPending(
+          threadReference,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching extra arguments exists") {
+        val expected = false
+        val threadReference = mock[ThreadReference]
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            removeExistingRequests = false,
+            threadReference = threadReference,
+            size = 0,
+            depth = 0,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureStepProfile.isStepRequestWithArgsPending(
+          threadReference
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no matching request is pending") {
+        val expected = false
+        val threadReference = mock[ThreadReference]
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            removeExistingRequests = false,
+            threadReference = threadReference,
+            size = 0,
+            depth = 0,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureStepProfile.isStepRequestWithArgsPending(
+          threadReference,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return true if at least one matching request is pending") {
+        val expected = true
+        val threadReference = mock[ThreadReference]
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            removeExistingRequests = false,
+            threadReference = threadReference,
+            size = 0,
+            depth = 0,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureStepProfile.isStepRequestWithArgsPending(
+          threadReference,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+    
     describe("#stepIntoLineWithData") {
       it("should create a new step request and pipeline whose future is returned") {
         val expected = (mock[StepEvent], Nil)
@@ -153,7 +371,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
         whenReady(stepFuture) { actual => actual should be (expected) }
       }
 
-      it("should capture exceptions thrown when creating the request") {
+      it("should capture steps thrown when creating the request") {
         val expected = new Throwable
 
         (mockStepManager.createStepIntoLineRequest _).expects(*, *)
@@ -199,7 +417,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
         whenReady(stepFuture) { actual => actual should be (expected) }
       }
 
-      it("should capture exceptions thrown when creating the request") {
+      it("should capture steps thrown when creating the request") {
         val expected = new Throwable
 
         (mockStepManager.createStepOutLineRequest _).expects(*, *)
@@ -245,7 +463,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
         whenReady(stepFuture) { actual => actual should be (expected) }
       }
 
-      it("should capture exceptions thrown when creating the request") {
+      it("should capture steps thrown when creating the request") {
         val expected = new Throwable
 
         (mockStepManager.createStepOverLineRequest _).expects(*, *)
@@ -291,7 +509,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
         whenReady(stepFuture) { actual => actual should be (expected) }
       }
 
-      it("should capture exceptions thrown when creating the request") {
+      it("should capture steps thrown when creating the request") {
         val expected = new Throwable
 
         (mockStepManager.createStepIntoMinRequest _).expects(*, *)
@@ -337,7 +555,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
         whenReady(stepFuture) { actual => actual should be (expected) }
       }
 
-      it("should capture exceptions thrown when creating the request") {
+      it("should capture steps thrown when creating the request") {
         val expected = new Throwable
 
         (mockStepManager.createStepOutMinRequest _).expects(*, *)
@@ -383,7 +601,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
         whenReady(stepFuture) { actual => actual should be (expected) }
       }
 
-      it("should capture exceptions thrown when creating the request") {
+      it("should capture steps thrown when creating the request") {
         val expected = new Throwable
 
         (mockStepManager.createStepOverMinRequest _).expects(*, *)

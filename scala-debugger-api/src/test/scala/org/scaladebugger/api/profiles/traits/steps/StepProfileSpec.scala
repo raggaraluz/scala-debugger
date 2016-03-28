@@ -65,6 +65,15 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
       Success(TestPipelineWithData)
     }
 
+    override def isStepRequestPending(
+      threadReference: ThreadReference
+    ): Boolean = ???
+
+    override def isStepRequestWithArgsPending(
+      threadReference: ThreadReference,
+      extraArguments: JDIArgument*
+    ): Boolean = ???
+
     override def stepRequests: Seq[StepRequestInfo] = ???
   }
 
@@ -105,6 +114,15 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
     ): Try[IdentityPipeline[StepEventAndData]] = {
       Failure(TestThrowable)
     }
+
+    override def isStepRequestPending(
+      threadReference: ThreadReference
+    ): Boolean = ???
+
+    override def isStepRequestWithArgsPending(
+      threadReference: ThreadReference,
+      extraArguments: JDIArgument*
+    ): Boolean = ???
 
     override def stepRequests: Seq[StepRequestInfo] = ???
   }
@@ -158,6 +176,15 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
             threadReference: ThreadReference,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
+
+          override def isStepRequestPending(
+            threadReference: ThreadReference
+          ): Boolean = ???
+
+          override def isStepRequestWithArgsPending(
+            threadReference: ThreadReference,
+            extraArguments: JDIArgument*
+          ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
         }
@@ -223,6 +250,15 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
 
+          override def isStepRequestPending(
+            threadReference: ThreadReference
+          ): Boolean = ???
+
+          override def isStepRequestWithArgsPending(
+            threadReference: ThreadReference,
+            extraArguments: JDIArgument*
+          ): Boolean = ???
+
           override def stepRequests: Seq[StepRequestInfo] = ???
         }
 
@@ -286,6 +322,15 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
             threadReference: ThreadReference,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
+
+          override def isStepRequestPending(
+            threadReference: ThreadReference
+          ): Boolean = ???
+
+          override def isStepRequestWithArgsPending(
+            threadReference: ThreadReference,
+            extraArguments: JDIArgument*
+          ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
         }
@@ -351,6 +396,15 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
 
+          override def isStepRequestPending(
+            threadReference: ThreadReference
+          ): Boolean = ???
+
+          override def isStepRequestWithArgsPending(
+            threadReference: ThreadReference,
+            extraArguments: JDIArgument*
+          ): Boolean = ???
+
           override def stepRequests: Seq[StepRequestInfo] = ???
         }
 
@@ -415,6 +469,15 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
 
+          override def isStepRequestPending(
+            threadReference: ThreadReference
+          ): Boolean = ???
+
+          override def isStepRequestWithArgsPending(
+            threadReference: ThreadReference,
+            extraArguments: JDIArgument*
+          ): Boolean = ???
+
           override def stepRequests: Seq[StepRequestInfo] = ???
         }
 
@@ -478,6 +541,15 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
             threadReference: ThreadReference,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
+
+          override def isStepRequestPending(
+            threadReference: ThreadReference
+          ): Boolean = ???
+
+          override def isStepRequestWithArgsPending(
+            threadReference: ThreadReference,
+            extraArguments: JDIArgument*
+          ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
         }
