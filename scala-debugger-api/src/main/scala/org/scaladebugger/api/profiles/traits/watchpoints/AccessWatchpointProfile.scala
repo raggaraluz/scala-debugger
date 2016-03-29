@@ -115,10 +115,10 @@ trait AccessWatchpointProfile {
    * class field that is pending.
    *
    * @param className The full name of the class/object/trait containing the
-   *                  method being watched
+   *                  field being watched
    * @param fieldName The name of the field being watched
    * @return True if there is at least one access watchpoint request with the
-   *         specified field namename in the specified class that is pending,
+   *         specified field name in the specified class that is pending,
    *         otherwise false
    */
   def isAccessWatchpointRequestPending(
@@ -131,7 +131,7 @@ trait AccessWatchpointProfile {
    * class field with matching arguments that is pending.
    *
    * @param className The full name of the class/object/trait containing the
-   *                  method being watched
+   *                  field being watched
    * @param fieldName The name of the field being watched
    * @param extraArguments The additional arguments provided to the specific
    *                       access watchpoint request

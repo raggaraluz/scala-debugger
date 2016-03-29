@@ -114,6 +114,286 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#isModificationWatchpointRequestPending") {
+      it("should return false if no requests exist") {
+        val expected = false
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureModificationWatchpointProfile.isModificationWatchpointRequestPending(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching class name exists") {
+        val expected = false
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className + "other",
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.isModificationWatchpointRequestPending(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching field name exists") {
+        val expected = false
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            fieldName = fieldName + 1,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.isModificationWatchpointRequestPending(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no matching request is pending") {
+        val expected = false
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = className,
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.isModificationWatchpointRequestPending(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return true if at least one matching request is pending") {
+        val expected = true
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.isModificationWatchpointRequestPending(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isModificationWatchpointRequestWithArgsPending") {
+      it("should return false if no requests exist") {
+        val expected = false
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureModificationWatchpointProfile.isModificationWatchpointRequestWithArgsPending(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching class name exists") {
+        val expected = false
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className + "other",
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.isModificationWatchpointRequestWithArgsPending(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching field name exists") {
+        val expected = false
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            fieldName = fieldName + 1,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.isModificationWatchpointRequestWithArgsPending(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching extra arguments exists") {
+        val expected = false
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.isModificationWatchpointRequestWithArgsPending(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no matching request is pending") {
+        val expected = false
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = className,
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.isModificationWatchpointRequestWithArgsPending(
+          className,
+          fieldName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return true if at least one matching request is pending") {
+        val expected = true
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.isModificationWatchpointRequestWithArgsPending(
+          className,
+          fieldName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
     describe("#tryGetOrCreateModificationWatchpointRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val className = "full.class.name"
