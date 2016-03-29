@@ -64,7 +64,6 @@ trait PureClassPrepareProfile extends ClassPrepareProfile {
    * Constructs a stream of class prepare events.
    *
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The stream of class prepare events and any retrieved data based on
    *         requests from extra arguments
    */
@@ -74,6 +73,23 @@ trait PureClassPrepareProfile extends ClassPrepareProfile {
     val JDIArgumentGroup(rArgs, eArgs, _) = JDIArgumentGroup(extraArguments: _*)
     val requestId = newClassPrepareRequest(rArgs)
     newClassPreparePipeline(requestId, eArgs)
+  }
+
+  /**
+   * Determines if the class prepare request with the specified arguments
+   * is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       class prepare request
+   * @return True if there is at least one class prepare request with the
+   *         provided extra arguments that is pending, otherwise false
+   */
+  override def isClassPrepareRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    classPrepareRequests
+      .filter(_.extraArguments == extraArguments)
+      .exists(_.isPending)
   }
 
   /**
@@ -168,7 +184,6 @@ trait PureClassPrepareProfile extends ClassPrepareProfile {
    *
    * @param requestId The id of the request
    * @param args The arguments associated with the request
-   *
    * @return The new function for closing the pipeline
    */
   protected def newClassPreparePipelineCloseFunc(
