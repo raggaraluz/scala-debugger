@@ -76,6 +76,23 @@ trait PureVMDeathProfile extends VMDeathProfile {
   }
 
   /**
+   * Determines if the vm death request with the specified
+   * arguments is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       vm death request
+   * @return True if there is at least one vm death request
+   *         with the provided extra arguments that is pending, otherwise false
+   */
+  override def isVMDeathRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    vmDeathRequests
+      .filter(_.extraArguments == extraArguments)
+      .exists(_.isPending)
+  }
+
+  /**
    * Creates a new vm death request using the given arguments. The request
    * is memoized, meaning that the same request will be returned for the same
    * arguments. The memoized result will be thrown out if the underlying

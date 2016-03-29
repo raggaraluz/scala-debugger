@@ -29,6 +29,10 @@ class VMDeathProfileSpec extends FunSpec with Matchers
       Success(TestPipelineWithData)
     }
 
+    override def isVMDeathRequestWithArgsPending(
+      extraArguments: JDIArgument*
+    ): Boolean = ???
+
     override def vmDeathRequests: Seq[VMDeathRequestInfo] = ???
   }
 
@@ -38,6 +42,10 @@ class VMDeathProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[VMDeathEventAndData]] = {
       Failure(TestThrowable)
     }
+
+    override def isVMDeathRequestWithArgsPending(
+      extraArguments: JDIArgument*
+    ): Boolean = ???
 
     override def vmDeathRequests: Seq[VMDeathRequestInfo] = ???
   }

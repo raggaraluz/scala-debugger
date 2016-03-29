@@ -22,6 +22,12 @@ trait SwappableVMDeathProfile extends VMDeathProfile {
     withCurrentProfile.tryGetOrCreateVMDeathRequestWithData(extraArguments: _*)
   }
 
+  override def isVMDeathRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    withCurrentProfile.isVMDeathRequestWithArgsPending(extraArguments: _*)
+  }
+
   override def vmDeathRequests: Seq[VMDeathRequestInfo] = {
     withCurrentProfile.vmDeathRequests
   }

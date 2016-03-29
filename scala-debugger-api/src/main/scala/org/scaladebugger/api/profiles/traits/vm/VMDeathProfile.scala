@@ -76,4 +76,17 @@ trait VMDeathProfile {
   ): IdentityPipeline[VMDeathEventAndData] = {
     tryGetOrCreateVMDeathRequestWithData(extraArguments: _*).get
   }
+
+  /**
+   * Determines if the vm death request with the specified
+   * arguments is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       vm death request
+   * @return True if there is at least one vm death request
+   *         with the provided extra arguments that is pending, otherwise false
+   */
+  def isVMDeathRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean
 }
