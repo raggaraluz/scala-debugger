@@ -29,6 +29,10 @@ class ThreadDeathProfileSpec extends FunSpec with Matchers
       Success(TestPipelineWithData)
     }
 
+    override def isThreadDeathRequestWithArgsPending(
+      extraArguments: JDIArgument*
+    ): Boolean = ???
+
     override def threadDeathRequests: Seq[ThreadDeathRequestInfo] = ???
   }
 
@@ -38,6 +42,10 @@ class ThreadDeathProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[ThreadDeathEventAndData]] = {
       Failure(TestThrowable)
     }
+
+    override def isThreadDeathRequestWithArgsPending(
+      extraArguments: JDIArgument*
+    ): Boolean = ???
 
     override def threadDeathRequests: Seq[ThreadDeathRequestInfo] = ???
   }

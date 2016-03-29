@@ -22,6 +22,12 @@ trait SwappableClassUnloadProfile extends ClassUnloadProfile {
     withCurrentProfile.tryGetOrCreateClassUnloadRequestWithData(extraArguments: _*)
   }
 
+  override def isClassUnloadRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    withCurrentProfile.isClassUnloadRequestWithArgsPending(extraArguments: _*)
+  }
+
   override def classUnloadRequests: Seq[ClassUnloadRequestInfo] = {
     withCurrentProfile.classUnloadRequests
   }

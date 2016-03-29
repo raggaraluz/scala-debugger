@@ -112,6 +112,287 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
       }
     }
 
+    describe("#isMethodEntryRequestPending") {
+      it("should return false if no requests exist") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+
+        (mockMethodEntryManager.methodEntryRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureMethodEntryProfile.isMethodEntryRequestPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching class name exists") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodEntryRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className + "other",
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodEntryManager.methodEntryRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodEntryProfile.isMethodEntryRequestPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching method name exists") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodEntryRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName + 1,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodEntryManager.methodEntryRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodEntryProfile.isMethodEntryRequestPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no matching request is pending") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodEntryRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodEntryManager.methodEntryRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodEntryProfile.isMethodEntryRequestPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return true if at least one matching request is pending") {
+        val expected = true
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodEntryRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodEntryManager.methodEntryRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodEntryProfile.isMethodEntryRequestPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isMethodEntryRequestWithArgsPending") {
+      it("should return false if no requests exist") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+
+        (mockMethodEntryManager.methodEntryRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureMethodEntryProfile.isMethodEntryRequestWithArgsPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching class name exists") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodEntryRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className + "other",
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodEntryManager.methodEntryRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodEntryProfile.isMethodEntryRequestWithArgsPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching method name exists") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodEntryRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName + 1,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodEntryManager.methodEntryRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodEntryProfile.isMethodEntryRequestWithArgsPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching extra arguments exists") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodEntryRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodEntryManager.methodEntryRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodEntryProfile.isMethodEntryRequestWithArgsPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no matching request is pending") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodEntryRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodEntryManager.methodEntryRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodEntryProfile.isMethodEntryRequestWithArgsPending(
+          className,
+          methodName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return true if at least one matching request is pending") {
+        val expected = true
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodEntryRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodEntryManager.methodEntryRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodEntryProfile.isMethodEntryRequestWithArgsPending(
+          className,
+          methodName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+    
     describe("#tryGetOrCreateMethodEntryRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val className = "some.class.name"

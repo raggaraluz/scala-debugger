@@ -28,6 +28,28 @@ trait SwappableModificationWatchpointProfile extends ModificationWatchpointProfi
     )
   }
 
+  override def isModificationWatchpointRequestPending(
+    className: String,
+    fieldName: String
+  ): Boolean = {
+    withCurrentProfile.isModificationWatchpointRequestPending(
+      className,
+      fieldName
+    )
+  }
+
+  override def isModificationWatchpointRequestWithArgsPending(
+    className: String,
+    fieldName: String,
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    withCurrentProfile.isModificationWatchpointRequestWithArgsPending(
+      className,
+      fieldName,
+      extraArguments: _*
+    )
+  }
+
   override def modificationWatchpointRequests: Seq[ModificationWatchpointRequestInfo] = {
     withCurrentProfile.modificationWatchpointRequests
   }

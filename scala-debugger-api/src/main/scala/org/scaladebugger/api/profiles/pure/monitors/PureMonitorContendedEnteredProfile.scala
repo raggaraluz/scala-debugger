@@ -65,7 +65,6 @@ trait PureMonitorContendedEnteredProfile extends MonitorContendedEnteredProfile 
    * Constructs a stream of monitor contended entered events.
    *
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The stream of monitor contended entered events and any retrieved
    *         data based on requests from extra arguments
    */
@@ -75,6 +74,23 @@ trait PureMonitorContendedEnteredProfile extends MonitorContendedEnteredProfile 
     val JDIArgumentGroup(rArgs, eArgs, _) = JDIArgumentGroup(extraArguments: _*)
     val requestId = newMonitorContendedEnteredRequest(rArgs)
     newMonitorContendedEnteredPipeline(requestId, eArgs)
+  }
+
+  /**
+   * Determines if the monitor contended entered request with the specified
+   * arguments is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       monitor contended entered request
+   * @return True if there is at least one monitor contended entered request
+   *         with the provided extra arguments that is pending, otherwise false
+   */
+  override def isMonitorContendedEnteredRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    monitorContendedEnteredRequests
+      .filter(_.extraArguments == extraArguments)
+      .exists(_.isPending)
   }
 
   /**
@@ -169,7 +185,6 @@ trait PureMonitorContendedEnteredProfile extends MonitorContendedEnteredProfile 
    *
    * @param requestId The id of the request
    * @param args The arguments associated with the request
-   *
    * @return The new function for closing the pipeline
    */
   protected def newMonitorContendedEnteredPipelineCloseFunc(

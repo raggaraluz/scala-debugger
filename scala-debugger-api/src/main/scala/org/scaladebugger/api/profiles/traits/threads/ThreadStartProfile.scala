@@ -76,4 +76,17 @@ trait ThreadStartProfile {
   ): IdentityPipeline[ThreadStartEventAndData] = {
     tryGetOrCreateThreadStartRequestWithData(extraArguments: _*).get
   }
+
+  /**
+   * Determines if the thread start request with the specified
+   * arguments is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       thread start request
+   * @return True if there is at least one thread start request
+   *         with the provided extra arguments that is pending, otherwise false
+   */
+  def isThreadStartRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean
 }

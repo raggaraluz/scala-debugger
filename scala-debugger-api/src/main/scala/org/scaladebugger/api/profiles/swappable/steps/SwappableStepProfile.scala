@@ -69,6 +69,22 @@ trait SwappableStepProfile extends StepProfile {
     withCurrentProfile.tryCreateStepListenerWithData(threadReference, extraArguments: _*)
   }
 
+  override def isStepRequestPending(
+    threadReference: ThreadReference
+  ): Boolean = {
+    withCurrentProfile.isStepRequestPending(threadReference)
+  }
+
+  override def isStepRequestWithArgsPending(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    withCurrentProfile.isStepRequestWithArgsPending(
+      threadReference,
+      extraArguments: _*
+    )
+  }
+
   override def stepRequests: Seq[StepRequestInfo] = {
     withCurrentProfile.stepRequests
   }

@@ -77,6 +77,23 @@ trait PureClassUnloadProfile extends ClassUnloadProfile {
   }
 
   /**
+   * Determines if the class unload request with the specified arguments
+   * is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       class unload request
+   * @return True if there is at least one class unload request with the
+   *         provided extra arguments that is pending, otherwise false
+   */
+  override def isClassUnloadRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    classUnloadRequests
+      .filter(_.extraArguments == extraArguments)
+      .exists(_.isPending)
+  }
+
+  /**
    * Creates a new class unload request using the given arguments. The request
    * is memoized, meaning that the same request will be returned for the same
    * arguments. The memoized result will be thrown out if the underlying

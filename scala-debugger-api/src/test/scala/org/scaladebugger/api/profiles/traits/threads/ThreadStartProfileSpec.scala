@@ -29,6 +29,10 @@ class ThreadStartProfileSpec extends FunSpec with Matchers
       Success(TestPipelineWithData)
     }
 
+    override def isThreadStartRequestWithArgsPending(
+      extraArguments: JDIArgument*
+    ): Boolean = ???
+
     override def threadStartRequests: Seq[ThreadStartRequestInfo] = ???
   }
 
@@ -38,6 +42,10 @@ class ThreadStartProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[ThreadStartEventAndData]] = {
       Failure(TestThrowable)
     }
+
+    override def isThreadStartRequestWithArgsPending(
+      extraArguments: JDIArgument*
+    ): Boolean = ???
 
     override def threadStartRequests: Seq[ThreadStartRequestInfo] = ???
   }

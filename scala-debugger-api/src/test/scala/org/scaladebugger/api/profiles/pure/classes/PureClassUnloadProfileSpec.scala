@@ -101,6 +101,101 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
       }
     }
 
+    describe("#isClassUnloadRequestWithArgsPending") {
+      it("should return false if no requests exist") {
+        val expected = false
+
+        (mockClassUnloadManager.classUnloadRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureClassUnloadProfile.isClassUnloadRequestWithArgsPending()
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching extra arguments exists") {
+        val expected = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ClassUnloadRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassUnloadManager.classUnloadRequestList _).expects()
+          .returning(requests.map(_.requestId)).once()
+        requests.foreach(r =>
+          (mockClassUnloadManager.getClassUnloadRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+        )
+
+        val actual = pureClassUnloadProfile.isClassUnloadRequestWithArgsPending()
+
+        actual should be (expected)
+      }
+
+      it("should return false if no matching request is pending") {
+        val expected = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ClassUnloadRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassUnloadManager.classUnloadRequestList _).expects()
+          .returning(requests.map(_.requestId)).once()
+        requests.foreach(r =>
+          (mockClassUnloadManager.getClassUnloadRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+        )
+
+        val actual = pureClassUnloadProfile.isClassUnloadRequestWithArgsPending(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return true if at least one matching request is pending") {
+        val expected = true
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ClassUnloadRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassUnloadManager.classUnloadRequestList _).expects()
+          .returning(requests.map(_.requestId)).once()
+        requests.foreach(r =>
+          (mockClassUnloadManager.getClassUnloadRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+        )
+
+        val actual = pureClassUnloadProfile.isClassUnloadRequestWithArgsPending(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
     describe("#tryGetOrCreateClassUnloadRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val arguments = Seq(mock[JDIRequestArgument])

@@ -38,6 +38,74 @@ class SwappableBreakpointProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#isBreakpointRequestPending") {
+      it("should invoke the method on the underlying profile") {
+        val expected = true
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.isBreakpointRequestPending _).expects(
+          fileName, lineNumber
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.isBreakpointRequestPending(
+          fileName, lineNumber
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.isBreakpointRequestPending(fileName, lineNumber)
+        }
+      }
+    }
+
+    describe("#isBreakpointRequestWithArgsPending") {
+      it("should invoke the method on the underlying profile") {
+        val expected = true
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.isBreakpointRequestWithArgsPending _).expects(
+          fileName, lineNumber, extraArguments
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.isBreakpointRequestWithArgsPending(
+          fileName, lineNumber, extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.isBreakpointRequestWithArgsPending(
+            fileName, lineNumber, extraArguments: _*
+          )
+        }
+      }
+    }
+
     describe("#tryGetOrCreateBreakpointRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val fileName = "some file"

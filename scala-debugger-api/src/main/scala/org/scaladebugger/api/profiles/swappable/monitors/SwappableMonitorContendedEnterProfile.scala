@@ -22,6 +22,12 @@ trait SwappableMonitorContendedEnterProfile extends MonitorContendedEnterProfile
     withCurrentProfile.tryGetOrCreateMonitorContendedEnterRequestWithData(extraArguments: _*)
   }
 
+  override def isMonitorContendedEnterRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    withCurrentProfile.isMonitorContendedEnterRequestWithArgsPending(extraArguments: _*)
+  }
+
   override def monitorContendedEnterRequests: Seq[MonitorContendedEnterRequestInfo] = {
     withCurrentProfile.monitorContendedEnterRequests
   }

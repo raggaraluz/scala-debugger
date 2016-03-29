@@ -29,6 +29,10 @@ class MonitorWaitedProfileSpec extends FunSpec with Matchers
       Success(TestPipelineWithData)
     }
 
+    override def isMonitorWaitedRequestWithArgsPending(
+      extraArguments: JDIArgument*
+    ): Boolean = ???
+
     override def monitorWaitedRequests: Seq[MonitorWaitedRequestInfo] = ???
   }
 
@@ -38,6 +42,10 @@ class MonitorWaitedProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[MonitorWaitedEventAndData]] = {
       Failure(TestThrowable)
     }
+
+    override def isMonitorWaitedRequestWithArgsPending(
+      extraArguments: JDIArgument*
+    ): Boolean = ???
 
     override def monitorWaitedRequests: Seq[MonitorWaitedRequestInfo] = ???
   }

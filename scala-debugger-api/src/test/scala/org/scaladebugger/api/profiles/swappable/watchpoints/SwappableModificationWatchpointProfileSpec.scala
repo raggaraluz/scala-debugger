@@ -38,6 +38,77 @@ class SwappableModificationWatchpointProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#isModificationWatchpointRequestPending") {
+      it("should invoke the method on the underlying profile") {
+        val expected = true
+        val className = "some.class.name"
+        val fieldName = "someField"
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.isModificationWatchpointRequestPending _).expects(
+          className, fieldName
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.isModificationWatchpointRequestPending(
+          className, fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val className = "some.class.name"
+        val fieldName = "someField"
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.isModificationWatchpointRequestPending(
+            className,
+            fieldName
+          )
+        }
+      }
+    }
+
+    describe("#isModificationWatchpointRequestWithArgsPending") {
+      it("should invoke the method on the underlying profile") {
+        val expected = true
+        val className = "some.class.name"
+        val fieldName = "someField"
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.isModificationWatchpointRequestWithArgsPending _).expects(
+          className, fieldName, extraArguments
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.isModificationWatchpointRequestWithArgsPending(
+          className, fieldName, extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val className = "some.class.name"
+        val fieldName = "someField"
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.isModificationWatchpointRequestWithArgsPending(
+            className, fieldName, extraArguments: _*
+          )
+        }
+      }
+    }
+
     describe("#tryGetOrCreateModificationWatchpointRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val className = "some class"

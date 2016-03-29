@@ -40,10 +40,36 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
       Success(TestPipelineWithData)
     }
 
+    override def isAllExceptionsRequestPending: Boolean = ???
+    override def isExceptionRequestWithArgsPending(
+      exceptionName: String,
+      notifyCaught: Boolean,
+      notifyUncaught: Boolean,
+      extraArguments: JDIArgument*
+    ): Boolean = ???
+    override def isExceptionRequestPending(exceptionName: String): Boolean = ???
+    override def isAllExceptionsRequestWithArgsPending(
+      notifyCaught: Boolean,
+      notifyUncaught: Boolean,
+      extraArguments: JDIArgument*
+    ): Boolean = ???
     override def exceptionRequests: Seq[ExceptionRequestInfo] = ???
   }
 
   private val failExceptionProfile = new Object with ExceptionProfile {
+    override def isAllExceptionsRequestPending: Boolean = ???
+    override def isExceptionRequestWithArgsPending(
+      exceptionName: String,
+      notifyCaught: Boolean,
+      notifyUncaught: Boolean,
+      extraArguments: JDIArgument*
+    ): Boolean = ???
+    override def isExceptionRequestPending(exceptionName: String): Boolean = ???
+    override def isAllExceptionsRequestWithArgsPending(
+      notifyCaught: Boolean,
+      notifyUncaught: Boolean,
+      extraArguments: JDIArgument*
+    ): Boolean = ???
     override def exceptionRequests: Seq[ExceptionRequestInfo] = ???
 
     override def tryGetOrCreateExceptionRequestWithData(

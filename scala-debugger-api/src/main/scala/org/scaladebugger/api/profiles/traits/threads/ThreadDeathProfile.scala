@@ -76,4 +76,17 @@ trait ThreadDeathProfile {
   ): IdentityPipeline[ThreadDeathEventAndData] = {
     tryGetOrCreateThreadDeathRequestWithData(extraArguments: _*).get
   }
+
+  /**
+   * Determines if the thread death request with the specified
+   * arguments is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       thread death request
+   * @return True if there is at least one thread death request
+   *         with the provided extra arguments that is pending, otherwise false
+   */
+  def isThreadDeathRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean
 }

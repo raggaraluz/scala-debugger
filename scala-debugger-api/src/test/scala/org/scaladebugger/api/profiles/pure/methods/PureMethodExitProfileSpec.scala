@@ -112,6 +112,287 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
       }
     }
 
+    describe("#isMethodExitRequestPending") {
+      it("should return false if no requests exist") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureMethodExitProfile.isMethodExitRequestPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching clas name exists") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className + "other",
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.isMethodExitRequestPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching method name exists") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName + 1,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.isMethodExitRequestPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no matching request is pending") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.isMethodExitRequestPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return true if at least one matching request is pending") {
+        val expected = true
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.isMethodExitRequestPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isMethodExitRequestWithArgsPending") {
+      it("should return false if no requests exist") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureMethodExitProfile.isMethodExitRequestWithArgsPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching class name exists") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className + "other",
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.isMethodExitRequestWithArgsPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching method name exists") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName + 1,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.isMethodExitRequestWithArgsPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching extra arguments exists") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.isMethodExitRequestWithArgsPending(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return false if no matching request is pending") {
+        val expected = false
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.isMethodExitRequestWithArgsPending(
+          className,
+          methodName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return true if at least one matching request is pending") {
+        val expected = true
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.isMethodExitRequestWithArgsPending(
+          className,
+          methodName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
     describe("#tryGetOrCreateMethodExitRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val className = "some.class.name"

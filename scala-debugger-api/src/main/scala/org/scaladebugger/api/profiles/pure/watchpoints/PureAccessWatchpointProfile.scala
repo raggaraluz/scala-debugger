@@ -63,7 +63,6 @@ trait PureAccessWatchpointProfile extends AccessWatchpointProfile {
    * @param className The full name of the class whose field to watch
    * @param fieldName The name of the field to watch
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The stream of access watchpoint events and any retrieved data
    *         based on requests from extra arguments
    */
@@ -75,6 +74,52 @@ trait PureAccessWatchpointProfile extends AccessWatchpointProfile {
     val JDIArgumentGroup(rArgs, eArgs, _) = JDIArgumentGroup(extraArguments: _*)
     val requestId = newAccessWatchpointRequest((className, fieldName, rArgs))
     newAccessWatchpointPipeline(requestId, (className, fieldName, eArgs))
+  }
+
+  /**
+   * Determines if there is any access watchpoint request for the specified
+   * class field that is pending.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  field being watched
+   * @param fieldName The name of the field being watched
+   * @return True if there is at least one access watchpoint request with the
+   *         specified field namename in the specified class that is pending,
+   *         otherwise false
+   */
+  override def isAccessWatchpointRequestPending(
+    className: String,
+    fieldName: String
+  ): Boolean = {
+    accessWatchpointRequests.filter(a =>
+      a.className == className &&
+      a.fieldName == fieldName
+    ).exists(_.isPending)
+  }
+
+  /**
+   * Determines if there is any access watchpoint request for the specified
+   * class field with matching arguments that is pending.
+   *
+   * @param className      The full name of the class/object/trait containing the
+   *                       field being watched
+   * @param fieldName      The name of the field being watched
+   * @param extraArguments The additional arguments provided to the specific
+   *                       access watchpoint request
+   * @return True if there is at least one access watchpoint request with the
+   *         specified field name and arguments in the specified class that is
+   *         pending, otherwise false
+   */
+  override def isAccessWatchpointRequestWithArgsPending(
+    className: String,
+    fieldName: String,
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    accessWatchpointRequests.filter(a =>
+      a.className == className &&
+      a.fieldName == fieldName &&
+      a.extraArguments == extraArguments
+    ).exists(_.isPending)
   }
 
   /**
@@ -164,7 +209,6 @@ trait PureAccessWatchpointProfile extends AccessWatchpointProfile {
    *
    * @param requestId The id of the request
    * @param args The arguments associated with the request
-   *
    * @return The new function for closing the pipeline
    */
   protected def newAccessWatchpointPipelineCloseFunc(

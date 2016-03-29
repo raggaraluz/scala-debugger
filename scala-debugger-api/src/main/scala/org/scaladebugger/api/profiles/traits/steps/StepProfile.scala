@@ -261,4 +261,31 @@ trait StepProfile {
   ): IdentityPipeline[StepEventAndData] = {
     tryCreateStepListenerWithData(threadReference, extraArguments: _*).get
   }
+
+  /**
+   * Determines if there is any step request for the specified thread that
+   * is pending.
+   *
+   * @param threadReference The thread with which is receiving the step request
+   * @return True if there is at least one step request with the
+   *         specified name in the specified class that is pending,
+   *         otherwise false
+   */
+  def isStepRequestPending(threadReference: ThreadReference): Boolean
+
+  /**
+   * Determines if there is any step request for the specified thread with
+   * matching arguments that is pending.
+   *
+   * @param threadReference The thread with which is receiving the step request
+   * @param extraArguments The additional arguments provided to the specific
+   *                       step request
+   * @return True if there is at least one step request with the
+   *         specified name and arguments in the specified class that is
+   *         pending, otherwise false
+   */
+  def isStepRequestWithArgsPending(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Boolean
 }

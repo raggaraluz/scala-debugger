@@ -76,4 +76,17 @@ trait ClassPrepareProfile {
   def tryGetOrCreateClassPrepareRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ClassPrepareEventAndData]]
+
+  /**
+   * Determines if the class prepare request with the specified arguments
+   * is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       class prepare request
+   * @return True if there is at least one class prepare request with the
+   *         provided extra arguments that is pending, otherwise false
+   */
+  def isClassPrepareRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean
 }

@@ -42,7 +42,6 @@ trait PureStepProfile extends StepProfile {
    *
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The resulting event and any retrieved data based on
    *         requests from extra arguments
    */
@@ -60,7 +59,6 @@ trait PureStepProfile extends StepProfile {
    *
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The resulting event and any retrieved data based on
    *         requests from extra arguments
    */
@@ -79,7 +77,6 @@ trait PureStepProfile extends StepProfile {
    *
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The resulting event and any retrieved data based on
    *         requests from extra arguments
    */
@@ -97,7 +94,6 @@ trait PureStepProfile extends StepProfile {
    *
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The resulting event and any retrieved data based on
    *         requests from extra arguments
    */
@@ -115,7 +111,6 @@ trait PureStepProfile extends StepProfile {
    *
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The resulting event and any retrieved data based on
    *         requests from extra arguments
    */
@@ -134,7 +129,6 @@ trait PureStepProfile extends StepProfile {
    *
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The resulting event and any retrieved data based on
    *         requests from extra arguments
    */
@@ -152,7 +146,6 @@ trait PureStepProfile extends StepProfile {
    *
    * @param threadReference The thread with which to receive step events
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The stream of step events and any retrieved data based on
    *         requests from extra arguments
    */
@@ -165,6 +158,45 @@ trait PureStepProfile extends StepProfile {
   }
 
   /**
+   * Determines if there is any step request for the specified thread that
+   * is pending.
+   *
+   * @param threadReference The thread with which is receiving the step request
+   * @return True if there is at least one step request with the
+   *         specified name in the specified class that is pending,
+   *         otherwise false
+   */
+  override def isStepRequestPending(
+    threadReference: ThreadReference
+  ): Boolean = {
+    stepRequests
+      .filter(_.threadReference == threadReference)
+      .exists(_.isPending)
+  }
+
+  /**
+   * Determines if there is any step request for the specified thread with
+   * matching arguments that is pending.
+   *
+   * @param threadReference The thread with which is receiving the step request
+   * @param extraArguments  The additional arguments provided to the specific
+   *                        step request
+   * @return True if there is at least one step request with the
+   *         specified name and arguments in the specified class that is
+   *         pending, otherwise false
+   */
+  override def isStepRequestWithArgsPending(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    stepRequests
+      .filter(t =>
+        t.threadReference == threadReference &&
+        t.extraArguments == extraArguments
+      ).exists(_.isPending)
+  }
+
+  /**
    * Creates a new step request and constructs a future for when its result
    * returns.
    *
@@ -172,7 +204,6 @@ trait PureStepProfile extends StepProfile {
    *                           return the id of the request
    * @param threadReference The thread in which to perform the step
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The future containing the result from the step request
    */
   protected def createStepFuture(
@@ -201,7 +232,6 @@ trait PureStepProfile extends StepProfile {
    *
    * @param args The additional event arguments to provide to the event handler
    *             feeding the new pipeline
-   *
    * @return The new step event and data pipeline
    */
   protected def newStepPipeline(
@@ -221,7 +251,6 @@ trait PureStepProfile extends StepProfile {
    * failed future.
    *
    * @param result The attempted pipeline
-   *
    * @return The future representing the attempted pipeline's
    */
   protected def tryPipelineToFuture(

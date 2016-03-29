@@ -75,4 +75,17 @@ trait ClassUnloadProfile {
   def tryGetOrCreateClassUnloadRequestWithData(
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[ClassUnloadEventAndData]]
+
+  /**
+   * Determines if the class unload request with the specified arguments
+   * is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       class unload request
+   * @return True if there is at least one class unload request with the
+   *         provided extra arguments that is pending, otherwise false
+   */
+  def isClassUnloadRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean
 }

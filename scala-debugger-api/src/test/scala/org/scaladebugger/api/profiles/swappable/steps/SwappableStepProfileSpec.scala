@@ -40,6 +40,73 @@ class SwappableStepProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#isStepRequestPending") {
+      it("should invoke the method on the underlying profile") {
+        val expected = true
+        val threadReference = mock[ThreadReference]
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.isStepRequestPending _).expects(
+          threadReference
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.isStepRequestPending(
+          threadReference
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val threadReference = mock[ThreadReference]
+        val methodName = "someMethod"
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.isStepRequestPending(threadReference)
+        }
+      }
+    }
+
+    describe("#isStepRequestWithArgsPending") {
+      it("should invoke the method on the underlying profile") {
+        val expected = true
+        val threadReference = mock[ThreadReference]
+        val methodName = "someMethod"
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.isStepRequestWithArgsPending _).expects(
+          threadReference, extraArguments
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.isStepRequestWithArgsPending(
+          threadReference, extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val threadReference = mock[ThreadReference]
+        val methodName = "someMethod"
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.isStepRequestWithArgsPending(
+            threadReference, extraArguments: _*
+          )
+        }
+      }
+    }
+    
     describe("#stepIntoLineWithData") {
       it("should invoke the method on the underlying profile") {
         val arguments = Seq(mock[JDIArgument])

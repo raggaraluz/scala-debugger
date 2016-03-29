@@ -63,7 +63,6 @@ trait PureModificationWatchpointProfile extends ModificationWatchpointProfile {
    * @param className The full name of the class whose field to watch
    * @param fieldName The name of the field to watch
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The stream of modification watchpoint events and any retrieved data
    *         based on requests from extra arguments
    */
@@ -79,6 +78,52 @@ trait PureModificationWatchpointProfile extends ModificationWatchpointProfile {
       rArgs
     ))
     newModificationWatchpointPipeline(requestId, (className, fieldName, eArgs))
+  }
+
+  /**
+   * Determines if there is any modification watchpoint request for the
+   * specified class field that is pending.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  field being watched
+   * @param fieldName The name of the field being watched
+   * @return True if there is at least one modification watchpoint request with
+   *         the specified field name in the specified class that is pending,
+   *         otherwise false
+   */
+  override def isModificationWatchpointRequestPending(
+    className: String,
+    fieldName: String
+  ): Boolean = {
+    modificationWatchpointRequests.filter(m =>
+      m.className == className &&
+      m.fieldName == fieldName
+    ).exists(_.isPending)
+  }
+
+  /**
+   * Determines if there is any modification watchpoint request for the
+   * specified class field with matching arguments that is pending.
+   *
+   * @param className      The full name of the class/object/trait containing
+   *                       the field being watched
+   * @param fieldName      The name of the field being watched
+   * @param extraArguments The additional arguments provided to the specific
+   *                       modification watchpoint request
+   * @return True if there is at least one modification watchpoint request with
+   *         the specified field name and arguments in the specified class that
+   *         is pending, otherwise false
+   */
+  override def isModificationWatchpointRequestWithArgsPending(
+    className: String,
+    fieldName: String,
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    modificationWatchpointRequests.filter(m =>
+      m.className == className &&
+      m.fieldName == fieldName &&
+      m.extraArguments == extraArguments
+    ).exists(_.isPending)
   }
 
   /**
@@ -171,7 +216,6 @@ trait PureModificationWatchpointProfile extends ModificationWatchpointProfile {
    *
    * @param requestId The id of the request
    * @param args The arguments associated with the request
-   *
    * @return The new function for closing the pipeline
    */
   protected def newModificationWatchpointPipelineCloseFunc(

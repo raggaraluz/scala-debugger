@@ -37,6 +37,138 @@ class SwappableExceptionProfileSpec extends FunSpec with Matchers
         }
       }
     }
+
+    describe("#isExceptionRequestPending") {
+      it("should invoke the method on the underlying profile") {
+        val expected = true
+
+        val exceptionName = "some exception"
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.isExceptionRequestPending _).expects(
+          exceptionName
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.isExceptionRequestPending(
+          exceptionName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val exceptionName = "some exception"
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.isExceptionRequestPending(exceptionName)
+        }
+      }
+    }
+
+    describe("#isExceptionRequestWithArgsPending") {
+      it("should invoke the method on the underlying profile") {
+        val expected = true
+
+        val exceptionName = "some exception"
+        val notifyCaught = true
+        val notifyUncaught = true
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.isExceptionRequestWithArgsPending _).expects(
+          exceptionName, notifyCaught, notifyUncaught, arguments
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.isExceptionRequestWithArgsPending(
+          exceptionName, notifyCaught, notifyUncaught, arguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val exceptionName = "some exception"
+        val notifyCaught = true
+        val notifyUncaught = true
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.isExceptionRequestWithArgsPending(
+            exceptionName, notifyCaught, notifyUncaught, arguments: _*
+          )
+        }
+      }
+    }
+
+    describe("#isAllExceptionsRequestPending") {
+      it("should invoke the method on the underlying profile") {
+        val expected = true
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.isAllExceptionsRequestPending _).expects()
+          .returning(expected).once()
+
+        val actual = swappableDebugProfile.isAllExceptionsRequestPending
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.isAllExceptionsRequestPending
+        }
+      }
+    }
+
+    describe("#isAllExceptionsRequestWithArgsPending") {
+      it("should invoke the method on the underlying profile") {
+        val expected = true
+
+        val notifyCaught = true
+        val notifyUncaught = true
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.isAllExceptionsRequestWithArgsPending _).expects(
+          notifyCaught, notifyUncaught, arguments
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.isAllExceptionsRequestWithArgsPending(
+          notifyCaught, notifyUncaught, arguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val notifyCaught = true
+        val notifyUncaught = true
+        val arguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.isAllExceptionsRequestWithArgsPending(
+            notifyCaught, notifyUncaught, arguments: _*
+          )
+        }
+      }
+    }
+
     describe("#tryGetOrCreateExceptionRequestWithData") {
       it("should invoke the method on the underlying profile") {
         val exceptionName = "some exception"

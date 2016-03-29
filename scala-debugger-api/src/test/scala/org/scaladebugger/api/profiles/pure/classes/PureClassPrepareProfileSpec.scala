@@ -101,6 +101,101 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
       }
     }
 
+    describe("#isClassPrepareRequestWithArgsPending") {
+      it("should return false if no requests exist") {
+        val expected = false
+
+        (mockClassPrepareManager.classPrepareRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureClassPrepareProfile.isClassPrepareRequestWithArgsPending()
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching extra arguments exists") {
+        val expected = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ClassPrepareRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassPrepareManager.classPrepareRequestList _).expects()
+          .returning(requests.map(_.requestId)).once()
+        requests.foreach(r =>
+          (mockClassPrepareManager.getClassPrepareRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+        )
+
+        val actual = pureClassPrepareProfile.isClassPrepareRequestWithArgsPending()
+
+        actual should be (expected)
+      }
+
+      it("should return false if no matching request is pending") {
+        val expected = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ClassPrepareRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassPrepareManager.classPrepareRequestList _).expects()
+          .returning(requests.map(_.requestId)).once()
+        requests.foreach(r =>
+          (mockClassPrepareManager.getClassPrepareRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+        )
+
+        val actual = pureClassPrepareProfile.isClassPrepareRequestWithArgsPending(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return true if at least one matching request is pending") {
+        val expected = true
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ClassPrepareRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassPrepareManager.classPrepareRequestList _).expects()
+          .returning(requests.map(_.requestId)).once()
+        requests.foreach(r =>
+          (mockClassPrepareManager.getClassPrepareRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+        )
+
+        val actual = pureClassPrepareProfile.isClassPrepareRequestWithArgsPending(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
     describe("#tryGetOrCreateClassPrepareRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val arguments = Seq(mock[JDIRequestArgument])

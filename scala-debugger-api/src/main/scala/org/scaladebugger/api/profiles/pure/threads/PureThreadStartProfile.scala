@@ -77,6 +77,23 @@ trait PureThreadStartProfile extends ThreadStartProfile {
   }
 
   /**
+   * Determines if the thread start request with the specified
+   * arguments is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       thread start request
+   * @return True if there is at least one thread start request
+   *         with the provided extra arguments that is pending, otherwise false
+   */
+  override def isThreadStartRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    threadStartRequests
+      .filter(_.extraArguments == extraArguments)
+      .exists(_.isPending)
+  }
+
+  /**
    * Creates a new thread start request using the given arguments. The request
    * is memoized, meaning that the same request will be returned for the same
    * arguments. The memoized result will be thrown out if the underlying

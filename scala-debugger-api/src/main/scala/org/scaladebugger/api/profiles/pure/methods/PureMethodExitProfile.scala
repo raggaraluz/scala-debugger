@@ -82,6 +82,48 @@ trait PureMethodExitProfile extends MethodExitProfile {
   }
 
   /**
+   * Determines if there is any method exit request for the specified class
+   * method that is pending.
+   *
+   * @param className  The full name of the class/object/trait containing the
+   *                   method being watched
+   * @param methodName The name of the method being watched
+   * @return True if there is at least one method exit request with the
+   *         specified name in the specified class that is pending,
+   *         otherwise false
+   */
+  override def isMethodExitRequestPending(
+    className: String,
+    methodName: String
+  ): Boolean = methodExitRequests.filter(m =>
+    m.className == className &&
+      m.methodName == methodName
+  ).exists(_.isPending)
+
+  /**
+   * Determines if there is any method exit request for the specified class
+   * method with matching arguments that is pending.
+   *
+   * @param className      The full name of the class/object/trait containing the
+   *                       method being watched
+   * @param methodName     The name of the method being watched
+   * @param extraArguments The additional arguments provided to the specific
+   *                       method exit request
+   * @return True if there is at least one method exit request with the
+   *         specified name and arguments in the specified class that is
+   *         pending, otherwise false
+   */
+  override def isMethodExitRequestWithArgsPending(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Boolean = methodExitRequests.filter(m =>
+    m.className == className &&
+      m.methodName == methodName &&
+      m.extraArguments == extraArguments
+  ).exists(_.isPending)
+
+  /**
    * Creates a new method exit request using the given arguments. The request
    * is memoized, meaning that the same request will be returned for the same
    * arguments. The memoized result will be thrown out if the underlying

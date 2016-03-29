@@ -28,6 +28,25 @@ trait SwappableAccessWatchpointProfile extends AccessWatchpointProfile {
     )
   }
 
+  override def isAccessWatchpointRequestPending(
+    className: String,
+    fieldName: String
+  ): Boolean = {
+    withCurrentProfile.isAccessWatchpointRequestPending(className, fieldName)
+  }
+
+  override def isAccessWatchpointRequestWithArgsPending(
+    className: String,
+    fieldName: String,
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    withCurrentProfile.isAccessWatchpointRequestWithArgsPending(
+      className,
+      fieldName,
+      extraArguments: _*
+    )
+  }
+
   override def accessWatchpointRequests: Seq[AccessWatchpointRequestInfo] = {
     withCurrentProfile.accessWatchpointRequests
   }

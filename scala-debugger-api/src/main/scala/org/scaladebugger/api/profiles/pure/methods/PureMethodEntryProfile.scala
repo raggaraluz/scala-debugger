@@ -64,7 +64,6 @@ trait PureMethodEntryProfile extends MethodEntryProfile {
    *                  method to watch
    * @param methodName The name of the method to watch
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The stream of method entry events and any retrieved data based on
    *         requests from extra arguments
    */
@@ -80,6 +79,48 @@ trait PureMethodEntryProfile extends MethodEntryProfile {
       (className, methodName, MethodNameFilter(methodName) +: eArgs)
     )
   }
+
+  /**
+   * Determines if there is any method entry request for the specified class
+   * method that is pending.
+   *
+   * @param className  The full name of the class/object/trait containing the
+   *                   method being watched
+   * @param methodName The name of the method being watched
+   * @return True if there is at least one method entry request with the
+   *         specified name in the specified class that is pending,
+   *         otherwise false
+   */
+  override def isMethodEntryRequestPending(
+    className: String,
+    methodName: String
+  ): Boolean = methodEntryRequests.filter(m =>
+    m.className == className &&
+    m.methodName == methodName
+  ).exists(_.isPending)
+
+  /**
+   * Determines if there is any method entry request for the specified class
+   * method with matching arguments that is pending.
+   *
+   * @param className      The full name of the class/object/trait containing the
+   *                       method being watched
+   * @param methodName     The name of the method being watched
+   * @param extraArguments The additional arguments provided to the specific
+   *                       method entry request
+   * @return True if there is at least one method entry request with the
+   *         specified name and arguments in the specified class that is
+   *         pending, otherwise false
+   */
+  override def isMethodEntryRequestWithArgsPending(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Boolean = methodEntryRequests.filter(m =>
+    m.className == className &&
+    m.methodName == methodName &&
+    m.extraArguments == extraArguments
+  ).exists(_.isPending)
 
   /**
    * Creates a new method entry request using the given arguments. The request
@@ -168,7 +209,6 @@ trait PureMethodEntryProfile extends MethodEntryProfile {
    *
    * @param requestId The id of the request
    * @param args The arguments associated with the request
-   *
    * @return The new function for closing the pipeline
    */
   protected def newMethodEntryPipelineCloseFunc(
