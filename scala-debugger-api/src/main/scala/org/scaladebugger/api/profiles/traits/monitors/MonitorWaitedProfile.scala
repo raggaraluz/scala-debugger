@@ -77,4 +77,17 @@ trait MonitorWaitedProfile {
   ): IdentityPipeline[MonitorWaitedEventAndData] = {
     tryGetOrCreateMonitorWaitedRequestWithData(extraArguments: _*).get
   }
+
+  /**
+   * Determines if the monitor waited request with the specified
+   * arguments is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       monitor waited request
+   * @return True if there is at least one monitor waited request
+   *         with the provided extra arguments that is pending, otherwise false
+   */
+  def isMonitorWaitedRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean
 }

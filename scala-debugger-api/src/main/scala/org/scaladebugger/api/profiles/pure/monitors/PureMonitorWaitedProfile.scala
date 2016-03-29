@@ -115,6 +115,23 @@ trait PureMonitorWaitedProfile extends MonitorWaitedProfile {
   }
 
   /**
+   * Determines if the monitor waited request with the specified
+   * arguments is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       monitor waited request
+   * @return True if there is at least one monitor waited request
+   *         with the provided extra arguments that is pending, otherwise false
+   */
+  override def isMonitorWaitedRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    monitorWaitedRequests
+      .filter(_.extraArguments == extraArguments)
+      .exists(_.isPending)
+  }
+
+  /**
    * Creates a new pipeline of monitor waited events and data using the given
    * arguments. The pipeline is NOT memoized; therefore, each call creates a
    * new pipeline with a new underlying event handler feeding the pipeline.
