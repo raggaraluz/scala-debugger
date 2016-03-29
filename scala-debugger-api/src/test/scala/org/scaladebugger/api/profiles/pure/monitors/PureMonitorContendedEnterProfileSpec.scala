@@ -101,6 +101,101 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers {
       }
     }
 
+    describe("#isMonitorContendedEnterRequestWithArgsPending") {
+      it("should return false if no requests exist") {
+        val expected = false
+
+        (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureMonitorContendedEnterProfile.isMonitorContendedEnterRequestWithArgsPending()
+
+        actual should be (expected)
+      }
+
+      it("should return false if no request with matching extra arguments exists") {
+        val expected = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MonitorContendedEnterRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _).expects()
+          .returning(requests.map(_.requestId)).once()
+        requests.foreach(r =>
+          (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+        )
+
+        val actual = pureMonitorContendedEnterProfile.isMonitorContendedEnterRequestWithArgsPending()
+
+        actual should be (expected)
+      }
+
+      it("should return false if no matching request is pending") {
+        val expected = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MonitorContendedEnterRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _).expects()
+          .returning(requests.map(_.requestId)).once()
+        requests.foreach(r =>
+          (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+        )
+
+        val actual = pureMonitorContendedEnterProfile.isMonitorContendedEnterRequestWithArgsPending(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return true if at least one matching request is pending") {
+        val expected = true
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MonitorContendedEnterRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _).expects()
+          .returning(requests.map(_.requestId)).once()
+        requests.foreach(r =>
+          (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+        )
+
+        val actual = pureMonitorContendedEnterProfile.isMonitorContendedEnterRequestWithArgsPending(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
     describe("#tryGetOrCreateMonitorContendedEnterRequestWithData") {
       it("should create a new request if one has not be made yet") {
         val arguments = Seq(mock[JDIRequestArgument])

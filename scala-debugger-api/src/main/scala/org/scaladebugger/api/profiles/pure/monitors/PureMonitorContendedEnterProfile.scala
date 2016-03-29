@@ -78,6 +78,23 @@ trait PureMonitorContendedEnterProfile extends MonitorContendedEnterProfile {
   }
 
   /**
+   * Determines if the monitor contended enter request with the specified
+   * arguments is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       monitor contended enter request
+   * @return True if there is at least one monitor contended enter request
+   *         with the provided extra arguments that is pending, otherwise false
+   */
+  override def isMonitorContendedEnterRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    monitorContendedEnterRequests
+      .filter(_.extraArguments == extraArguments)
+      .exists(_.isPending)
+  }
+
+  /**
    * Creates a new monitor contended enter request using the given arguments.
    * The request is memoized, meaning that the same request will be returned
    * for the same arguments. The memoized result will be thrown out if the
