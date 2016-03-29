@@ -29,6 +29,10 @@ class ClassUnloadProfileSpec extends FunSpec with Matchers
       Success(TestPipelineWithData)
     }
 
+    override def isClassUnloadRequestWithArgsPending(
+      extraArguments: JDIArgument*
+    ): Boolean = ???
+
     override def classUnloadRequests: Seq[ClassUnloadRequestInfo] = ???
   }
 
@@ -38,6 +42,10 @@ class ClassUnloadProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[ClassUnloadEventAndData]] = {
       Failure(TestThrowable)
     }
+
+    override def isClassUnloadRequestWithArgsPending(
+      extraArguments: JDIArgument*
+    ): Boolean = ???
 
     override def classUnloadRequests: Seq[ClassUnloadRequestInfo] = ???
   }
