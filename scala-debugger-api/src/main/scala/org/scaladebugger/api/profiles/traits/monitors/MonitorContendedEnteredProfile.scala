@@ -79,4 +79,17 @@ trait MonitorContendedEnteredProfile {
   ): IdentityPipeline[MonitorContendedEnteredEventAndData] = {
     tryGetOrCreateMonitorContendedEnteredRequestWithData(extraArguments: _*).get
   }
+
+  /**
+   * Determines if the monitor contended entered request with the specified
+   * arguments is pending.
+   *
+   * @param extraArguments The additional arguments provided to the specific
+   *                       monitor contended entered request
+   * @return True if there is at least one monitor contended entered request
+   *         with the provided extra arguments that is pending, otherwise false
+   */
+  def isMonitorContendedEnteredRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean
 }
