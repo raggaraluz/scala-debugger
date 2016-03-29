@@ -109,4 +109,39 @@ trait AccessWatchpointProfile {
       extraArguments: _*
     ).get
   }
+
+  /**
+   * Determines if there is any access watchpoint request for the specified
+   * class field that is pending.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param fieldName The name of the field being watched
+   * @return True if there is at least one access watchpoint request with the
+   *         specified field namename in the specified class that is pending,
+   *         otherwise false
+   */
+  def isAccessWatchpointRequestPending(
+    className: String,
+    fieldName: String
+  ): Boolean
+
+  /**
+   * Determines if there is any access watchpoint request for the specified
+   * class field with matching arguments that is pending.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param fieldName The name of the field being watched
+   * @param extraArguments The additional arguments provided to the specific
+   *                       access watchpoint request
+   * @return True if there is at least one access watchpoint request with the
+   *         specified field name and arguments in the specified class that is
+   *         pending, otherwise false
+   */
+  def isAccessWatchpointRequestWithArgsPending(
+    className: String,
+    fieldName: String,
+    extraArguments: JDIArgument*
+  ): Boolean
 }
