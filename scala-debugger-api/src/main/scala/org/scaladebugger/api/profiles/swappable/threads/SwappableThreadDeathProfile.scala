@@ -22,6 +22,12 @@ trait SwappableThreadDeathProfile extends ThreadDeathProfile {
     withCurrentProfile.tryGetOrCreateThreadDeathRequestWithData(extraArguments: _*)
   }
 
+  override def isThreadDeathRequestWithArgsPending(
+    extraArguments: JDIArgument*
+  ): Boolean = {
+    withCurrentProfile.isThreadDeathRequestWithArgsPending(extraArguments: _*)
+  }
+
   override def threadDeathRequests: Seq[ThreadDeathRequestInfo] = {
     withCurrentProfile.threadDeathRequests
   }
