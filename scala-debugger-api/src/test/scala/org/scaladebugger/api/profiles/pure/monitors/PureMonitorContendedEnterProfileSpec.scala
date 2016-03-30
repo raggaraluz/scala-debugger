@@ -101,6 +101,187 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers {
       }
     }
 
+    describe("#removeMonitorContendedEnterRequestWithArgs") {
+      it("should return None if no requests exists") {
+        val expected = None
+
+        (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _)
+          .expects()
+          .returning(Nil).once()
+
+        val actual = pureMonitorContendedEnterProfile.removeMonitorContendedEnterRequestWithArgs()
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching extra arguments exists") {
+        val expected = None
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MonitorContendedEnterRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _)
+          .expects()
+          .returning(requests.map(_.requestId)).once()
+        requests.foreach(r =>
+          (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+        )
+
+        val actual = pureMonitorContendedEnterProfile.removeMonitorContendedEnterRequestWithArgs()
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          MonitorContendedEnterRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _)
+          .expects()
+          .returning(Seq(expected.get).map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockMonitorContendedEnterManager.removeMonitorContendedEnterRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureMonitorContendedEnterProfile.removeMonitorContendedEnterRequestWithArgs(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          MonitorContendedEnterRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _)
+          .expects()
+          .returning(Seq(expected.get).map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockMonitorContendedEnterManager.removeMonitorContendedEnterRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureMonitorContendedEnterProfile.removeMonitorContendedEnterRequestWithArgs(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeAllMonitorContendedEnterRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+
+        (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _)
+          .expects()
+          .returning(Nil).once()
+
+        val actual = pureMonitorContendedEnterProfile.removeAllMonitorContendedEnterRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          MonitorContendedEnterRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _)
+          .expects()
+          .returning(expected.map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockMonitorContendedEnterManager.removeMonitorContendedEnterRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureMonitorContendedEnterProfile.removeAllMonitorContendedEnterRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all non-pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          MonitorContendedEnterRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMonitorContendedEnterManager.monitorContendedEnterRequestList _)
+          .expects()
+          .returning(expected.map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockMonitorContendedEnterManager.getMonitorContendedEnterRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockMonitorContendedEnterManager.removeMonitorContendedEnterRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureMonitorContendedEnterProfile.removeAllMonitorContendedEnterRequests()
+
+        actual should be (expected)
+      }
+    }
+
     describe("#isMonitorContendedEnterRequestWithArgsPending") {
       it("should return false if no requests exist") {
         val expected = false

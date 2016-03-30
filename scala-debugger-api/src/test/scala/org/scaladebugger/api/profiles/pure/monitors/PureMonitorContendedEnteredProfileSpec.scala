@@ -283,7 +283,6 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
       }
     }
 
-
     describe("#isMonitorContendedEnteredRequestWithArgsPending") {
       it("should return false if no requests exist") {
         val expected = false
