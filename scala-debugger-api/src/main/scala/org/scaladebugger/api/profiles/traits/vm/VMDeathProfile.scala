@@ -89,4 +89,47 @@ trait VMDeathProfile {
   def isVMDeathRequestWithArgsPending(
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes all vm death requests with the specified extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       vm death request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeVMDeathRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[VMDeathRequestInfo]
+
+  /**
+   * Removes all vm death requests with the specified extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       vm death request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveVMDeathRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Try[Option[VMDeathRequestInfo]] = Try(removeVMDeathRequestWithArgs(
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all vm death requests.
+   *
+   * @return The collection of information about removed vm death requests
+   */
+  def removeAllVMDeathRequests(): Seq[VMDeathRequestInfo]
+
+  /**
+   * Removes all vm death requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         vm death requests, otherwise a failure
+   */
+  def tryRemoveAllVMDeathRequests(): Try[Seq[VMDeathRequestInfo]] = Try(
+    removeAllVMDeathRequests()
+  )
 }

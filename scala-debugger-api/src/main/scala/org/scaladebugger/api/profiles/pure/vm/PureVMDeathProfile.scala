@@ -93,6 +93,33 @@ trait PureVMDeathProfile extends VMDeathProfile {
   }
 
   /**
+   * Removes all vm death requests with the specified extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       vm death request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  override def removeVMDeathRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[VMDeathRequestInfo] = {
+    vmDeathRequests.find(_.extraArguments == extraArguments).filter(c =>
+      vmDeathManager.removeVMDeathRequest(c.requestId)
+    )
+  }
+
+  /**
+   * Removes all vm death requests.
+   *
+   * @return The collection of information about removed vm death requests
+   */
+  override def removeAllVMDeathRequests(): Seq[VMDeathRequestInfo] = {
+    vmDeathRequests.filter(c =>
+      vmDeathManager.removeVMDeathRequest(c.requestId)
+    )
+  }
+
+  /**
    * Creates a new vm death request using the given arguments. The request
    * is memoized, meaning that the same request will be returned for the same
    * arguments. The memoized result will be thrown out if the underlying
