@@ -100,6 +100,382 @@ class PureBreakpointProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#removeBreakpointRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureBreakpointProfile.removeBreakpointRequests(
+          fileName,
+          lineNumber
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return empty if no request with matching filename exists") {
+        val expected = Nil
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          BreakpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            fileName = fileName + "other",
+            lineNumber = lineNumber,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureBreakpointProfile.removeBreakpointRequests(
+          fileName,
+          lineNumber
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return empty if no request with matching line number exists") {
+        val expected = Nil
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          BreakpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            fileName = fileName,
+            lineNumber = lineNumber + 1,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureBreakpointProfile.removeBreakpointRequests(
+          fileName,
+          lineNumber
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          BreakpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            fileName = fileName,
+            lineNumber = lineNumber,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockBreakpointManager.removeBreakpointRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureBreakpointProfile.removeBreakpointRequests(
+          fileName,
+          lineNumber
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          BreakpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            fileName = fileName,
+            lineNumber = lineNumber,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockBreakpointManager.removeBreakpointRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureBreakpointProfile.removeBreakpointRequests(
+          fileName,
+          lineNumber
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeBreakpointRequestWithArgs") {
+      it("should return None if no requests exists") {
+        val expected = None
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureBreakpointProfile.removeBreakpointRequestWithArgs(
+          fileName,
+          lineNumber
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching filename exists") {
+        val expected = None
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          BreakpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            fileName = fileName + "other",
+            lineNumber = lineNumber,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureBreakpointProfile.removeBreakpointRequestWithArgs(
+          fileName,
+          lineNumber,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching line number exists") {
+        val expected = None
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          BreakpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            fileName = fileName,
+            lineNumber = lineNumber + 1,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureBreakpointProfile.removeBreakpointRequestWithArgs(
+          fileName,
+          lineNumber,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching extra arguments exists") {
+        val expected = None
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          BreakpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            fileName = fileName,
+            lineNumber = lineNumber,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureBreakpointProfile.removeBreakpointRequestWithArgs(
+          fileName,
+          lineNumber
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          BreakpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            fileName = fileName,
+            lineNumber = lineNumber,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(Seq(expected.get)).once()
+        expected.foreach(b =>
+          (mockBreakpointManager.removeBreakpointRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureBreakpointProfile.removeBreakpointRequestWithArgs(
+          fileName,
+          lineNumber,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          BreakpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            fileName = fileName,
+            lineNumber = lineNumber,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(Seq(expected.get)).once()
+        expected.foreach(b =>
+          (mockBreakpointManager.removeBreakpointRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureBreakpointProfile.removeBreakpointRequestWithArgs(
+          fileName,
+          lineNumber,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeAllBreakpointRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureBreakpointProfile.removeAllBreakpointRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all pending requests") {
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          BreakpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            fileName = fileName,
+            lineNumber = lineNumber,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockBreakpointManager.removeBreakpointRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureBreakpointProfile.removeAllBreakpointRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all non-pending requests") {
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          BreakpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            fileName = fileName,
+            lineNumber = lineNumber,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockBreakpointManager.breakpointRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockBreakpointManager.removeBreakpointRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureBreakpointProfile.removeAllBreakpointRequests()
+
+        actual should be (expected)
+      }
+    }
+
     describe("#isBreakpointRequestPending") {
       it("should return false if no requests exist") {
         val expected = false

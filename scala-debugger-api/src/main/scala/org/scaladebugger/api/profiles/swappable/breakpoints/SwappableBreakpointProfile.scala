@@ -47,6 +47,29 @@ trait SwappableBreakpointProfile extends BreakpointProfile {
     )
   }
 
+  override def removeBreakpointRequests(
+    fileName: String,
+    lineNumber: Int
+  ): Seq[BreakpointRequestInfo] = {
+    withCurrentProfile.removeBreakpointRequests(fileName, lineNumber)
+  }
+
+  override def removeBreakpointRequestWithArgs(
+    fileName: String,
+    lineNumber: Int,
+    extraArguments: JDIArgument*
+  ): Option[BreakpointRequestInfo] = {
+    withCurrentProfile.removeBreakpointRequestWithArgs(
+      fileName,
+      lineNumber,
+      extraArguments: _*
+    )
+  }
+
+  override def removeAllBreakpointRequests(): Seq[BreakpointRequestInfo] = {
+    withCurrentProfile.removeAllBreakpointRequests()
+  }
+
   override def breakpointRequests: Seq[BreakpointRequestInfo] = {
     withCurrentProfile.breakpointRequests
   }

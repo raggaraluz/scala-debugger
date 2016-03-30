@@ -114,6 +114,69 @@ trait PureBreakpointProfile extends BreakpointProfile {
   ).exists(_.isPending)
 
   /**
+   * Removes all breakpoint requests placed on the specified line and file.
+   *
+   * @param fileName   The name of the file where the breakpoints reside
+   * @param lineNumber The number of the line where the breakpoints reside
+   * @return The collection of information about removed breakpoint requests
+   */
+  override def removeBreakpointRequests(
+    fileName: String,
+    lineNumber: Int
+  ): Seq[BreakpointRequestInfo] = {
+    removeRequestsUsingInfo(breakpointRequests.filter(b =>
+      b.fileName == fileName &&
+      b.lineNumber == lineNumber
+    ))
+  }
+
+  /**
+   * Removes all breakpoint requests placed on the specified line and file with
+   * the specified extra arguments.
+   *
+   * @param fileName       The name of the file where the breakpoints reside
+   * @param lineNumber     The number of the line where the breakpoints reside
+   * @param extraArguments the additional arguments provided to the specific
+   *                       breakpoint request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  override def removeBreakpointRequestWithArgs(
+    fileName: String,
+    lineNumber: Int,
+    extraArguments: JDIArgument*
+  ): Option[BreakpointRequestInfo] = {
+    removeRequestsUsingInfo(breakpointRequests.filter(b =>
+      b.fileName == fileName &&
+      b.lineNumber == lineNumber &&
+      b.extraArguments == extraArguments
+    )).headOption
+  }
+
+  /**
+   * Removes all breakpoint requests.
+   *
+   * @return The collection of information about removed breakpoint requests
+   */
+  override def removeAllBreakpointRequests(): Seq[BreakpointRequestInfo] = {
+    removeRequestsUsingInfo(breakpointRequests)
+  }
+
+  /**
+   * Removes all requests based on the provided information.
+   *
+   * @param requests The information about the requests to remove
+   * @return The information of the removed requests
+   */
+  private def removeRequestsUsingInfo(
+    requests: Seq[BreakpointRequestInfo]
+  ): Seq[BreakpointRequestInfo] = {
+    requests.filter(r =>
+      breakpointManager.removeBreakpointRequestWithId(r.requestId)
+    )
+  }
+
+  /**
    * Creates a new breakpoint request using the given arguments. The request is
    * memoized, meaning that the same request will be returned for the same
    * arguments. The memoized result will be thrown out if the underlying

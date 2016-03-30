@@ -7,6 +7,7 @@ import org.scaladebugger.api.lowlevel.JDIArgument
 import org.scaladebugger.api.profiles.ProfileManager
 import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
 import org.scaladebugger.api.profiles.traits.DebugProfile
+import test.RequestInfoBuilder
 
 class SwappableBreakpointProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
@@ -34,6 +35,98 @@ class SwappableBreakpointProfileSpec extends FunSpec with Matchers
 
         intercept[AssertionError] {
           swappableDebugProfile.breakpointRequests
+        }
+      }
+    }
+
+    describe("#removeBreakpointRequests") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Seq(RequestInfoBuilder.newBreakpointRequestInfo())
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeBreakpointRequests _).expects(
+          fileName, lineNumber
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.removeBreakpointRequests(
+          fileName, lineNumber
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeBreakpointRequests(fileName, lineNumber)
+        }
+      }
+    }
+
+    describe("#removeBreakpointRequestWithArgs") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Some(RequestInfoBuilder.newBreakpointRequestInfo())
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeBreakpointRequestWithArgs _).expects(
+          fileName, lineNumber, extraArguments
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.removeBreakpointRequestWithArgs(
+          fileName, lineNumber, extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        val fileName = "some/file/name.scala"
+        val lineNumber = 999
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeBreakpointRequestWithArgs(
+            fileName, lineNumber, extraArguments: _*
+          )
+        }
+      }
+    }
+
+    describe("#removeAllBreakpointRequests") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Seq(RequestInfoBuilder.newBreakpointRequestInfo())
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeAllBreakpointRequests _).expects()
+          .returning(expected).once()
+
+        val actual = swappableDebugProfile.removeAllBreakpointRequests()
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeAllBreakpointRequests()
         }
       }
     }

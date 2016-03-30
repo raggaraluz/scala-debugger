@@ -33,7 +33,6 @@ trait BreakpointProfile {
    * @param lineNumber The line number within the file where the breakpoint
    *                   will be set
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The stream of breakpoint events
    */
   def tryGetOrCreateBreakpointRequest(
@@ -56,7 +55,6 @@ trait BreakpointProfile {
    * @param lineNumber The line number within the file where the breakpoint
    *                   will be set
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The stream of breakpoint events
    */
   def getOrCreateBreakpointRequest(
@@ -79,7 +77,6 @@ trait BreakpointProfile {
    * @param lineNumber The line number within the file where the breakpoint
    *                   will be set
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The stream of breakpoint events and any retrieved data based on
    *         requests from extra arguments
    */
@@ -103,7 +100,6 @@ trait BreakpointProfile {
    * @param lineNumber The line number within the file where the breakpoint
    *                   will be set
    * @param extraArguments The additional JDI arguments to provide
-   *
    * @return The stream of breakpoint events and any retrieved data based on
    *         requests from extra arguments
    */
@@ -140,4 +136,87 @@ trait BreakpointProfile {
     lineNumber: Int,
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes all breakpoint requests placed on the specified line and file.
+   *
+   * @param fileName The name of the file where the breakpoints reside
+   * @param lineNumber The number of the line where the breakpoints reside
+   * @return The collection of information about removed breakpoint requests
+   */
+  def removeBreakpointRequests(
+    fileName: String,
+    lineNumber: Int
+  ): Seq[BreakpointRequestInfo]
+
+  /**
+   * Removes all breakpoint requests placed on the specified line and file.
+   *
+   * @param fileName The name of the file where the breakpoints reside
+   * @param lineNumber The number of the line where the breakpoints reside
+   * @return Success containing the collection of information about removed
+   *         breakpoint requests, otherwise a failure
+   */
+  def tryRemoveBreakpointRequests(
+    fileName: String,
+    lineNumber: Int
+  ): Try[Seq[BreakpointRequestInfo]] = Try(removeBreakpointRequests(
+    fileName,
+    lineNumber
+  ))
+
+  /**
+   * Removes all breakpoint requests placed on the specified line and file with
+   * the specified extra arguments.
+   *
+   * @param fileName The name of the file where the breakpoints reside
+   * @param lineNumber The number of the line where the breakpoints reside
+   * @param extraArguments the additional arguments provided to the specific
+   *                       breakpoint request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeBreakpointRequestWithArgs(
+    fileName: String,
+    lineNumber: Int,
+    extraArguments: JDIArgument*
+  ): Option[BreakpointRequestInfo]
+
+  /**
+   * Removes all breakpoint requests placed on the specified line and file with
+   * the specified extra arguments.
+   *
+   * @param fileName The name of the file where the breakpoints reside
+   * @param lineNumber The number of the line where the breakpoints reside
+   * @param extraArguments the additional arguments provided to the specific
+   *                       breakpoint request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveBreakpointRequestWithArgs(
+    fileName: String,
+    lineNumber: Int,
+    extraArguments: JDIArgument*
+  ): Try[Option[BreakpointRequestInfo]] = Try(removeBreakpointRequestWithArgs(
+    fileName,
+    lineNumber,
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all breakpoint requests.
+   *
+   * @return The collection of information about removed breakpoint requests
+   */
+  def removeAllBreakpointRequests(): Seq[BreakpointRequestInfo]
+
+  /**
+   * Removes all breakpoint requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         breakpoint requests, otherwise a failure
+   */
+  def tryRemoveAllBreakpointRequests(): Try[Seq[BreakpointRequestInfo]] = Try(
+    removeAllBreakpointRequests()
+  )
 }
