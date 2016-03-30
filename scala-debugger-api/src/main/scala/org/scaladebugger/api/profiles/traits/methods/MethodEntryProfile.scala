@@ -147,4 +147,91 @@ trait MethodEntryProfile {
     methodName: String,
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes all method entry requests for the specified class method.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param methodName The name of the method being watched
+   * @return The collection of information about removed method entry requests
+   */
+  def removeMethodEntryRequests(
+    className: String,
+    methodName: String
+  ): Seq[MethodEntryRequestInfo]
+
+  /**
+   * Removes all method entry requests for the specified class method.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param methodName The name of the method being watched
+   * @return Success containing the collection of information about removed
+   *         method entry requests, otherwise a failure
+   */
+  def tryRemoveMethodEntryRequests(
+    className: String,
+    methodName: String
+  ): Try[Seq[MethodEntryRequestInfo]] = Try(removeMethodEntryRequests(
+    className,
+    methodName
+  ))
+
+  /**
+   * Removes all method entry requests for the specified class method with
+   * the specified extra arguments.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param methodName The name of the method being watched
+   * @param extraArguments the additional arguments provided to the specific
+   *                       method entry request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeMethodEntryRequestWithArgs(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Option[MethodEntryRequestInfo]
+
+  /**
+   * Removes all method entry requests for the specified class method with
+   * the specified extra arguments.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param methodName The name of the method being watched
+   * @param extraArguments the additional arguments provided to the specific
+   *                       method entry request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveMethodEntryRequestWithArgs(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Try[Option[MethodEntryRequestInfo]] = Try(removeMethodEntryRequestWithArgs(
+    className,
+    methodName,
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all method entry requests.
+   *
+   * @return The collection of information about removed method entry requests
+   */
+  def removeAllMethodEntryRequests(): Seq[MethodEntryRequestInfo]
+
+  /**
+   * Removes all method entry requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         method entry requests, otherwise a failure
+   */
+  def tryRemoveAllMethodEntryRequests(): Try[Seq[MethodEntryRequestInfo]] = Try(
+    removeAllMethodEntryRequests()
+  )
 }

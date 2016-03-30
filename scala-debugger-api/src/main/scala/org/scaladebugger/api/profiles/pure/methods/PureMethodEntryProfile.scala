@@ -123,6 +123,63 @@ trait PureMethodEntryProfile extends MethodEntryProfile {
   ).exists(_.isPending)
 
   /**
+   * Removes all method entry requests for the specified class method.
+   *
+   * @param className  The full name of the class/object/trait containing the
+   *                   method being watched
+   * @param methodName The name of the method being watched
+   * @return The collection of information about removed method entry requests
+   */
+  override def removeMethodEntryRequests(
+    className: String,
+    methodName: String
+  ): Seq[MethodEntryRequestInfo] = {
+    methodEntryRequests.filter(m =>
+      m.className == className &&
+      m.methodName == methodName
+    ).filter(m =>
+      methodEntryManager.removeMethodEntryRequestWithId(m.requestId)
+    )
+  }
+
+  /**
+   * Removes all method entry requests for the specified class method with
+   * the specified extra arguments.
+   *
+   * @param className      The full name of the class/object/trait containing the
+   *                       method being watched
+   * @param methodName     The name of the method being watched
+   * @param extraArguments the additional arguments provided to the specific
+   *                       method entry request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  override def removeMethodEntryRequestWithArgs(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Option[MethodEntryRequestInfo] = {
+    methodEntryRequests.find(m =>
+      m.className == className &&
+      m.methodName == methodName &&
+      m.extraArguments == extraArguments
+    ).filter(m =>
+      methodEntryManager.removeMethodEntryRequestWithId(m.requestId)
+    )
+  }
+
+  /**
+   * Removes all method entry requests.
+   *
+   * @return The collection of information about removed method entry requests
+   */
+  override def removeAllMethodEntryRequests(): Seq[MethodEntryRequestInfo] = {
+    methodEntryRequests.filter(m =>
+      methodEntryManager.removeMethodEntryRequestWithId(m.requestId)
+    )
+  }
+
+  /**
    * Creates a new method entry request using the given arguments. The request
    * is memoized, meaning that the same request will be returned for the same
    * arguments. The memoized result will be thrown out if the underlying

@@ -31,6 +31,16 @@ class MethodEntryProfileSpec extends FunSpec with Matchers
       Success(TestPipelineWithData)
     }
 
+    override def removeMethodEntryRequests(
+      className: String,
+      methodName: String
+    ): Seq[MethodEntryRequestInfo] = ???
+    override def removeMethodEntryRequestWithArgs(
+      className: String,
+      methodName: String,
+      extraArguments: JDIArgument*
+    ): Option[MethodEntryRequestInfo] = ???
+    override def removeAllMethodEntryRequests(): Seq[MethodEntryRequestInfo] = ???
     override def isMethodEntryRequestPending(
       className: String,
       methodName: String
@@ -52,6 +62,16 @@ class MethodEntryProfileSpec extends FunSpec with Matchers
       Failure(TestThrowable)
     }
 
+    override def removeMethodEntryRequests(
+      className: String,
+      methodName: String
+    ): Seq[MethodEntryRequestInfo] = ???
+    override def removeMethodEntryRequestWithArgs(
+      className: String,
+      methodName: String,
+      extraArguments: JDIArgument*
+    ): Option[MethodEntryRequestInfo] = ???
+    override def removeAllMethodEntryRequests(): Seq[MethodEntryRequestInfo] = ???
     override def isMethodEntryRequestPending(
       className: String,
       methodName: String

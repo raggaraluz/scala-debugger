@@ -47,6 +47,32 @@ trait SwappableMethodEntryProfile extends MethodEntryProfile {
     )
   }
 
+  override def removeMethodEntryRequests(
+    className: String,
+    methodName: String
+  ): Seq[MethodEntryRequestInfo] = {
+    withCurrentProfile.removeMethodEntryRequests(
+      className,
+      methodName
+    )
+  }
+
+  override def removeMethodEntryRequestWithArgs(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Option[MethodEntryRequestInfo] = {
+    withCurrentProfile.removeMethodEntryRequestWithArgs(
+      className,
+      methodName,
+      extraArguments: _*
+    )
+  }
+
+  override def removeAllMethodEntryRequests(): Seq[MethodEntryRequestInfo] = {
+    withCurrentProfile.removeAllMethodEntryRequests()
+  }
+
   override def methodEntryRequests: Seq[MethodEntryRequestInfo] = {
     withCurrentProfile.methodEntryRequests
   }

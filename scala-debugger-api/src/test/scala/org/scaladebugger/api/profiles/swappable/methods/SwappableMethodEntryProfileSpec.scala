@@ -7,6 +7,7 @@ import org.scaladebugger.api.lowlevel.JDIArgument
 import org.scaladebugger.api.profiles.ProfileManager
 import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
 import org.scaladebugger.api.profiles.traits.DebugProfile
+import test.RequestInfoBuilder
 
 class SwappableMethodEntryProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
@@ -34,6 +35,98 @@ class SwappableMethodEntryProfileSpec extends FunSpec with Matchers
 
         intercept[AssertionError] {
           swappableDebugProfile.methodEntryRequests
+        }
+      }
+    }
+
+    describe("#removeMethodEntryRequests") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Seq(RequestInfoBuilder.newMethodEntryRequestInfo())
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeMethodEntryRequests _).expects(
+          className, methodName
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.removeMethodEntryRequests(
+          className, methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeMethodEntryRequests(className, methodName)
+        }
+      }
+    }
+
+    describe("#removeMethodEntryRequestWithArgs") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Some(RequestInfoBuilder.newMethodEntryRequestInfo())
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeMethodEntryRequestWithArgs _).expects(
+          className, methodName, extraArguments
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.removeMethodEntryRequestWithArgs(
+          className, methodName, extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeMethodEntryRequestWithArgs(
+            className, methodName, extraArguments: _*
+          )
+        }
+      }
+    }
+
+    describe("#removeAllMethodEntryRequests") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Seq(RequestInfoBuilder.newMethodEntryRequestInfo())
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeAllMethodEntryRequests _).expects()
+          .returning(expected).once()
+
+        val actual = swappableDebugProfile.removeAllMethodEntryRequests()
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeAllMethodEntryRequests()
         }
       }
     }
