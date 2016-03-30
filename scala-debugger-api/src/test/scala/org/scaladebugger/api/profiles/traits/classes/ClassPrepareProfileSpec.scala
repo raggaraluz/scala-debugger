@@ -29,6 +29,12 @@ class ClassPrepareProfileSpec extends FunSpec with Matchers
       Success(TestPipelineWithData)
     }
 
+    override def removeClassPrepareRequestWithArgs(
+      extraArguments: JDIArgument*
+    ): Option[ClassPrepareRequestInfo] = ???
+
+    override def removeAllClassPrepareRequests(): Seq[ClassPrepareRequestInfo] = ???
+
     override def isClassPrepareRequestWithArgsPending(
       extraArguments: JDIArgument*
     ): Boolean = ???
@@ -42,6 +48,12 @@ class ClassPrepareProfileSpec extends FunSpec with Matchers
     ): Try[IdentityPipeline[ClassPrepareEventAndData]] = {
       Failure(TestThrowable)
     }
+
+    override def removeClassPrepareRequestWithArgs(
+      extraArguments: JDIArgument*
+    ): Option[ClassPrepareRequestInfo] = ???
+
+    override def removeAllClassPrepareRequests(): Seq[ClassPrepareRequestInfo] = ???
 
     override def isClassPrepareRequestWithArgsPending(
       extraArguments: JDIArgument*

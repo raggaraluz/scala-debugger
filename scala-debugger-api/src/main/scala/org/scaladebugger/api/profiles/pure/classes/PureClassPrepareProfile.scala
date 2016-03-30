@@ -93,6 +93,33 @@ trait PureClassPrepareProfile extends ClassPrepareProfile {
   }
 
   /**
+   * Removes all class prepare requests with the specified extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       class prepare request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  override def removeClassPrepareRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[ClassPrepareRequestInfo] = {
+    classPrepareRequests.find(_.extraArguments == extraArguments).filter(c =>
+      classPrepareManager.removeClassPrepareRequest(c.requestId)
+    )
+  }
+
+  /**
+   * Removes all class prepare requests.
+   *
+   * @return The collection of information about removed class prepare requests
+   */
+  override def removeAllClassPrepareRequests(): Seq[ClassPrepareRequestInfo] = {
+    classPrepareRequests.filter(c =>
+      classPrepareManager.removeClassPrepareRequest(c.requestId)
+    )
+  }
+
+  /**
    * Creates a new class prepare request using the given arguments. The request
    * is memoized, meaning that the same request will be returned for the same
    * arguments. The memoized result will be thrown out if the underlying
