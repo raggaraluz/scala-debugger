@@ -7,6 +7,7 @@ import org.scaladebugger.api.lowlevel.JDIArgument
 import org.scaladebugger.api.profiles.ProfileManager
 import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
 import org.scaladebugger.api.profiles.traits.DebugProfile
+import test.RequestInfoBuilder
 
 class SwappableThreadStartProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
@@ -34,6 +35,62 @@ class SwappableThreadStartProfileSpec extends FunSpec with Matchers
 
         intercept[AssertionError] {
           swappableDebugProfile.threadStartRequests
+        }
+      }
+    }
+
+    describe("#removeThreadStartRequestWithArgs") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Some(RequestInfoBuilder.newThreadStartRequestInfo())
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeThreadStartRequestWithArgs _).expects(
+          extraArguments
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.removeThreadStartRequestWithArgs(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeThreadStartRequestWithArgs(
+            extraArguments: _*
+          )
+        }
+      }
+    }
+
+    describe("#removeAllThreadStartRequests") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Seq(RequestInfoBuilder.newThreadStartRequestInfo())
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeAllThreadStartRequests _).expects()
+          .returning(expected).once()
+
+        val actual = swappableDebugProfile.removeAllThreadStartRequests()
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeAllThreadStartRequests()
         }
       }
     }

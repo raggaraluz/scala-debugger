@@ -28,6 +28,16 @@ trait SwappableThreadStartProfile extends ThreadStartProfile {
     withCurrentProfile.isThreadStartRequestWithArgsPending(extraArguments: _*)
   }
 
+  override def removeThreadStartRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[ThreadStartRequestInfo] = {
+    withCurrentProfile.removeThreadStartRequestWithArgs(extraArguments: _*)
+  }
+
+  override def removeAllThreadStartRequests(): Seq[ThreadStartRequestInfo] = {
+    withCurrentProfile.removeAllThreadStartRequests()
+  }
+
   override def threadStartRequests: Seq[ThreadStartRequestInfo] = {
     withCurrentProfile.threadStartRequests
   }
