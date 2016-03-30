@@ -97,6 +97,705 @@ class PureExceptionProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#removeOnlyAllExceptionsRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureExceptionProfile.removeOnlyAllExceptionsRequests()
+
+        actual should be (expected)
+      }
+
+      it("should return empty if no catchall exception request exists") {
+        val expected = Nil
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = ExceptionRequestInfo.DefaultCatchallExceptionName + "other",
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureExceptionProfile.removeOnlyAllExceptionsRequests()
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = ExceptionRequestInfo.DefaultCatchallExceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureExceptionProfile.removeOnlyAllExceptionsRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = ExceptionRequestInfo.DefaultCatchallExceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureExceptionProfile.removeOnlyAllExceptionsRequests()
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeOnlyAllExceptionsRequestWithArgs") {
+      it("should return None if no requests exists") {
+        val expected = None
+        val notifyCaught = true
+        val notifyUncaught = false
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureExceptionProfile.removeOnlyAllExceptionsRequestWithArgs(
+          notifyCaught,
+          notifyUncaught
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no catchall exception request exists") {
+        val expected = None
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = ExceptionRequestInfo.DefaultCatchallExceptionName + "other",
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureExceptionProfile.removeOnlyAllExceptionsRequestWithArgs(
+          notifyCaught,
+          notifyUncaught,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching notify caught flag exists") {
+        val expected = None
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = ExceptionRequestInfo.DefaultCatchallExceptionName,
+            notifyCaught = !notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureExceptionProfile.removeOnlyAllExceptionsRequestWithArgs(
+          notifyCaught,
+          notifyUncaught,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching notify uncaught flag exists") {
+        val expected = None
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = ExceptionRequestInfo.DefaultCatchallExceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = !notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureExceptionProfile.removeOnlyAllExceptionsRequestWithArgs(
+          notifyCaught,
+          notifyUncaught,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching extra arguments exists") {
+        val expected = None
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = ExceptionRequestInfo.DefaultCatchallExceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureExceptionProfile.removeOnlyAllExceptionsRequestWithArgs(
+          notifyCaught,
+          notifyUncaught
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = ExceptionRequestInfo.DefaultCatchallExceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(Seq(expected.get)).once()
+        expected.foreach(b =>
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureExceptionProfile.removeOnlyAllExceptionsRequestWithArgs(
+          notifyCaught,
+          notifyUncaught,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = ExceptionRequestInfo.DefaultCatchallExceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(Seq(expected.get)).once()
+        expected.foreach(b =>
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureExceptionProfile.removeOnlyAllExceptionsRequestWithArgs(
+          notifyCaught,
+          notifyUncaught,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeExceptionRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+        val exceptionName = "some.exception.name"
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureExceptionProfile.removeExceptionRequests(
+          exceptionName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return empty if no request with matching exception name exists") {
+        val expected = Nil
+        val exceptionName = "some.exception.name"
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = exceptionName + "other",
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureExceptionProfile.removeExceptionRequests(
+          exceptionName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val exceptionName = "some.exception.name"
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = exceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureExceptionProfile.removeExceptionRequests(
+          exceptionName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val exceptionName = "some.exception.name"
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = exceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureExceptionProfile.removeExceptionRequests(
+          exceptionName
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeExceptionRequestWithArgs") {
+      it("should return None if no requests exists") {
+        val expected = None
+        val exceptionName = "some.exception.name"
+        val notifyCaught = true
+        val notifyUncaught = false
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureExceptionProfile.removeExceptionRequestWithArgs(
+          exceptionName,
+          notifyCaught,
+          notifyUncaught
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching exception name exists") {
+        val expected = None
+        val exceptionName = "some.exception.name"
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = exceptionName + "other",
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureExceptionProfile.removeExceptionRequestWithArgs(
+          exceptionName,
+          notifyCaught,
+          notifyUncaught,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching notify caught flag exists") {
+        val expected = None
+        val exceptionName = "some.exception.name"
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = exceptionName,
+            notifyCaught = !notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureExceptionProfile.removeExceptionRequestWithArgs(
+          exceptionName,
+          notifyCaught,
+          notifyUncaught,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching notify uncaught flag exists") {
+        val expected = None
+        val exceptionName = "some.exception.name"
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = exceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = !notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureExceptionProfile.removeExceptionRequestWithArgs(
+          exceptionName,
+          notifyCaught,
+          notifyUncaught,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching extra arguments exists") {
+        val expected = None
+        val exceptionName = "some.exception.name"
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = exceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureExceptionProfile.removeExceptionRequestWithArgs(
+          exceptionName,
+          notifyCaught,
+          notifyUncaught
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val exceptionName = "some.exception.name"
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = exceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(Seq(expected.get)).once()
+        expected.foreach(b =>
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureExceptionProfile.removeExceptionRequestWithArgs(
+          exceptionName,
+          notifyCaught,
+          notifyUncaught,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val exceptionName = "some.exception.name"
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = exceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(Seq(expected.get)).once()
+        expected.foreach(b =>
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureExceptionProfile.removeExceptionRequestWithArgs(
+          exceptionName,
+          notifyCaught,
+          notifyUncaught,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeAllExceptionRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureExceptionProfile.removeAllExceptionRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all pending requests") {
+        val exceptionName = "some.exception.name"
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = exceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureExceptionProfile.removeAllExceptionRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all non-pending requests") {
+        val exceptionName = "some.exception.name"
+        val notifyCaught = true
+        val notifyUncaught = false
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ExceptionRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = exceptionName,
+            notifyCaught = notifyCaught,
+            notifyUncaught = notifyUncaught,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockExceptionManager.exceptionRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockExceptionManager.removeExceptionRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureExceptionProfile.removeAllExceptionRequests()
+
+        actual should be (expected)
+      }
+    }
+
     describe("#isAllExceptionsRequestPending") {
       it("should return false if no requests exist") {
         val expected = false

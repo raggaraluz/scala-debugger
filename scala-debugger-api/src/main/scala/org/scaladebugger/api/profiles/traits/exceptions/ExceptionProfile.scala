@@ -266,4 +266,139 @@ trait ExceptionProfile {
     notifyUncaught: Boolean,
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes exception requests targeted towards "all exceptions."
+   *
+   * @return The collection of information about removed exception requests
+   */
+  def removeOnlyAllExceptionsRequests(): Seq[ExceptionRequestInfo]
+
+  /**
+   * Removes exception requests targeted towards "all exceptions."
+   *
+   * @return Success containing the collection of information about removed
+   *         exception requests, otherwise a failure
+   */
+  def tryRemoveOnlyAllExceptionsRequests(): Try[Seq[ExceptionRequestInfo]] =
+    Try(removeOnlyAllExceptionsRequests())
+
+  /**
+   * Removes the exception request targeted towards "all exceptions" with
+   * the specified notification flags and extra arguments.
+   *
+   * @param notifyCaught The caught notification flag provided to the request
+   * @param notifyUncaught The uncaught notification flag provided to the request
+   * @param extraArguments the additional arguments provided to the specific
+   *                       exception request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeOnlyAllExceptionsRequestWithArgs(
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Option[ExceptionRequestInfo]
+
+  /**
+   * Removes the exception request targeted towards "all exceptions" with
+   * the specified notification flags and extra arguments.
+   *
+   * @param notifyCaught The caught notification flag provided to the request
+   * @param notifyUncaught The uncaught notification flag provided to the request
+   * @param extraArguments the additional arguments provided to the specific
+   *                       exception request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveOnlyAllExceptionsRequestWithArgs(
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Try[Option[ExceptionRequestInfo]] = Try(removeOnlyAllExceptionsRequestWithArgs(
+    notifyCaught,
+    notifyUncaught,
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all exception requests with the specified class name.
+   *
+   * @param exceptionName The full class name of the exception
+   * @return The collection of information about removed exception requests
+   */
+  def removeExceptionRequests(exceptionName: String): Seq[ExceptionRequestInfo]
+
+  /**
+   * Removes all exception requests with the specified class name.
+   *
+   * @param exceptionName The full class name of the exception
+   * @return Success containing the collection of information about removed
+   *         exception requests, otherwise a failure
+   */
+  def tryRemoveExceptionRequests(
+    exceptionName: String
+  ): Try[Seq[ExceptionRequestInfo]] = Try(removeExceptionRequests(
+    exceptionName
+  ))
+
+  /**
+   * Remove the exception request with the specified class name, notification
+   * flags, and extra arguments.
+   *
+   * @param exceptionName The full class name of the exception
+   * @param notifyCaught The caught notification flag provided to the request
+   * @param notifyUncaught The uncaught notification flag provided to the request
+   * @param extraArguments the additional arguments provided to the specific
+   *                       exception request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeExceptionRequestWithArgs(
+    exceptionName: String,
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Option[ExceptionRequestInfo]
+
+  /**
+   * Remove the exception request with the specified class name, notification
+   * flags, and extra arguments.
+   *
+   * @param exceptionName The full class name of the exception
+   * @param notifyCaught The caught notification flag provided to the request
+   * @param notifyUncaught The uncaught notification flag provided to the request
+   * @param extraArguments the additional arguments provided to the specific
+   *                       exception request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveExceptionRequestWithArgs(
+    exceptionName: String,
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Try[Option[ExceptionRequestInfo]] = Try(removeExceptionRequestWithArgs(
+    exceptionName,
+    notifyCaught,
+    notifyUncaught,
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all exception requests.
+   *
+   * @return The collection of information about removed exception requests
+   */
+  def removeAllExceptionRequests(): Seq[ExceptionRequestInfo]
+
+  /**
+   * Removes all exception requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         exception requests, otherwise a failure
+   */
+  def tryRemoveAllExceptionRequests(): Try[Seq[ExceptionRequestInfo]] = Try(
+    removeAllExceptionRequests()
+  )
 }

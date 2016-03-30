@@ -188,6 +188,91 @@ trait PureExceptionProfile extends ExceptionProfile {
   ).exists(_.isPending)
 
   /**
+   * Removes exception requests targeted towards "all exceptions."
+   *
+   * @return The collection of information about removed exception requests
+   */
+  override def removeOnlyAllExceptionsRequests(): Seq[ExceptionRequestInfo] = {
+    exceptionRequests.filter(_.isCatchall).filter(e =>
+      exceptionManager.removeExceptionRequestWithId(e.requestId)
+    )
+  }
+
+  /**
+   * Removes all exception requests with the specified class name.
+   *
+   * @param exceptionName The full class name of the exception
+   * @return The collection of information about removed exception requests
+   */
+  override def removeExceptionRequests(
+    exceptionName: String
+  ): Seq[ExceptionRequestInfo] = {
+    exceptionRequests.filter(_.className == exceptionName).filter(e =>
+      exceptionManager.removeExceptionRequestWithId(e.requestId)
+    )
+  }
+
+  /**
+   * Removes all exception requests.
+   *
+   * @return The collection of information about removed exception requests
+   */
+  override def removeAllExceptionRequests(): Seq[ExceptionRequestInfo] = {
+    exceptionRequests.filter(e =>
+      exceptionManager.removeExceptionRequestWithId(e.requestId)
+    )
+  }
+
+  /**
+   * Remove the exception request with the specified class name, notification
+   * flags, and extra arguments.
+   *
+   * @param exceptionName  The full class name of the exception
+   * @param notifyCaught   The caught notification flag provided to the request
+   * @param notifyUncaught The uncaught notification flag provided to the request
+   * @param extraArguments the additional arguments provided to the specific
+   *                       exception request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  override def removeExceptionRequestWithArgs(
+    exceptionName: String,
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Option[ExceptionRequestInfo] = {
+    exceptionRequests.find(e =>
+      e.className == exceptionName &&
+      e.notifyCaught == notifyCaught &&
+      e.notifyUncaught == notifyUncaught &&
+      e.extraArguments == extraArguments
+    ).filter(e => exceptionManager.removeExceptionRequestWithId(e.requestId))
+  }
+
+  /**
+   * Removes the exception request targeted towards "all exceptions" with
+   * the specified notification flags and extra arguments.
+   *
+   * @param notifyCaught   The caught notification flag provided to the request
+   * @param notifyUncaught The uncaught notification flag provided to the request
+   * @param extraArguments the additional arguments provided to the specific
+   *                       exception request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  override def removeOnlyAllExceptionsRequestWithArgs(
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Option[ExceptionRequestInfo] = {
+    exceptionRequests.filter(_.isCatchall).find(e =>
+      e.notifyCaught == notifyCaught &&
+      e.notifyUncaught == notifyUncaught &&
+      e.extraArguments == extraArguments
+    ).filter(e => exceptionManager.removeExceptionRequestWithId(e.requestId))
+  }
+
+  /**
    * Creates a new exception request using the given arguments. The request is
    * memoized, meaning that the same request will be returned for the same
    * arguments. The memoized result will be thrown out if the underlying
