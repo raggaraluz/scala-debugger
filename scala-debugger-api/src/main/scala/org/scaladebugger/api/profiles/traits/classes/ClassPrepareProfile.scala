@@ -89,4 +89,47 @@ trait ClassPrepareProfile {
   def isClassPrepareRequestWithArgsPending(
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes all class prepare requests with the specified extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       class prepare request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeClassPrepareRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[ClassPrepareRequestInfo]
+
+  /**
+   * Removes all class prepare requests with the specified extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       class prepare request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveClassPrepareRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Try[Option[ClassPrepareRequestInfo]] = Try(removeClassPrepareRequestWithArgs(
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all class prepare requests.
+   *
+   * @return The collection of information about removed class prepare requests
+   */
+  def removeAllClassPrepareRequests(): Seq[ClassPrepareRequestInfo]
+
+  /**
+   * Removes all class prepare requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         class prepare requests, otherwise a failure
+   */
+  def tryRemoveAllClassPrepareRequests(): Try[Seq[ClassPrepareRequestInfo]] = Try(
+    removeAllClassPrepareRequests()
+  )
 }

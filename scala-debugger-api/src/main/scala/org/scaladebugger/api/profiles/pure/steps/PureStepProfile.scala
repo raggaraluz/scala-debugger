@@ -197,6 +197,53 @@ trait PureStepProfile extends StepProfile {
   }
 
   /**
+   * Removes all step requests for the given thread.
+   *
+   * @param threadReference The thread with which is receiving the step request
+   * @return The collection of information about removed step requests
+   */
+  override def removeStepRequests(
+    threadReference: ThreadReference
+  ): Seq[StepRequestInfo] = {
+    stepRequests.filter(_.threadReference == threadReference).filter(s =>
+      stepManager.removeStepRequestWithId(s.requestId)
+    )
+  }
+
+  /**
+   * Removes all step requests for the given thread with the specified extra
+   * arguments.
+   *
+   * @param threadReference The thread with which is receiving the step request
+   * @param extraArguments  the additional arguments provided to the specific
+   *                        step request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  override def removeStepRequestWithArgs(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Option[StepRequestInfo] = {
+    stepRequests.find(s =>
+      s.threadReference == threadReference &&
+      s.extraArguments == extraArguments
+    ).filter(s =>
+      stepManager.removeStepRequestWithId(s.requestId)
+    )
+  }
+
+  /**
+   * Removes all step requests.
+   *
+   * @return The collection of information about removed step requests
+   */
+  override def removeAllStepRequests(): Seq[StepRequestInfo] = {
+    stepRequests.filter(s =>
+      stepManager.removeStepRequestWithId(s.requestId)
+    )
+  }
+
+  /**
    * Creates a new step request and constructs a future for when its result
    * returns.
    *

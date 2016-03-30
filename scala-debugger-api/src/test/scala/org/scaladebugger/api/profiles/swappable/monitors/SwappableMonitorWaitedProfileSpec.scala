@@ -7,6 +7,7 @@ import org.scaladebugger.api.lowlevel.JDIArgument
 import org.scaladebugger.api.profiles.ProfileManager
 import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
 import org.scaladebugger.api.profiles.traits.DebugProfile
+import test.RequestInfoBuilder
 
 class SwappableMonitorWaitedProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
@@ -34,6 +35,62 @@ class SwappableMonitorWaitedProfileSpec extends FunSpec with Matchers
 
         intercept[AssertionError] {
           swappableDebugProfile.monitorWaitedRequests
+        }
+      }
+    }
+
+    describe("#removeMonitorWaitedRequestWithArgs") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Some(RequestInfoBuilder.newMonitorWaitedRequestInfo())
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeMonitorWaitedRequestWithArgs _)
+          .expects(extraArguments)
+          .returning(expected).once()
+
+        val actual = swappableDebugProfile.removeMonitorWaitedRequestWithArgs(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeMonitorWaitedRequestWithArgs(
+            extraArguments: _*
+          )
+        }
+      }
+    }
+
+    describe("#removeAllMonitorWaitedRequests") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Seq(RequestInfoBuilder.newMonitorWaitedRequestInfo())
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeAllMonitorWaitedRequests _).expects()
+          .returning(expected).once()
+
+        val actual = swappableDebugProfile.removeAllMonitorWaitedRequests()
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeAllMonitorWaitedRequests()
         }
       }
     }

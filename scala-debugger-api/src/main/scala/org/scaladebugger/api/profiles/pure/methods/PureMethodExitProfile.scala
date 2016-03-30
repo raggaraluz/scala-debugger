@@ -124,6 +124,63 @@ trait PureMethodExitProfile extends MethodExitProfile {
   ).exists(_.isPending)
 
   /**
+   * Removes all method exit requests for the specified class method.
+   *
+   * @param className  The full name of the class/object/trait containing the
+   *                   method being watched
+   * @param methodName The name of the method being watched
+   * @return The collection of information about removed method exit requests
+   */
+  override def removeMethodExitRequests(
+    className: String,
+    methodName: String
+  ): Seq[MethodExitRequestInfo] = {
+    methodExitRequests.filter(m =>
+      m.className == className &&
+        m.methodName == methodName
+    ).filter(m =>
+      methodExitManager.removeMethodExitRequestWithId(m.requestId)
+    )
+  }
+
+  /**
+   * Removes all method exit requests for the specified class method with
+   * the specified extra arguments.
+   *
+   * @param className      The full name of the class/object/trait containing the
+   *                       method being watched
+   * @param methodName     The name of the method being watched
+   * @param extraArguments the additional arguments provided to the specific
+   *                       method exit request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  override def removeMethodExitRequestWithArgs(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Option[MethodExitRequestInfo] = {
+    methodExitRequests.find(m =>
+      m.className == className &&
+        m.methodName == methodName &&
+        m.extraArguments == extraArguments
+    ).filter(m =>
+      methodExitManager.removeMethodExitRequestWithId(m.requestId)
+    )
+  }
+
+  /**
+   * Removes all method exit requests.
+   *
+   * @return The collection of information about removed method exit requests
+   */
+  override def removeAllMethodExitRequests(): Seq[MethodExitRequestInfo] = {
+    methodExitRequests.filter(m =>
+      methodExitManager.removeMethodExitRequestWithId(m.requestId)
+    )
+  }
+
+  /**
    * Creates a new method exit request using the given arguments. The request
    * is memoized, meaning that the same request will be returned for the same
    * arguments. The memoized result will be thrown out if the underlying

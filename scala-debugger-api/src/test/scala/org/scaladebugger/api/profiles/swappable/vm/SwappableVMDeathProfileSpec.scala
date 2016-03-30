@@ -7,6 +7,7 @@ import org.scaladebugger.api.lowlevel.JDIArgument
 import org.scaladebugger.api.profiles.ProfileManager
 import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
 import org.scaladebugger.api.profiles.traits.DebugProfile
+import test.RequestInfoBuilder
 
 class SwappableVMDeathProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
@@ -34,6 +35,62 @@ class SwappableVMDeathProfileSpec extends FunSpec with Matchers
 
         intercept[AssertionError] {
           swappableDebugProfile.vmDeathRequests
+        }
+      }
+    }
+
+    describe("#removeVMDeathRequestWithArgs") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Some(RequestInfoBuilder.newVMDeathRequestInfo())
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeVMDeathRequestWithArgs _).expects(
+          extraArguments
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.removeVMDeathRequestWithArgs(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeVMDeathRequestWithArgs(
+            extraArguments: _*
+          )
+        }
+      }
+    }
+
+    describe("#removeAllVMDeathRequests") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Seq(RequestInfoBuilder.newVMDeathRequestInfo())
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeAllVMDeathRequests _).expects()
+          .returning(expected).once()
+
+        val actual = swappableDebugProfile.removeAllVMDeathRequests()
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeAllVMDeathRequests()
         }
       }
     }

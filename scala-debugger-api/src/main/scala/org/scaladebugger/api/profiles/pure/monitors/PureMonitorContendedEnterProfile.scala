@@ -95,6 +95,41 @@ trait PureMonitorContendedEnterProfile extends MonitorContendedEnterProfile {
   }
 
   /**
+   * Removes all monitor contended enter requests with the specified extra
+   * arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       monitor contended enter request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  override def removeMonitorContendedEnterRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[MonitorContendedEnterRequestInfo] = {
+    monitorContendedEnterRequests
+      .find(_.extraArguments == extraArguments)
+      .filter(c =>
+        monitorContendedEnterManager.removeMonitorContendedEnterRequest(
+          c.requestId
+        )
+      )
+  }
+
+  /**
+   * Removes all monitor contended enter requests.
+   *
+   * @return The collection of information about removed
+   *         monitor contended enter requests
+   */
+  override def removeAllMonitorContendedEnterRequests(): Seq[MonitorContendedEnterRequestInfo] = {
+    monitorContendedEnterRequests.filter(c =>
+      monitorContendedEnterManager.removeMonitorContendedEnterRequest(
+        c.requestId
+      )
+    )
+  }
+
+  /**
    * Creates a new monitor contended enter request using the given arguments.
    * The request is memoized, meaning that the same request will be returned
    * for the same arguments. The memoized result will be thrown out if the

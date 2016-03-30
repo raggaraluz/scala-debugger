@@ -121,6 +121,350 @@ class PureStepProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#removeStepRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+        val threadReference = mock[ThreadReference]
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureStepProfile.removeStepRequests(
+          threadReference
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return empty if no request with matching thread exists") {
+        val expected = Nil
+        val removeExistingRequests = true
+        val threadReference = mock[ThreadReference]
+        val size = 1
+        val depth = 2
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            removeExistingRequests = removeExistingRequests,
+            threadReference = mock[ThreadReference],
+            size = size,
+            depth = depth,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureStepProfile.removeStepRequests(
+          threadReference
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val removeExistingRequests = true
+        val threadReference = mock[ThreadReference]
+        val size = 1
+        val depth = 2
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            removeExistingRequests = removeExistingRequests,
+            threadReference = threadReference,
+            size = size,
+            depth = depth,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockStepManager.removeStepRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureStepProfile.removeStepRequests(
+          threadReference
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val removeExistingRequests = true
+        val threadReference = mock[ThreadReference]
+        val size = 1
+        val depth = 2
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            removeExistingRequests = removeExistingRequests,
+            threadReference = threadReference,
+            size = size,
+            depth = depth,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockStepManager.removeStepRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureStepProfile.removeStepRequests(
+          threadReference
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeStepRequestWithArgs") {
+      it("should return None if no requests exists") {
+        val expected = None
+        val threadReference = mock[ThreadReference]
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureStepProfile.removeStepRequestWithArgs(
+          threadReference
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching thread exists") {
+        val expected = None
+        val removeExistingRequests = true
+        val threadReference = mock[ThreadReference]
+        val size = 1
+        val depth = 2
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            removeExistingRequests = removeExistingRequests,
+            threadReference = mock[ThreadReference],
+            size = size,
+            depth = depth,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureStepProfile.removeStepRequestWithArgs(
+          threadReference,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching extra arguments exists") {
+        val expected = None
+        val removeExistingRequests = true
+        val threadReference = mock[ThreadReference]
+        val size = 1
+        val depth = 2
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            removeExistingRequests = removeExistingRequests,
+            threadReference = threadReference,
+            size = size,
+            depth = depth,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureStepProfile.removeStepRequestWithArgs(
+          threadReference
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val removeExistingRequests = true
+        val threadReference = mock[ThreadReference]
+        val size = 1
+        val depth = 2
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            removeExistingRequests = removeExistingRequests,
+            threadReference = threadReference,
+            size = size,
+            depth = depth,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(Seq(expected.get)).once()
+        expected.foreach(b =>
+          (mockStepManager.removeStepRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureStepProfile.removeStepRequestWithArgs(
+          threadReference,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val removeExistingRequests = true
+        val threadReference = mock[ThreadReference]
+        val size = 1
+        val depth = 2
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            removeExistingRequests = removeExistingRequests,
+            threadReference = threadReference,
+            size = size,
+            depth = depth,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(Seq(expected.get)).once()
+        expected.foreach(b =>
+          (mockStepManager.removeStepRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureStepProfile.removeStepRequestWithArgs(
+          threadReference,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeAllStepRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureStepProfile.removeAllStepRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all pending requests") {
+        val removeExistingRequests = true
+        val threadReference = mock[ThreadReference]
+        val size = 1
+        val depth = 2
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            removeExistingRequests = removeExistingRequests,
+            threadReference = threadReference,
+            size = size,
+            depth = depth,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockStepManager.removeStepRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureStepProfile.removeAllStepRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all non-pending requests") {
+        val removeExistingRequests = true
+        val threadReference = mock[ThreadReference]
+        val size = 1
+        val depth = 2
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          StepRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            removeExistingRequests = removeExistingRequests,
+            threadReference = threadReference,
+            size = size,
+            depth = depth,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockStepManager.stepRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockStepManager.removeStepRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureStepProfile.removeAllStepRequests()
+
+        actual should be (expected)
+      }
+    }
+
     describe("#isStepRequestPending") {
       it("should return false if no requests exist") {
         val expected = false

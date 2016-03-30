@@ -101,6 +101,180 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
       }
     }
 
+    describe("#removeClassPrepareRequestWithArgs") {
+      it("should return None if no requests exists") {
+        val expected = None
+
+        (mockClassPrepareManager.classPrepareRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureClassPrepareProfile.removeClassPrepareRequestWithArgs()
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching extra arguments exists") {
+        val expected = None
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ClassPrepareRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassPrepareManager.classPrepareRequestList _).expects()
+          .returning(requests.map(_.requestId)).once()
+        requests.foreach(r =>
+          (mockClassPrepareManager.getClassPrepareRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+        )
+
+        val actual = pureClassPrepareProfile.removeClassPrepareRequestWithArgs()
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          ClassPrepareRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassPrepareManager.classPrepareRequestList _).expects()
+          .returning(Seq(expected.get).map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockClassPrepareManager.getClassPrepareRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockClassPrepareManager.removeClassPrepareRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureClassPrepareProfile.removeClassPrepareRequestWithArgs(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          ClassPrepareRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassPrepareManager.classPrepareRequestList _).expects()
+          .returning(Seq(expected.get).map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockClassPrepareManager.getClassPrepareRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockClassPrepareManager.removeClassPrepareRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureClassPrepareProfile.removeClassPrepareRequestWithArgs(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeAllClassPrepareRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+
+        (mockClassPrepareManager.classPrepareRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureClassPrepareProfile.removeAllClassPrepareRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ClassPrepareRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassPrepareManager.classPrepareRequestList _).expects()
+          .returning(expected.map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockClassPrepareManager.getClassPrepareRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockClassPrepareManager.removeClassPrepareRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureClassPrepareProfile.removeAllClassPrepareRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all non-pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ClassPrepareRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassPrepareManager.classPrepareRequestList _).expects()
+          .returning(expected.map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockClassPrepareManager.getClassPrepareRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockClassPrepareManager.removeClassPrepareRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureClassPrepareProfile.removeAllClassPrepareRequests()
+
+        actual should be (expected)
+      }
+    }
+    
     describe("#isClassPrepareRequestWithArgsPending") {
       it("should return false if no requests exist") {
         val expected = false

@@ -28,6 +28,16 @@ trait SwappableClassPrepareProfile extends ClassPrepareProfile {
     withCurrentProfile.isClassPrepareRequestWithArgsPending(extraArguments: _*)
   }
 
+  override def removeClassPrepareRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[ClassPrepareRequestInfo] = {
+    withCurrentProfile.removeClassPrepareRequestWithArgs(extraArguments: _*)
+  }
+
+  override def removeAllClassPrepareRequests(): Seq[ClassPrepareRequestInfo] = {
+    withCurrentProfile.removeAllClassPrepareRequests()
+  }
+
   override def classPrepareRequests: Seq[ClassPrepareRequestInfo] = {
     withCurrentProfile.classPrepareRequests
   }

@@ -75,6 +75,17 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
     ): Boolean = ???
 
     override def stepRequests: Seq[StepRequestInfo] = ???
+
+    override def removeStepRequests(
+      threadReference: ThreadReference
+    ): Seq[StepRequestInfo] = ???
+
+    override def removeStepRequestWithArgs(
+      threadReference: ThreadReference,
+      extraArguments: JDIArgument*
+    ): Option[StepRequestInfo] = ???
+
+    override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
   }
 
   private val failStepProfile = new Object with StepProfile {
@@ -125,6 +136,17 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
     ): Boolean = ???
 
     override def stepRequests: Seq[StepRequestInfo] = ???
+
+    override def removeStepRequests(
+      threadReference: ThreadReference
+    ): Seq[StepRequestInfo] = ???
+
+    override def removeStepRequestWithArgs(
+      threadReference: ThreadReference,
+      extraArguments: JDIArgument*
+    ): Option[StepRequestInfo] = ???
+
+    override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
   }
 
   describe("StepProfile") {
@@ -187,6 +209,17 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
           ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
+
+          override def removeStepRequests(
+            threadReference: ThreadReference
+          ): Seq[StepRequestInfo] = ???
+
+          override def removeStepRequestWithArgs(
+            threadReference: ThreadReference,
+            extraArguments: JDIArgument*
+          ): Option[StepRequestInfo] = ???
+
+          override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
         }
 
         val actual = stepProfile.stepIntoLine(mockThreadReference)
@@ -260,6 +293,17 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
           ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
+
+          override def removeStepRequests(
+            threadReference: ThreadReference
+          ): Seq[StepRequestInfo] = ???
+
+          override def removeStepRequestWithArgs(
+            threadReference: ThreadReference,
+            extraArguments: JDIArgument*
+          ): Option[StepRequestInfo] = ???
+
+          override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
         }
 
         val actual = stepProfile.stepOverLine(mockThreadReference)
@@ -333,6 +377,17 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
           ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
+
+          override def removeStepRequests(
+            threadReference: ThreadReference
+          ): Seq[StepRequestInfo] = ???
+
+          override def removeStepRequestWithArgs(
+            threadReference: ThreadReference,
+            extraArguments: JDIArgument*
+          ): Option[StepRequestInfo] = ???
+
+          override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
         }
 
         val actual = stepProfile.stepOutLine(mockThreadReference)
@@ -406,6 +461,17 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
           ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
+
+          override def removeStepRequests(
+            threadReference: ThreadReference
+          ): Seq[StepRequestInfo] = ???
+
+          override def removeStepRequestWithArgs(
+            threadReference: ThreadReference,
+            extraArguments: JDIArgument*
+          ): Option[StepRequestInfo] = ???
+
+          override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
         }
 
         val actual = stepProfile.stepIntoMin(mockThreadReference)
@@ -479,6 +545,17 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
           ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
+
+          override def removeStepRequests(
+            threadReference: ThreadReference
+          ): Seq[StepRequestInfo] = ???
+
+          override def removeStepRequestWithArgs(
+            threadReference: ThreadReference,
+            extraArguments: JDIArgument*
+          ): Option[StepRequestInfo] = ???
+
+          override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
         }
 
         val actual = stepProfile.stepOverMin(mockThreadReference)
@@ -552,6 +629,17 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
           ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
+
+          override def removeStepRequests(
+            threadReference: ThreadReference
+          ): Seq[StepRequestInfo] = ???
+
+          override def removeStepRequestWithArgs(
+            threadReference: ThreadReference,
+            extraArguments: JDIArgument*
+          ): Option[StepRequestInfo] = ???
+
+          override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
         }
 
         val actual = stepProfile.stepOutMin(mockThreadReference)

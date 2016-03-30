@@ -90,4 +90,50 @@ trait MonitorWaitProfile {
   def isMonitorWaitRequestWithArgsPending(
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes all monitor wait requests with the specified
+   * extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       monitor wait request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeMonitorWaitRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[MonitorWaitRequestInfo]
+
+  /**
+   * Removes all monitor wait requests with the specified extra
+   * arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       monitor wait request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveMonitorWaitRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Try[Option[MonitorWaitRequestInfo]] = Try(removeMonitorWaitRequestWithArgs(
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all monitor wait requests.
+   *
+   * @return The collection of information about removed
+   *         monitor wait requests
+   */
+  def removeAllMonitorWaitRequests(): Seq[MonitorWaitRequestInfo]
+
+  /**
+   * Removes all monitor wait requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         monitor wait requests, otherwise a failure
+   */
+  def tryRemoveAllMonitorWaitRequests(): Try[Seq[MonitorWaitRequestInfo]] = Try(
+    removeAllMonitorWaitRequests()
+  )
 }

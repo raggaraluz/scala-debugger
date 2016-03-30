@@ -31,6 +31,16 @@ class AccessWatchpointProfileSpec extends FunSpec with Matchers
       Success(TestPipelineWithData)
     }
 
+    override def removeAccessWatchpointRequests(
+      className: String,
+      fieldName: String
+    ): Seq[AccessWatchpointRequestInfo] = ???
+    override def removeAccessWatchpointRequestWithArgs(
+      className: String,
+      fieldName: String,
+      extraArguments: JDIArgument*
+    ): Option[AccessWatchpointRequestInfo] = ???
+    override def removeAllAccessWatchpointRequests(): Seq[AccessWatchpointRequestInfo] = ???
     override def isAccessWatchpointRequestPending(
       className: String,
       fieldName: String
@@ -52,6 +62,16 @@ class AccessWatchpointProfileSpec extends FunSpec with Matchers
       Failure(TestThrowable)
     }
 
+    override def removeAccessWatchpointRequests(
+      className: String,
+      fieldName: String
+    ): Seq[AccessWatchpointRequestInfo] = ???
+    override def removeAccessWatchpointRequestWithArgs(
+      className: String,
+      fieldName: String,
+      extraArguments: JDIArgument*
+    ): Option[AccessWatchpointRequestInfo] = ???
+    override def removeAllAccessWatchpointRequests(): Seq[AccessWatchpointRequestInfo] = ???
     override def isAccessWatchpointRequestPending(
       className: String,
       fieldName: String

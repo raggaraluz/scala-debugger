@@ -77,6 +77,41 @@ trait PureMonitorWaitedProfile extends MonitorWaitedProfile {
   }
 
   /**
+   * Removes all monitor waited requests with the specified extra
+   * arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       monitor waited request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  override def removeMonitorWaitedRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[MonitorWaitedRequestInfo] = {
+    monitorWaitedRequests
+      .find(_.extraArguments == extraArguments)
+      .filter(c =>
+        monitorWaitedManager.removeMonitorWaitedRequest(
+          c.requestId
+        )
+      )
+  }
+
+  /**
+   * Removes all monitor waited requests.
+   *
+   * @return The collection of information about removed
+   *         monitor waited requests
+   */
+  override def removeAllMonitorWaitedRequests(): Seq[MonitorWaitedRequestInfo] = {
+    monitorWaitedRequests.filter(c =>
+      monitorWaitedManager.removeMonitorWaitedRequest(
+        c.requestId
+      )
+    )
+  }
+
+  /**
    * Creates a new monitor waited request using the given arguments. The request
    * is memoized, meaning that the same request will be returned for the same
    * arguments. The memoized result will be thrown out if the underlying

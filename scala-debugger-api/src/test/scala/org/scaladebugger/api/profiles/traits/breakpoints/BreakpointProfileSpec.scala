@@ -31,6 +31,9 @@ class BreakpointProfileSpec extends FunSpec with Matchers
       Success(TestPipelineWithData)
     }
 
+    override def removeBreakpointRequests(fileName: String, lineNumber: Int): Seq[BreakpointRequestInfo] = ???
+    override def removeBreakpointRequestWithArgs(fileName: String, lineNumber: Int, extraArguments: JDIArgument*): Option[BreakpointRequestInfo] = ???
+    override def removeAllBreakpointRequests(): Seq[BreakpointRequestInfo] = ???
     override def isBreakpointRequestPending(fileName: String, lineNumber: Int): Boolean = ???
     override def isBreakpointRequestWithArgsPending(fileName: String, lineNumber: Int, extraArguments: JDIArgument*): Boolean = ???
     override def breakpointRequests: Seq[BreakpointRequestInfo] = ???
@@ -45,6 +48,9 @@ class BreakpointProfileSpec extends FunSpec with Matchers
       Failure(TestThrowable)
     }
 
+    override def removeBreakpointRequests(fileName: String, lineNumber: Int): Seq[BreakpointRequestInfo] = ???
+    override def removeBreakpointRequestWithArgs(fileName: String, lineNumber: Int, extraArguments: JDIArgument*): Option[BreakpointRequestInfo] = ???
+    override def removeAllBreakpointRequests(): Seq[BreakpointRequestInfo] = ???
     override def isBreakpointRequestPending(fileName: String, lineNumber: Int): Boolean = ???
     override def isBreakpointRequestWithArgsPending(fileName: String, lineNumber: Int, extraArguments: JDIArgument*): Boolean = ???
     override def breakpointRequests: Seq[BreakpointRequestInfo] = ???

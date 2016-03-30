@@ -40,6 +40,22 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
       Success(TestPipelineWithData)
     }
 
+    override def removeOnlyAllExceptionsRequests(): Seq[ExceptionRequestInfo] = ???
+    override def removeExceptionRequests(
+      exceptionName: String
+    ): Seq[ExceptionRequestInfo] = ???
+    override def removeAllExceptionRequests(): Seq[ExceptionRequestInfo] = ???
+    override def removeExceptionRequestWithArgs(
+      exceptionName: String,
+      notifyCaught: Boolean,
+      notifyUncaught: Boolean,
+      extraArguments: JDIArgument*
+    ): Option[ExceptionRequestInfo] = ???
+    override def removeOnlyAllExceptionsRequestWithArgs(
+      notifyCaught: Boolean,
+      notifyUncaught: Boolean,
+      extraArguments: JDIArgument*
+    ): Option[ExceptionRequestInfo] = ???
     override def isAllExceptionsRequestPending: Boolean = ???
     override def isExceptionRequestWithArgsPending(
       exceptionName: String,
@@ -57,6 +73,22 @@ class ExceptionProfileSpec extends FunSpec with Matchers with ParallelTestExecut
   }
 
   private val failExceptionProfile = new Object with ExceptionProfile {
+    override def removeOnlyAllExceptionsRequests(): Seq[ExceptionRequestInfo] = ???
+    override def removeExceptionRequests(
+      exceptionName: String
+    ): Seq[ExceptionRequestInfo] = ???
+    override def removeAllExceptionRequests(): Seq[ExceptionRequestInfo] = ???
+    override def removeExceptionRequestWithArgs(
+      exceptionName: String,
+      notifyCaught: Boolean,
+      notifyUncaught: Boolean,
+      extraArguments: JDIArgument*
+    ): Option[ExceptionRequestInfo] = ???
+    override def removeOnlyAllExceptionsRequestWithArgs(
+      notifyCaught: Boolean,
+      notifyUncaught: Boolean,
+      extraArguments: JDIArgument*
+    ): Option[ExceptionRequestInfo] = ???
     override def isAllExceptionsRequestPending: Boolean = ???
     override def isExceptionRequestWithArgsPending(
       exceptionName: String,

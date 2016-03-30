@@ -147,4 +147,91 @@ trait MethodExitProfile {
     methodName: String,
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes all method exit requests for the specified class method.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param methodName The name of the method being watched
+   * @return The collection of information about removed method exit requests
+   */
+  def removeMethodExitRequests(
+    className: String,
+    methodName: String
+  ): Seq[MethodExitRequestInfo]
+
+  /**
+   * Removes all method exit requests for the specified class method.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param methodName The name of the method being watched
+   * @return Success containing the collection of information about removed
+   *         method exit requests, otherwise a failure
+   */
+  def tryRemoveMethodExitRequests(
+    className: String,
+    methodName: String
+  ): Try[Seq[MethodExitRequestInfo]] = Try(removeMethodExitRequests(
+    className,
+    methodName
+  ))
+
+  /**
+   * Removes all method exit requests for the specified class method with
+   * the specified extra arguments.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param methodName The name of the method being watched
+   * @param extraArguments the additional arguments provided to the specific
+   *                       method exit request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeMethodExitRequestWithArgs(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Option[MethodExitRequestInfo]
+
+  /**
+   * Removes all method exit requests for the specified class method with
+   * the specified extra arguments.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  method being watched
+   * @param methodName The name of the method being watched
+   * @param extraArguments the additional arguments provided to the specific
+   *                       method exit request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveMethodExitRequestWithArgs(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Try[Option[MethodExitRequestInfo]] = Try(removeMethodExitRequestWithArgs(
+    className,
+    methodName,
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all method exit requests.
+   *
+   * @return The collection of information about removed method exit requests
+   */
+  def removeAllMethodExitRequests(): Seq[MethodExitRequestInfo]
+
+  /**
+   * Removes all method exit requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         method exit requests, otherwise a failure
+   */
+  def tryRemoveAllMethodExitRequests(): Try[Seq[MethodExitRequestInfo]] = Try(
+    removeAllMethodExitRequests()
+  )
 }

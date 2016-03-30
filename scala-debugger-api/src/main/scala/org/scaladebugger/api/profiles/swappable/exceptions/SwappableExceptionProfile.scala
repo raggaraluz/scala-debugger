@@ -76,6 +76,46 @@ trait SwappableExceptionProfile extends ExceptionProfile {
     )
   }
 
+  override def removeOnlyAllExceptionsRequests(): Seq[ExceptionRequestInfo] = {
+    withCurrentProfile.removeOnlyAllExceptionsRequests()
+  }
+
+  override def removeOnlyAllExceptionsRequestWithArgs(
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Option[ExceptionRequestInfo] = {
+    withCurrentProfile.removeOnlyAllExceptionsRequestWithArgs(
+      notifyCaught,
+      notifyUncaught,
+      extraArguments: _*
+    )
+  }
+
+  override def removeExceptionRequests(
+    exceptionName: String
+  ): Seq[ExceptionRequestInfo] = {
+    withCurrentProfile.removeExceptionRequests(exceptionName)
+  }
+
+  override def removeExceptionRequestWithArgs(
+    exceptionName: String,
+    notifyCaught: Boolean,
+    notifyUncaught: Boolean,
+    extraArguments: JDIArgument*
+  ): Option[ExceptionRequestInfo] = {
+    withCurrentProfile.removeExceptionRequestWithArgs(
+      exceptionName,
+      notifyCaught,
+      notifyUncaught,
+      extraArguments: _*
+    )
+  }
+
+  override def removeAllExceptionRequests(): Seq[ExceptionRequestInfo] = {
+    withCurrentProfile.removeAllExceptionRequests()
+  }
+
   override def exceptionRequests: Seq[ExceptionRequestInfo] = {
     withCurrentProfile.exceptionRequests
   }

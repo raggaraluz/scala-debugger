@@ -114,6 +114,382 @@ class PureModificationWatchpointProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#removeModificationWatchpointRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureModificationWatchpointProfile.removeModificationWatchpointRequests(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return empty if no request with matching filename exists") {
+        val expected = Nil
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className + "other",
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.removeModificationWatchpointRequests(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return empty if no request with matching line number exists") {
+        val expected = Nil
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            fieldName = fieldName + 1,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.removeModificationWatchpointRequests(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockModificationWatchpointManager.removeModificationWatchpointRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureModificationWatchpointProfile.removeModificationWatchpointRequests(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = className,
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockModificationWatchpointManager.removeModificationWatchpointRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureModificationWatchpointProfile.removeModificationWatchpointRequests(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeModificationWatchpointRequestWithArgs") {
+      it("should return None if no requests exists") {
+        val expected = None
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureModificationWatchpointProfile.removeModificationWatchpointRequestWithArgs(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching filename exists") {
+        val expected = None
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className + "other",
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.removeModificationWatchpointRequestWithArgs(
+          className,
+          fieldName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching line number exists") {
+        val expected = None
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            fieldName = fieldName + 1,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.removeModificationWatchpointRequestWithArgs(
+          className,
+          fieldName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching extra arguments exists") {
+        val expected = None
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureModificationWatchpointProfile.removeModificationWatchpointRequestWithArgs(
+          className,
+          fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(Seq(expected.get)).once()
+        expected.foreach(b =>
+          (mockModificationWatchpointManager.removeModificationWatchpointRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureModificationWatchpointProfile.removeModificationWatchpointRequestWithArgs(
+          className,
+          fieldName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = className,
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(Seq(expected.get)).once()
+        expected.foreach(b =>
+          (mockModificationWatchpointManager.removeModificationWatchpointRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureModificationWatchpointProfile.removeModificationWatchpointRequestWithArgs(
+          className,
+          fieldName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeAllModificationWatchpointRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureModificationWatchpointProfile.removeAllModificationWatchpointRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all pending requests") {
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockModificationWatchpointManager.removeModificationWatchpointRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureModificationWatchpointProfile.removeAllModificationWatchpointRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all non-pending requests") {
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ModificationWatchpointRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = className,
+            fieldName = fieldName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockModificationWatchpointManager.modificationWatchpointRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockModificationWatchpointManager.removeModificationWatchpointRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureModificationWatchpointProfile.removeAllModificationWatchpointRequests()
+
+        actual should be (expected)
+      }
+    }
+
     describe("#isModificationWatchpointRequestPending") {
       it("should return false if no requests exist") {
         val expected = false

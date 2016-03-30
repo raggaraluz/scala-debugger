@@ -123,6 +123,63 @@ trait PureAccessWatchpointProfile extends AccessWatchpointProfile {
   }
 
   /**
+   * Removes all access watchpoint requests for the specified class field.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  field being watched
+   * @param fieldName The name of the field being watched
+   * @return The collection of information about removed access watchpoint requests
+   */
+  override def removeAccessWatchpointRequests(
+    className: String,
+    fieldName: String
+  ): Seq[AccessWatchpointRequestInfo] = {
+    accessWatchpointRequests.filter(a =>
+      a.className == className &&
+      a.fieldName == fieldName
+    ).filter(a =>
+      accessWatchpointManager.removeAccessWatchpointRequestWithId(a.requestId)
+    )
+  }
+
+  /**
+   * Removes all access watchpoint requests for the specified class field with
+   * the specified extra arguments.
+   *
+   * @param className      The full name of the class/object/trait containing the
+   *                       field being watched
+   * @param fieldName      The name of the field being watched
+   * @param extraArguments the additional arguments provided to the specific
+   *                       access watchpoint request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  override def removeAccessWatchpointRequestWithArgs(
+    className: String,
+    fieldName: String,
+    extraArguments: JDIArgument*
+  ): Option[AccessWatchpointRequestInfo] = {
+    accessWatchpointRequests.find(a =>
+      a.className == className &&
+      a.fieldName == fieldName &&
+      a.extraArguments == extraArguments
+    ).filter(a =>
+      accessWatchpointManager.removeAccessWatchpointRequestWithId(a.requestId)
+    )
+  }
+
+  /**
+   * Removes all access watchpoint requests.
+   *
+   * @return The collection of information about removed access watchpoint requests
+   */
+  override def removeAllAccessWatchpointRequests(): Seq[AccessWatchpointRequestInfo] = {
+    accessWatchpointRequests.filter(a =>
+      accessWatchpointManager.removeAccessWatchpointRequestWithId(a.requestId)
+    )
+  }
+
+  /**
    * Creates a new access watchpoint request using the given arguments. The
    * request is memoized, meaning that the same request will be returned for
    * the same arguments. The memoized result will be thrown out if the

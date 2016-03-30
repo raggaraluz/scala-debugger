@@ -33,6 +33,12 @@ class ThreadStartProfileSpec extends FunSpec with Matchers
       extraArguments: JDIArgument*
     ): Boolean = ???
 
+    override def removeThreadStartRequestWithArgs(
+      extraArguments: JDIArgument*
+    ): Option[ThreadStartRequestInfo] = ???
+
+    override def removeAllThreadStartRequests(): Seq[ThreadStartRequestInfo] = ???
+
     override def threadStartRequests: Seq[ThreadStartRequestInfo] = ???
   }
 
@@ -46,6 +52,12 @@ class ThreadStartProfileSpec extends FunSpec with Matchers
     override def isThreadStartRequestWithArgsPending(
       extraArguments: JDIArgument*
     ): Boolean = ???
+
+    override def removeThreadStartRequestWithArgs(
+      extraArguments: JDIArgument*
+    ): Option[ThreadStartRequestInfo] = ???
+
+    override def removeAllThreadStartRequests(): Seq[ThreadStartRequestInfo] = ???
 
     override def threadStartRequests: Seq[ThreadStartRequestInfo] = ???
   }

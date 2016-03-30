@@ -91,4 +91,50 @@ trait MonitorContendedEnterProfile {
   def isMonitorContendedEnterRequestWithArgsPending(
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes all monitor contended enter requests with the specified
+   * extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       monitor contended enter request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeMonitorContendedEnterRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[MonitorContendedEnterRequestInfo]
+
+  /**
+   * Removes all monitor contended enter requests with the specified extra
+   * arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       monitor contended enter request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveMonitorContendedEnterRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Try[Option[MonitorContendedEnterRequestInfo]] = Try(removeMonitorContendedEnterRequestWithArgs(
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all monitor contended enter requests.
+   *
+   * @return The collection of information about removed
+   *         monitor contended enter requests
+   */
+  def removeAllMonitorContendedEnterRequests(): Seq[MonitorContendedEnterRequestInfo]
+
+  /**
+   * Removes all monitor contended enter requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         monitor contended enter requests, otherwise a failure
+   */
+  def tryRemoveAllMonitorContendedEnterRequests(): Try[Seq[MonitorContendedEnterRequestInfo]] = Try(
+    removeAllMonitorContendedEnterRequests()
+  )
 }

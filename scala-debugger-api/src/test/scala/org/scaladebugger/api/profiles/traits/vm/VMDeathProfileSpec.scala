@@ -33,6 +33,12 @@ class VMDeathProfileSpec extends FunSpec with Matchers
       extraArguments: JDIArgument*
     ): Boolean = ???
 
+    override def removeVMDeathRequestWithArgs(
+      extraArguments: JDIArgument*
+    ): Option[VMDeathRequestInfo] = ???
+
+    override def removeAllVMDeathRequests(): Seq[VMDeathRequestInfo] = ???
+
     override def vmDeathRequests: Seq[VMDeathRequestInfo] = ???
   }
 
@@ -46,6 +52,12 @@ class VMDeathProfileSpec extends FunSpec with Matchers
     override def isVMDeathRequestWithArgsPending(
       extraArguments: JDIArgument*
     ): Boolean = ???
+
+    override def removeVMDeathRequestWithArgs(
+      extraArguments: JDIArgument*
+    ): Option[VMDeathRequestInfo] = ???
+
+    override def removeAllVMDeathRequests(): Seq[VMDeathRequestInfo] = ???
 
     override def vmDeathRequests: Seq[VMDeathRequestInfo] = ???
   }

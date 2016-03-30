@@ -47,6 +47,32 @@ trait SwappableAccessWatchpointProfile extends AccessWatchpointProfile {
     )
   }
 
+  override def removeAccessWatchpointRequests(
+    className: String,
+    fieldName: String
+  ): Seq[AccessWatchpointRequestInfo] = {
+    withCurrentProfile.removeAccessWatchpointRequests(
+      className,
+      fieldName
+    )
+  }
+
+  override def removeAccessWatchpointRequestWithArgs(
+    className: String,
+    fieldName: String,
+    extraArguments: JDIArgument*
+  ): Option[AccessWatchpointRequestInfo] = {
+    withCurrentProfile.removeAccessWatchpointRequestWithArgs(
+      className,
+      fieldName,
+      extraArguments: _*
+    )
+  }
+
+  override def removeAllAccessWatchpointRequests(): Seq[AccessWatchpointRequestInfo] = {
+    withCurrentProfile.removeAllAccessWatchpointRequests()
+  }
+
   override def accessWatchpointRequests: Seq[AccessWatchpointRequestInfo] = {
     withCurrentProfile.accessWatchpointRequests
   }

@@ -85,6 +85,26 @@ trait SwappableStepProfile extends StepProfile {
     )
   }
 
+  override def removeStepRequests(
+    threadReference: ThreadReference
+  ): Seq[StepRequestInfo] = {
+    withCurrentProfile.removeStepRequests(threadReference)
+  }
+
+  override def removeStepRequestWithArgs(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Option[StepRequestInfo] = {
+    withCurrentProfile.removeStepRequestWithArgs(
+      threadReference,
+      extraArguments: _*
+    )
+  }
+
+  override def removeAllStepRequests(): Seq[StepRequestInfo] = {
+    withCurrentProfile.removeAllStepRequests()
+  }
+
   override def stepRequests: Seq[StepRequestInfo] = {
     withCurrentProfile.stepRequests
   }

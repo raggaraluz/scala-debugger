@@ -7,6 +7,7 @@ import org.scaladebugger.api.lowlevel.JDIArgument
 import org.scaladebugger.api.profiles.ProfileManager
 import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
 import org.scaladebugger.api.profiles.traits.DebugProfile
+import test.RequestInfoBuilder
 
 class SwappableAccessWatchpointProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
@@ -20,7 +21,7 @@ class SwappableAccessWatchpointProfileSpec extends FunSpec with Matchers
 
   describe("SwappableAccessWatchpointProfile") {
     describe("#accessWatchpointRequests") {
-      it("should invoke the method on the underlying profile") {
+      it("should invoke the field on the underlying profile") {
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
@@ -38,8 +39,100 @@ class SwappableAccessWatchpointProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#removeAccessWatchpointRequests") {
+      it("should invoke the field on the underlying profile") {
+        val expected = Seq(RequestInfoBuilder.newAccessWatchpointRequestInfo())
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeAccessWatchpointRequests _).expects(
+          className, fieldName
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.removeAccessWatchpointRequests(
+          className, fieldName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeAccessWatchpointRequests(className, fieldName)
+        }
+      }
+    }
+
+    describe("#removeAccessWatchpointRequestWithArgs") {
+      it("should invoke the field on the underlying profile") {
+        val expected = Some(RequestInfoBuilder.newAccessWatchpointRequestInfo())
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeAccessWatchpointRequestWithArgs _).expects(
+          className, fieldName, extraArguments
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.removeAccessWatchpointRequestWithArgs(
+          className, fieldName, extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        val className = "some.class.name"
+        val fieldName = "someFieldName"
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeAccessWatchpointRequestWithArgs(
+            className, fieldName, extraArguments: _*
+          )
+        }
+      }
+    }
+
+    describe("#removeAllAccessWatchpointRequests") {
+      it("should invoke the field on the underlying profile") {
+        val expected = Seq(RequestInfoBuilder.newAccessWatchpointRequestInfo())
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeAllAccessWatchpointRequests _).expects()
+          .returning(expected).once()
+
+        val actual = swappableDebugProfile.removeAllAccessWatchpointRequests()
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeAllAccessWatchpointRequests()
+        }
+      }
+    }
+
     describe("#isAccessWatchpointRequestPending") {
-      it("should invoke the method on the underlying profile") {
+      it("should invoke the field on the underlying profile") {
         val expected = true
         val className = "some.class.name"
         val fieldName = "someField"
@@ -74,7 +167,7 @@ class SwappableAccessWatchpointProfileSpec extends FunSpec with Matchers
     }
 
     describe("#isAccessWatchpointRequestWithArgsPending") {
-      it("should invoke the method on the underlying profile") {
+      it("should invoke the field on the underlying profile") {
         val expected = true
         val className = "some.class.name"
         val fieldName = "someField"
@@ -110,7 +203,7 @@ class SwappableAccessWatchpointProfileSpec extends FunSpec with Matchers
     }
 
     describe("#tryGetOrCreateAccessWatchpointRequestWithData") {
-      it("should invoke the method on the underlying profile") {
+      it("should invoke the field on the underlying profile") {
         val className = "some class"
         val fieldName = "some field"
         val arguments = Seq(mock[JDIArgument])

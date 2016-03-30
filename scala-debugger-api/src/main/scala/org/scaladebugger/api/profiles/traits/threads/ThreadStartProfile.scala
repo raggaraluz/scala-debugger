@@ -89,4 +89,47 @@ trait ThreadStartProfile {
   def isThreadStartRequestWithArgsPending(
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes all thread start requests with the specified extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       thread start request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeThreadStartRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[ThreadStartRequestInfo]
+
+  /**
+   * Removes all thread start requests with the specified extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       thread start request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveThreadStartRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Try[Option[ThreadStartRequestInfo]] = Try(removeThreadStartRequestWithArgs(
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all thread start requests.
+   *
+   * @return The collection of information about removed thread start requests
+   */
+  def removeAllThreadStartRequests(): Seq[ThreadStartRequestInfo]
+
+  /**
+   * Removes all thread start requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         thread start requests, otherwise a failure
+   */
+  def tryRemoveAllThreadStartRequests(): Try[Seq[ThreadStartRequestInfo]] = Try(
+    removeAllThreadStartRequests()
+  )
 }
