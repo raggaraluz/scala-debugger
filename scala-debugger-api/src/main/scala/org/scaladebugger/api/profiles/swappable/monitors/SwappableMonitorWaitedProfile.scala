@@ -28,6 +28,16 @@ trait SwappableMonitorWaitedProfile extends MonitorWaitedProfile {
     withCurrentProfile.isMonitorWaitedRequestWithArgsPending(extraArguments: _*)
   }
 
+  override def removeMonitorWaitedRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[MonitorWaitedRequestInfo] = {
+    withCurrentProfile.removeMonitorWaitedRequestWithArgs(extraArguments: _*)
+  }
+
+  override def removeAllMonitorWaitedRequests(): Seq[MonitorWaitedRequestInfo] = {
+    withCurrentProfile.removeAllMonitorWaitedRequests()
+  }
+
   override def monitorWaitedRequests: Seq[MonitorWaitedRequestInfo] = {
     withCurrentProfile.monitorWaitedRequests
   }
