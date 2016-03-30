@@ -127,6 +127,63 @@ trait PureModificationWatchpointProfile extends ModificationWatchpointProfile {
   }
 
   /**
+   * Removes all modification watchpoint requests for the specified class field.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  field being watched
+   * @param fieldName The name of the field being watched
+   * @return The collection of information about removed modification watchpoint requests
+   */
+  override def removeModificationWatchpointRequests(
+    className: String,
+    fieldName: String
+  ): Seq[ModificationWatchpointRequestInfo] = {
+    modificationWatchpointRequests.filter(a =>
+      a.className == className &&
+        a.fieldName == fieldName
+    ).filter(a =>
+      modificationWatchpointManager.removeModificationWatchpointRequestWithId(a.requestId)
+    )
+  }
+
+  /**
+   * Removes all modification watchpoint requests for the specified class field with
+   * the specified extra arguments.
+   *
+   * @param className      The full name of the class/object/trait containing the
+   *                       field being watched
+   * @param fieldName      The name of the field being watched
+   * @param extraArguments the additional arguments provided to the specific
+   *                       modification watchpoint request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  override def removeModificationWatchpointRequestWithArgs(
+    className: String,
+    fieldName: String,
+    extraArguments: JDIArgument*
+  ): Option[ModificationWatchpointRequestInfo] = {
+    modificationWatchpointRequests.find(a =>
+      a.className == className &&
+        a.fieldName == fieldName &&
+        a.extraArguments == extraArguments
+    ).filter(a =>
+      modificationWatchpointManager.removeModificationWatchpointRequestWithId(a.requestId)
+    )
+  }
+
+  /**
+   * Removes all modification watchpoint requests.
+   *
+   * @return The collection of information about removed modification watchpoint requests
+   */
+  override def removeAllModificationWatchpointRequests(): Seq[ModificationWatchpointRequestInfo] = {
+    modificationWatchpointRequests.filter(a =>
+      modificationWatchpointManager.removeModificationWatchpointRequestWithId(a.requestId)
+    )
+  }
+
+  /**
    * Creates a new modification watchpoint request using the given arguments.
    * The request is memoized, meaning that the same request will be returned for
    * the same arguments. The memoized result will be thrown out if the

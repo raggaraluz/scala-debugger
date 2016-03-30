@@ -145,4 +145,91 @@ trait ModificationWatchpointProfile {
     fieldName: String,
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes all modification watchpoint requests for the specified class field.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  field being watched
+   * @param fieldName The name of the field being watched
+   * @return The collection of information about removed modification watchpoint requests
+   */
+  def removeModificationWatchpointRequests(
+    className: String,
+    fieldName: String
+  ): Seq[ModificationWatchpointRequestInfo]
+
+  /**
+   * Removes all modification watchpoint requests for the specified class field.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  field being watched
+   * @param fieldName The name of the field being watched
+   * @return Success containing the collection of information about removed
+   *         modification watchpoint requests, otherwise a failure
+   */
+  def tryRemoveModificationWatchpointRequests(
+    className: String,
+    fieldName: String
+  ): Try[Seq[ModificationWatchpointRequestInfo]] = Try(removeModificationWatchpointRequests(
+    className,
+    fieldName
+  ))
+
+  /**
+   * Removes all modification watchpoint requests for the specified class field with
+   * the specified extra arguments.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  field being watched
+   * @param fieldName The name of the field being watched
+   * @param extraArguments the additional arguments provided to the specific
+   *                       modification watchpoint request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeModificationWatchpointRequestWithArgs(
+    className: String,
+    fieldName: String,
+    extraArguments: JDIArgument*
+  ): Option[ModificationWatchpointRequestInfo]
+
+  /**
+   * Removes all modification watchpoint requests for the specified class field with
+   * the specified extra arguments.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  field being watched
+   * @param fieldName The name of the field being watched
+   * @param extraArguments the additional arguments provided to the specific
+   *                       modification watchpoint request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveModificationWatchpointRequestWithArgs(
+    className: String,
+    fieldName: String,
+    extraArguments: JDIArgument*
+  ): Try[Option[ModificationWatchpointRequestInfo]] = Try(removeModificationWatchpointRequestWithArgs(
+    className,
+    fieldName,
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all modification watchpoint requests.
+   *
+   * @return The collection of information about removed modification watchpoint requests
+   */
+  def removeAllModificationWatchpointRequests(): Seq[ModificationWatchpointRequestInfo]
+
+  /**
+   * Removes all modification watchpoint requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         modification watchpoint requests, otherwise a failure
+   */
+  def tryRemoveAllModificationWatchpointRequests(): Try[Seq[ModificationWatchpointRequestInfo]] = Try(
+    removeAllModificationWatchpointRequests()
+  )
 }

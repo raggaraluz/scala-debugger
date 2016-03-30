@@ -31,6 +31,16 @@ class ModificationWatchpointProfileSpec extends FunSpec with Matchers
       Success(TestPipelineWithData)
     }
 
+    override def removeModificationWatchpointRequests(
+      className: String,
+      fieldName: String
+    ): Seq[ModificationWatchpointRequestInfo] = ???
+    override def removeModificationWatchpointRequestWithArgs(
+      className: String,
+      fieldName: String,
+      extraArguments: JDIArgument*
+    ): Option[ModificationWatchpointRequestInfo] = ???
+    override def removeAllModificationWatchpointRequests(): Seq[ModificationWatchpointRequestInfo] = ???
     override def isModificationWatchpointRequestPending(
       className: String,
       fieldName: String
@@ -52,6 +62,16 @@ class ModificationWatchpointProfileSpec extends FunSpec with Matchers
       Failure(TestThrowable)
     }
 
+    override def removeModificationWatchpointRequests(
+      className: String,
+      fieldName: String
+    ): Seq[ModificationWatchpointRequestInfo] = ???
+    override def removeModificationWatchpointRequestWithArgs(
+      className: String,
+      fieldName: String,
+      extraArguments: JDIArgument*
+    ): Option[ModificationWatchpointRequestInfo] = ???
+    override def removeAllModificationWatchpointRequests(): Seq[ModificationWatchpointRequestInfo] = ???
     override def isModificationWatchpointRequestPending(
       className: String,
       fieldName: String
