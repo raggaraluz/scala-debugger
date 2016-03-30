@@ -33,6 +33,12 @@ class ThreadDeathProfileSpec extends FunSpec with Matchers
       extraArguments: JDIArgument*
     ): Boolean = ???
 
+    override def removeThreadDeathRequestWithArgs(
+      extraArguments: JDIArgument*
+    ): Option[ThreadDeathRequestInfo] = ???
+
+    override def removeAllThreadDeathRequests(): Seq[ThreadDeathRequestInfo] = ???
+
     override def threadDeathRequests: Seq[ThreadDeathRequestInfo] = ???
   }
 
@@ -46,6 +52,12 @@ class ThreadDeathProfileSpec extends FunSpec with Matchers
     override def isThreadDeathRequestWithArgsPending(
       extraArguments: JDIArgument*
     ): Boolean = ???
+
+    override def removeThreadDeathRequestWithArgs(
+      extraArguments: JDIArgument*
+    ): Option[ThreadDeathRequestInfo] = ???
+
+    override def removeAllThreadDeathRequests(): Seq[ThreadDeathRequestInfo] = ???
 
     override def threadDeathRequests: Seq[ThreadDeathRequestInfo] = ???
   }

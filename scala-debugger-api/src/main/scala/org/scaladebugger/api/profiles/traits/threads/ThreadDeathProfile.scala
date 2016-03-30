@@ -89,4 +89,47 @@ trait ThreadDeathProfile {
   def isThreadDeathRequestWithArgsPending(
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes all thread death requests with the specified extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       thread death request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeThreadDeathRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[ThreadDeathRequestInfo]
+
+  /**
+   * Removes all thread death requests with the specified extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       thread death request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveThreadDeathRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Try[Option[ThreadDeathRequestInfo]] = Try(removeThreadDeathRequestWithArgs(
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all thread death requests.
+   *
+   * @return The collection of information about removed thread death requests
+   */
+  def removeAllThreadDeathRequests(): Seq[ThreadDeathRequestInfo]
+
+  /**
+   * Removes all thread death requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         thread death requests, otherwise a failure
+   */
+  def tryRemoveAllThreadDeathRequests(): Try[Seq[ThreadDeathRequestInfo]] = Try(
+    removeAllThreadDeathRequests()
+  )
 }
