@@ -101,6 +101,181 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
       }
     }
 
+    describe("#removeClassUnloadRequestWithArgs") {
+      it("should return None if no requests exists") {
+        val expected = None
+
+        (mockClassUnloadManager.classUnloadRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureClassUnloadProfile.removeClassUnloadRequestWithArgs()
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching extra arguments exists") {
+        val expected = None
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          ClassUnloadRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassUnloadManager.classUnloadRequestList _).expects()
+          .returning(requests.map(_.requestId)).once()
+        requests.foreach(r =>
+          (mockClassUnloadManager.getClassUnloadRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+        )
+
+        val actual = pureClassUnloadProfile.removeClassUnloadRequestWithArgs()
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          ClassUnloadRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassUnloadManager.classUnloadRequestList _).expects()
+          .returning(Seq(expected.get).map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockClassUnloadManager.getClassUnloadRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockClassUnloadManager.removeClassUnloadRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureClassUnloadProfile.removeClassUnloadRequestWithArgs(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          ClassUnloadRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassUnloadManager.classUnloadRequestList _).expects()
+          .returning(Seq(expected.get).map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockClassUnloadManager.getClassUnloadRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockClassUnloadManager.removeClassUnloadRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureClassUnloadProfile.removeClassUnloadRequestWithArgs(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeAllClassUnloadRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+
+        (mockClassUnloadManager.classUnloadRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureClassUnloadProfile.removeAllClassUnloadRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ClassUnloadRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassUnloadManager.classUnloadRequestList _).expects()
+          .returning(expected.map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockClassUnloadManager.getClassUnloadRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockClassUnloadManager.removeClassUnloadRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureClassUnloadProfile.removeAllClassUnloadRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all non-pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          ClassUnloadRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockClassUnloadManager.classUnloadRequestList _).expects()
+          .returning(expected.map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockClassUnloadManager.getClassUnloadRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockClassUnloadManager.removeClassUnloadRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureClassUnloadProfile.removeAllClassUnloadRequests()
+
+        actual should be (expected)
+      }
+    }
+
+
     describe("#isClassUnloadRequestWithArgsPending") {
       it("should return false if no requests exist") {
         val expected = false

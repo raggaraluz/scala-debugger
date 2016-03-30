@@ -7,6 +7,7 @@ import org.scaladebugger.api.lowlevel.JDIArgument
 import org.scaladebugger.api.profiles.ProfileManager
 import org.scaladebugger.api.profiles.swappable.SwappableDebugProfile
 import org.scaladebugger.api.profiles.traits.DebugProfile
+import test.RequestInfoBuilder
 
 class SwappableClassUnloadProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
@@ -38,6 +39,61 @@ class SwappableClassUnloadProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#removeClassUnloadRequestWithArgs") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Some(RequestInfoBuilder.newClassUnloadRequestInfo())
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeClassUnloadRequestWithArgs _).expects(
+          extraArguments
+        ).returning(expected).once()
+
+        val actual = swappableDebugProfile.removeClassUnloadRequestWithArgs(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        val extraArguments = Seq(mock[JDIArgument])
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeClassUnloadRequestWithArgs(
+            extraArguments: _*
+          )
+        }
+      }
+    }
+
+    describe("#removeAllClassUnloadRequests") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Seq(RequestInfoBuilder.newClassUnloadRequestInfo())
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.removeAllClassUnloadRequests _).expects()
+          .returning(expected).once()
+
+        val actual = swappableDebugProfile.removeAllClassUnloadRequests()
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there remove no underlying profile") {
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.removeAllClassUnloadRequests()
+        }
+      }
+    }
     describe("#isClassUnloadRequestWithArgsPending") {
       it("should invoke the method on the underlying profile") {
         val expected = true

@@ -88,4 +88,47 @@ trait ClassUnloadProfile {
   def isClassUnloadRequestWithArgsPending(
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes all class unload requests with the specified extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       class unload request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeClassUnloadRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Option[ClassUnloadRequestInfo]
+
+  /**
+   * Removes all class unload requests with the specified extra arguments.
+   *
+   * @param extraArguments the additional arguments provided to the specific
+   *                       class unload request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveClassUnloadRequestWithArgs(
+    extraArguments: JDIArgument*
+  ): Try[Option[ClassUnloadRequestInfo]] = Try(removeClassUnloadRequestWithArgs(
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all class unload requests.
+   *
+   * @return The collection of information about removed class unload requests
+   */
+  def removeAllClassUnloadRequests(): Seq[ClassUnloadRequestInfo]
+
+  /**
+   * Removes all class unload requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         class unload requests, otherwise a failure
+   */
+  def tryRemoveAllClassUnloadRequests(): Try[Seq[ClassUnloadRequestInfo]] = Try(
+    removeAllClassUnloadRequests()
+  )
 }
