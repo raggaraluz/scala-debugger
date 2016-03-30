@@ -101,6 +101,187 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
       }
     }
 
+    describe("#removeMonitorWaitRequestWithArgs") {
+      it("should return None if no requests exists") {
+        val expected = None
+
+        (mockMonitorWaitManager.monitorWaitRequestList _)
+          .expects()
+          .returning(Nil).once()
+
+        val actual = pureMonitorWaitProfile.removeMonitorWaitRequestWithArgs()
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching extra arguments exists") {
+        val expected = None
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MonitorWaitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMonitorWaitManager.monitorWaitRequestList _)
+          .expects()
+          .returning(requests.map(_.requestId)).once()
+        requests.foreach(r =>
+          (mockMonitorWaitManager.getMonitorWaitRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+        )
+
+        val actual = pureMonitorWaitProfile.removeMonitorWaitRequestWithArgs()
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          MonitorWaitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMonitorWaitManager.monitorWaitRequestList _)
+          .expects()
+          .returning(Seq(expected.get).map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockMonitorWaitManager.getMonitorWaitRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockMonitorWaitManager.removeMonitorWaitRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureMonitorWaitProfile.removeMonitorWaitRequestWithArgs(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          MonitorWaitRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMonitorWaitManager.monitorWaitRequestList _)
+          .expects()
+          .returning(Seq(expected.get).map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockMonitorWaitManager.getMonitorWaitRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockMonitorWaitManager.removeMonitorWaitRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureMonitorWaitProfile.removeMonitorWaitRequestWithArgs(
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeAllMonitorWaitRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+
+        (mockMonitorWaitManager.monitorWaitRequestList _)
+          .expects()
+          .returning(Nil).once()
+
+        val actual = pureMonitorWaitProfile.removeAllMonitorWaitRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          MonitorWaitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMonitorWaitManager.monitorWaitRequestList _)
+          .expects()
+          .returning(expected.map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockMonitorWaitManager.getMonitorWaitRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockMonitorWaitManager.removeMonitorWaitRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureMonitorWaitProfile.removeAllMonitorWaitRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all non-pending requests") {
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          MonitorWaitRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMonitorWaitManager.monitorWaitRequestList _)
+          .expects()
+          .returning(expected.map(_.requestId)).once()
+        expected.foreach(r => {
+          (mockMonitorWaitManager.getMonitorWaitRequestInfo _)
+            .expects(r.requestId)
+            .returning(Some(r))
+            .once()
+          (mockMonitorWaitManager.removeMonitorWaitRequest _)
+            .expects(r.requestId)
+            .returning(true)
+            .once()
+        })
+
+        val actual = pureMonitorWaitProfile.removeAllMonitorWaitRequests()
+
+        actual should be (expected)
+      }
+    }
+
     describe("#isMonitorWaitRequestWithArgsPending") {
       it("should return false if no requests exist") {
         val expected = false
