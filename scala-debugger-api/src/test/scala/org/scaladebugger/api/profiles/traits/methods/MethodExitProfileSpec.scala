@@ -31,6 +31,16 @@ class MethodExitProfileSpec extends FunSpec with Matchers
       Success(TestPipelineWithData)
     }
 
+    override def removeMethodExitRequests(
+      className: String,
+      methodName: String
+    ): Seq[MethodExitRequestInfo] = ???
+    override def removeMethodExitRequestWithArgs(
+      className: String,
+      methodName: String,
+      extraArguments: JDIArgument*
+    ): Option[MethodExitRequestInfo] = ???
+    override def removeAllMethodExitRequests(): Seq[MethodExitRequestInfo] = ???
     override def isMethodExitRequestPending(
       className: String,
       methodName: String
@@ -52,6 +62,16 @@ class MethodExitProfileSpec extends FunSpec with Matchers
       Failure(TestThrowable)
     }
 
+    override def removeMethodExitRequests(
+      className: String,
+      methodName: String
+    ): Seq[MethodExitRequestInfo] = ???
+    override def removeMethodExitRequestWithArgs(
+      className: String,
+      methodName: String,
+      extraArguments: JDIArgument*
+    ): Option[MethodExitRequestInfo] = ???
+    override def removeAllMethodExitRequests(): Seq[MethodExitRequestInfo] = ???
     override def isMethodExitRequestPending(
       className: String,
       methodName: String

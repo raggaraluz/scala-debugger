@@ -47,6 +47,32 @@ trait SwappableMethodExitProfile extends MethodExitProfile {
     )
   }
 
+  override def removeMethodExitRequests(
+    className: String,
+    methodName: String
+  ): Seq[MethodExitRequestInfo] = {
+    withCurrentProfile.removeMethodExitRequests(
+      className,
+      methodName
+    )
+  }
+
+  override def removeMethodExitRequestWithArgs(
+    className: String,
+    methodName: String,
+    extraArguments: JDIArgument*
+  ): Option[MethodExitRequestInfo] = {
+    withCurrentProfile.removeMethodExitRequestWithArgs(
+      className,
+      methodName,
+      extraArguments: _*
+    )
+  }
+
+  override def removeAllMethodExitRequests(): Seq[MethodExitRequestInfo] = {
+    withCurrentProfile.removeAllMethodExitRequests()
+  }
+
   override def methodExitRequests: Seq[MethodExitRequestInfo] = {
     withCurrentProfile.methodExitRequests
   }

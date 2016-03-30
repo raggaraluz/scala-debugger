@@ -112,6 +112,382 @@ with ParallelTestExecution with MockFactory with JDIMockHelpers
       }
     }
 
+    describe("#removeMethodExitRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureMethodExitProfile.removeMethodExitRequests(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return empty if no request with matching filename exists") {
+        val expected = Nil
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className + "other",
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.removeMethodExitRequests(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return empty if no request with matching line number exists") {
+        val expected = Nil
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName + 1,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.removeMethodExitRequests(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockMethodExitManager.removeMethodExitRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureMethodExitProfile.removeMethodExitRequests(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockMethodExitManager.removeMethodExitRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureMethodExitProfile.removeMethodExitRequests(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeMethodExitRequestWithArgs") {
+      it("should return None if no requests exists") {
+        val expected = None
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureMethodExitProfile.removeMethodExitRequestWithArgs(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching filename exists") {
+        val expected = None
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className + "other",
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.removeMethodExitRequestWithArgs(
+          className,
+          methodName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching line number exists") {
+        val expected = None
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName + 1,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.removeMethodExitRequestWithArgs(
+          className,
+          methodName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return None if no request with matching extra arguments exists") {
+        val expected = None
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val requests = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(requests).once()
+
+        val actual = pureMethodExitProfile.removeMethodExitRequestWithArgs(
+          className,
+          methodName
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return remove and return matching pending requests") {
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(Seq(expected.get)).once()
+        expected.foreach(b =>
+          (mockMethodExitManager.removeMethodExitRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureMethodExitProfile.removeMethodExitRequestWithArgs(
+          className,
+          methodName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+
+      it("should remove and return matching non-pending requests") {
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Some(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(Seq(expected.get)).once()
+        expected.foreach(b =>
+          (mockMethodExitManager.removeMethodExitRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureMethodExitProfile.removeMethodExitRequestWithArgs(
+          className,
+          methodName,
+          extraArguments: _*
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#removeAllMethodExitRequests") {
+      it("should return empty if no requests exists") {
+        val expected = Nil
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(Nil).once()
+
+        val actual = pureMethodExitProfile.removeAllMethodExitRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all pending requests") {
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = true,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockMethodExitManager.removeMethodExitRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureMethodExitProfile.removeAllMethodExitRequests()
+
+        actual should be (expected)
+      }
+
+      it("should remove and return all non-pending requests") {
+        val className = "some.class.name"
+        val methodName = "someMethodName"
+        val extraArguments = Seq(mock[JDIRequestArgument])
+
+        val expected = Seq(
+          MethodExitRequestInfo(
+            requestId = TestRequestId,
+            isPending = false,
+            className = className,
+            methodName = methodName,
+            extraArguments = extraArguments
+          )
+        )
+
+        (mockMethodExitManager.methodExitRequestList _).expects()
+          .returning(expected).once()
+        expected.foreach(b =>
+          (mockMethodExitManager.removeMethodExitRequestWithId _)
+            .expects(b.requestId)
+            .returning(true)
+            .once()
+        )
+
+        val actual = pureMethodExitProfile.removeAllMethodExitRequests()
+
+        actual should be (expected)
+      }
+    }
+
     describe("#isMethodExitRequestPending") {
       it("should return false if no requests exist") {
         val expected = false
