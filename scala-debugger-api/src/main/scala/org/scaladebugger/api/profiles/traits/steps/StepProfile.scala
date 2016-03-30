@@ -288,4 +288,77 @@ trait StepProfile {
     threadReference: ThreadReference,
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes all step requests for the given thread.
+   *
+   * @param threadReference The thread with which is receiving the step request
+   * @return The collection of information about removed step requests
+   */
+  def removeStepRequests(
+    threadReference: ThreadReference
+  ): Seq[StepRequestInfo]
+
+  /**
+   * Removes all step requests for the given thread.
+   *
+   * @param threadReference The thread with which is receiving the step request
+   * @return Success containing the collection of information about removed
+   *         step requests, otherwise a failure
+   */
+  def tryRemoveStepRequests(
+    threadReference: ThreadReference
+  ): Try[Seq[StepRequestInfo]] = Try(removeStepRequests(
+    threadReference
+  ))
+
+  /**
+   * Removes all step requests for the given thread with the specified extra
+   * arguments.
+   *
+   * @param threadReference The thread with which is receiving the step request
+   * @param extraArguments the additional arguments provided to the specific
+   *                       step request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeStepRequestWithArgs(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Option[StepRequestInfo]
+
+  /**
+   * Removes all step requests for the given thread with the specified extra
+   * arguments.
+   *
+   * @param threadReference The thread with which is receiving the step request
+   * @param extraArguments the additional arguments provided to the specific
+   *                       step request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveStepRequestWithArgs(
+    threadReference: ThreadReference,
+    extraArguments: JDIArgument*
+  ): Try[Option[StepRequestInfo]] = Try(removeStepRequestWithArgs(
+    threadReference,
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all step requests.
+   *
+   * @return The collection of information about removed step requests
+   */
+  def removeAllStepRequests(): Seq[StepRequestInfo]
+
+  /**
+   * Removes all step requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         step requests, otherwise a failure
+   */
+  def tryRemoveAllStepRequests(): Try[Seq[StepRequestInfo]] = Try(
+    removeAllStepRequests()
+  )
 }
