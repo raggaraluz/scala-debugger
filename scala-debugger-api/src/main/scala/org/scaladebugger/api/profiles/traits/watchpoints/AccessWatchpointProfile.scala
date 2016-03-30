@@ -144,4 +144,91 @@ trait AccessWatchpointProfile {
     fieldName: String,
     extraArguments: JDIArgument*
   ): Boolean
+
+  /**
+   * Removes all access watchpoint requests for the specified class field.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  field being watched
+   * @param fieldName The name of the field being watched
+   * @return The collection of information about removed access watchpoint requests
+   */
+  def removeAccessWatchpointRequests(
+    className: String,
+    fieldName: String
+  ): Seq[AccessWatchpointRequestInfo]
+
+  /**
+   * Removes all access watchpoint requests for the specified class field.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  field being watched
+   * @param fieldName The name of the field being watched
+   * @return Success containing the collection of information about removed
+   *         access watchpoint requests, otherwise a failure
+   */
+  def tryRemoveAccessWatchpointRequests(
+    className: String,
+    fieldName: String
+  ): Try[Seq[AccessWatchpointRequestInfo]] = Try(removeAccessWatchpointRequests(
+    className,
+    fieldName
+  ))
+
+  /**
+   * Removes all access watchpoint requests for the specified class field with
+   * the specified extra arguments.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  field being watched
+   * @param fieldName The name of the field being watched
+   * @param extraArguments the additional arguments provided to the specific
+   *                       access watchpoint request
+   * @return Some information about the removed request if it existed,
+   *         otherwise None
+   */
+  def removeAccessWatchpointRequestWithArgs(
+    className: String,
+    fieldName: String,
+    extraArguments: JDIArgument*
+  ): Option[AccessWatchpointRequestInfo]
+
+  /**
+   * Removes all access watchpoint requests for the specified class field with
+   * the specified extra arguments.
+   *
+   * @param className The full name of the class/object/trait containing the
+   *                  field being watched
+   * @param fieldName The name of the field being watched
+   * @param extraArguments the additional arguments provided to the specific
+   *                       access watchpoint request
+   * @return Success containing Some information if it existed (or None if it
+   *         did not), otherwise a failure
+   */
+  def tryRemoveAccessWatchpointRequestWithArgs(
+    className: String,
+    fieldName: String,
+    extraArguments: JDIArgument*
+  ): Try[Option[AccessWatchpointRequestInfo]] = Try(removeAccessWatchpointRequestWithArgs(
+    className,
+    fieldName,
+    extraArguments: _*
+  ))
+
+  /**
+   * Removes all access watchpoint requests.
+   *
+   * @return The collection of information about removed access watchpoint requests
+   */
+  def removeAllAccessWatchpointRequests(): Seq[AccessWatchpointRequestInfo]
+
+  /**
+   * Removes all access watchpoint requests.
+   *
+   * @return Success containing the collection of information about removed
+   *         access watchpoint requests, otherwise a failure
+   */
+  def tryRemoveAllAccessWatchpointRequests(): Try[Seq[AccessWatchpointRequestInfo]] = Try(
+    removeAllAccessWatchpointRequests()
+  )
 }
