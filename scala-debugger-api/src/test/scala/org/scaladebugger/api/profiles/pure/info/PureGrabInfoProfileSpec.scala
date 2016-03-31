@@ -1,6 +1,7 @@
 package org.scaladebugger.api.profiles.pure.info
 
-import com.sun.jdi.{ThreadReference, VirtualMachine}
+import com.sun.jdi.{ReferenceType, ThreadReference, VirtualMachine}
+import org.scaladebugger.api.lowlevel.wrappers.ReferenceTypeWrapper
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
@@ -17,6 +18,7 @@ class PureGrabInfoProfileSpec extends FunSpec with Matchers
       it("should return a pure thread info profile wrapping the thread") {
         val expected = mock[ThreadReference]
 
+        (expected.referenceType _).expects().returning(mock[ReferenceType]).once()
         val actual = pureGrabInfoProfile.getThread(expected)
 
         (expected.uniqueID _).expects().returning(999L).twice()
@@ -33,6 +35,7 @@ class PureGrabInfoProfileSpec extends FunSpec with Matchers
           .returning(Seq(expected).asJava).once()
 
         (expected.uniqueID _).expects().returning(999L).repeated(3).times()
+        (expected.referenceType _).expects().returning(mock[ReferenceType]).once()
         val actual = pureGrabInfoProfile.getThread(999L)
 
         actual.uniqueId should be (expected.uniqueID())

@@ -10,6 +10,13 @@ import scala.util.Try
  */
 trait ObjectInfoProfile extends ValueInfoProfile {
   /**
+   * Represents the unique id of this object.
+   *
+   * @return The unique id as a long
+   */
+  def uniqueId: Long
+
+  /**
    * Invokes the object's method with matching name and arguments.
    *
    * @param methodName The name of the method to invoke

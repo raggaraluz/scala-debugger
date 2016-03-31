@@ -10,13 +10,13 @@ import scala.util.Try
  * Represents a pure implementation of a field profile that adds no custom
  * logic on top of the standard JDI.
  *
- * @param stackFrame The stack frame associated with the field instance
+ * @param objectReference The object associated with the field instance
  * @param field The reference to the underlying JDI field
  * @param virtualMachine The virtual machine used to mirror local values on
  *                       the remote JVM
  */
 class PureFieldInfoProfile(
-  private val stackFrame: StackFrame,
+  private val objectReference: ObjectReference,
   private val field: Field
 )(
   private val virtualMachine: VirtualMachine = field.virtualMachine()
@@ -75,7 +75,7 @@ class PureFieldInfoProfile(
   }
 
   private def setFieldValue(value: Value): Unit =
-    stackFrame.thisObject().setValue(field, value)
+    objectReference.setValue(field, value)
 
   /**
    * Returns a profile representing the value of this variable.
@@ -83,9 +83,9 @@ class PureFieldInfoProfile(
    * @return The profile representing the value
    */
   override def toValue: ValueInfoProfile = newValueProfile(
-    stackFrame.thisObject().getValue(field)
+    objectReference.getValue(field)
   )
 
   protected def newValueProfile(value: Value): ValueInfoProfile =
-    new PureValueInfoProfile(stackFrame, value)
+    new PureValueInfoProfile(value)
 }

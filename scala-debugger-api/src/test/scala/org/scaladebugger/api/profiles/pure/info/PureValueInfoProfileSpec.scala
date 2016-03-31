@@ -10,7 +10,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
 {
   private val mockNewObjectProfile = mockFunction[ObjectReference, ObjectInfoProfile]
   private val mockNewArrayProfile = mockFunction[ArrayReference, ArrayInfoProfile]
-  private val mockStackFrame = mock[StackFrame]
 
   describe("PureValueInfoProfile") {
     describe("#typeName") {
@@ -24,7 +23,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         (mockValue.`type` _).expects().returning(mockType).once()
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mockValue
         )
         val actual = pureValueInfoProfile.typeName
@@ -36,7 +34,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = PureValueInfoProfile.DefaultNullTypeName
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           null
         )
 
@@ -49,7 +46,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
     describe("#toArray") {
       it("should throw an assertion error if the value is null") {
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           null
         )
 
@@ -60,7 +56,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
 
       it("should throw an assertion error if the value is not an array") {
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mock[Value]
         )
 
@@ -74,7 +69,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val mockArrayReference = mock[ArrayReference]
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mockArrayReference
         ) {
           override protected def newArrayProfile(
@@ -94,7 +88,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
     describe("#toObject") {
       it("should throw an assertion error if the value is null") {
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           null
         )
 
@@ -105,7 +98,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
 
       it("should throw an assertion error if the value is not an object") {
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mock[Value]
         )
 
@@ -119,7 +111,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val mockObjectReference = mock[ObjectReference]
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mockObjectReference
         ) {
           override protected def newObjectProfile(
@@ -141,7 +132,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected: Any = null
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           null
         )
 
@@ -155,7 +145,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val mockStringReference = mock[StringReference]
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mockStringReference
         )
 
@@ -171,7 +160,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           null
         )
 
@@ -184,7 +172,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mock[Value]
         )
 
@@ -197,7 +184,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = true
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mock[PrimitiveValue]
         )
 
@@ -212,7 +198,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           null
         )
 
@@ -225,7 +210,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mock[Value]
         )
 
@@ -238,7 +222,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = true
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mock[ObjectReference]
         )
 
@@ -253,7 +236,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           null
         )
 
@@ -266,7 +248,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mock[Value]
         )
 
@@ -279,7 +260,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = true
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mock[StringReference]
         )
 
@@ -294,7 +274,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           null
         )
 
@@ -307,7 +286,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mock[Value]
         )
 
@@ -320,7 +298,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = true
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mock[ArrayReference]
         )
 
@@ -335,7 +312,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = true
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           null
         )
 
@@ -348,7 +324,6 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val pureValueInfoProfile = new PureValueInfoProfile(
-          mockStackFrame,
           mock[Value]
         )
 
