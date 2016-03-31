@@ -11,6 +11,16 @@ class PureMethodInfoProfileSpec extends FunSpec with Matchers
   private val pureMethodInfoProfile = new PureMethodInfoProfile(mockMethod)
 
   describe("PureMethodInfoProfile") {
+    describe("#toJdiInstance") {
+      it("should return the JDI instance this profile instance represents") {
+        val expected = mockMethod
+
+        val actual = pureMethodInfoProfile.toJdiInstance
+
+        actual should be (expected)
+      }
+    }
+
     describe("#name") {
       it("should return the name of the method") {
         val expected = "someName"

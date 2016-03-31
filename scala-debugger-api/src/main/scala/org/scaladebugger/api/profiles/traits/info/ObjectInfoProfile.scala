@@ -1,6 +1,7 @@
 package org.scaladebugger.api.profiles.traits.info
 //import acyclic.file
 
+import com.sun.jdi.ObjectReference
 import org.scaladebugger.api.lowlevel.JDIArgument
 
 import scala.util.Try
@@ -8,7 +9,14 @@ import scala.util.Try
 /**
  * Represents the interface for object-based interaction.
  */
-trait ObjectInfoProfile extends ValueInfoProfile {
+trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
+  /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: ObjectReference
+
   /**
    * Represents the unique id of this object.
    *

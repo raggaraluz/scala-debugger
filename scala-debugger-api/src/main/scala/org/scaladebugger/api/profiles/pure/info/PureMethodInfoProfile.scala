@@ -11,9 +11,15 @@ import org.scaladebugger.api.profiles.traits.info.MethodInfoProfile
  * @param method The reference to the underlying JDI method
  */
 class PureMethodInfoProfile(
-  // TODO: Remove need for exposing this to the object profile
-  private[info] val method: Method
+  private val method: Method
 ) extends MethodInfoProfile {
+  /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: Method = method
+
   /**
    * Returns the name of this method.
    *

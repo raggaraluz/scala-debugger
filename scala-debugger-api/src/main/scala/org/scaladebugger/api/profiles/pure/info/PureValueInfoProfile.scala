@@ -20,6 +20,13 @@ class PureValueInfoProfile(
   private val value: Value
 ) extends ValueInfoProfile {
   /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: Value = value
+
+  /**
    * Returns the type name of this value.
    *
    * @return The type name (typically a fully-qualified class name)

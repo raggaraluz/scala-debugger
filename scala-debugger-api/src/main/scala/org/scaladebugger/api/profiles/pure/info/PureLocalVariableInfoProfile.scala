@@ -22,6 +22,13 @@ class PureLocalVariableInfoProfile(
   private val virtualMachine: VirtualMachine = localVariable.virtualMachine()
 ) extends VariableInfoProfile {
   /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: LocalVariable = localVariable
+
+  /**
    * Returns the name of the variable.
    *
    * @return The name of the variable

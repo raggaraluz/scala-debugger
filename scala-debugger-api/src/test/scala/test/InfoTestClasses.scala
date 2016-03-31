@@ -1,6 +1,6 @@
 package test
 
-import com.sun.jdi.ThreadReference
+import com.sun.jdi._
 import org.scaladebugger.api.lowlevel.JDIArgument
 import org.scaladebugger.api.profiles.traits.info._
 
@@ -21,6 +21,7 @@ object InfoTestClasses {
     override def name: String = throwException()
     override def getFrame(index: Int): FrameInfoProfile = throwException()
     override def getTotalFrames: Int = throwException()
+    override def toJdiInstance: ThreadReference = throwException()
   }
 
   class TestValueInfoProfile extends ValueInfoProfile {
@@ -33,6 +34,7 @@ object InfoTestClasses {
     override def isString: Boolean = throwException()
     override def isArray: Boolean = throwException()
     override def isNull: Boolean = throwException()
+    override def toJdiInstance: Value = throwException()
   }
 
   class TestVariableInfoProfile extends VariableInfoProfile {
@@ -43,6 +45,7 @@ object InfoTestClasses {
     override def isArgument: Boolean = throwException()
     override def isLocal: Boolean = throwException()
     override def isField: Boolean = throwException()
+    override def toJdiInstance: Mirror = throwException()
   }
 
   class TestObjectInfoProfile extends TestValueInfoProfile with ObjectInfoProfile {
@@ -53,12 +56,14 @@ object InfoTestClasses {
     override def getFields: Seq[VariableInfoProfile] = throwException()
     override def getField(name: String): VariableInfoProfile = throwException()
     override def getMethods: Seq[MethodInfoProfile] = throwException()
+    override def toJdiInstance: ObjectReference = throwException()
   }
 
   class TestMethodInfoProfile extends MethodInfoProfile {
     override def name: String = throwException()
     override def getReturnTypeName: String = throwException()
     override def getParameterTypeNames: Seq[String] = throwException()
+    override def toJdiInstance: Method = throwException()
   }
 
   class TestGrabInfoProfile extends GrabInfoProfile {
@@ -75,6 +80,7 @@ object InfoTestClasses {
     override def getLocalVariables: Seq[VariableInfoProfile] = throwException()
     override def getNonArguments: Seq[VariableInfoProfile] = throwException()
     override def getArguments: Seq[VariableInfoProfile] = throwException()
+    override def toJdiInstance: StackFrame = throwException()
   }
 
   class TestArrayInfoProfile extends TestObjectInfoProfile with ArrayInfoProfile {
@@ -85,5 +91,6 @@ object InfoTestClasses {
     override def getValues(index: Int, length: Int): Seq[ValueInfoProfile] = throwException()
     override def getValues: Seq[ValueInfoProfile] = throwException()
     override def setValue(index: Int, value: Any): Any = throwException()
+    override def toJdiInstance: ArrayReference = throwException()
   }
 }

@@ -21,6 +21,14 @@ class PureFieldInfoProfile(
 )(
   private val virtualMachine: VirtualMachine = field.virtualMachine()
 ) extends VariableInfoProfile {
+
+  /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: Field = field
+
   /**
    * Returns the name of the variable.
    *

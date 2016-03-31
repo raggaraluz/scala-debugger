@@ -1,7 +1,7 @@
 package org.scaladebugger.api.profiles.pure.info
 //import acyclic.file
 
-import com.sun.jdi.{ReferenceType, StackFrame, VirtualMachine, ThreadReference}
+import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info.{FrameInfoProfile, ThreadInfoProfile}
 
 import scala.util.Try
@@ -25,6 +25,13 @@ class PureThreadInfoProfile(
   threadReference = threadReference,
   referenceType = referenceType
 ) with ThreadInfoProfile {
+  /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: ThreadReference = threadReference
+
   /**
    * Represents the name of the thread.
    *
