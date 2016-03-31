@@ -134,7 +134,7 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
             .getThread(t.get).getTopFrame
             .getVariable("g")
 
-          variable.trySetValue(888.0).get should be (888.0)
+          variable.setValue(888.0) should be (888.0)
         })
       }
     }
@@ -158,7 +158,7 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
             .getVariable("h")
 
           intercept[InvalidTypeException] {
-            field.trySetValue("some value").get
+            field.setValue("some value")
           }
         })
       }

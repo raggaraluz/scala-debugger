@@ -40,8 +40,8 @@ object InfoTestClasses {
   class TestVariableInfoProfile extends VariableInfoProfile {
     override def name: String = throwException()
     override def toValue: ValueInfoProfile = throwException()
-    override def trySetValue(value: AnyVal): Try[AnyVal] = throwException()
-    override def trySetValue(value: String): Try[String] = throwException()
+    override def setValue(value: AnyVal): AnyVal = throwException()
+    override def setValue(value: String): String = throwException()
     override def isArgument: Boolean = throwException()
     override def isLocal: Boolean = throwException()
     override def isField: Boolean = throwException()
