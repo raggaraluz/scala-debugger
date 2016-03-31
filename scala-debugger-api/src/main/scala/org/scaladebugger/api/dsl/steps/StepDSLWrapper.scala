@@ -1,10 +1,10 @@
 package org.scaladebugger.api.dsl.steps
 
-import com.sun.jdi.ThreadReference
 import com.sun.jdi.event.StepEvent
 import org.scaladebugger.api.lowlevel.JDIArgument
 import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
 import org.scaladebugger.api.pipelines.Pipeline.IdentityPipeline
+import org.scaladebugger.api.profiles.traits.info.ThreadInfoProfile
 import org.scaladebugger.api.profiles.traits.steps.StepProfile
 
 import scala.util.Try
@@ -20,31 +20,31 @@ class StepDSLWrapper private[dsl] (
   /** Represents a Step event and any associated data. */
   type StepStepAndData = (StepEvent, Seq[JDIEventDataResult])
 
-  /** @see StepProfile#tryCreateStepListener(ThreadReference, JDIArgument*) */
+  /** @see StepProfile#tryCreateStepListener(ThreadInfoProfile, JDIArgument*) */
   def onStep(
-    threadReference: ThreadReference,
+    threadInfoProfile: ThreadInfoProfile,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[StepEvent]] =
-    stepProfile.tryCreateStepListener(threadReference, extraArguments: _*)
+    stepProfile.tryCreateStepListener(threadInfoProfile, extraArguments: _*)
 
-  /** @see StepProfile#createStepListener(ThreadReference, JDIArgument*) */
+  /** @see StepProfile#createStepListener(ThreadInfoProfile, JDIArgument*) */
   def onUnsafeStep(
-    threadReference: ThreadReference,
+    threadInfoProfile: ThreadInfoProfile,
     extraArguments: JDIArgument*
   ): IdentityPipeline[StepEvent] =
-    stepProfile.createStepListener(threadReference, extraArguments: _*)
+    stepProfile.createStepListener(threadInfoProfile, extraArguments: _*)
 
-  /** @see StepProfile#createStepListenerWithData(ThreadReference, JDIArgument*) */
+  /** @see StepProfile#createStepListenerWithData(ThreadInfoProfile, JDIArgument*) */
   def onUnsafeStepWithData(
-    threadReference: ThreadReference,
+    threadInfoProfile: ThreadInfoProfile,
     extraArguments: JDIArgument*
   ): IdentityPipeline[StepStepAndData] =
-    stepProfile.createStepListenerWithData(threadReference, extraArguments: _*)
+    stepProfile.createStepListenerWithData(threadInfoProfile, extraArguments: _*)
 
-  /** @see StepProfile#tryCreateStepListenerWithData(ThreadReference, JDIArgument*) */
+  /** @see StepProfile#tryCreateStepListenerWithData(ThreadInfoProfile, JDIArgument*) */
   def onStepWithData(
-    threadReference: ThreadReference,
+    threadInfoProfile: ThreadInfoProfile,
     extraArguments: JDIArgument*
   ): Try[IdentityPipeline[StepStepAndData]] =
-    stepProfile.tryCreateStepListenerWithData(threadReference, extraArguments: _*)
+    stepProfile.tryCreateStepListenerWithData(threadInfoProfile, extraArguments: _*)
 }
