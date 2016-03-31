@@ -60,9 +60,9 @@ class PureLocalVariableInfoProfile(
    * Sets the primitive value of this variable.
    *
    * @param value The new value for the variable
-   * @return Success containing the value, otherwise a failure
+   * @return The new value
    */
-  override def trySetValue(value: AnyVal): Try[AnyVal] = Try {
+  override def setValue(value: AnyVal): AnyVal = {
     import org.scaladebugger.api.lowlevel.wrappers.Implicits._
     val mirrorValue = virtualMachine.mirrorOf(value)
     stackFrame.setValue(localVariable, mirrorValue)
@@ -73,9 +73,9 @@ class PureLocalVariableInfoProfile(
    * Sets the string value of this variable.
    *
    * @param value The new value for the variable
-   * @return Success containing the value, otherwise a failure
+   * @return The new value
    */
-  override def trySetValue(value: String): Try[String] = Try {
+  override def setValue(value: String): String = {
     val mirrorValue = virtualMachine.mirrorOf(value)
     stackFrame.setValue(localVariable, mirrorValue)
     value

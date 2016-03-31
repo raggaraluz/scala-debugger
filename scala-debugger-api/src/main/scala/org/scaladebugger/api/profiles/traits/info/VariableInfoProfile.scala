@@ -65,7 +65,15 @@ trait VariableInfoProfile extends CommonInfoProfile {
    * @param value The new value for the variable
    * @return Success containing the value, otherwise a failure
    */
-  def trySetValue(value: AnyVal): Try[AnyVal]
+  def trySetValue(value: AnyVal): Try[AnyVal] = Try(setValue(value))
+
+  /**
+   * Sets the primitive value of this variable.
+   *
+   * @param value The new value for the variable
+   * @return The new value
+   */
+  def setValue(value: AnyVal): AnyVal
 
   /**
    * Sets the string value of this variable.
@@ -73,5 +81,13 @@ trait VariableInfoProfile extends CommonInfoProfile {
    * @param value The new value for the variable
    * @return Success containing the value, otherwise a failure
    */
-  def trySetValue(value: String): Try[String]
+  def trySetValue(value: String): Try[String] = Try(setValue(value))
+
+  /**
+   * Sets the string value of this variable.
+   *
+   * @param value The new value for the variable
+   * @return The new value
+   */
+  def setValue(value: String): String
 }
