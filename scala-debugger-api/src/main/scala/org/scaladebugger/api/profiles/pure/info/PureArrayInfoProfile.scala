@@ -30,6 +30,13 @@ class PureArrayInfoProfile(
   import org.scaladebugger.api.lowlevel.wrappers.Implicits._
 
   /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: ArrayReference = arrayReference
+
+  /**
    * Returns the length of the array.
    *
    * @return The length of the array

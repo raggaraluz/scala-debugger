@@ -1,9 +1,9 @@
 package org.scaladebugger.api.profiles.traits.steps
 import acyclic.file
 
-import com.sun.jdi.ThreadReference
 import com.sun.jdi.event.StepEvent
 import org.scaladebugger.api.lowlevel.steps.StepRequestInfo
+import org.scaladebugger.api.profiles.traits.info.ThreadInfoProfile
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -18,7 +18,7 @@ import scala.util.{Failure, Success, Try}
 class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
   with MockFactory with ScalaFutures
 {
-  private val mockThreadReference = mock[ThreadReference]
+  private val mockThreadInfoProfile = mock[ThreadInfoProfile]
 
   private val TestThrowable = new Throwable
 
@@ -29,59 +29,59 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
   private val successStepProfile = new Object with StepProfile {
     override def stepIntoLineWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Future[StepEventAndData] = ???
 
     override def stepOverLineWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Future[StepEventAndData] = ???
 
     override def stepOutLineWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Future[StepEventAndData] = ???
 
     override def stepIntoMinWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Future[(StepEventAndData)] = ???
 
     override def stepOutMinWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Future[(StepEventAndData)] = ???
 
     override def stepOverMinWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Future[(StepEventAndData)] = ???
 
     override def tryCreateStepListenerWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[StepEventAndData]] = {
       Success(TestPipelineWithData)
     }
 
     override def isStepRequestPending(
-      threadReference: ThreadReference
+      threadInfoProfile: ThreadInfoProfile
     ): Boolean = ???
 
     override def isStepRequestWithArgsPending(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Boolean = ???
 
     override def stepRequests: Seq[StepRequestInfo] = ???
 
     override def removeStepRequests(
-      threadReference: ThreadReference
+      threadInfoProfile: ThreadInfoProfile
     ): Seq[StepRequestInfo] = ???
 
     override def removeStepRequestWithArgs(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Option[StepRequestInfo] = ???
 
@@ -90,59 +90,59 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
   private val failStepProfile = new Object with StepProfile {
     override def stepIntoLineWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Future[StepEventAndData] = ???
 
     override def stepOverLineWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Future[StepEventAndData] = ???
 
     override def stepOutLineWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Future[StepEventAndData] = ???
 
     override def stepIntoMinWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Future[(StepEventAndData)] = ???
 
     override def stepOutMinWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Future[(StepEventAndData)] = ???
 
     override def stepOverMinWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Future[(StepEventAndData)] = ???
 
     override def tryCreateStepListenerWithData(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Try[IdentityPipeline[StepEventAndData]] = {
       Failure(TestThrowable)
     }
 
     override def isStepRequestPending(
-      threadReference: ThreadReference
+      threadInfoProfile: ThreadInfoProfile
     ): Boolean = ???
 
     override def isStepRequestWithArgsPending(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Boolean = ???
 
     override def stepRequests: Seq[StepRequestInfo] = ???
 
     override def removeStepRequests(
-      threadReference: ThreadReference
+      threadInfoProfile: ThreadInfoProfile
     ): Seq[StepRequestInfo] = ???
 
     override def removeStepRequestWithArgs(
-      threadReference: ThreadReference,
+      threadInfoProfile: ThreadInfoProfile,
       extraArguments: JDIArgument*
     ): Option[StepRequestInfo] = ???
 
@@ -163,66 +163,66 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
         val stepProfile = new Object with StepProfile {
           override def stepIntoLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = {
             futureWithData
           }
 
           override def stepOverLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepOutLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepIntoMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def stepOutMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def stepOverMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def tryCreateStepListenerWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
 
           override def isStepRequestPending(
-            threadReference: ThreadReference
+            threadInfoProfile: ThreadInfoProfile
           ): Boolean = ???
 
           override def isStepRequestWithArgsPending(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
 
           override def removeStepRequests(
-            threadReference: ThreadReference
+            threadInfoProfile: ThreadInfoProfile
           ): Seq[StepRequestInfo] = ???
 
           override def removeStepRequestWithArgs(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Option[StepRequestInfo] = ???
 
           override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
         }
 
-        val actual = stepProfile.stepIntoLine(mockThreadReference)
+        val actual = stepProfile.stepIntoLine(mockThreadInfoProfile)
 
         // Funnel the data through the future that is mapped by the wrapper
         // method
@@ -247,66 +247,66 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
         val stepProfile = new Object with StepProfile {
           override def stepIntoLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepOverLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = {
             futureWithData
           }
 
           override def stepOutLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepIntoMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def stepOutMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def stepOverMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def tryCreateStepListenerWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
 
           override def isStepRequestPending(
-            threadReference: ThreadReference
+            threadInfoProfile: ThreadInfoProfile
           ): Boolean = ???
 
           override def isStepRequestWithArgsPending(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
 
           override def removeStepRequests(
-            threadReference: ThreadReference
+            threadInfoProfile: ThreadInfoProfile
           ): Seq[StepRequestInfo] = ???
 
           override def removeStepRequestWithArgs(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Option[StepRequestInfo] = ???
 
           override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
         }
 
-        val actual = stepProfile.stepOverLine(mockThreadReference)
+        val actual = stepProfile.stepOverLine(mockThreadInfoProfile)
 
         // Funnel the data through the future that is mapped by the wrapper
         // method
@@ -331,66 +331,66 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
         val stepProfile = new Object with StepProfile {
           override def stepIntoLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepOverLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepOutLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = {
             futureWithData
           }
 
           override def stepIntoMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def stepOutMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def stepOverMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def tryCreateStepListenerWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
 
           override def isStepRequestPending(
-            threadReference: ThreadReference
+            threadInfoProfile: ThreadInfoProfile
           ): Boolean = ???
 
           override def isStepRequestWithArgsPending(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
 
           override def removeStepRequests(
-            threadReference: ThreadReference
+            threadInfoProfile: ThreadInfoProfile
           ): Seq[StepRequestInfo] = ???
 
           override def removeStepRequestWithArgs(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Option[StepRequestInfo] = ???
 
           override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
         }
 
-        val actual = stepProfile.stepOutLine(mockThreadReference)
+        val actual = stepProfile.stepOutLine(mockThreadInfoProfile)
 
         // Funnel the data through the future that is mapped by the wrapper
         // method
@@ -415,66 +415,66 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
         val stepProfile = new Object with StepProfile {
           override def stepIntoLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepOverLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepOutLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepIntoMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = {
             futureWithData
           }
 
           override def stepOutMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def stepOverMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def tryCreateStepListenerWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
 
           override def isStepRequestPending(
-            threadReference: ThreadReference
+            threadInfoProfile: ThreadInfoProfile
           ): Boolean = ???
 
           override def isStepRequestWithArgsPending(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
 
           override def removeStepRequests(
-            threadReference: ThreadReference
+            threadInfoProfile: ThreadInfoProfile
           ): Seq[StepRequestInfo] = ???
 
           override def removeStepRequestWithArgs(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Option[StepRequestInfo] = ???
 
           override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
         }
 
-        val actual = stepProfile.stepIntoMin(mockThreadReference)
+        val actual = stepProfile.stepIntoMin(mockThreadInfoProfile)
 
         // Funnel the data through the future that is mapped by the wrapper
         // method
@@ -499,66 +499,66 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
         val stepProfile = new Object with StepProfile {
           override def stepIntoLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepOverLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepOutLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepIntoMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def stepOutMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def stepOverMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = {
             futureWithData
           }
 
           override def tryCreateStepListenerWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
 
           override def isStepRequestPending(
-            threadReference: ThreadReference
+            threadInfoProfile: ThreadInfoProfile
           ): Boolean = ???
 
           override def isStepRequestWithArgsPending(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
 
           override def removeStepRequests(
-            threadReference: ThreadReference
+            threadInfoProfile: ThreadInfoProfile
           ): Seq[StepRequestInfo] = ???
 
           override def removeStepRequestWithArgs(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Option[StepRequestInfo] = ???
 
           override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
         }
 
-        val actual = stepProfile.stepOverMin(mockThreadReference)
+        val actual = stepProfile.stepOverMin(mockThreadInfoProfile)
 
         // Funnel the data through the future that is mapped by the wrapper
         // method
@@ -583,66 +583,66 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
         val stepProfile = new Object with StepProfile {
           override def stepIntoLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepOverLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepOutLineWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[StepEventAndData] = ???
 
           override def stepIntoMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def stepOutMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = {
             futureWithData
           }
 
           override def stepOverMinWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Future[(StepEventAndData)] = ???
 
           override def tryCreateStepListenerWithData(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Try[IdentityPipeline[(StepEvent, Seq[JDIEventDataResult])]] = ???
 
           override def isStepRequestPending(
-            threadReference: ThreadReference
+            threadInfoProfile: ThreadInfoProfile
           ): Boolean = ???
 
           override def isStepRequestWithArgsPending(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Boolean = ???
 
           override def stepRequests: Seq[StepRequestInfo] = ???
 
           override def removeStepRequests(
-            threadReference: ThreadReference
+            threadInfoProfile: ThreadInfoProfile
           ): Seq[StepRequestInfo] = ???
 
           override def removeStepRequestWithArgs(
-            threadReference: ThreadReference,
+            threadInfoProfile: ThreadInfoProfile,
             extraArguments: JDIArgument*
           ): Option[StepRequestInfo] = ???
 
           override def removeAllStepRequests(): Seq[StepRequestInfo] = ???
         }
 
-        val actual = stepProfile.stepOutMin(mockThreadReference)
+        val actual = stepProfile.stepOutMin(mockThreadInfoProfile)
 
         // Funnel the data through the future that is mapped by the wrapper
         // method
@@ -663,7 +663,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
         var actual: StepEvent = null
         successStepProfile
-          .tryCreateStepListener(mockThreadReference)
+          .tryCreateStepListener(mockThreadInfoProfile)
           .get
           .foreach(actual = _)
 
@@ -680,7 +680,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
         var actual: Throwable = null
         failStepProfile
-          .tryCreateStepListener(mockThreadReference)
+          .tryCreateStepListener(mockThreadInfoProfile)
           .failed
           .foreach(actual = _)
 
@@ -697,7 +697,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
         var actual: StepEvent = null
         successStepProfile
-          .createStepListener(mockThreadReference)
+          .createStepListener(mockThreadInfoProfile)
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -710,7 +710,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
-          failStepProfile.createStepListener(mockThreadReference)
+          failStepProfile.createStepListener(mockThreadInfoProfile)
         }
       }
     }
@@ -722,7 +722,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
 
         var actual: (StepEvent, Seq[JDIEventDataResult]) = null
         successStepProfile
-          .createStepListenerWithData(mockThreadReference)
+          .createStepListenerWithData(mockThreadInfoProfile)
           .foreach(actual = _)
 
         // Funnel the data through the parent pipeline that contains data to
@@ -736,7 +736,7 @@ class StepProfileSpec extends FunSpec with Matchers with ParallelTestExecution
       it("should throw the exception if unsuccessful") {
         intercept[Throwable] {
           failStepProfile
-            .createStepListenerWithData(mockThreadReference)
+            .createStepListenerWithData(mockThreadInfoProfile)
         }
       }
     }

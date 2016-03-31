@@ -28,6 +28,16 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureFrameInfoProfile") {
+    describe("#toJdiInstance") {
+      it("should return the JDI instance this profile instance represents") {
+        val expected = mockStackFrame
+
+        val actual = pureFrameInfoProfile.toJdiInstance
+
+        actual should be (expected)
+      }
+    }
+
     describe("#getThisObject") {
       it("should return the stack frame's 'this' object wrapped in a profile") {
         val expected = mock[ObjectInfoProfile]

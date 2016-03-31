@@ -1,12 +1,21 @@
 package org.scaladebugger.api.profiles.traits.info
 //import acyclic.file
 
+import com.sun.jdi.ArrayReference
+
 import scala.util.Try
 
 /**
  * Represents the interface for array-based interaction.
  */
-trait ArrayInfoProfile extends ObjectInfoProfile {
+trait ArrayInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
+  /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: ArrayReference
+
   /**
    * Returns the length of the array.
    *

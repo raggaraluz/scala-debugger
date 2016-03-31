@@ -1,5 +1,6 @@
 package org.scaladebugger.api.dsl.info
 
+import com.sun.jdi.StackFrame
 import org.scaladebugger.api.profiles.traits.info.{VariableInfoProfile, ThreadInfoProfile, FrameInfoProfile, ObjectInfoProfile}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -242,6 +243,7 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
   private val mockGetNonArgumentsFunction = mockFunction[Seq[VariableInfoProfile]]
   private val mockGetLocalVariablesFunction = mockFunction[Seq[VariableInfoProfile]]
   private val mockGetFieldVariablesFunction = mockFunction[Seq[VariableInfoProfile]]
+  private val mockToJdiInstanceFunction = mockFunction[StackFrame]
 
   private class TestFrameInfoProfile extends FrameInfoProfile {
     override def tryGetThisObject: Try[ObjectInfoProfile] = mockTryGetThisObjectFunction()
@@ -260,5 +262,6 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
     override def getNonArguments: Seq[VariableInfoProfile] = mockGetNonArgumentsFunction()
     override def getLocalVariables: Seq[VariableInfoProfile] = mockGetLocalVariablesFunction()
     override def getFieldVariables: Seq[VariableInfoProfile] = mockGetFieldVariablesFunction()
+    override def toJdiInstance: StackFrame = mockToJdiInstanceFunction()
   }
 }

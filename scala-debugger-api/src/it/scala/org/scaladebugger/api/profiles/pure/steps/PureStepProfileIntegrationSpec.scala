@@ -299,6 +299,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
       s.withProfile(PureDebugProfile.Name)
         .getOrCreateBreakpointRequest(testFile, startingLine)
         .map(_.thread())
+        .map(s.getThread)
         .foreach(thread => {
           s.withProfile(PureDebugProfile.Name).createStepListener(thread).foreach(stepEvent => {
             val className = stepEvent.location().declaringType().name()
@@ -308,7 +309,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
             success.set(lineNumber == expectedLine)
           })
 
-          stepMethod(thread)
+          stepMethod(thread.toJdiInstance)
         })
 
       start()
@@ -367,7 +368,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
           // On receiving a step request, verify that we are in the right
           // location
           s.withProfile(PureDebugProfile.Name)
-            .createStepListener(thread)
+            .createStepListener(s.getThread(thread))
             .foreach(stepEvent => {
               val className = stepEvent.location().declaringType().name()
               val lineNumber = stepEvent.location().lineNumber()

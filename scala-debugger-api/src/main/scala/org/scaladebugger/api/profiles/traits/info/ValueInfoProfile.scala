@@ -1,12 +1,21 @@
 package org.scaladebugger.api.profiles.traits.info
 //import acyclic.file
 
+import com.sun.jdi.Value
+
 import scala.util.Try
 
 /**
  * Represents information about a value.
  */
-trait ValueInfoProfile {
+trait ValueInfoProfile extends CommonInfoProfile {
+  /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: Value
+
   /**
    * Returns the type name of this value.
    *

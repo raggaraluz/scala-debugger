@@ -17,6 +17,16 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
   )(mockVirtualMachine)
 
   describe("PureFieldInfoProfile") {
+    describe("#toJdiInstance") {
+      it("should return the JDI instance this profile instance represents") {
+        val expected = mockField
+
+        val actual = pureFieldInfoProfile.toJdiInstance
+
+        actual should be (expected)
+      }
+    }
+
     describe("#name") {
       it("should return the field's name") {
         val expected = "someName"

@@ -23,6 +23,16 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
   )
 
   describe("PureArrayInfoProfile") {
+    describe("#toJdiInstance") {
+      it("should return the JDI instance this profile instance represents") {
+        val expected = mockArrayReference
+
+        val actual = pureArrayInfoProfile.toJdiInstance
+
+        actual should be (expected)
+      }
+    }
+
     describe("#length") {
       it("should return the length provided by the array reference") {
         val expected = 999

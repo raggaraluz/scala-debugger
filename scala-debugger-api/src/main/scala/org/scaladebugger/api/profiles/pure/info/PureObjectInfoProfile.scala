@@ -28,6 +28,13 @@ class PureObjectInfoProfile(
   private lazy val typeChecker = newTypeCheckerProfile()
 
   /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: ObjectReference = objectReference
+
+  /**
    * Represents the unique id of this object.
    *
    * @return The unique id as a long
@@ -48,9 +55,7 @@ class PureObjectInfoProfile(
     arguments: Seq[Any],
     jdiArguments: JDIArgument*
   ): ValueInfoProfile = {
-    val m = methodInfoProfile match {
-      case p: PureMethodInfoProfile => p.method
-    }
+    val m = methodInfoProfile.toJdiInstance
 
     import org.scaladebugger.api.lowlevel.wrappers.Implicits._
     val v = arguments.map(virtualMachine.mirrorOf(_: Any))

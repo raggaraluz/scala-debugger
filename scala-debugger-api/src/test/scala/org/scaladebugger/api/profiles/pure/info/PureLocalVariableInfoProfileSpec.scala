@@ -17,6 +17,16 @@ class PureLocalVariableInfoProfileSpec extends FunSpec with Matchers
   )(mockVirtualMachine)
 
   describe("PureLocalVariableInfoProfile") {
+    describe("#toJdiInstance") {
+      it("should return the JDI instance this profile instance represents") {
+        val expected = mockLocalVariable
+
+        val actual = pureLocalVariableInfoProfile.toJdiInstance
+
+        actual should be (expected)
+      }
+    }
+
     describe("#name") {
       it("should return the local variable's name") {
         val expected = "someName"

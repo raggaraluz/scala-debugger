@@ -35,6 +35,16 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureObjectInfoProfile") {
+    describe("#toJdiInstance") {
+      it("should return the JDI instance this profile instance represents") {
+        val expected = mockObjectReference
+
+        val actual = pureObjectInfoProfile.toJdiInstance
+
+        actual should be (expected)
+      }
+    }
+
     describe("#uniqueId") {
       it("should return the unique id of the object") {
         val expected = 12345L
@@ -111,15 +121,6 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
     }
 
     describe("#invoke(method profile, arguments, JDI arguments)") {
-      it("should throw a match error if the method profile is not a pure method profile") {
-        intercept[MatchError] {
-          pureObjectInfoProfile.invoke(
-            mock[MethodInfoProfile],
-            Nil
-          )
-        }
-      }
-
       it("should invoke using the current stack frame's thread and profile method, returning wrapper profile of value") {
         val expected = mock[ValueInfoProfile]
 

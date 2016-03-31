@@ -1,12 +1,21 @@
 package org.scaladebugger.api.profiles.traits.info
 //import acyclic.file
 
+import com.sun.jdi.ThreadReference
+
 import scala.util.Try
 
 /**
  * Represents the interface for thread-based interaction.
  */
-trait ThreadInfoProfile extends ObjectInfoProfile {
+trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
+  /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: ThreadReference
+
   /**
    * Represents the unique id of this thread.
    *

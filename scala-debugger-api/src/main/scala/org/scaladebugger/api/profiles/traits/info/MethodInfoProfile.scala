@@ -1,12 +1,21 @@
 package org.scaladebugger.api.profiles.traits.info
 //import acyclic.file
 
+import com.sun.jdi.Method
+
 import scala.util.Try
 
 /**
  * Represents the interface for method-based interaction.
  */
-trait MethodInfoProfile {
+trait MethodInfoProfile extends CommonInfoProfile {
+  /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: Method
+
   /**
    * Returns the name of this method.
    *

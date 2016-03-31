@@ -24,6 +24,16 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureThreadInfoProfile") {
+    describe("#toJdiInstance") {
+      it("should return the JDI instance this profile instance represents") {
+        val expected = mockThreadReference
+
+        val actual = pureThreadInfoProfile.toJdiInstance
+
+        actual should be (expected)
+      }
+    }
+
     describe("#name") {
       it("should return the name of the thread") {
         val expected = "some name"

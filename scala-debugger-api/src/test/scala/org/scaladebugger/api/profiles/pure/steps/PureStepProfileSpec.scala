@@ -1,22 +1,18 @@
 package org.scaladebugger.api.profiles.pure.steps
-import acyclic.file
-
 import com.sun.jdi.ThreadReference
-import com.sun.jdi.event.{StepEvent, Event, EventQueue}
-import com.sun.jdi.request.EventRequestManager
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.concurrent.{ScalaFutures, Futures}
-import org.scalatest.time.{Span, Milliseconds}
-import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
-import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
-import org.scaladebugger.api.lowlevel.requests.filters.ThreadFilter
-import org.scaladebugger.api.lowlevel.requests.properties.UniqueIdProperty
-import org.scaladebugger.api.lowlevel.steps.{PendingStepSupportLike, StepRequestInfo, StepManager, StandardStepManager}
-import org.scaladebugger.api.lowlevel.events.{JDIEventArgument, EventManager}
-import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
-import org.scaladebugger.api.pipelines.{Operation, Pipeline}
-import org.scaladebugger.api.utils.LoopingTaskRunner
+import com.sun.jdi.event.{Event, StepEvent}
 import org.scaladebugger.api.lowlevel.events.EventType.StepEventType
+import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
+import org.scaladebugger.api.lowlevel.events.{EventManager, JDIEventArgument}
+import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
+import org.scaladebugger.api.lowlevel.requests.filters.ThreadFilter
+import org.scaladebugger.api.lowlevel.steps.{PendingStepSupportLike, StepManager, StepRequestInfo}
+import org.scaladebugger.api.pipelines.Pipeline
+import org.scaladebugger.api.profiles.traits.info.ThreadInfoProfile
+import org.scalamock.scalatest.MockFactory
+import org.scalatest.concurrent.{Futures, ScalaFutures}
+import org.scalatest.time.{Milliseconds, Span}
+import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import test.JDIMockHelpers
 
 import scala.util.{Failure, Success}
@@ -32,6 +28,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
 
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockThreadReference = mock[ThreadReference]
+  private val mockThreadInfoProfile = mock[ThreadInfoProfile]
   private val mockStepManager = mock[StepManager]
   private val mockEventManager = mock[EventManager]
 
@@ -124,13 +121,13 @@ class PureStepProfileSpec extends FunSpec with Matchers
     describe("#removeStepRequests") {
       it("should return empty if no requests exists") {
         val expected = Nil
-        val threadReference = mock[ThreadReference]
+        val threadInfoProfile = mock[ThreadInfoProfile]
 
         (mockStepManager.stepRequestList _).expects()
           .returning(Nil).once()
 
         val actual = pureStepProfile.removeStepRequests(
-          threadReference
+          threadInfoProfile
         )
 
         actual should be (expected)
@@ -139,7 +136,6 @@ class PureStepProfileSpec extends FunSpec with Matchers
       it("should return empty if no request with matching thread exists") {
         val expected = Nil
         val removeExistingRequests = true
-        val threadReference = mock[ThreadReference]
         val size = 1
         val depth = 2
         val extraArguments = Seq(mock[JDIRequestArgument])
@@ -156,11 +152,13 @@ class PureStepProfileSpec extends FunSpec with Matchers
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(requests).once()
 
         val actual = pureStepProfile.removeStepRequests(
-          threadReference
+          mockThreadInfoProfile
         )
 
         actual should be (expected)
@@ -168,7 +166,6 @@ class PureStepProfileSpec extends FunSpec with Matchers
 
       it("should return remove and return matching pending requests") {
         val removeExistingRequests = true
-        val threadReference = mock[ThreadReference]
         val size = 1
         val depth = 2
         val extraArguments = Seq(mock[JDIRequestArgument])
@@ -178,13 +175,15 @@ class PureStepProfileSpec extends FunSpec with Matchers
             requestId = TestRequestId,
             isPending = true,
             removeExistingRequests = removeExistingRequests,
-            threadReference = threadReference,
+            threadReference = mockThreadReference,
             size = size,
             depth = depth,
             extraArguments = extraArguments
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(expected).once()
         expected.foreach(b =>
@@ -195,7 +194,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
         )
 
         val actual = pureStepProfile.removeStepRequests(
-          threadReference
+          mockThreadInfoProfile
         )
 
         actual should be (expected)
@@ -203,7 +202,6 @@ class PureStepProfileSpec extends FunSpec with Matchers
 
       it("should remove and return matching non-pending requests") {
         val removeExistingRequests = true
-        val threadReference = mock[ThreadReference]
         val size = 1
         val depth = 2
         val extraArguments = Seq(mock[JDIRequestArgument])
@@ -213,13 +211,15 @@ class PureStepProfileSpec extends FunSpec with Matchers
             requestId = TestRequestId,
             isPending = false,
             removeExistingRequests = removeExistingRequests,
-            threadReference = threadReference,
+            threadReference = mockThreadReference,
             size = size,
             depth = depth,
             extraArguments = extraArguments
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(expected).once()
         expected.foreach(b =>
@@ -230,7 +230,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
         )
 
         val actual = pureStepProfile.removeStepRequests(
-          threadReference
+          mockThreadInfoProfile
         )
 
         actual should be (expected)
@@ -240,13 +240,13 @@ class PureStepProfileSpec extends FunSpec with Matchers
     describe("#removeStepRequestWithArgs") {
       it("should return None if no requests exists") {
         val expected = None
-        val threadReference = mock[ThreadReference]
+        val threadInfoProfile = mock[ThreadInfoProfile]
 
         (mockStepManager.stepRequestList _).expects()
           .returning(Nil).once()
 
         val actual = pureStepProfile.removeStepRequestWithArgs(
-          threadReference
+          threadInfoProfile
         )
 
         actual should be (expected)
@@ -255,7 +255,6 @@ class PureStepProfileSpec extends FunSpec with Matchers
       it("should return None if no request with matching thread exists") {
         val expected = None
         val removeExistingRequests = true
-        val threadReference = mock[ThreadReference]
         val size = 1
         val depth = 2
         val extraArguments = Seq(mock[JDIRequestArgument])
@@ -272,11 +271,13 @@ class PureStepProfileSpec extends FunSpec with Matchers
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(requests).once()
 
         val actual = pureStepProfile.removeStepRequestWithArgs(
-          threadReference,
+          mockThreadInfoProfile,
           extraArguments: _*
         )
 
@@ -286,7 +287,6 @@ class PureStepProfileSpec extends FunSpec with Matchers
       it("should return None if no request with matching extra arguments exists") {
         val expected = None
         val removeExistingRequests = true
-        val threadReference = mock[ThreadReference]
         val size = 1
         val depth = 2
         val extraArguments = Seq(mock[JDIRequestArgument])
@@ -296,18 +296,20 @@ class PureStepProfileSpec extends FunSpec with Matchers
             requestId = TestRequestId,
             isPending = true,
             removeExistingRequests = removeExistingRequests,
-            threadReference = threadReference,
+            threadReference = mockThreadReference,
             size = size,
             depth = depth,
             extraArguments = extraArguments
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(requests).once()
 
         val actual = pureStepProfile.removeStepRequestWithArgs(
-          threadReference
+          mockThreadInfoProfile
         )
 
         actual should be (expected)
@@ -315,7 +317,6 @@ class PureStepProfileSpec extends FunSpec with Matchers
 
       it("should return remove and return matching pending requests") {
         val removeExistingRequests = true
-        val threadReference = mock[ThreadReference]
         val size = 1
         val depth = 2
         val extraArguments = Seq(mock[JDIRequestArgument])
@@ -325,13 +326,15 @@ class PureStepProfileSpec extends FunSpec with Matchers
             requestId = TestRequestId,
             isPending = true,
             removeExistingRequests = removeExistingRequests,
-            threadReference = threadReference,
+            threadReference = mockThreadReference,
             size = size,
             depth = depth,
             extraArguments = extraArguments
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(Seq(expected.get)).once()
         expected.foreach(b =>
@@ -342,7 +345,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
         )
 
         val actual = pureStepProfile.removeStepRequestWithArgs(
-          threadReference,
+          mockThreadInfoProfile,
           extraArguments: _*
         )
 
@@ -351,7 +354,6 @@ class PureStepProfileSpec extends FunSpec with Matchers
 
       it("should remove and return matching non-pending requests") {
         val removeExistingRequests = true
-        val threadReference = mock[ThreadReference]
         val size = 1
         val depth = 2
         val extraArguments = Seq(mock[JDIRequestArgument])
@@ -361,13 +363,15 @@ class PureStepProfileSpec extends FunSpec with Matchers
             requestId = TestRequestId,
             isPending = false,
             removeExistingRequests = removeExistingRequests,
-            threadReference = threadReference,
+            threadReference = mockThreadReference,
             size = size,
             depth = depth,
             extraArguments = extraArguments
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(Seq(expected.get)).once()
         expected.foreach(b =>
@@ -378,7 +382,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
         )
 
         val actual = pureStepProfile.removeStepRequestWithArgs(
-          threadReference,
+          mockThreadInfoProfile,
           extraArguments: _*
         )
 
@@ -400,7 +404,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
 
       it("should remove and return all pending requests") {
         val removeExistingRequests = true
-        val threadReference = mock[ThreadReference]
+        val threadInfoProfile = mock[ThreadInfoProfile]
         val size = 1
         val depth = 2
         val extraArguments = Seq(mock[JDIRequestArgument])
@@ -410,7 +414,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
             requestId = TestRequestId,
             isPending = true,
             removeExistingRequests = removeExistingRequests,
-            threadReference = threadReference,
+            threadReference = mockThreadReference,
             size = size,
             depth = depth,
             extraArguments = extraArguments
@@ -433,7 +437,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
 
       it("should remove and return all non-pending requests") {
         val removeExistingRequests = true
-        val threadReference = mock[ThreadReference]
+        val threadInfoProfile = mock[ThreadInfoProfile]
         val size = 1
         val depth = 2
         val extraArguments = Seq(mock[JDIRequestArgument])
@@ -443,7 +447,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
             requestId = TestRequestId,
             isPending = false,
             removeExistingRequests = removeExistingRequests,
-            threadReference = threadReference,
+            threadReference = mockThreadReference,
             size = size,
             depth = depth,
             extraArguments = extraArguments
@@ -468,19 +472,18 @@ class PureStepProfileSpec extends FunSpec with Matchers
     describe("#isStepRequestPending") {
       it("should return false if no requests exist") {
         val expected = false
-        val threadReference = mock[ThreadReference]
+        val threadInfoProfile = mock[ThreadInfoProfile]
 
         (mockStepManager.stepRequestList _).expects()
           .returning(Nil).once()
 
-        val actual = pureStepProfile.isStepRequestPending(threadReference)
+        val actual = pureStepProfile.isStepRequestPending(threadInfoProfile)
 
         actual should be (expected)
       }
 
       it("should return false if no request with matching thread exists") {
         val expected = false
-        val threadReference = mock[ThreadReference]
         val extraArguments = Seq(mock[JDIRequestArgument])
 
         val requests = Seq(
@@ -495,17 +498,18 @@ class PureStepProfileSpec extends FunSpec with Matchers
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(requests).once()
 
-        val actual = pureStepProfile.isStepRequestPending(threadReference)
+        val actual = pureStepProfile.isStepRequestPending(mockThreadInfoProfile)
 
         actual should be (expected)
       }
 
       it("should return false if no matching request is pending") {
         val expected = false
-        val threadReference = mock[ThreadReference]
         val extraArguments = Seq(mock[JDIRequestArgument])
 
         val requests = Seq(
@@ -513,24 +517,25 @@ class PureStepProfileSpec extends FunSpec with Matchers
             requestId = TestRequestId,
             isPending = false,
             removeExistingRequests = false,
-            threadReference = threadReference,
+            threadReference = mockThreadReference,
             size = 0,
             depth = 0,
             extraArguments = extraArguments
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(requests).once()
 
-        val actual = pureStepProfile.isStepRequestPending(threadReference)
+        val actual = pureStepProfile.isStepRequestPending(mockThreadInfoProfile)
 
         actual should be (expected)
       }
 
       it("should return true if at least one matching request is pending") {
         val expected = true
-        val threadReference = mock[ThreadReference]
         val extraArguments = Seq(mock[JDIRequestArgument])
 
         val requests = Seq(
@@ -538,17 +543,19 @@ class PureStepProfileSpec extends FunSpec with Matchers
             requestId = TestRequestId,
             isPending = true,
             removeExistingRequests = false,
-            threadReference = threadReference,
+            threadReference = mockThreadReference,
             size = 0,
             depth = 0,
             extraArguments = extraArguments
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(requests).once()
 
-        val actual = pureStepProfile.isStepRequestPending(threadReference)
+        val actual = pureStepProfile.isStepRequestPending(mockThreadInfoProfile)
 
         actual should be (expected)
       }
@@ -557,14 +564,14 @@ class PureStepProfileSpec extends FunSpec with Matchers
     describe("#isStepRequestWithArgsPending") {
       it("should return false if no requests exist") {
         val expected = false
-        val threadReference = mock[ThreadReference]
+        val threadInfoProfile = mock[ThreadInfoProfile]
         val extraArguments = Seq(mock[JDIRequestArgument])
 
         (mockStepManager.stepRequestList _).expects()
           .returning(Nil).once()
 
         val actual = pureStepProfile.isStepRequestWithArgsPending(
-          threadReference,
+          threadInfoProfile,
           extraArguments: _*
         )
 
@@ -573,7 +580,6 @@ class PureStepProfileSpec extends FunSpec with Matchers
 
       it("should return false if no request with matching thread exists") {
         val expected = false
-        val threadReference = mock[ThreadReference]
         val extraArguments = Seq(mock[JDIRequestArgument])
 
         val requests = Seq(
@@ -588,11 +594,13 @@ class PureStepProfileSpec extends FunSpec with Matchers
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(requests).once()
 
         val actual = pureStepProfile.isStepRequestWithArgsPending(
-          threadReference,
+          mockThreadInfoProfile,
           extraArguments: _*
         )
 
@@ -601,7 +609,6 @@ class PureStepProfileSpec extends FunSpec with Matchers
 
       it("should return false if no request with matching extra arguments exists") {
         val expected = false
-        val threadReference = mock[ThreadReference]
         val extraArguments = Seq(mock[JDIRequestArgument])
 
         val requests = Seq(
@@ -609,18 +616,20 @@ class PureStepProfileSpec extends FunSpec with Matchers
             requestId = TestRequestId,
             isPending = true,
             removeExistingRequests = false,
-            threadReference = threadReference,
+            threadReference = mockThreadReference,
             size = 0,
             depth = 0,
             extraArguments = extraArguments
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(requests).once()
 
         val actual = pureStepProfile.isStepRequestWithArgsPending(
-          threadReference
+          mockThreadInfoProfile
         )
 
         actual should be (expected)
@@ -628,7 +637,6 @@ class PureStepProfileSpec extends FunSpec with Matchers
 
       it("should return false if no matching request is pending") {
         val expected = false
-        val threadReference = mock[ThreadReference]
         val extraArguments = Seq(mock[JDIRequestArgument])
 
         val requests = Seq(
@@ -636,18 +644,20 @@ class PureStepProfileSpec extends FunSpec with Matchers
             requestId = TestRequestId,
             isPending = false,
             removeExistingRequests = false,
-            threadReference = threadReference,
+            threadReference = mockThreadReference,
             size = 0,
             depth = 0,
             extraArguments = extraArguments
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(requests).once()
 
         val actual = pureStepProfile.isStepRequestWithArgsPending(
-          threadReference,
+          mockThreadInfoProfile,
           extraArguments: _*
         )
 
@@ -656,7 +666,6 @@ class PureStepProfileSpec extends FunSpec with Matchers
 
       it("should return true if at least one matching request is pending") {
         val expected = true
-        val threadReference = mock[ThreadReference]
         val extraArguments = Seq(mock[JDIRequestArgument])
 
         val requests = Seq(
@@ -664,18 +673,20 @@ class PureStepProfileSpec extends FunSpec with Matchers
             requestId = TestRequestId,
             isPending = true,
             removeExistingRequests = false,
-            threadReference = threadReference,
+            threadReference = mockThreadReference,
             size = 0,
             depth = 0,
             extraArguments = extraArguments
           )
         )
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
         (mockStepManager.stepRequestList _).expects()
           .returning(requests).once()
 
         val actual = pureStepProfile.isStepRequestWithArgsPending(
-          threadReference,
+          mockThreadInfoProfile,
           extraArguments: _*
         )
 
@@ -696,6 +707,9 @@ class PureStepProfileSpec extends FunSpec with Matchers
         // These filters should be injected by our profile
         val threadFilter = ThreadFilter(threadReference = mockThreadReference)
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
+
         (mockStepManager.createStepIntoLineRequest _)
           .expects(mockThreadReference, rArgs :+ threadFilter)
           .returning(Success(TestRequestId)).once()
@@ -705,7 +719,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
           .returning(stepPipeline).once()
 
         val stepFuture = pureStepProfile.stepIntoLineWithData(
-          mockThreadReference,
+          mockThreadInfoProfile,
           rArgs ++ eArgs: _*
         )
 
@@ -718,11 +732,14 @@ class PureStepProfileSpec extends FunSpec with Matchers
       it("should capture steps thrown when creating the request") {
         val expected = new Throwable
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
+
         (mockStepManager.createStepIntoLineRequest _).expects(*, *)
           .returning(Failure(expected)).once()
 
         val stepFuture = pureStepProfile.stepIntoLineWithData(
-          mockThreadReference
+          mockThreadInfoProfile
         )
 
         whenReady(stepFuture.failed) { actual => actual should be (expected) }
@@ -742,6 +759,9 @@ class PureStepProfileSpec extends FunSpec with Matchers
         // These filters should be injected by our profile
         val threadFilter = ThreadFilter(threadReference = mockThreadReference)
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
+
         (mockStepManager.createStepOutLineRequest _)
           .expects(mockThreadReference, rArgs :+ threadFilter)
           .returning(Success(TestRequestId)).once()
@@ -751,7 +771,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
           .returning(stepPipeline).once()
 
         val stepFuture = pureStepProfile.stepOutLineWithData(
-          mockThreadReference,
+          mockThreadInfoProfile,
           rArgs ++ eArgs: _*
         )
 
@@ -764,11 +784,14 @@ class PureStepProfileSpec extends FunSpec with Matchers
       it("should capture steps thrown when creating the request") {
         val expected = new Throwable
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
+
         (mockStepManager.createStepOutLineRequest _).expects(*, *)
           .returning(Failure(expected)).once()
 
         val stepFuture = pureStepProfile.stepOutLineWithData(
-          mockThreadReference
+          mockThreadInfoProfile
         )
 
         whenReady(stepFuture.failed) { actual => actual should be (expected) }
@@ -788,6 +811,9 @@ class PureStepProfileSpec extends FunSpec with Matchers
         // These filters should be injected by our profile
         val threadFilter = ThreadFilter(threadReference = mockThreadReference)
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
+
         (mockStepManager.createStepOverLineRequest _)
           .expects(mockThreadReference, rArgs :+ threadFilter)
           .returning(Success(TestRequestId)).once()
@@ -797,7 +823,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
           .returning(stepPipeline).once()
 
         val stepFuture = pureStepProfile.stepOverLineWithData(
-          mockThreadReference,
+          mockThreadInfoProfile,
           rArgs ++ eArgs: _*
         )
 
@@ -810,11 +836,14 @@ class PureStepProfileSpec extends FunSpec with Matchers
       it("should capture steps thrown when creating the request") {
         val expected = new Throwable
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
+
         (mockStepManager.createStepOverLineRequest _).expects(*, *)
           .returning(Failure(expected)).once()
 
         val stepFuture = pureStepProfile.stepOverLineWithData(
-          mockThreadReference
+          mockThreadInfoProfile
         )
 
         whenReady(stepFuture.failed) { actual => actual should be (expected) }
@@ -834,6 +863,9 @@ class PureStepProfileSpec extends FunSpec with Matchers
         // These filters should be injected by our profile
         val threadFilter = ThreadFilter(threadReference = mockThreadReference)
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
+
         (mockStepManager.createStepIntoMinRequest _)
           .expects(mockThreadReference, rArgs :+ threadFilter)
           .returning(Success(TestRequestId)).once()
@@ -843,7 +875,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
           .returning(stepPipeline).once()
 
         val stepFuture = pureStepProfile.stepIntoMinWithData(
-          mockThreadReference,
+          mockThreadInfoProfile,
           rArgs ++ eArgs: _*
         )
 
@@ -856,11 +888,14 @@ class PureStepProfileSpec extends FunSpec with Matchers
       it("should capture steps thrown when creating the request") {
         val expected = new Throwable
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
+
         (mockStepManager.createStepIntoMinRequest _).expects(*, *)
           .returning(Failure(expected)).once()
 
         val stepFuture = pureStepProfile.stepIntoMinWithData(
-          mockThreadReference
+          mockThreadInfoProfile
         )
 
         whenReady(stepFuture.failed) { actual => actual should be (expected) }
@@ -880,6 +915,9 @@ class PureStepProfileSpec extends FunSpec with Matchers
         // These filters should be injected by our profile
         val threadFilter = ThreadFilter(threadReference = mockThreadReference)
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
+
         (mockStepManager.createStepOutMinRequest _)
           .expects(mockThreadReference, rArgs :+ threadFilter)
           .returning(Success(TestRequestId)).once()
@@ -889,7 +927,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
           .returning(stepPipeline).once()
 
         val stepFuture = pureStepProfile.stepOutMinWithData(
-          mockThreadReference,
+          mockThreadInfoProfile,
           rArgs ++ eArgs: _*
         )
 
@@ -902,11 +940,14 @@ class PureStepProfileSpec extends FunSpec with Matchers
       it("should capture steps thrown when creating the request") {
         val expected = new Throwable
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
+
         (mockStepManager.createStepOutMinRequest _).expects(*, *)
           .returning(Failure(expected)).once()
 
         val stepFuture = pureStepProfile.stepOutMinWithData(
-          mockThreadReference
+          mockThreadInfoProfile
         )
 
         whenReady(stepFuture.failed) { actual => actual should be (expected) }
@@ -926,6 +967,9 @@ class PureStepProfileSpec extends FunSpec with Matchers
         // These filters should be injected by our profile
         val threadFilter = ThreadFilter(threadReference = mockThreadReference)
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
+
         (mockStepManager.createStepOverMinRequest _)
           .expects(mockThreadReference, rArgs :+ threadFilter)
           .returning(Success(TestRequestId)).once()
@@ -935,7 +979,7 @@ class PureStepProfileSpec extends FunSpec with Matchers
           .returning(stepPipeline).once()
 
         val stepFuture = pureStepProfile.stepOverMinWithData(
-          mockThreadReference,
+          mockThreadInfoProfile,
           rArgs ++ eArgs: _*
         )
 
@@ -948,11 +992,14 @@ class PureStepProfileSpec extends FunSpec with Matchers
       it("should capture steps thrown when creating the request") {
         val expected = new Throwable
 
+        (mockThreadInfoProfile.toJdiInstance _).expects()
+          .returning(mockThreadReference).once()
+
         (mockStepManager.createStepOverMinRequest _).expects(*, *)
           .returning(Failure(expected)).once()
 
         val stepFuture = pureStepProfile.stepOverMinWithData(
-          mockThreadReference
+          mockThreadInfoProfile
         )
 
         whenReady(stepFuture.failed) { actual => actual should be (expected) }
@@ -972,8 +1019,9 @@ class PureStepProfileSpec extends FunSpec with Matchers
           ).once()
 
         var actual: (StepEvent, Seq[JDIEventDataResult]) = null
-        val pipeline =
-          pureStepProfile.tryCreateStepListenerWithData(mockThreadReference, arguments: _*)
+        val pipeline = pureStepProfile.tryCreateStepListenerWithData(
+          mockThreadInfoProfile, arguments: _*
+        )
         pipeline.get.foreach(actual = _)
 
         pipeline.get.process(expected)

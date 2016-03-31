@@ -21,6 +21,13 @@ class PureFrameInfoProfile(
   private lazy val currentThreadProfile = newThreadProfile(threadReference)
 
   /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: StackFrame = stackFrame
+
+  /**
    * Retrieves the object representing 'this' in the current frame scope.
    *
    * @return The profile of this object

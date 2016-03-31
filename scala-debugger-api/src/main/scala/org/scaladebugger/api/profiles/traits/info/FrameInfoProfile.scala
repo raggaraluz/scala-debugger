@@ -1,12 +1,21 @@
 package org.scaladebugger.api.profiles.traits.info
 //import acyclic.file
 
+import com.sun.jdi.StackFrame
+
 import scala.util.Try
 
 /**
  * Represents the interface for frame-based interaction.
  */
-trait FrameInfoProfile {
+trait FrameInfoProfile extends CommonInfoProfile {
+  /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: StackFrame
+
   /**
    * Retrieves the object representing 'this' in the current frame scope.
    *

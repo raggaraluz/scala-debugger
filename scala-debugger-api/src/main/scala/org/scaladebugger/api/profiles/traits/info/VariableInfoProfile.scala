@@ -1,12 +1,21 @@
 package org.scaladebugger.api.profiles.traits.info
 //import acyclic.file
 
+import com.sun.jdi.Mirror
+
 import scala.util.Try
 
 /**
  * Represents the interface for variable-based interaction.
  */
-trait VariableInfoProfile {
+trait VariableInfoProfile extends CommonInfoProfile {
+  /**
+   * Returns the JDI representation this profile instance wraps.
+   *
+   * @return The JDI instance
+   */
+  override def toJdiInstance: Mirror
+
   /**
    * Returns the name of the variable.
    *

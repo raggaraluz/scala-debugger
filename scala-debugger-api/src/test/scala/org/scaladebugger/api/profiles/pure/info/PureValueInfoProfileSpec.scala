@@ -8,10 +8,23 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 class PureValueInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
+  private val mockValue = mock[Value]
   private val mockNewObjectProfile = mockFunction[ObjectReference, ObjectInfoProfile]
   private val mockNewArrayProfile = mockFunction[ArrayReference, ArrayInfoProfile]
 
   describe("PureValueInfoProfile") {
+    describe("#toJdiInstance") {
+      it("should return the JDI instance this profile instance represents") {
+        val expected = mockValue
+
+        val pureValueInfoProfile = new PureValueInfoProfile(mockValue)
+
+        val actual = pureValueInfoProfile.toJdiInstance
+
+        actual should be (expected)
+      }
+    }
+
     describe("#typeName") {
       it("should return the type name of the value") {
         val expected = "some.type.name"

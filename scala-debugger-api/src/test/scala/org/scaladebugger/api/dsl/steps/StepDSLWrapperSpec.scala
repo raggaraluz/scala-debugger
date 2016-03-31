@@ -1,10 +1,10 @@
 package org.scaladebugger.api.dsl.steps
 
-import com.sun.jdi.ThreadReference
 import com.sun.jdi.event.StepEvent
 import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
 import org.scaladebugger.api.lowlevel.requests.JDIRequestArgument
 import org.scaladebugger.api.pipelines.Pipeline
+import org.scaladebugger.api.profiles.traits.info.ThreadInfoProfile
 import org.scaladebugger.api.profiles.traits.steps.StepProfile
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -21,17 +21,17 @@ class StepDSLWrapperSpec extends FunSpec with Matchers
       it("should invoke the underlying profile method") {
         import org.scaladebugger.api.dsl.Implicits.StepDSL
 
-        val threadReference = mock[ThreadReference]
+        val threadInfoProfile = mock[ThreadInfoProfile]
         val extraArguments = Seq(mock[JDIRequestArgument])
         val returnValue = Success(Pipeline.newPipeline(classOf[StepEvent]))
 
         (mockStepProfile.tryCreateStepListener _).expects(
-          threadReference,
+          threadInfoProfile,
           extraArguments
         ).returning(returnValue).once()
 
         mockStepProfile.onStep(
-          threadReference,
+          threadInfoProfile,
           extraArguments: _*
         ) should be (returnValue)
       }
@@ -41,17 +41,17 @@ class StepDSLWrapperSpec extends FunSpec with Matchers
       it("should invoke the underlying profile method") {
         import org.scaladebugger.api.dsl.Implicits.StepDSL
 
-        val threadReference = mock[ThreadReference]
+        val threadInfoProfile = mock[ThreadInfoProfile]
         val extraArguments = Seq(mock[JDIRequestArgument])
         val returnValue = Pipeline.newPipeline(classOf[StepEvent])
 
         (mockStepProfile.createStepListener _).expects(
-          threadReference,
+          threadInfoProfile,
           extraArguments
         ).returning(returnValue).once()
 
         mockStepProfile.onUnsafeStep(
-          threadReference,
+          threadInfoProfile,
           extraArguments: _*
         ) should be (returnValue)
       }
@@ -61,19 +61,19 @@ class StepDSLWrapperSpec extends FunSpec with Matchers
       it("should invoke the underlying profile method") {
         import org.scaladebugger.api.dsl.Implicits.StepDSL
 
-        val threadReference = mock[ThreadReference]
+        val threadInfoProfile = mock[ThreadInfoProfile]
         val extraArguments = Seq(mock[JDIRequestArgument])
         val returnValue = Success(Pipeline.newPipeline(
           classOf[(StepEvent, Seq[JDIEventDataResult])]
         ))
 
         (mockStepProfile.tryCreateStepListenerWithData _).expects(
-          threadReference,
+          threadInfoProfile,
           extraArguments
         ).returning(returnValue).once()
 
         mockStepProfile.onStepWithData(
-          threadReference,
+          threadInfoProfile,
           extraArguments: _*
         ) should be (returnValue)
       }
@@ -83,19 +83,19 @@ class StepDSLWrapperSpec extends FunSpec with Matchers
       it("should invoke the underlying profile method") {
         import org.scaladebugger.api.dsl.Implicits.StepDSL
 
-        val threadReference = mock[ThreadReference]
+        val threadInfoProfile = mock[ThreadInfoProfile]
         val extraArguments = Seq(mock[JDIRequestArgument])
         val returnValue = Pipeline.newPipeline(
           classOf[(StepEvent, Seq[JDIEventDataResult])]
         )
 
         (mockStepProfile.createStepListenerWithData _).expects(
-          threadReference,
+          threadInfoProfile,
           extraArguments
         ).returning(returnValue).once()
 
         mockStepProfile.onUnsafeStepWithData(
-          threadReference,
+          threadInfoProfile,
           extraArguments: _*
         ) should be (returnValue)
       }
