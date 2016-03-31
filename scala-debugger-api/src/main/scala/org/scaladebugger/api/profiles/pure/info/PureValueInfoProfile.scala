@@ -14,11 +14,9 @@ object PureValueInfoProfile {
  * Represents a pure implementation of a value profile that adds no custom
  * logic on top of the standard JDI.
  *
- * @param stackFrame The stack frame associated with the value instance
  * @param value The reference to the underlying JDI value
  */
 class PureValueInfoProfile(
-  private val stackFrame: StackFrame,
   private val value: Value
 ) extends ValueInfoProfile {
   /**
@@ -103,8 +101,8 @@ class PureValueInfoProfile(
   override def isNull: Boolean = value == null
 
   protected def newObjectProfile(objectReference: ObjectReference): ObjectInfoProfile =
-    new PureObjectInfoProfile(stackFrame, objectReference)
+    new PureObjectInfoProfile(objectReference)()
 
   protected def newArrayProfile(arrayReference: ArrayReference): ArrayInfoProfile =
-    new PureArrayInfoProfile(stackFrame, arrayReference)()
+    new PureArrayInfoProfile(arrayReference)()
 }

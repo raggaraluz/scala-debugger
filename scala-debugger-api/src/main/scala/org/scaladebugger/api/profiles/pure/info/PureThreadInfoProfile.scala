@@ -1,7 +1,7 @@
 package org.scaladebugger.api.profiles.pure.info
 //import acyclic.file
 
-import com.sun.jdi.{StackFrame, VirtualMachine, ThreadReference}
+import com.sun.jdi.{ReferenceType, StackFrame, VirtualMachine, ThreadReference}
 import org.scaladebugger.api.profiles.traits.info.{FrameInfoProfile, ThreadInfoProfile}
 
 import scala.util.Try
@@ -11,17 +11,20 @@ import scala.util.Try
  * custom logic on top of the standard JDI.
  *
  * @param threadReference The reference to the underlying JDI thread
+ * @param virtualMachine The virtual machine used to mirror local values on
+ *                       the remote JVM
+ * @param referenceType The reference type for this thread
  */
 class PureThreadInfoProfile(
   private val threadReference: ThreadReference
-) extends ThreadInfoProfile {
-  /**
-   * Represents the unique id of this thread.
-   *
-   * @return The unique id as a long
-   */
-  override def uniqueId: Long = threadReference.uniqueID()
-
+)(
+  private val virtualMachine: VirtualMachine = threadReference.virtualMachine(),
+  private val referenceType: ReferenceType = threadReference.referenceType()
+) extends PureObjectInfoProfile(threadReference)(
+  virtualMachine = virtualMachine,
+  threadReference = threadReference,
+  referenceType = referenceType
+) with ThreadInfoProfile {
   /**
    * Represents the name of the thread.
    *

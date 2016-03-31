@@ -11,12 +11,16 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   private val mockVirtualMachine = mock[VirtualMachine]
-  private val mockStackFrame = mock[StackFrame]
+  private val mockThreadReference = mock[ThreadReference]
+  private val mockReferenceType = mock[ReferenceType]
   private val mockArrayReference = mock[ArrayReference]
   private val pureArrayInfoProfile = new PureArrayInfoProfile(
-    mockStackFrame,
     mockArrayReference
-  )(mockVirtualMachine)
+  )(
+    virtualMachine = mockVirtualMachine,
+    threadReference = mockThreadReference,
+    referenceType = mockReferenceType
+  )
 
   describe("PureArrayInfoProfile") {
     describe("#length") {
@@ -37,9 +41,12 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
         val mockValue = mock[Value]
 
         val pureArrayInfoProfile = new PureArrayInfoProfile(
-          mockStackFrame,
           mockArrayReference
-        )(mockVirtualMachine) {
+        )(
+          virtualMachine = mockVirtualMachine,
+          threadReference = mockThreadReference,
+          referenceType = mockReferenceType
+        ) {
           override protected def newValueProfile(value: Value): ValueInfoProfile = {
             value should be (mockValue)
             expected
@@ -59,9 +66,12 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
         val mockValues = Seq(mock[Value])
 
         val pureArrayInfoProfile = new PureArrayInfoProfile(
-          mockStackFrame,
           mockArrayReference
-        )(mockVirtualMachine) {
+        )(
+          virtualMachine = mockVirtualMachine,
+          threadReference = mockThreadReference,
+          referenceType = mockReferenceType
+        ) {
           override protected def newValueProfile(value: Value): ValueInfoProfile = {
             value should be (mockValues.head)
             expected.head
@@ -83,9 +93,12 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
         val mockValues = Seq(mock[Value])
 
         val pureArrayInfoProfile = new PureArrayInfoProfile(
-          mockStackFrame,
           mockArrayReference
-        )(mockVirtualMachine) {
+        )(
+          virtualMachine = mockVirtualMachine,
+          threadReference = mockThreadReference,
+          referenceType = mockReferenceType
+        ) {
           override protected def newValueProfile(value: Value): ValueInfoProfile = {
             value should be (mockValues.head)
             expected.head
@@ -146,9 +159,12 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
         import scala.collection.JavaConverters._
         mockSetValues.expects(index, mockValues.asJava, srcIndex, totalElements).once()
         val pureArrayInfoProfile = new PureArrayInfoProfile(
-          mockStackFrame,
           testArrayReference
-        )(mockVirtualMachine)
+        )(
+          virtualMachine = mockVirtualMachine,
+          threadReference = mockThreadReference,
+          referenceType = mockReferenceType
+        )
 
         val actual = pureArrayInfoProfile.setValues(
           index,
@@ -184,9 +200,12 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
         import scala.collection.JavaConverters._
         mockSetValues.expects(mockValues.asJava).once()
         val pureArrayInfoProfile = new PureArrayInfoProfile(
-          mockStackFrame,
           testArrayReference
-        )(mockVirtualMachine)
+        )(
+          virtualMachine = mockVirtualMachine,
+          threadReference = mockThreadReference,
+          referenceType = mockReferenceType
+        )
 
         val actual = pureArrayInfoProfile.setValues(expected)
 

@@ -16,8 +16,7 @@ object InfoTestClasses {
   val DefaultException = new NotOverriddenException
   private def throwException() = throw DefaultException
 
-  class TestThreadInfoProfile extends ThreadInfoProfile {
-    override def uniqueId: Long = throwException()
+  class TestThreadInfoProfile extends TestObjectInfoProfile with ThreadInfoProfile {
     override def getFrames: Seq[FrameInfoProfile] = throwException()
     override def name: String = throwException()
     override def getFrame(index: Int): FrameInfoProfile = throwException()
@@ -47,6 +46,7 @@ object InfoTestClasses {
   }
 
   class TestObjectInfoProfile extends TestValueInfoProfile with ObjectInfoProfile {
+    override def uniqueId: Long = throwException()
     override def invoke(methodInfoProfile: MethodInfoProfile, arguments: Seq[Any], jdiArguments: JDIArgument*): ValueInfoProfile = throwException()
     override def invoke(methodName: String, parameterTypeNames: Seq[String], arguments: Seq[Any], jdiArguments: JDIArgument*): ValueInfoProfile = throwException()
     override def getMethod(name: String, parameterTypeNames: String*): MethodInfoProfile = throwException()

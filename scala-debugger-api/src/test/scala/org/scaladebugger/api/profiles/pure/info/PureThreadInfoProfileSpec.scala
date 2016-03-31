@@ -1,6 +1,6 @@
 package org.scaladebugger.api.profiles.pure.info
 
-import com.sun.jdi.{StackFrame, ThreadReference}
+import com.sun.jdi.{ReferenceType, VirtualMachine, StackFrame, ThreadReference}
 import org.scaladebugger.api.profiles.traits.info.FrameInfoProfile
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -8,10 +8,15 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 class PureThreadInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
+  private val mockVirtualMachine = mock[VirtualMachine]
+  private val mockReferenceType = mock[ReferenceType]
   private val mockNewFrameProfile = mockFunction[StackFrame, FrameInfoProfile]
   private val mockThreadReference = mock[ThreadReference]
   private val pureThreadInfoProfile = new PureThreadInfoProfile(
     mockThreadReference
+  )(
+    virtualMachine = mockVirtualMachine,
+    referenceType = mockReferenceType
   ) {
     override protected def newFrameProfile(
       stackFrame: StackFrame
@@ -19,18 +24,6 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureThreadInfoProfile") {
-    describe("#uniqueId") {
-      it("should return the unique id of the thread") {
-        val expected = 12345L
-
-        (mockThreadReference.uniqueID _).expects().returning(expected).once()
-
-        val actual = pureThreadInfoProfile.uniqueId
-
-        actual should be (expected)
-      }
-    }
-
     describe("#name") {
       it("should return the name of the thread") {
         val expected = "some name"

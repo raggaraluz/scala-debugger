@@ -16,8 +16,9 @@ import scala.collection.JavaConverters._
 class PureFrameInfoProfile(
   private val stackFrame: StackFrame
 ) extends FrameInfoProfile {
+  private lazy val threadReference = stackFrame.thread()
   private lazy val thisObjectProfile = newObjectProfile(stackFrame.thisObject())
-  private lazy val currentThreadProfile = newThreadProfile(stackFrame.thread())
+  private lazy val currentThreadProfile = newThreadProfile(threadReference)
 
   /**
    * Retrieves the object representing 'this' in the current frame scope.
@@ -93,8 +94,8 @@ class PureFrameInfoProfile(
     new PureLocalVariableInfoProfile(stackFrame, localVariable)()
 
   protected def newObjectProfile(objectReference: ObjectReference): ObjectInfoProfile =
-    new PureObjectInfoProfile(stackFrame, objectReference)
+    new PureObjectInfoProfile(objectReference)(threadReference = threadReference)
 
   protected def newThreadProfile(threadReference: ThreadReference): ThreadInfoProfile =
-    new PureThreadInfoProfile(threadReference)
+    new PureThreadInfoProfile(threadReference)()
 }

@@ -1,24 +1,31 @@
 package org.scaladebugger.api.profiles.pure.info
 //import acyclic.file
 
-import com.sun.jdi.{VirtualMachine, StackFrame, Value, ArrayReference}
+import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info.{ValueInfoProfile, ArrayInfoProfile}
 
 /**
  * Represents a pure implementation of an array profile that adds no custom
  * logic on top of the standard JDI.
  *
- * @param stackFrame The stack frame associated with the array instance
  * @param arrayReference The reference to the underlying JDI array
  * @param virtualMachine The virtual machine used to mirror local values on
  *                       the remote JVM
+ * @param threadReference The thread associated with the array (for method
+ *                        invocation)
+ * @param referenceType The reference type for this array
  */
 class PureArrayInfoProfile(
-  private val stackFrame: StackFrame,
   private val arrayReference: ArrayReference
 )(
-  private val virtualMachine: VirtualMachine = stackFrame.virtualMachine()
-) extends PureObjectInfoProfile(stackFrame, arrayReference) with ArrayInfoProfile {
+  private val virtualMachine: VirtualMachine = arrayReference.virtualMachine(),
+  private val threadReference: ThreadReference = arrayReference.owningThread(),
+  private val referenceType: ReferenceType = arrayReference.referenceType()
+) extends PureObjectInfoProfile(arrayReference)(
+  virtualMachine = virtualMachine,
+  threadReference = threadReference,
+  referenceType = referenceType
+) with ArrayInfoProfile {
   import scala.collection.JavaConverters._
   import org.scaladebugger.api.lowlevel.wrappers.Implicits._
 
@@ -113,5 +120,5 @@ class PureArrayInfoProfile(
   }
 
   override protected def newValueProfile(value: Value): ValueInfoProfile =
-    new PureValueInfoProfile(stackFrame, value)
+    new PureValueInfoProfile(value)
 }

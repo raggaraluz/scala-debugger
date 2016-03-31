@@ -40,5 +40,5 @@ trait PureGrabInfoProfile extends GrabInfoProfile {
   }
 
   protected def newThreadProfile(threadReference: ThreadReference): ThreadInfoProfile =
-    new PureThreadInfoProfile(threadReference)
+    new PureThreadInfoProfile(threadReference)(virtualMachine = _virtualMachine)
 }

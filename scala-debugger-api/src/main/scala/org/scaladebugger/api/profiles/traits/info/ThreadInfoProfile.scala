@@ -6,7 +6,7 @@ import scala.util.Try
 /**
  * Represents the interface for thread-based interaction.
  */
-trait ThreadInfoProfile {
+trait ThreadInfoProfile extends ObjectInfoProfile {
   /**
    * Represents the unique id of this thread.
    *

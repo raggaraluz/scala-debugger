@@ -84,8 +84,5 @@ class PureLocalVariableInfoProfile(
   )
 
   protected def newValueProfile(value: Value): ValueInfoProfile =
-    new PureValueInfoProfile(
-      stackFrame,
-      value
-    )
+    new PureValueInfoProfile(value)
 }

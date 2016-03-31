@@ -12,15 +12,27 @@ import scala.collection.JavaConverters._
  * Represents a pure implementation of an object profile that adds no custom
  * logic on top of the standard JDI.
  *
- * @param stackFrame The stack frame associated with the object instance
  * @param objectReference The reference to the underlying JDI object
+ * @param virtualMachine The virtual machine associated with the object
+ * @param threadReference The thread associated with the object (for method
+ *                        invocation)
+ * @param referenceType The reference type for this object
  */
 class PureObjectInfoProfile(
-  private val stackFrame: StackFrame,
   private val objectReference: ObjectReference
-) extends PureValueInfoProfile(stackFrame, objectReference) with ObjectInfoProfile {
-  private lazy val referenceType = objectReference.referenceType()
+)(
+  private val virtualMachine: VirtualMachine = objectReference.virtualMachine(),
+  private val threadReference: ThreadReference = objectReference.owningThread(),
+  private val referenceType: ReferenceType = objectReference.referenceType()
+) extends PureValueInfoProfile(objectReference) with ObjectInfoProfile {
   private lazy val typeChecker = newTypeCheckerProfile()
+
+  /**
+   * Represents the unique id of this object.
+   *
+   * @return The unique id as a long
+   */
+  override def uniqueId: Long = objectReference.uniqueID()
 
   /**
    * Invokes the object's method.
@@ -41,7 +53,6 @@ class PureObjectInfoProfile(
     }
 
     import org.scaladebugger.api.lowlevel.wrappers.Implicits._
-    lazy val virtualMachine = stackFrame.virtualMachine()
     val v = arguments.map(virtualMachine.mirrorOf(_: Any))
 
     val o = jdiArguments.map {
@@ -49,7 +60,7 @@ class PureObjectInfoProfile(
       case InvokeNonVirtualArgument     => ObjectReference.INVOKE_NONVIRTUAL
     }.fold(0)(_ | _)
 
-    val r = objectReference.invokeMethod(stackFrame.thread(), m, v.asJava, o)
+    val r = objectReference.invokeMethod(threadReference, m, v.asJava, o)
     newValueProfile(r)
   }
 
@@ -127,13 +138,13 @@ class PureObjectInfoProfile(
   }
 
   protected def newFieldProfile(field: Field): VariableInfoProfile =
-    new PureFieldInfoProfile(stackFrame, field)()
+    new PureFieldInfoProfile(objectReference, field)()
 
   protected def newMethodProfile(method: Method): MethodInfoProfile =
     new PureMethodInfoProfile(method)
 
   protected def newValueProfile(value: Value): ValueInfoProfile =
-    new PureValueInfoProfile(stackFrame, value)
+    new PureValueInfoProfile(value)
 
   protected def newTypeCheckerProfile(): TypeCheckerProfile =
     new PureTypeCheckerProfile

@@ -9,10 +9,10 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   private val mockVirtualMachine = mock[VirtualMachine]
-  private val mockStackFrame = mock[StackFrame]
+  private val mockObjectReference = mock[ObjectReference]
   private val mockField = mock[Field]
   private val pureFieldInfoProfile = new PureFieldInfoProfile(
-    mockStackFrame,
+    mockObjectReference,
     mockField
   )(mockVirtualMachine)
 
@@ -69,14 +69,9 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
           .returning(mockStringReference).once()
 
         // Ensure setting the value on the object is verified
-        val mockObjectReference = mock[ObjectReference]
         (mockObjectReference.setValue _)
           .expects(mockField, mockStringReference)
           .once()
-
-        // Retrieve the object with which to invoke setValue(...)
-        (mockStackFrame.thisObject _).expects()
-          .returning(mockObjectReference).once()
 
         pureFieldInfoProfile.trySetValue(expected).get should be (expected)
       }
@@ -90,14 +85,9 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
           .returning(mockByteValue).once()
 
         // Ensure setting the value on the object is verified
-        val mockObjectReference = mock[ObjectReference]
         (mockObjectReference.setValue _)
           .expects(mockField, mockByteValue)
           .once()
-
-        // Retrieve the object with which to invoke setValue(...)
-        (mockStackFrame.thisObject _).expects()
-          .returning(mockObjectReference).once()
 
         pureFieldInfoProfile.trySetValue(expected).get should be (expected)
       }
@@ -109,17 +99,12 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
         val mockValue = mock[Value]
 
         // Retrieving the value of the field returns our mock
-        val mockObjectReference = mock[ObjectReference]
         (mockObjectReference.getValue _).expects(mockField)
           .returning(mockValue).once()
 
-        // Retrieve the object with which to invoke getValue(...)
-        (mockStackFrame.thisObject _).expects()
-          .returning(mockObjectReference).once()
-
         val mockNewValueProfile = mockFunction[Value, ValueInfoProfile]
         val pureFieldInfoProfile = new PureFieldInfoProfile(
-          mockStackFrame,
+          mockObjectReference,
           mockField
         )(mockVirtualMachine) {
           override protected def newValueProfile(value: Value): ValueInfoProfile =

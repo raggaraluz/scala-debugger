@@ -13,11 +13,16 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
   private val mockNewMethodProfile = mockFunction[Method, MethodInfoProfile]
   private val mockNewValueProfile = mockFunction[Value, ValueInfoProfile]
   private val mockNewTypeCheckerProfile = mockFunction[TypeCheckerProfile]
-  private val mockStackFrame = mock[StackFrame]
+  private val mockVirtualMachine = mock[VirtualMachine]
+  private val mockReferenceType = mock[ReferenceType]
+  private val mockThreadReference = mock[ThreadReference]
   private val mockObjectReference = mock[ObjectReference]
   private val pureObjectInfoProfile = new PureObjectInfoProfile(
-    mockStackFrame,
     mockObjectReference
+  )(
+    threadReference = mockThreadReference,
+    virtualMachine = mockVirtualMachine,
+    referenceType = mockReferenceType
   ) {
     override protected def newFieldProfile(field: Field): VariableInfoProfile =
       mockNewFieldProfile(field)
@@ -30,6 +35,18 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureObjectInfoProfile") {
+    describe("#uniqueId") {
+      it("should return the unique id of the object") {
+        val expected = 12345L
+
+        (mockObjectReference.uniqueID _).expects().returning(expected).once()
+
+        val actual = pureObjectInfoProfile.uniqueId
+
+        actual should be (expected)
+      }
+    }
+
     describe("#invoke(methodName, parameter types, arguments, JDI arguments)") {
       it("should throw an AssertionError if parameter types and arguments are not same length") {
         intercept[AssertionError] {
@@ -54,8 +71,11 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         val mockUnsafeMethod = mockFunction[String, Seq[String], MethodInfoProfile]
 
         val pureObjectInfoProfile = new PureObjectInfoProfile(
-          mockStackFrame,
           mockObjectReference
+        )(
+          threadReference = mockThreadReference,
+          virtualMachine = mockVirtualMachine,
+          referenceType = mockReferenceType
         ) {
           override def invoke(
             methodInfoProfile: MethodInfoProfile,
@@ -106,10 +126,6 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         val mockMethod = mock[Method]
         val pureMethodInfoProfile = new PureMethodInfoProfile(mockMethod)
 
-        // Thread is retrieved from stack frame
-        val mockThreadReference = mock[ThreadReference]
-        (mockStackFrame.thread _).expects().returning(mockThreadReference).once()
-
         // Object method is invoked
         val mockValue = mock[Value]
         import scala.collection.JavaConverters._
@@ -137,21 +153,12 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         val mockMethod = mock[Method]
         val pureMethodInfoProfile = new PureMethodInfoProfile(mockMethod)
 
-        // Virtual machine is accessed from stack frame
-        val mockVirtualMachine = mock[VirtualMachine]
-        (mockStackFrame.virtualMachine _).expects()
-          .returning(mockVirtualMachine).once()
-
         // Arguments are mirrored remotely
         val mockValues = Seq(mock[IntegerValue])
         arguments.zip(mockValues).foreach { case (ar, ma) =>
           (mockVirtualMachine.mirrorOf(_: Int)).expects(ar)
             .returning(ma).once()
         }
-
-        // Thread is retrieved from stack frame
-        val mockThreadReference = mock[ThreadReference]
-        (mockStackFrame.thread _).expects().returning(mockThreadReference).once()
 
         // Object method is invoked
         val mockValue = mock[Value]
@@ -181,10 +188,6 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         val mockMethod = mock[Method]
         val pureMethodInfoProfile = new PureMethodInfoProfile(mockMethod)
 
-        // Thread is retrieved from stack frame
-        val mockThreadReference = mock[ThreadReference]
-        (mockStackFrame.thread _).expects().returning(mockThreadReference).once()
-
         // Object method is invoked
         // NOTE: Both arguments OR'd together is 3 (1 | 2)
         (mockObjectReference.invokeMethod _).expects(*, *, *, 3)
@@ -204,11 +207,6 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
     describe("#getMethods") {
       it("should return a collection of profiles wrapping the object's visible methods") {
         val expected = Seq(mock[MethodInfoProfile])
-
-        // Grab reference type for field lookup
-        val mockReferenceType = mock[ReferenceType]
-        (mockObjectReference.referenceType _).expects()
-          .returning(mockReferenceType).once()
 
         // Lookup the visible methods
         import scala.collection.JavaConverters._
@@ -232,11 +230,6 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         val name = "someName"
         val paramTypes = Seq("some.type")
 
-        // Grab reference type for field lookup
-        val mockReferenceType = mock[ReferenceType]
-        (mockObjectReference.referenceType _).expects()
-          .returning(mockReferenceType).once()
-
         // Lookup the method and return empty list indicating no method found
         import scala.collection.JavaConverters._
         (mockReferenceType.methodsByName(_: String)).expects(name)
@@ -250,11 +243,6 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
       it("should throw a NoSuchElement exception if no method with matching parameters is found") {
         val name = "someName"
         val paramTypes = Seq("some.type")
-
-        // Grab reference type for field lookup
-        val mockReferenceType = mock[ReferenceType]
-        (mockObjectReference.referenceType _).expects()
-          .returning(mockReferenceType).once()
 
         // Lookup the method and return method indicating matching name found
         val mockMethod = mock[Method]
@@ -282,11 +270,6 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
 
         val name = "someName"
         val paramTypes = Seq("some.type")
-
-        // Grab reference type for field lookup
-        val mockReferenceType = mock[ReferenceType]
-        (mockObjectReference.referenceType _).expects()
-          .returning(mockReferenceType).once()
 
         // Lookup the method and return method indicating matching name found
         val mockMethod = mock[Method]
@@ -317,11 +300,6 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
       it("should return a collection of profiles wrapping the object's visible fields") {
         val expected = Seq(mock[VariableInfoProfile])
 
-        // Grab reference type for field lookup
-        val mockReferenceType = mock[ReferenceType]
-        (mockObjectReference.referenceType _).expects()
-          .returning(mockReferenceType).once()
-
         // Lookup the visible fields
         import scala.collection.JavaConverters._
         val mockFields = Seq(mock[Field])
@@ -343,11 +321,6 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
       it("should throw a NoSuchElement exception if no field with matching name is found") {
         val name = "someName"
 
-        // Grab reference type for field lookup
-        val mockReferenceType = mock[ReferenceType]
-        (mockObjectReference.referenceType _).expects()
-          .returning(mockReferenceType).once()
-
         // Lookup the field and return null indicating no field found
         (mockReferenceType.fieldByName _).expects(name)
           .returning(null).once()
@@ -360,11 +333,6 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
       it("should return a profile wrapping the associated field if found") {
         val expected = mock[VariableInfoProfile]
         val name = "someName"
-
-        // Grab reference type for field lookup
-        val mockReferenceType = mock[ReferenceType]
-        (mockObjectReference.referenceType _).expects()
-          .returning(mockReferenceType).once()
 
         // Lookup the field
         val mockField = mock[Field]
