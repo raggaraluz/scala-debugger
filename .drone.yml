@@ -12,6 +12,7 @@ build:
     - CACHE_DIR="/drone"
     - SCALATEST_SPAN_SCALE_FACTOR=10
   commands:
+    - host `curl -s http://httpbin.org/ip | jq -r '.origin'` || true
     - javac -version
     - /usr/bin/sbt ++$SCALA_VERSION $TEST_SUITE
 
