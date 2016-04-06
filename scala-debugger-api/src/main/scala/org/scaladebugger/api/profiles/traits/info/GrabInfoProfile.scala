@@ -53,16 +53,16 @@ trait GrabInfoProfile {
    * Retrieves all classes contained in the remote JVM in the form of
    * reference type information.
    *
-   * @return The collection of reference type info profiles
+   * @return Success containing the collection of reference type info profiles,
+   *         otherwise a failure
    */
-  def getClasses: Seq[ReferenceTypeInfoProfile]
+  def tryGetClasses: Try[Seq[ReferenceTypeInfoProfile]] = Try(getClasses)
 
   /**
    * Retrieves all classes contained in the remote JVM in the form of
    * reference type information.
    *
-   * @return Success containing the collection of reference type info profiles,
-   *         otherwise a failure
+   * @return The collection of reference type info profiles
    */
-  def tryGetClasses: Try[Seq[ReferenceTypeInfoProfile]] = Try(getClasses)
+  def getClasses: Seq[ReferenceTypeInfoProfile]
 }

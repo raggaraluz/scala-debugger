@@ -17,6 +17,17 @@ trait MiscInfoProfile {
   def availableLinesForFile(fileName: String): Option[Seq[Int]]
 
   /**
+   * Retrieves all source paths for the given source name.
+   *
+   * @example nameToPaths("file.scala") yields
+   *          Seq("path/to/file.scala", "other/path/to/file.scala")
+   *
+   * @param sourceName The source (file) name whose associated paths to find
+   * @return The collection of source paths
+   */
+  def sourceNameToPaths(sourceName: String): Seq[String]
+
+  /**
    * Represents the name of the class used as the entrypoint for this vm.
    *
    * @return The main class name as a string

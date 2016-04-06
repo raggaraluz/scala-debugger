@@ -1,11 +1,13 @@
 package org.scaladebugger.api.profiles.pure.info
 import acyclic.file
-
-import com.sun.jdi.{Location, VirtualMachine}
+import com.sun.jdi.{AbsentInformationException, Location, ReferenceType, VirtualMachine}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.lowlevel.classes.ClassManager
+import org.scaladebugger.api.profiles.traits.info.ReferenceTypeInfoProfile
 import test.JDIMockHelpers
+
+import scala.util.{Failure, Success}
 
 class PureMiscInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory with JDIMockHelpers
@@ -15,12 +17,16 @@ class PureMiscInfoProfileSpec extends FunSpec with Matchers
 
   private val mockRetrieveCommandLineArguments = mockFunction[Seq[String]]
   private val mockRetrieveMainClassName = mockFunction[String]
+  private val mockMiscNewReferenceTypeProfile = mockFunction[ReferenceType, ReferenceTypeInfoProfile]
 
   private val pureMiscInfoProfile = new Object with PureMiscInfoProfile {
     override protected def retrieveCommandLineArguments(): Seq[String] =
       mockRetrieveCommandLineArguments()
     override protected def retrieveMainClassName(): String =
       mockRetrieveMainClassName()
+    override protected def miscNewReferenceTypeProfile(
+      referenceType: ReferenceType
+    ): ReferenceTypeInfoProfile = mockMiscNewReferenceTypeProfile(referenceType)
 
     override protected val classManager: ClassManager = mockClassManager
     override protected val _virtualMachine: VirtualMachine = mockVirtualMachine
@@ -52,6 +58,102 @@ class PureMiscInfoProfileSpec extends FunSpec with Matchers
         val actual = pureMiscInfoProfile.availableLinesForFile("")
 
         actual should be (expected)
+      }
+    }
+
+    describe("#sourceNameToPaths") {
+      it("should ignore any class with absent source name information") {
+        val expected = Nil
+        val sourceName = "file.scala"
+
+        val referenceTypeProfiles = Seq(mock[ReferenceTypeInfoProfile])
+        val referenceTypes = Seq(mock[ReferenceType])
+
+        // All classes are examined for their sources
+        (mockClassManager.allClasses _).expects()
+          .returning(referenceTypes).once()
+
+        // Class references are transformed into our profile structure
+        referenceTypeProfiles.zip(referenceTypes).foreach { case (p, r) =>
+          mockMiscNewReferenceTypeProfile.expects(r).returning(p).once()
+        }
+
+        // Accessing the source names can fail
+        referenceTypeProfiles.foreach(p =>
+          (p.tryGetSourceNames _).expects()
+            .returning(Failure(new AbsentInformationException)).once()
+        )
+
+        val actual = pureMiscInfoProfile.sourceNameToPaths(sourceName)
+
+        actual should be (expected)
+      }
+
+      it("should ignore any class with absent source path information") {
+        val expected = Nil
+        val sourceName = "file.scala"
+
+        val referenceTypeProfiles = Seq(mock[ReferenceTypeInfoProfile])
+        val referenceTypes = Seq(mock[ReferenceType])
+
+        // All classes are examined for their sources
+        (mockClassManager.allClasses _).expects()
+          .returning(referenceTypes).once()
+
+        // Class references are transformed into our profile structure
+        referenceTypeProfiles.zip(referenceTypes).foreach { case (p, r) =>
+          mockMiscNewReferenceTypeProfile.expects(r).returning(p).once()
+        }
+
+        // Filtering by source name (return matching name)
+        referenceTypeProfiles.foreach(p =>
+          (p.tryGetSourceNames _).expects()
+            .returning(Success(Seq(sourceName))).once()
+        )
+
+        // Accessing the source paths can fail
+        referenceTypeProfiles.foreach(p =>
+          (p.tryGetSourcePaths _).expects()
+            .returning(Failure(new AbsentInformationException)).once()
+        )
+
+        val actual = pureMiscInfoProfile.sourceNameToPaths(sourceName)
+
+        actual should be (expected)
+      }
+
+      it("should collect source paths for all classes with the same source name") {
+        val expected = Seq("path/to/file.scala", "other/path/to/file.scala")
+        val sourceName = "file.scala"
+
+        val referenceTypeProfiles = Seq(mock[ReferenceTypeInfoProfile])
+        val referenceTypes = Seq(mock[ReferenceType])
+
+        // All classes are examined for their sources
+        (mockClassManager.allClasses _).expects()
+          .returning(referenceTypes).once()
+
+        // Class references are transformed into our profile structure
+        referenceTypeProfiles.zip(referenceTypes).foreach { case (p, r) =>
+          mockMiscNewReferenceTypeProfile.expects(r).returning(p).once()
+        }
+
+        // Filtering by source name (return matching name)
+        referenceTypeProfiles.foreach(p =>
+          (p.tryGetSourceNames _).expects()
+            .returning(Success(Seq(sourceName))).once()
+        )
+
+        // Source paths returned by each reference type profile are included
+        // in final results
+        referenceTypeProfiles.foreach(p =>
+          (p.tryGetSourcePaths _).expects()
+            .returning(Success(expected)).once()
+        )
+
+        val actual = pureMiscInfoProfile.sourceNameToPaths(sourceName)
+
+        actual should contain theSameElementsAs (expected)
       }
     }
 
