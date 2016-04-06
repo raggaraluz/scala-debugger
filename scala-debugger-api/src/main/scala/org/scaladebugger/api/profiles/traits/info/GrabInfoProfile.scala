@@ -48,4 +48,21 @@ trait GrabInfoProfile {
    * @return The profile of the matching thread, or throws an exception
    */
   def getThread(threadId: Long): ThreadInfoProfile
+
+  /**
+   * Retrieves all classes contained in the remote JVM in the form of
+   * reference type information.
+   *
+   * @return The collection of reference type info profiles
+   */
+  def getClasses: Seq[ReferenceTypeInfoProfile]
+
+  /**
+   * Retrieves all classes contained in the remote JVM in the form of
+   * reference type information.
+   *
+   * @return Success containing the collection of reference type info profiles,
+   *         otherwise a failure
+   */
+  def tryGetClasses: Try[Seq[ReferenceTypeInfoProfile]] = Try(getClasses)
 }

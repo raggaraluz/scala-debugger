@@ -1,8 +1,8 @@
 package org.scaladebugger.api.profiles.pure.info
 //import acyclic.file
 
-import com.sun.jdi.{VirtualMachine, ThreadReference}
-import org.scaladebugger.api.profiles.traits.info.{ThreadInfoProfile, GrabInfoProfile}
+import com.sun.jdi.{ReferenceType, VirtualMachine, ThreadReference}
+import org.scaladebugger.api.profiles.traits.info.{ReferenceTypeInfoProfile, ThreadInfoProfile, GrabInfoProfile}
 
 import scala.util.{Success, Try}
 
@@ -39,6 +39,21 @@ trait PureGrabInfoProfile extends GrabInfoProfile {
       .get
   }
 
+  /**
+   * Retrieves all classes contained in the remote JVM in the form of
+   * reference type information.
+   *
+   * @return The collection of reference type info profiles
+   */
+  override def getClasses: Seq[ReferenceTypeInfoProfile] = {
+    import scala.collection.JavaConverters._
+    _virtualMachine.allClasses().asScala.map(newReferenceTypeProfile)
+  }
+
   protected def newThreadProfile(threadReference: ThreadReference): ThreadInfoProfile =
     new PureThreadInfoProfile(threadReference)(virtualMachine = _virtualMachine)
+
+  protected def newReferenceTypeProfile(
+    referenceType: ReferenceType
+  ): ReferenceTypeInfoProfile = new PureReferenceTypeInfoProfile(referenceType)
 }

@@ -25,6 +25,17 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
   def uniqueId: Long
 
   /**
+   * Returns the reference type information for this object.
+   *
+   * @note Returns the specific type of this object, not any interface or
+   *       superclass that it inherits. So, val x: AnyRef = "a string" would
+   *       yield the reference type for String, not AnyRef.
+   *
+   * @return The reference type information
+   */
+  def getReferenceType: ReferenceTypeInfoProfile
+
+  /**
    * Invokes the object's method with matching name and arguments.
    *
    * @param methodName The name of the method to invoke

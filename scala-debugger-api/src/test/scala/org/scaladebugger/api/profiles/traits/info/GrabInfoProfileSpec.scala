@@ -40,5 +40,20 @@ class GrabInfoProfileSpec extends FunSpec with Matchers
         grabInfoProfile.tryGetThread(a1).get should be (r)
       }
     }
+
+    describe("#tryGetClasses") {
+      it("should wrap the unsafe call in a Try") {
+        val mockUnsafeMethod = mockFunction[Seq[ReferenceTypeInfoProfile]]
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def getClasses: Seq[ReferenceTypeInfoProfile] =
+            mockUnsafeMethod()
+        }
+
+        val r = Seq(mock[ReferenceTypeInfoProfile])
+        mockUnsafeMethod.expects().returning(r).once()
+        grabInfoProfile.tryGetClasses.get should be (r)
+      }
+    }
   }
 }

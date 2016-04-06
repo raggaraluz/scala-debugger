@@ -1,8 +1,8 @@
 package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
-import org.scaladebugger.api.lowlevel.{InvokeSingleThreadedArgument, InvokeNonVirtualArgument, JDIArgument}
-import org.scaladebugger.api.profiles.traits.info.{TypeCheckerProfile, VariableInfoProfile, MethodInfoProfile, ValueInfoProfile}
+import org.scaladebugger.api.lowlevel.{InvokeNonVirtualArgument, InvokeSingleThreadedArgument, JDIArgument}
+import org.scaladebugger.api.profiles.traits.info._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
@@ -13,6 +13,7 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
   private val mockNewMethodProfile = mockFunction[Method, MethodInfoProfile]
   private val mockNewValueProfile = mockFunction[Value, ValueInfoProfile]
   private val mockNewTypeCheckerProfile = mockFunction[TypeCheckerProfile]
+  private val mockNewReferenceTypeProfile = mockFunction[ReferenceType, ReferenceTypeInfoProfile]
   private val mockVirtualMachine = mock[VirtualMachine]
   private val mockReferenceType = mock[ReferenceType]
   private val mockThreadReference = mock[ThreadReference]
@@ -32,6 +33,9 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
       mockNewValueProfile(value)
     override protected def newTypeCheckerProfile(): TypeCheckerProfile =
       mockNewTypeCheckerProfile()
+    override protected def newReferenceTypeProfile(
+      referenceType: ReferenceType
+    ): ReferenceTypeInfoProfile = mockNewReferenceTypeProfile(referenceType)
   }
 
   describe("PureObjectInfoProfile") {
@@ -52,6 +56,23 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         (mockObjectReference.uniqueID _).expects().returning(expected).once()
 
         val actual = pureObjectInfoProfile.uniqueId
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#getReferenceType") {
+      it("should return a profile wrapping the object's reference type") {
+        val expected = mock[ReferenceTypeInfoProfile]
+        val mockReferenceType = mock[ReferenceType]
+
+        (mockObjectReference.referenceType _).expects()
+          .returning(mockReferenceType).once()
+
+        mockNewReferenceTypeProfile.expects(mockReferenceType)
+          .returning(expected).once()
+
+        val actual = pureObjectInfoProfile.getReferenceType
 
         actual should be (expected)
       }
