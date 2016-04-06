@@ -70,6 +70,22 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
     }
 
     describe("#setValue") {
+      it("should throw an exception if no object reference available") {
+        val pureFieldInfoProfile = new PureFieldInfoProfile(
+          null,
+          mockField
+        )(mockVirtualMachine)
+
+        // Mirror of value still happens first
+        val mockStringReference = mock[StringReference]
+        (mockVirtualMachine.mirrorOf(_: String)).expects(*)
+          .returning(mockStringReference).once()
+
+        intercept[AssertionError] {
+          pureFieldInfoProfile.setValue("some value")
+        }
+      }
+
       it("should set strings directly on the object") {
         val expected = "some value"
 
@@ -104,6 +120,17 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
     }
 
     describe("#toValue") {
+      it("should throw an exception if no object reference available") {
+        val pureFieldInfoProfile = new PureFieldInfoProfile(
+          null,
+          mockField
+        )(mockVirtualMachine)
+
+        intercept[AssertionError] {
+          pureFieldInfoProfile.toValue
+        }
+      }
+
       it("should return a wrapper around the value of the field") {
         val expected = mock[ValueInfoProfile]
         val mockValue = mock[Value]

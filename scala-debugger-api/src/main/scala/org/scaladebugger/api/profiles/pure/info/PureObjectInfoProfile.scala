@@ -42,6 +42,17 @@ class PureObjectInfoProfile(
   override def uniqueId: Long = objectReference.uniqueID()
 
   /**
+   * Returns the reference type information for this object.
+   *
+   * @note Returns the specific type of this object, not any interface or
+   *       superclass that it inherits. So, val x: AnyRef = "a string" would
+   *       yield the reference type for String, not AnyRef.
+   * @return The reference type information
+   */
+  override def getReferenceType: ReferenceTypeInfoProfile =
+    newReferenceTypeProfile(objectReference.referenceType())
+
+  /**
    * Invokes the object's method.
    *
    * @param methodInfoProfile The method of the object to invoke
@@ -141,6 +152,12 @@ class PureObjectInfoProfile(
   override def getField(name: String): VariableInfoProfile = {
     newFieldProfile(Option(referenceType.fieldByName(name)).get)
   }
+
+  protected def newReferenceTypeProfile(
+    referenceType: ReferenceType
+  ): ReferenceTypeInfoProfile = new PureReferenceTypeInfoProfile(
+    referenceType
+  )
 
   protected def newFieldProfile(field: Field): VariableInfoProfile =
     new PureFieldInfoProfile(objectReference, field)()

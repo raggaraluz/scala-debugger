@@ -82,17 +82,25 @@ class PureFieldInfoProfile(
     value
   }
 
-  private def setFieldValue(value: Value): Unit =
+  private def setFieldValue(value: Value): Unit = {
+    assert(objectReference != null, "Cannot set field value on reference type!")
+
     objectReference.setValue(field, value)
+  }
 
   /**
    * Returns a profile representing the value of this variable.
    *
    * @return The profile representing the value
    */
-  override def toValue: ValueInfoProfile = newValueProfile(
-    objectReference.getValue(field)
-  )
+  override def toValue: ValueInfoProfile = {
+    assert(objectReference != null,
+      "Cannot get field value from reference type!")
+
+    newValueProfile(
+      objectReference.getValue(field)
+    )
+  }
 
   protected def newValueProfile(value: Value): ValueInfoProfile =
     new PureValueInfoProfile(value)

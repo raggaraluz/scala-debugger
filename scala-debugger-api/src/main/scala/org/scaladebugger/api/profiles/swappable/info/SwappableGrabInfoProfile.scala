@@ -3,7 +3,7 @@ import acyclic.file
 
 import com.sun.jdi.ThreadReference
 import org.scaladebugger.api.profiles.swappable.SwappableDebugProfileManagement
-import org.scaladebugger.api.profiles.traits.info.{ThreadInfoProfile, GrabInfoProfile, MiscInfoProfile}
+import org.scaladebugger.api.profiles.traits.info.{ReferenceTypeInfoProfile, ThreadInfoProfile, GrabInfoProfile, MiscInfoProfile}
 
 /**
  * Represents a swappable profile for grabbing various info that redirects the
@@ -18,4 +18,7 @@ trait SwappableGrabInfoProfile extends GrabInfoProfile {
   override def getThread(
     threadId: Long
   ): ThreadInfoProfile = withCurrentProfile.getThread(threadId)
+
+  override def getClasses: Seq[ReferenceTypeInfoProfile] =
+    withCurrentProfile.getClasses
 }

@@ -24,6 +24,16 @@ object InfoTestClasses {
     override def toJdiInstance: ThreadReference = throwException()
   }
 
+  class TestLocationInfoProfile extends LocationInfoProfile {
+    override def toJdiInstance: Location = throwException()
+    override def getSourcePath: String = throwException()
+    override def getLineNumber: Int = throwException()
+    override def getSourceName: String = throwException()
+    override def getCodeIndex: Long = throwException()
+    override def getDeclaringType: ReferenceTypeInfoProfile = throwException()
+    override def getMethod: MethodInfoProfile = throwException()
+  }
+
   class TestValueInfoProfile extends ValueInfoProfile {
     override def typeName: String = throwException()
     override def isObject: Boolean = throwException()
@@ -57,6 +67,7 @@ object InfoTestClasses {
     override def getField(name: String): VariableInfoProfile = throwException()
     override def getMethods: Seq[MethodInfoProfile] = throwException()
     override def toJdiInstance: ObjectReference = throwException()
+    override def getReferenceType: ReferenceTypeInfoProfile = throwException()
   }
 
   class TestMethodInfoProfile extends MethodInfoProfile {
@@ -69,6 +80,7 @@ object InfoTestClasses {
   class TestGrabInfoProfile extends GrabInfoProfile {
     override def getThread(threadReference: ThreadReference): ThreadInfoProfile = throwException()
     override def getThread(threadId: Long): ThreadInfoProfile = throwException()
+    override def getClasses: Seq[ReferenceTypeInfoProfile] = throwException()
   }
 
   class TestFrameInfoProfile extends FrameInfoProfile {
