@@ -1,11 +1,11 @@
 package org.scaladebugger.api.profiles.pure.info
 import acyclic.file
-
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger}
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.profiles.pure.PureDebugProfile
+import org.scaladebugger.api.utils.JDITools
 import test.{TestUtilities, VirtualMachineFixtures}
 
 class PureMiscInfoProfileIntegrationSpec extends FunSpec with Matchers
@@ -18,6 +18,25 @@ class PureMiscInfoProfileIntegrationSpec extends FunSpec with Matchers
   )
 
   describe("PureMiscInfoProfile") {
+    it("should return the source paths for a given source name") {
+      val testClass = "org.scaladebugger.test.info.MultiSource"
+
+      withVirtualMachine(testClass) { (s) =>
+        val expected = Seq(
+          "org/scaladebugger/test/info/package1/ScalaSource.scala",
+          "org/scaladebugger/test/info/package2/ScalaSource.scala"
+        )
+        val fileName = "ScalaSource.scala"
+
+        eventually {
+          val actual = s.withProfile(PureDebugProfile.Name)
+            .sourceNameToPaths(fileName)
+
+          actual should contain theSameElementsAs (expected)
+        }
+      }
+    }
+
     it("should return the class name of a Scala main method entrypoint") {
       val testClass = "org.scaladebugger.test.misc.MainUsingMethod"
 

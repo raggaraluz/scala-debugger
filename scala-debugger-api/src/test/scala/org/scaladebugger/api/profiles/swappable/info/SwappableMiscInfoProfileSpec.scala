@@ -45,6 +45,33 @@ class SwappableMiscInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#sourceNameToPaths") {
+      it("should invoke the method on the underlying profile") {
+        val expected = Seq("path/to/file.scala")
+        val sourceName = "file.scala"
+
+        (mockProfileManager.retrieve _).expects(*)
+          .returning(Some(mockDebugProfile)).once()
+
+        (mockDebugProfile.sourceNameToPaths _).expects(sourceName)
+          .returning(expected).once()
+
+        val actual = swappableDebugProfile.sourceNameToPaths(sourceName)
+
+        actual should be (expected)
+      }
+
+      it("should throw an exception if there is no underlying profile") {
+        val sourceName = "file.scala"
+
+        (mockProfileManager.retrieve _).expects(*).returning(None).once()
+
+        intercept[AssertionError] {
+          swappableDebugProfile.availableLinesForFile(sourceName)
+        }
+      }
+    }
+
     describe("#mainClassName") {
       it("should invoke the method on the underlying profile") {
         val expected = "some class name"

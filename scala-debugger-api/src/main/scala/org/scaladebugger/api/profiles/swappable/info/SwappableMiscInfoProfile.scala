@@ -15,6 +15,10 @@ trait SwappableMiscInfoProfile extends MiscInfoProfile {
     withCurrentProfile.availableLinesForFile(fileName)
   }
 
+  override def sourceNameToPaths(sourceName: String): Seq[String] = {
+    withCurrentProfile.sourceNameToPaths(sourceName)
+  }
+
   override def commandLineArguments: Seq[String] = {
     withCurrentProfile.commandLineArguments
   }

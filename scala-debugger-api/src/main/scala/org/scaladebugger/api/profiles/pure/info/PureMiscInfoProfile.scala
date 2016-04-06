@@ -1,9 +1,12 @@
 package org.scaladebugger.api.profiles.pure.info
 //import acyclic.file
 
+import com.sun.jdi.ReferenceType
 import org.scaladebugger.api.lowlevel.classes.ClassManager
 import org.scaladebugger.api.lowlevel.utils.JDIHelperMethods
-import org.scaladebugger.api.profiles.traits.info.MiscInfoProfile
+import org.scaladebugger.api.profiles.traits.info.{MiscInfoProfile, ReferenceTypeInfoProfile}
+
+import scala.util.Try
 
 /**
  * Represents a pure profile for miscellaneous info that adds no extra logic
@@ -16,12 +19,27 @@ trait PureMiscInfoProfile extends MiscInfoProfile with JDIHelperMethods {
    * Retrieves the list of available lines for a specific file.
    *
    * @param fileName The name of the file whose lines to retrieve
-   *
    * @return Some list of breakpointable lines if the file exists,
    *         otherwise None
    */
   override def availableLinesForFile(fileName: String): Option[Seq[Int]] =
     classManager.linesAndLocationsForFile(fileName).map(_.keys.toSeq.sorted)
+
+  /**
+   * Retrieves all source paths for the given source name.
+   *
+   * @example nameToPaths("file.scala") yields
+   *          Seq("path/to/file.scala", "other/path/to/file.scala")
+   *
+   * @param sourceName The source (file) name whose associated paths to find
+   * @return The collection of source paths
+   */
+  override def sourceNameToPaths(sourceName: String): Seq[String] =
+    classManager.allClasses
+      .map(miscNewReferenceTypeProfile)
+      .filter(r => r.tryGetSourceNames.getOrElse(Nil).contains(sourceName))
+      .flatMap(r => r.tryGetSourcePaths.getOrElse(Nil))
+      .distinct
 
   /**
    * Represents the command line arguments used to start this VM.
@@ -37,4 +55,10 @@ trait PureMiscInfoProfile extends MiscInfoProfile with JDIHelperMethods {
    * @return The main class name as a string
    */
   override lazy val mainClassName: String = retrieveMainClassName()
+
+  protected def miscNewReferenceTypeProfile(
+    referenceType: ReferenceType
+  ): ReferenceTypeInfoProfile = new PureReferenceTypeInfoProfile(
+    referenceType
+  )
 }
