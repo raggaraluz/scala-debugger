@@ -20,6 +20,30 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
   )
 
   describe("PureFrameInfoProfile") {
+    it("should be able to get the location of the frame") {
+      val testClass = "org.scaladebugger.test.info.Variables"
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
+
+      @volatile var t: Option[ThreadReference] = None
+      val s = DummyScalaVirtualMachine.newInstance()
+
+      // NOTE: Do not resume so we can check the variables at the stack frame
+      s.withProfile(PureDebugProfile.Name)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
+        .foreach(e => t = Some(e.thread()))
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
+        logTimeTaken(eventually {
+          val location = s.withProfile(PureDebugProfile.Name)
+            .getThread(t.get).getTopFrame
+            .getLocation
+
+          location.getSourcePath should be (testFile)
+          location.getLineNumber should be (32)
+        })
+      }
+    }
+
     it("should be able to get the 'this' object of the current scope") {
       val testClass = "org.scaladebugger.test.info.Variables"
       val testFile = JDITools.scalaClassStringToFileString(testClass)

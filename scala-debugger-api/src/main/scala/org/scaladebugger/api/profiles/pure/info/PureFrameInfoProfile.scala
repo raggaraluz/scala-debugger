@@ -2,7 +2,7 @@ package org.scaladebugger.api.profiles.pure.info
 //import acyclic.file
 
 import com.sun.jdi._
-import org.scaladebugger.api.profiles.traits.info.{ThreadInfoProfile, ObjectInfoProfile, VariableInfoProfile, FrameInfoProfile}
+import org.scaladebugger.api.profiles.traits.info._
 
 import scala.util.{Failure, Try}
 import scala.collection.JavaConverters._
@@ -19,6 +19,7 @@ class PureFrameInfoProfile(
   private lazy val threadReference = stackFrame.thread()
   private lazy val thisObjectProfile = newObjectProfile(stackFrame.thisObject())
   private lazy val currentThreadProfile = newThreadProfile(threadReference)
+  private lazy val locationProfile = newLocationProfile(stackFrame.location())
 
   /**
    * Returns the JDI representation this profile instance wraps.
@@ -40,6 +41,13 @@ class PureFrameInfoProfile(
    * @return The profile of the thread
    */
   override def getCurrentThread: ThreadInfoProfile = currentThreadProfile
+
+  /**
+   * Retrieves the location associated with this frame.
+   *
+   * @return The profile of the location
+   */
+  override def getLocation: LocationInfoProfile = locationProfile
 
   /**
    * Retrieves the variable with the specified name from the frame.
@@ -105,4 +113,7 @@ class PureFrameInfoProfile(
 
   protected def newThreadProfile(threadReference: ThreadReference): ThreadInfoProfile =
     new PureThreadInfoProfile(threadReference)()
+
+  protected def newLocationProfile(location: Location): LocationInfoProfile =
+    new PureLocationInfoProfile(location)
 }

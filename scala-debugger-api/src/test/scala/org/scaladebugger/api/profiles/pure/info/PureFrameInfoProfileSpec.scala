@@ -1,7 +1,7 @@
 package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
-import org.scaladebugger.api.profiles.traits.info.{VariableInfoProfile, ObjectInfoProfile, ThreadInfoProfile}
+import org.scaladebugger.api.profiles.traits.info.{LocationInfoProfile, ObjectInfoProfile, ThreadInfoProfile, VariableInfoProfile}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
@@ -11,6 +11,7 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
   private val mockNewLocalVariableProfile = mockFunction[LocalVariable, VariableInfoProfile]
   private val mockNewObjectProfile = mockFunction[ObjectReference, ObjectInfoProfile]
   private val mockNewThreadProfile = mockFunction[ThreadReference, ThreadInfoProfile]
+  private val mockNewLocationProfile = mockFunction[Location, LocationInfoProfile]
 
   private val mockStackFrame = mock[StackFrame]
   private val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame) {
@@ -25,6 +26,10 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
     override protected def newThreadProfile(
       threadReference: ThreadReference
     ): ThreadInfoProfile = mockNewThreadProfile(threadReference)
+
+    override protected def newLocationProfile(
+      location: Location
+    ): LocationInfoProfile = mockNewLocationProfile(location)
   }
 
   describe("PureFrameInfoProfile") {
@@ -99,6 +104,38 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
 
         pureFrameInfoProfile.getCurrentThread should
           be (pureFrameInfoProfile.getCurrentThread)
+      }
+    }
+
+    describe("#getLocation") {
+      it("should return the stack frame's location wrapped in a profile") {
+        val expected = mock[LocationInfoProfile]
+        val mockLocation = mock[Location]
+
+        // stackFrame.location() fed into newLocationProfile
+        (mockStackFrame.location _).expects()
+          .returning(mockLocation).once()
+
+        // New location profile created once using helper method
+        mockNewLocationProfile.expects(mockLocation)
+          .returning(expected).once()
+
+        val actual = pureFrameInfoProfile.getLocation
+        actual should be (expected)
+      }
+
+      it("Should use the same cached location profile") {
+        val mockLocationProfile = mock[LocationInfoProfile]
+
+        // stackFrame.location() fed into newLocationProfile
+        (mockStackFrame.location _).expects()
+          .returning(mock[Location]).once()
+
+        // New location profile created once using helper method
+        mockNewLocationProfile.expects(*).returning(mockLocationProfile).once()
+
+        pureFrameInfoProfile.getLocation should
+          be (pureFrameInfoProfile.getLocation)
       }
     }
 
