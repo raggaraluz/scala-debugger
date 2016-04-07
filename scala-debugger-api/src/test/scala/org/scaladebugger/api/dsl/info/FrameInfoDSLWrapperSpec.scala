@@ -1,11 +1,11 @@
 package org.scaladebugger.api.dsl.info
 
 import com.sun.jdi.StackFrame
-import org.scaladebugger.api.profiles.traits.info.{VariableInfoProfile, ThreadInfoProfile, FrameInfoProfile, ObjectInfoProfile}
+import org.scaladebugger.api.profiles.traits.info._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
-import scala.util.{Try, Success}
+import scala.util.{Success, Try}
 
 class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
@@ -231,6 +231,8 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
   private val mockGetThisObjectFunction = mockFunction[ObjectInfoProfile]
   private val mockTryGetCurrentThreadFunction = mockFunction[Try[ThreadInfoProfile]]
   private val mockGetCurrentThreadFunction = mockFunction[ThreadInfoProfile]
+  private val mockTryGetLocationFunction = mockFunction[Try[LocationInfoProfile]]
+  private val mockGetLocationFunction = mockFunction[LocationInfoProfile]
   private val mockTryGetVariableFunction = mockFunction[String, Try[VariableInfoProfile]]
   private val mockGetVariableFunction = mockFunction[String, VariableInfoProfile]
   private val mockTryGetAllVariablesFunction = mockFunction[Try[Seq[VariableInfoProfile]]]
@@ -250,6 +252,8 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
     override def getThisObject: ObjectInfoProfile = mockGetThisObjectFunction()
     override def tryGetCurrentThread: Try[ThreadInfoProfile] = mockTryGetCurrentThreadFunction()
     override def getCurrentThread: ThreadInfoProfile = mockGetCurrentThreadFunction()
+    override def tryGetLocation: Try[LocationInfoProfile] = mockTryGetLocationFunction()
+    override def getLocation: LocationInfoProfile = mockGetLocationFunction()
     override def tryGetVariable(name: String): Try[VariableInfoProfile] = mockTryGetVariableFunction(name)
     override def getVariable(name: String): VariableInfoProfile = mockGetVariableFunction(name)
     override def tryGetAllVariables: Try[Seq[VariableInfoProfile]] = mockTryGetAllVariablesFunction()

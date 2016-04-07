@@ -45,6 +45,20 @@ trait FrameInfoProfile extends CommonInfoProfile {
   def getCurrentThread: ThreadInfoProfile
 
   /**
+   * Retrieves the location associated with this frame.
+   *
+   * @return Success containing the profile of the location, otherwise a failure
+   */
+  def tryGetLocation: Try[LocationInfoProfile] = Try(getLocation)
+
+  /**
+   * Retrieves the location associated with this frame.
+   *
+   * @return The profile of the location
+   */
+  def getLocation: LocationInfoProfile
+
+  /**
    * Retrieves the variable with the specified name from the frame.
    *
    * @param name The name of the variable to retrieve

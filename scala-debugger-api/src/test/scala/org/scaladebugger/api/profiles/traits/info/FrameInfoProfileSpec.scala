@@ -37,6 +37,21 @@ class FrameInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#tryGetLocation") {
+      it("should wrap the unsafe call in a Try") {
+        val mockUnsafeMethod = mockFunction[LocationInfoProfile]
+
+        val frameInfoProfile = new TestFrameInfoProfile {
+          override def getLocation: LocationInfoProfile =
+            mockUnsafeMethod()
+        }
+
+        val r = mock[LocationInfoProfile]
+        mockUnsafeMethod.expects().returning(r).once()
+        frameInfoProfile.tryGetLocation.get should be (r)
+      }
+    }
+
     describe("#tryGetVariable") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[String, VariableInfoProfile]

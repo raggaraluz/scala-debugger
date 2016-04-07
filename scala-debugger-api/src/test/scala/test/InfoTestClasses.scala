@@ -86,6 +86,7 @@ object InfoTestClasses {
   class TestFrameInfoProfile extends FrameInfoProfile {
     override def getThisObject: ObjectInfoProfile = throwException()
     override def getCurrentThread: ThreadInfoProfile = throwException()
+    override def getLocation: LocationInfoProfile = throwException()
     override def getFieldVariables: Seq[VariableInfoProfile] = throwException()
     override def getVariable(name: String): VariableInfoProfile = throwException()
     override def getAllVariables: Seq[VariableInfoProfile] = throwException()
