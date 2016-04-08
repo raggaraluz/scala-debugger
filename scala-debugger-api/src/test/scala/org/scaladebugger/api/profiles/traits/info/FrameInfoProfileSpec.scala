@@ -4,10 +4,49 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import test.InfoTestClasses.TestFrameInfoProfile
 
+import scala.util.{Failure, Success, Try}
+
 class FrameInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   describe("FrameInfoProfile") {
+    describe("#toPrettyString") {
+      it("should include the frame's location if available") {
+        val expected = "Frame at (LOCATION)"
+        val mockUnsafeMethod = mockFunction[Try[LocationInfoProfile]]
+
+        val frameInfoProfile = new TestFrameInfoProfile {
+          override def tryGetLocation: Try[LocationInfoProfile] =
+            mockUnsafeMethod()
+        }
+
+        val r = Success(mock[LocationInfoProfile])
+        mockUnsafeMethod.expects().returning(r).once()
+        (r.get.toPrettyString _).expects().returning("LOCATION").once()
+
+        val actual = frameInfoProfile.toPrettyString
+
+        actual should be (expected)
+      }
+
+      it("should use ??? if the frame's location is unavailable") {
+        val expected = "Frame at (???)"
+        val mockUnsafeMethod = mockFunction[Try[LocationInfoProfile]]
+
+        val frameInfoProfile = new TestFrameInfoProfile {
+          override def tryGetLocation: Try[LocationInfoProfile] =
+            mockUnsafeMethod()
+        }
+
+        val r = Failure(new Throwable)
+        mockUnsafeMethod.expects().returning(r).once()
+
+        val actual = frameInfoProfile.toPrettyString
+
+        actual should be (expected)
+      }
+    }
+
     describe("#tryGetThisObject") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[ObjectInfoProfile]

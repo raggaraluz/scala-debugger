@@ -2,7 +2,7 @@ package org.scaladebugger.api.profiles.pure.info
 //import acyclic.file
 
 import com.sun.jdi._
-import org.scaladebugger.api.profiles.traits.info.{ArrayInfoProfile, ObjectInfoProfile, ValueInfoProfile}
+import org.scaladebugger.api.profiles.traits.info.{ArrayInfoProfile, ObjectInfoProfile, PrimitiveInfoProfile, ValueInfoProfile}
 
 import scala.util.Try
 
@@ -69,6 +69,16 @@ class PureValueInfoProfile(
   }
 
   /**
+   * Returns the value as a primitive (profile).
+   *
+   * @return The primitive profile wrapping this value
+   */
+  override def toPrimitive: PrimitiveInfoProfile = {
+    assert(isPrimitive, "Value must be a primitive!")
+    newPrimitiveProfile(value.asInstanceOf[PrimitiveValue])
+  }
+
+  /**
    * Returns whether or not this value represents a primitive.
    *
    * @return True if a primitive, otherwise false
@@ -101,11 +111,21 @@ class PureValueInfoProfile(
     !isNull && value.isInstanceOf[StringReference]
 
   /**
+   * Returns whether or not this value is void.
+   *
+   * @return True if void, otherwise false
+   */
+  override def isVoid: Boolean = !isNull && value.isInstanceOf[VoidValue]
+
+  /**
    * Returns whether or not this value is null.
    *
    * @return True if null, otherwise false
    */
   override def isNull: Boolean = value == null
+
+  protected def newPrimitiveProfile(primitiveValue: PrimitiveValue): PrimitiveInfoProfile =
+    new PurePrimitiveInfoProfile(primitiveValue)
 
   protected def newObjectProfile(objectReference: ObjectReference): ObjectInfoProfile =
     new PureObjectInfoProfile(objectReference)()

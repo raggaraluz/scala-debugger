@@ -87,4 +87,14 @@ trait LocationInfoProfile extends CommonInfoProfile {
    * @return Success containing the source path, otherwise a failure
    */
   def tryGetSourcePath: Try[String] = Try(getSourcePath)
+
+  /**
+   * Returns a string presenting a better human-readable description of
+   * the JDI instance.
+   *
+   * @return The human-readable description
+   */
+  override def toPrettyString: String = {
+    tryGetSourcePath.getOrElse("???") + " : " + getLineNumber
+  }
 }

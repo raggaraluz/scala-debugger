@@ -74,6 +74,28 @@ trait ValueInfoProfile extends CommonInfoProfile {
   def isNull: Boolean
 
   /**
+   * Returns whether or not this value is void.
+   *
+   * @return True if void, otherwise false
+   */
+  def isVoid: Boolean
+
+  /**
+   * Returns the value as a primitive (profile).
+   *
+   * @return Success containing the primitive profile wrapping this value,
+   *         otherwise a failure
+   */
+  def tryToPrimitive: Try[PrimitiveInfoProfile] = Try(toPrimitive)
+
+  /**
+   * Returns the value as a primitive (profile).
+   *
+   * @return The primitive profile wrapping this value
+   */
+  def toPrimitive: PrimitiveInfoProfile
+
+  /**
    * Returns the value as an object (profile).
    *
    * @return Success containing the object profile wrapping this value,
@@ -102,4 +124,23 @@ trait ValueInfoProfile extends CommonInfoProfile {
    * @return The array profile wrapping this value
    */
   def toArray: ArrayInfoProfile
+
+  /**
+   * Returns a string presenting a better human-readable description of
+   * the JDI instance.
+   *
+   * @return The human-readable description
+   */
+  override def toPrettyString: String = {
+    val q = "\""
+    Try {
+      if (this.isNull) "null"
+      else if (this.isVoid) "void"
+      else if (this.isArray) this.toArray.toPrettyString
+      else if (this.isString) s"$q${this.toLocalValue}$q"
+      else if (this.isObject) this.toObject.toPrettyString
+      else if (this.isPrimitive) this.toPrimitive.toPrettyString
+      else "???"
+    }.getOrElse("<ERROR>")
+  }
 }

@@ -4,6 +4,18 @@ package org.scaladebugger.api.profiles.traits.info
 import com.sun.jdi.ArrayReference
 
 import scala.util.Try
+import ArrayInfoProfile._
+
+/**
+ * Contains constants available to all array-focused information profiles.
+ */
+object ArrayInfoProfile {
+  /**
+   * Represents the default maximum number of elements to display in a
+   * pretty string.
+   */
+  val DefaultMaxPrettyElements: Int = 3
+}
 
 /**
  * Represents the interface for array-based interaction.
@@ -185,4 +197,36 @@ trait ArrayInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    * @return The updated values
    */
   def setValues(values: Seq[Any]): Seq[Any]
+
+  /**
+   * Returns a string presenting a better human-readable description of
+   * the JDI instance.
+   *
+   * @return The human-readable description
+   */
+  override def toPrettyString: String = toPrettyString(DefaultMaxPrettyElements)
+
+  /**
+   * Returns a string presenting a better human-readable description of
+   * the JDI instance.
+   *
+   * @param maxElements The maximum number of elements to retrieve from the
+   *                    array (starting from the beginning) to display in
+   *                    the string
+   * @return The human-readable description
+   */
+  def toPrettyString(maxElements: Int): String = {
+    val l = this.length
+    val prefix = s"Array(length = $l)"
+
+    // Retrieve N arguments if possible, returning less elements (or none)
+    // depending on the size of the array
+    val args = this.tryGetValues(0, maxElements)
+      .map(_.map(_.toPrettyString).mkString(","))
+      .getOrElse("<ERROR>")
+
+    if (l == 0)                 s"$prefix[<EMPTY>]"
+    else if (l <= maxElements)  s"$prefix[$args]"
+    else                        s"$prefix[$args,...]"
+  }
 }

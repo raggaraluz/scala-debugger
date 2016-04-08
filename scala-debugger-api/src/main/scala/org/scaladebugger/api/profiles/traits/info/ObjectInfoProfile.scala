@@ -226,4 +226,16 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
     name: String,
     parameterTypeNames: String*
   ): MethodInfoProfile
+
+  /**
+   * Returns a string presenting a better human-readable description of
+   * the JDI instance.
+   *
+   * @return The human-readable description
+   */
+  override def toPrettyString: String = {
+    val typeName = this.getReferenceType.getName
+    val uniqueHexCode = this.uniqueId.toHexString.toUpperCase()
+    s"Instance of $typeName (0x$uniqueHexCode)"
+  }
 }

@@ -11,6 +11,21 @@ class ThreadInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   describe("ThreadInfoProfile") {
+    describe("#toPrettyString") {
+      it("should display the thread name and unique id as a hex code") {
+        val expected = "Thread threadName (0xABCDE)"
+
+        val threadInfoProfile = new TestThreadInfoProfile {
+          override def uniqueId: Long = Integer.parseInt("ABCDE", 16)
+          override def name: String = "threadName"
+        }
+
+        val actual = threadInfoProfile.toPrettyString
+
+        actual should be(expected)
+      }
+    }
+
     describe("#tryGetFrames") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Seq[FrameInfoProfile]]

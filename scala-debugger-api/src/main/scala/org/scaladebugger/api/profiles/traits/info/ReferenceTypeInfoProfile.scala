@@ -357,4 +357,14 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *         failure
    */
   def tryGetSourcePaths: Try[Seq[String]] = Try(getSourcePaths)
+
+  /**
+   * Returns a string presenting a better human-readable description of
+   * the JDI instance.
+   *
+   * @return The human-readable description
+   */
+  override def toPrettyString: String = {
+    this.getName
+  }
 }

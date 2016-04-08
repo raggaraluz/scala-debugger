@@ -9,6 +9,26 @@ class ObjectInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   describe("ObjectInfoProfile") {
+    describe("#toPrettyString") {
+      it("should display the reference type name and unique id as a hex code") {
+        val expected = "Instance of some.class.name (0xABCDE)"
+
+        val mockReferenceTypeInfoProfile = mock[ReferenceTypeInfoProfile]
+        (mockReferenceTypeInfoProfile.getName _).expects()
+          .returning("some.class.name").once()
+
+        val objectInfoProfile = new TestObjectInfoProfile {
+          override def uniqueId: Long = Integer.parseInt("ABCDE", 16)
+          override def getReferenceType: ReferenceTypeInfoProfile =
+            mockReferenceTypeInfoProfile
+        }
+
+        val actual = objectInfoProfile.toPrettyString
+
+        actual should be(expected)
+      }
+    }
+
     describe("#tryInvoke(methodProfile, arguments, JDI arguments)") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[

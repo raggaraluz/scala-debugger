@@ -55,4 +55,20 @@ trait MethodInfoProfile extends CommonInfoProfile {
    * @return The return type name
    */
   def getReturnTypeName: String
+
+  /**
+   * Returns a string presenting a better human-readable description of
+   * the JDI instance.
+   *
+   * @return The human-readable description
+   */
+  override def toPrettyString: String = {
+    val params = this.tryGetParameterTypeNames
+      .map(_.mkString(","))
+      .getOrElse("???")
+
+    val returnType = this.tryGetReturnTypeName.getOrElse("???")
+
+    s"def ${this.name}($params): $returnType"
+  }
 }

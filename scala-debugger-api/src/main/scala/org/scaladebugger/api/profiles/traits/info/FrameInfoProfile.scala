@@ -154,4 +154,15 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return The collection of variables as their profile equivalents
    */
   def getFieldVariables: Seq[VariableInfoProfile]
+
+  /**
+   * Returns a string presenting a better human-readable description of
+   * the JDI instance.
+   *
+   * @return The human-readable description
+   */
+  override def toPrettyString: String = {
+    val loc = this.tryGetLocation.map(_.toPrettyString).getOrElse("???")
+    s"Frame at ($loc)"
+  }
 }
