@@ -1,7 +1,7 @@
 package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
-import org.scaladebugger.api.profiles.traits.info.{ValueInfoProfile, ObjectInfoProfile, ArrayInfoProfile}
+import org.scaladebugger.api.profiles.traits.info.{ArrayInfoProfile, ObjectInfoProfile, PrimitiveInfoProfile, ValueInfoProfile}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
@@ -9,6 +9,7 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   private val mockValue = mock[Value]
+  private val mockNewPrimitiveProfile = mockFunction[PrimitiveValue, PrimitiveInfoProfile]
   private val mockNewObjectProfile = mockFunction[ObjectReference, ObjectInfoProfile]
   private val mockNewArrayProfile = mockFunction[ArrayReference, ArrayInfoProfile]
 
@@ -93,6 +94,48 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
           .returning(expected).once()
 
         val actual = pureValueInfoProfile.toArray
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#toPrimitive") {
+      it("should throw an assertion error if the value is null") {
+        val pureValueInfoProfile = new PureValueInfoProfile(
+          null
+        )
+
+        intercept[AssertionError] {
+          pureValueInfoProfile.toPrimitive
+        }
+      }
+
+      it("should throw an assertion error if the value is not an primitive") {
+        val pureValueInfoProfile = new PureValueInfoProfile(
+          mock[Value]
+        )
+
+        intercept[AssertionError] {
+          pureValueInfoProfile.toPrimitive
+        }
+      }
+
+      it("should return an primitive reference wrapped in a profile") {
+        val expected = mock[PrimitiveInfoProfile]
+        val mockPrimitiveValue = mock[PrimitiveValue]
+
+        val pureValueInfoProfile = new PureValueInfoProfile(
+          mockPrimitiveValue
+        ) {
+          override protected def newPrimitiveProfile(
+            primitiveValue: PrimitiveValue
+          ): PrimitiveInfoProfile = mockNewPrimitiveProfile(primitiveValue)
+        }
+
+        mockNewPrimitiveProfile.expects(mockPrimitiveValue)
+          .returning(expected).once()
+
+        val actual = pureValueInfoProfile.toPrimitive
 
         actual should be (expected)
       }
@@ -201,6 +244,44 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         )
 
         val actual = pureValueInfoProfile.isPrimitive
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isVoid") {
+      it("should return false if the value is null") {
+        val expected = false
+
+        val pureValueInfoProfile = new PureValueInfoProfile(
+          null
+        )
+
+        val actual = pureValueInfoProfile.isVoid
+
+        actual should be (expected)
+      }
+
+      it("should return false if the value is not void") {
+        val expected = false
+
+        val pureValueInfoProfile = new PureValueInfoProfile(
+          mock[Value]
+        )
+
+        val actual = pureValueInfoProfile.isVoid
+
+        actual should be (expected)
+      }
+
+      it("should return true if the value is void") {
+        val expected = true
+
+        val pureValueInfoProfile = new PureValueInfoProfile(
+          mock[VoidValue]
+        )
+
+        val actual = pureValueInfoProfile.isVoid
 
         actual should be (expected)
       }

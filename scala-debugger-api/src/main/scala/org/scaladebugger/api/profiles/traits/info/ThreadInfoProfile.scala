@@ -91,4 +91,16 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    * @return The new frame profile instance
    */
   def getTopFrame: FrameInfoProfile = getFrame(0)
+
+  /**
+   * Returns a string presenting a better human-readable description of
+   * the JDI instance.
+   *
+   * @return The human-readable description
+   */
+  override def toPrettyString: String = {
+    val threadName = this.name
+    val uniqueHexCode = this.uniqueId.toHexString.toUpperCase()
+    s"Thread $threadName (0x$uniqueHexCode)"
+  }
 }

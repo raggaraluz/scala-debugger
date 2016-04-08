@@ -12,4 +12,12 @@ trait CommonInfoProfile {
    * @return The JDI instance
    */
   def toJdiInstance: Mirror
+
+  /**
+   * Returns a string presenting a better human-readable description of
+   * the JDI instance.
+   *
+   * @return The human-readable description
+   */
+  def toPrettyString: String
 }

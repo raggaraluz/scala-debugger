@@ -4,10 +4,116 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import test.InfoTestClasses.TestArrayInfoProfile
 
+import scala.util.{Failure, Success, Try}
+
 class ArrayInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   describe("ArrayInfoProfile") {
+    describe("#toPrettyString") {
+      it("should support empty arrays") {
+        val expected = "Array(length = 0)[<EMPTY>]"
+
+        val index = 0
+        val maxLength = 10
+        val r: Try[Seq[ValueInfoProfile]] = Success(Nil)
+
+        val mockUnsafeMethod = mockFunction[Int, Int, Try[Seq[ValueInfoProfile]]]
+        mockUnsafeMethod.expects(index, maxLength).returning(r).once()
+
+        val arrayInfoProfile = new TestArrayInfoProfile {
+          override def length: Int = r.get.length
+
+          override def tryGetValues(
+            index: Int,
+            totalElements: Int
+          ): Try[Seq[ValueInfoProfile]] = mockUnsafeMethod(index, totalElements)
+        }
+
+        val actual = arrayInfoProfile.toPrettyString(maxLength)
+
+        actual should be (expected)
+      }
+
+      it("should support arrays with length less than or equal to the maximum") {
+        val expected = "Array(length = 2)[test1,test2]"
+
+        val index = 0
+        val maxLength = 2
+        val r = Success((1 to maxLength).map(_ => mock[ValueInfoProfile]))
+        r.get.zipWithIndex.foreach { case (v, i) =>
+          (v.toPrettyString _).expects().returning(s"test${i+1}").once()
+        }
+
+        val mockUnsafeMethod = mockFunction[Int, Int, Try[Seq[ValueInfoProfile]]]
+        mockUnsafeMethod.expects(index, maxLength).returning(r).once()
+
+        val arrayInfoProfile = new TestArrayInfoProfile {
+          override def length: Int = r.get.length
+
+          override def tryGetValues(
+            index: Int,
+            totalElements: Int
+          ): Try[Seq[ValueInfoProfile]] = mockUnsafeMethod(index, totalElements)
+        }
+
+        val actual = arrayInfoProfile.toPrettyString(maxLength)
+
+        actual should be (expected)
+      }
+
+      it("should cut off additional values from arrays with length over the maximum") {
+        val expected = "Array(length = 3)[test1,test2,...]"
+
+        val index = 0
+        val maxLength = 2
+        val r = Success((1 to maxLength).map(_ => mock[ValueInfoProfile]))
+        r.get.zipWithIndex.foreach { case (v, i) =>
+          (v.toPrettyString _).expects().returning(s"test${i+1}").once()
+        }
+
+        val mockUnsafeMethod = mockFunction[Int, Int, Try[Seq[ValueInfoProfile]]]
+        mockUnsafeMethod.expects(index, maxLength).returning(r).once()
+
+        val arrayInfoProfile = new TestArrayInfoProfile {
+          override def length: Int = r.get.length + 1
+
+          override def tryGetValues(
+            index: Int,
+            totalElements: Int
+          ): Try[Seq[ValueInfoProfile]] = mockUnsafeMethod(index, totalElements)
+        }
+
+        val actual = arrayInfoProfile.toPrettyString(maxLength)
+
+        actual should be (expected)
+      }
+
+      it("should return no values if failing to get array values") {
+        val expected = "Array(length = 3)[<ERROR>]"
+
+        val index = 0
+        val maxLength = 3
+        val r = Failure(new Throwable)
+
+        val mockUnsafeMethod = mockFunction[Int, Int, Try[Seq[ValueInfoProfile]]]
+        mockUnsafeMethod.expects(index, maxLength).returning(r).once()
+
+        val arrayInfoProfile = new TestArrayInfoProfile {
+          override def length: Int = maxLength
+
+          override def tryGetValues(
+            index: Int,
+            totalElements: Int
+          ): Try[Seq[ValueInfoProfile]] = mockUnsafeMethod(index, totalElements)
+        }
+
+        val actual = arrayInfoProfile.toPrettyString(maxLength)
+
+        actual should be (expected)
+      }
+    }
+
     describe("#tryGetValue") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Int, ValueInfoProfile]

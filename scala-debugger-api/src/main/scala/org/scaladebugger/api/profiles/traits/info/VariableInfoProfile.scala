@@ -90,4 +90,16 @@ trait VariableInfoProfile extends CommonInfoProfile {
    * @return The new value
    */
   def setValue(value: String): String
+
+  /**
+   * Returns a string presenting a better human-readable description of
+   * the JDI instance.
+   *
+   * @return The human-readable description
+   */
+  override def toPrettyString: String = {
+    val name = this.name
+    val value = this.tryToValue.map(_.toPrettyString).getOrElse("???")
+    s"$name = $value"
+  }
 }
