@@ -169,7 +169,7 @@ class ObjectCacheSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#remove") {
+    describe("#remove(id)") {
       it("should remove the cached object and return Some(object)") {
         val expected = Some(mock[ObjectInfoProfile])
 
@@ -184,6 +184,49 @@ class ObjectCacheSpec extends FunSpec with Matchers
         val expected = None
 
         val actual = objectCache.remove(TestUniqueId)
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#remove(object)") {
+      it("should remove the cached object and return Some(object)") {
+        val expected = Some(mock[ObjectInfoProfile])
+
+        val mockObject = expected.get
+        internalCache.put(TestUniqueId, mockObject)
+
+        (mockObject.uniqueId _).expects().returning(TestUniqueId).once()
+
+        val actual = objectCache.remove(mockObject)
+
+        actual should be (expected)
+        internalCache.values should not contain (mockObject)
+      }
+
+      it("should return None if unable to get the unique id of the object") {
+        val expected = None
+
+        val mockObject = mock[ObjectInfoProfile]
+        internalCache.put(TestUniqueId, mockObject)
+
+        (mockObject.uniqueId _).expects()
+          .throwing(new VMCannotBeModifiedException()).once()
+
+        val actual = objectCache.remove(mockObject)
+
+        actual should be (expected)
+        internalCache.values should contain (mockObject)
+      }
+
+      it("should return None if no object with the id is cached") {
+        val expected = None
+
+        val mockObject = mock[ObjectInfoProfile]
+
+        (mockObject.uniqueId _).expects().returning(TestUniqueId).once()
+
+        val actual = objectCache.remove(mockObject)
 
         actual should be (expected)
       }
