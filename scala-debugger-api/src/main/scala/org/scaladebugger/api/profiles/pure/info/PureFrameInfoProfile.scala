@@ -60,7 +60,8 @@ class PureFrameInfoProfile(
   override def getVariable(name: String): VariableInfoProfile = {
     // NOTE: Had to switch from name lookup in local variables to find method
     //       so we could include index information
-    getLocalVariables.find(_.name == name)
+    // NOTE: Ensime implementation looks for last match, so we will do the same
+    getLocalVariables.reverseIterator.find(_.name == name)
       .getOrElse(thisObjectProfile.getField(name))
   }
 

@@ -93,6 +93,36 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
   def getTopFrame: FrameInfoProfile = getFrame(0)
 
   /**
+   * Retrieves an active variable within the thread's stack frames with the
+   * matching name.
+   *
+   * @param name The name of the variable to find
+   * @return Some variable if found, otherwise None
+   */
+  def findVariableByName(name: String
+  ): Option[VariableInfoProfile] = {
+    // NOTE: Using for loop to reduce data retrieval (finding earlier is better)
+    for (frameIndex <- 0 until this.getTotalFrames) {
+      val frame = this.getFrame(frameIndex)
+      val variable = frame.tryGetVariable(name).toOption
+      if (variable.nonEmpty) return variable
+    }
+
+    // No variable found
+    None
+  }
+
+  /**
+   * Retrieves an active variable within the thread's stack frames with the
+   * matching name.
+   *
+   * @param name The name of the variable to find
+   * @return Success containing the variable if found, otherwise a failure
+   */
+  def tryFindVariableByName(name: String): Try[VariableInfoProfile] =
+    Try(findVariableByName(name).get)
+
+  /**
    * Returns a string presenting a better human-readable description of
    * the JDI instance.
    *

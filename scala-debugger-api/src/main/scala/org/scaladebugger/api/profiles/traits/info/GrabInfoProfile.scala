@@ -11,42 +11,6 @@ import scala.util.Try
  */
 trait GrabInfoProfile {
   /**
-   * Retrieves an active variable within the thread's stack frames with the
-   * matching name.
-   *
-   * @param thread The thread (profile) whose stack frames to search through
-   * @param name The name of the variable to find
-   * @return Some variable if found, otherwise None
-   */
-  def findVariableByName(
-    thread: ThreadInfoProfile,
-    name: String
-  ): Option[VariableInfoProfile] = {
-    // NOTE: Using for loop to reduce data retrieval (finding earlier is better)
-    for (frameIndex <- 0 until thread.getTotalFrames) {
-      val frame = thread.getFrame(frameIndex)
-      val variable = frame.tryGetVariable(name).toOption
-      if (variable.nonEmpty) return variable
-    }
-
-    // No variable found
-    None
-  }
-
-  /**
-   * Retrieves an active variable within the thread's stack frames with the
-   * matching name.
-   *
-   * @param thread The thread (profile) whose stack frames to search through
-   * @param name The name of the variable to find
-   * @return Success containing the variable if found, otherwise a failure
-   */
-  def tryFindVariableByName(
-    thread: ThreadInfoProfile,
-    name: String
-  ): Try[VariableInfoProfile] = Try(findVariableByName(thread, name).get)
-
-  /**
    * Retrieves a thread profile for the given JDI thread reference.
    *
    * @param threadReference The JDI thread reference with which to wrap in
