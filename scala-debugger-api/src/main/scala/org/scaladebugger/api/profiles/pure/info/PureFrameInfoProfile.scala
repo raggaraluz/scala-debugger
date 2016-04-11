@@ -11,10 +11,12 @@ import scala.collection.JavaConverters._
  * Represents a pure implementation of a stack frame profile that adds no custom
  * logic on top of the standard JDI.
  *
- * @param stackFrame The reference to the underlying JDI staxk frame instance
+ * @param stackFrame The reference to the underlying JDI stack frame instance
+ * @param index The index of the frame relative to the frame stack
  */
 class PureFrameInfoProfile(
-  private val stackFrame: StackFrame
+  private val stackFrame: StackFrame,
+  val index: Int
 ) extends FrameInfoProfile {
   private lazy val threadReference = stackFrame.thread()
   private lazy val thisObjectProfile = newObjectProfile(stackFrame.thisObject())
@@ -56,8 +58,9 @@ class PureFrameInfoProfile(
    * @return Profile of the variable or throws an exception
    */
   override def getVariable(name: String): VariableInfoProfile = {
-    Try(Option(stackFrame.visibleVariableByName(name)).get)
-      .map(newLocalVariableProfile)
+    // NOTE: Had to switch from name lookup in local variables to find method
+    //       so we could include index information
+    getLocalVariables.find(_.name == name)
       .getOrElse(thisObjectProfile.getField(name))
   }
 
@@ -83,8 +86,10 @@ class PureFrameInfoProfile(
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def getLocalVariables: Seq[VariableInfoProfile] = {
-    stackFrame.visibleVariables().asScala.map(newLocalVariableProfile)
+  override def getLocalVariables: Seq[IndexedVariableInfoProfile] = {
+    stackFrame.visibleVariables().asScala.zipWithIndex.map { case (v, i) =>
+      newLocalVariableProfile(v, i)
+    }
   }
 
   /**
@@ -92,7 +97,7 @@ class PureFrameInfoProfile(
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def getNonArguments: Seq[VariableInfoProfile] = {
+  override def getNonArguments: Seq[IndexedVariableInfoProfile] = {
     getLocalVariables.filterNot(_.isArgument)
   }
 
@@ -101,12 +106,18 @@ class PureFrameInfoProfile(
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def getArguments: Seq[VariableInfoProfile] = {
+  override def getArguments: Seq[IndexedVariableInfoProfile] = {
     getLocalVariables.filter(_.isArgument)
   }
 
-  protected def newLocalVariableProfile(localVariable: LocalVariable): VariableInfoProfile =
-    new PureLocalVariableInfoProfile(stackFrame, localVariable)()
+  protected def newLocalVariableProfile(
+    localVariable: LocalVariable,
+    offsetIndex: Int
+  ): IndexedVariableInfoProfile = new PureLocalVariableInfoProfile(
+    this,
+    localVariable,
+    offsetIndex
+  )()
 
   protected def newObjectProfile(objectReference: ObjectReference): ObjectInfoProfile =
     new PureObjectInfoProfile(objectReference)(threadReference = threadReference)

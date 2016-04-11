@@ -10,7 +10,7 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
 {
   private val mockVirtualMachine = mock[VirtualMachine]
   private val mockReferenceType = mock[ReferenceType]
-  private val mockNewFrameProfile = mockFunction[StackFrame, FrameInfoProfile]
+  private val mockNewFrameProfile = mockFunction[StackFrame, Int, FrameInfoProfile]
   private val mockThreadReference = mock[ThreadReference]
   private val pureThreadInfoProfile = new PureThreadInfoProfile(
     mockThreadReference
@@ -19,8 +19,9 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
     referenceType = mockReferenceType
   ) {
     override protected def newFrameProfile(
-      stackFrame: StackFrame
-    ): FrameInfoProfile = mockNewFrameProfile(stackFrame)
+      stackFrame: StackFrame,
+      index: Int
+    ): FrameInfoProfile = mockNewFrameProfile(stackFrame, index)
   }
 
   describe("PureThreadInfoProfile") {
@@ -60,8 +61,8 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
           .once()
 
         // Wrap stack frame in profile instance
-        mockStackFrames.zip(expected).foreach { case (sf, e) =>
-          mockNewFrameProfile.expects(sf).returning(e).once()
+        mockStackFrames.zip(expected).zipWithIndex.foreach { case ((sf, e), i) =>
+          mockNewFrameProfile.expects(sf, i).returning(e).once()
         }
 
         val actual = pureThreadInfoProfile.getFrames
@@ -82,7 +83,8 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
           .returning(mockStackFrame).once()
 
         // Wrap stack frame in profile instance
-        mockNewFrameProfile.expects(mockStackFrame).returning(expected).once()
+        mockNewFrameProfile.expects(mockStackFrame, index)
+          .returning(expected).once()
 
         val actual = pureThreadInfoProfile.getFrame(index)
 

@@ -25,6 +25,39 @@ class PureGrabInfoProfileIntegrationSpec extends FunSpec with Matchers
   )
 
   describe("PureGrabInfoProfile") {
+    it("should be able to find a variable by its name") {
+      val testClass = "org.scaladebugger.test.info.Variables"
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
+
+      @volatile var t: Option[ThreadReference] = None
+      val s = DummyScalaVirtualMachine.newInstance()
+
+      // NOTE: Do not resume so we can check the variables at the stack frame
+      s.withProfile(PureDebugProfile.Name)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
+        .foreach(e => t = Some(e.thread()))
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
+        logTimeTaken(eventually {
+          val thread = s.withProfile(PureDebugProfile.Name).getThread(t.get)
+
+          // Should support retrieving local variables
+          val localVariable = s.withProfile(PureDebugProfile.Name)
+            .findVariableByName(thread, "a")
+            .get
+          localVariable.isLocal should be (true)
+          localVariable.name should be ("a")
+
+          // Should support retrieving fields
+          val field = s.withProfile(PureDebugProfile.Name)
+            .findVariableByName(thread, "z1")
+            .get
+          field.isField should be (true)
+          field.name should be ("z1")
+        })
+      }
+    }
+
     it("should be able to find a thread by its unique id") {
       val testClass = "org.scaladebugger.test.misc.LaunchingMain"
       val testFile = JDITools.scalaClassStringToFileString(testClass)

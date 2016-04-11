@@ -86,15 +86,16 @@ object InfoTestClasses {
   }
 
   class TestFrameInfoProfile extends FrameInfoProfile {
+    override def index: Int = throwException()
     override def getThisObject: ObjectInfoProfile = throwException()
     override def getCurrentThread: ThreadInfoProfile = throwException()
     override def getLocation: LocationInfoProfile = throwException()
     override def getFieldVariables: Seq[VariableInfoProfile] = throwException()
     override def getVariable(name: String): VariableInfoProfile = throwException()
     override def getAllVariables: Seq[VariableInfoProfile] = throwException()
-    override def getLocalVariables: Seq[VariableInfoProfile] = throwException()
-    override def getNonArguments: Seq[VariableInfoProfile] = throwException()
-    override def getArguments: Seq[VariableInfoProfile] = throwException()
+    override def getLocalVariables: Seq[IndexedVariableInfoProfile] = throwException()
+    override def getNonArguments: Seq[IndexedVariableInfoProfile] = throwException()
+    override def getArguments: Seq[IndexedVariableInfoProfile] = throwException()
     override def toJdiInstance: StackFrame = throwException()
   }
 

@@ -126,7 +126,7 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
       it("should invoke the underlying profile method") {
         import org.scaladebugger.api.dsl.Implicits.FrameInfoDSL
 
-        val returnValue = Success(Seq(mock[VariableInfoProfile]))
+        val returnValue = Success(Seq(mock[IndexedVariableInfoProfile]))
 
         mockTryGetArgumentsFunction.expects()
           .returning(returnValue).once()
@@ -139,7 +139,7 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
       it("should invoke the underlying profile method") {
         import org.scaladebugger.api.dsl.Implicits.FrameInfoDSL
 
-        val returnValue = Seq(mock[VariableInfoProfile])
+        val returnValue = Seq(mock[IndexedVariableInfoProfile])
 
         mockGetArgumentsFunction.expects()
           .returning(returnValue).once()
@@ -152,7 +152,7 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
       it("should invoke the underlying profile method") {
         import org.scaladebugger.api.dsl.Implicits.FrameInfoDSL
 
-        val returnValue = Success(Seq(mock[VariableInfoProfile]))
+        val returnValue = Success(Seq(mock[IndexedVariableInfoProfile]))
 
         mockTryGetNonArgumentsFunction.expects()
           .returning(returnValue).once()
@@ -165,7 +165,7 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
       it("should invoke the underlying profile method") {
         import org.scaladebugger.api.dsl.Implicits.FrameInfoDSL
 
-        val returnValue = Seq(mock[VariableInfoProfile])
+        val returnValue = Seq(mock[IndexedVariableInfoProfile])
 
         mockGetNonArgumentsFunction.expects()
           .returning(returnValue).once()
@@ -178,7 +178,7 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
       it("should invoke the underlying profile method") {
         import org.scaladebugger.api.dsl.Implicits.FrameInfoDSL
 
-        val returnValue = Success(Seq(mock[VariableInfoProfile]))
+        val returnValue = Success(Seq(mock[IndexedVariableInfoProfile]))
 
         mockTryGetLocalVariablesFunction.expects()
           .returning(returnValue).once()
@@ -191,7 +191,7 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
       it("should invoke the underlying profile method") {
         import org.scaladebugger.api.dsl.Implicits.FrameInfoDSL
 
-        val returnValue = Seq(mock[VariableInfoProfile])
+        val returnValue = Seq(mock[IndexedVariableInfoProfile])
 
         mockGetLocalVariablesFunction.expects()
           .returning(returnValue).once()
@@ -227,6 +227,7 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
     }
   }
 
+  private val mockIndexFunction = mockFunction[Int]
   private val mockTryGetThisObjectFunction = mockFunction[Try[ObjectInfoProfile]]
   private val mockGetThisObjectFunction = mockFunction[ObjectInfoProfile]
   private val mockTryGetCurrentThreadFunction = mockFunction[Try[ThreadInfoProfile]]
@@ -236,18 +237,19 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
   private val mockTryGetVariableFunction = mockFunction[String, Try[VariableInfoProfile]]
   private val mockGetVariableFunction = mockFunction[String, VariableInfoProfile]
   private val mockTryGetAllVariablesFunction = mockFunction[Try[Seq[VariableInfoProfile]]]
-  private val mockTryGetArgumentsFunction = mockFunction[Try[Seq[VariableInfoProfile]]]
-  private val mockTryGetNonArgumentsFunction = mockFunction[Try[Seq[VariableInfoProfile]]]
-  private val mockTryGetLocalVariablesFunction = mockFunction[Try[Seq[VariableInfoProfile]]]
+  private val mockTryGetArgumentsFunction = mockFunction[Try[Seq[IndexedVariableInfoProfile]]]
+  private val mockTryGetNonArgumentsFunction = mockFunction[Try[Seq[IndexedVariableInfoProfile]]]
+  private val mockTryGetLocalVariablesFunction = mockFunction[Try[Seq[IndexedVariableInfoProfile]]]
   private val mockTryGetFieldVariablesFunction = mockFunction[Try[Seq[VariableInfoProfile]]]
   private val mockGetAllVariablesFunction = mockFunction[Seq[VariableInfoProfile]]
-  private val mockGetArgumentsFunction = mockFunction[Seq[VariableInfoProfile]]
-  private val mockGetNonArgumentsFunction = mockFunction[Seq[VariableInfoProfile]]
-  private val mockGetLocalVariablesFunction = mockFunction[Seq[VariableInfoProfile]]
+  private val mockGetArgumentsFunction = mockFunction[Seq[IndexedVariableInfoProfile]]
+  private val mockGetNonArgumentsFunction = mockFunction[Seq[IndexedVariableInfoProfile]]
+  private val mockGetLocalVariablesFunction = mockFunction[Seq[IndexedVariableInfoProfile]]
   private val mockGetFieldVariablesFunction = mockFunction[Seq[VariableInfoProfile]]
   private val mockToJdiInstanceFunction = mockFunction[StackFrame]
 
   private class TestFrameInfoProfile extends FrameInfoProfile {
+    override def index: Int = mockIndexFunction()
     override def tryGetThisObject: Try[ObjectInfoProfile] = mockTryGetThisObjectFunction()
     override def getThisObject: ObjectInfoProfile = mockGetThisObjectFunction()
     override def tryGetCurrentThread: Try[ThreadInfoProfile] = mockTryGetCurrentThreadFunction()
@@ -257,14 +259,14 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
     override def tryGetVariable(name: String): Try[VariableInfoProfile] = mockTryGetVariableFunction(name)
     override def getVariable(name: String): VariableInfoProfile = mockGetVariableFunction(name)
     override def tryGetAllVariables: Try[Seq[VariableInfoProfile]] = mockTryGetAllVariablesFunction()
-    override def tryGetArguments: Try[Seq[VariableInfoProfile]] = mockTryGetArgumentsFunction()
-    override def tryGetNonArguments: Try[Seq[VariableInfoProfile]] = mockTryGetNonArgumentsFunction()
-    override def tryGetLocalVariables: Try[Seq[VariableInfoProfile]] = mockTryGetLocalVariablesFunction()
+    override def tryGetArguments: Try[Seq[IndexedVariableInfoProfile]] = mockTryGetArgumentsFunction()
+    override def tryGetNonArguments: Try[Seq[IndexedVariableInfoProfile]] = mockTryGetNonArgumentsFunction()
+    override def tryGetLocalVariables: Try[Seq[IndexedVariableInfoProfile]] = mockTryGetLocalVariablesFunction()
     override def tryGetFieldVariables: Try[Seq[VariableInfoProfile]] = mockTryGetFieldVariablesFunction()
     override def getAllVariables: Seq[VariableInfoProfile] = mockGetAllVariablesFunction()
-    override def getArguments: Seq[VariableInfoProfile] = mockGetArgumentsFunction()
-    override def getNonArguments: Seq[VariableInfoProfile] = mockGetNonArgumentsFunction()
-    override def getLocalVariables: Seq[VariableInfoProfile] = mockGetLocalVariablesFunction()
+    override def getArguments: Seq[IndexedVariableInfoProfile] = mockGetArgumentsFunction()
+    override def getNonArguments: Seq[IndexedVariableInfoProfile] = mockGetNonArgumentsFunction()
+    override def getLocalVariables: Seq[IndexedVariableInfoProfile] = mockGetLocalVariablesFunction()
     override def getFieldVariables: Seq[VariableInfoProfile] = mockGetFieldVariablesFunction()
     override def toJdiInstance: StackFrame = mockToJdiInstanceFunction()
   }
