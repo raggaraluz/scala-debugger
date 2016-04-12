@@ -124,14 +124,14 @@ class FrameInfoProfileSpec extends FunSpec with Matchers
 
     describe("#tryGetLocalVariables") {
       it("should wrap the unsafe call in a Try") {
-        val mockUnsafeMethod = mockFunction[Seq[VariableInfoProfile]]
+        val mockUnsafeMethod = mockFunction[Seq[IndexedVariableInfoProfile]]
 
         val frameInfoProfile = new TestFrameInfoProfile {
-          override def getLocalVariables: Seq[VariableInfoProfile] =
+          override def getLocalVariables: Seq[IndexedVariableInfoProfile] =
             mockUnsafeMethod()
         }
 
-        val r = Seq(mock[VariableInfoProfile])
+        val r = Seq(mock[IndexedVariableInfoProfile])
         mockUnsafeMethod.expects().returning(r).once()
         frameInfoProfile.tryGetLocalVariables.get should be (r)
       }
@@ -154,14 +154,14 @@ class FrameInfoProfileSpec extends FunSpec with Matchers
 
     describe("#tryGetArguments") {
       it("should wrap the unsafe call in a Try") {
-        val mockUnsafeMethod = mockFunction[Seq[VariableInfoProfile]]
+        val mockUnsafeMethod = mockFunction[Seq[IndexedVariableInfoProfile]]
 
         val frameInfoProfile = new TestFrameInfoProfile {
-          override def getArguments: Seq[VariableInfoProfile] =
+          override def getArguments: Seq[IndexedVariableInfoProfile] =
             mockUnsafeMethod()
         }
 
-        val r = Seq(mock[VariableInfoProfile])
+        val r = Seq(mock[IndexedVariableInfoProfile])
         mockUnsafeMethod.expects().returning(r).once()
         frameInfoProfile.tryGetArguments.get should be (r)
       }
@@ -169,14 +169,14 @@ class FrameInfoProfileSpec extends FunSpec with Matchers
 
     describe("#tryGetNonArguments") {
       it("should wrap the unsafe call in a Try") {
-        val mockUnsafeMethod = mockFunction[Seq[VariableInfoProfile]]
+        val mockUnsafeMethod = mockFunction[Seq[IndexedVariableInfoProfile]]
 
         val frameInfoProfile = new TestFrameInfoProfile {
-          override def getNonArguments: Seq[VariableInfoProfile] =
+          override def getNonArguments: Seq[IndexedVariableInfoProfile] =
             mockUnsafeMethod()
         }
 
-        val r = Seq(mock[VariableInfoProfile])
+        val r = Seq(mock[IndexedVariableInfoProfile])
         mockUnsafeMethod.expects().returning(r).once()
         frameInfoProfile.tryGetNonArguments.get should be (r)
       }

@@ -93,6 +93,66 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
   def getTopFrame: FrameInfoProfile = getFrame(0)
 
   /**
+   * Retrieves an active variable within the thread's stack frames with the
+   * matching name.
+   *
+   * @param name The name of the variable to find
+   * @return Some variable if found, otherwise None
+   */
+  def findVariableByName(name: String): Option[VariableInfoProfile] = {
+    // NOTE: Using for loop to reduce data retrieval (finding earlier is better)
+    for (frameIndex <- 0 until this.getTotalFrames) {
+      val frame = this.getFrame(frameIndex)
+      val variable = frame.tryGetVariable(name).toOption
+      if (variable.nonEmpty) return variable
+    }
+
+    // No variable found
+    None
+  }
+
+  /**
+   * Retrieves an active variable within the thread's stack frames with the
+   * matching name.
+   *
+   * @param name The name of the variable to find
+   * @return Success containing the variable if found, otherwise a failure
+   */
+  def tryFindVariableByName(name: String): Try[VariableInfoProfile] =
+    Try(findVariableByName(name).get)
+
+  /**
+   * Retrieves an active variable from the specified stack frame using its
+   * index and the offset of visible, local variables in the stack frame.
+   *
+   * @param frameIndex The index of the frame containing the variable
+   * @param offsetIndex The offset within the frame to find the variable
+   * @return Some variable if found, otherwise None
+   */
+  def findVariableByIndex(
+    frameIndex: Int,
+    offsetIndex: Int
+  ): Option[VariableInfoProfile] = {
+    this.getFrame(frameIndex)
+      .getLocalVariables
+      .find(_.offsetIndex == offsetIndex)
+  }
+
+  /**
+   * Retrieves an active variable from the specified stack frame using its
+   * index and the offset of visible, local variables in the stack frame.
+   *
+   * @param frameIndex The index of the frame containing the variable
+   * @param offsetIndex The offset within the frame to find the variable
+   * @return Some variable if found, otherwise None
+   */
+  def tryFindVariableByIndex(
+    frameIndex: Int,
+    offsetIndex: Int
+  ): Try[VariableInfoProfile] =
+    Try(findVariableByIndex(frameIndex, offsetIndex).get)
+
+  /**
    * Returns a string presenting a better human-readable description of
    * the JDI instance.
    *

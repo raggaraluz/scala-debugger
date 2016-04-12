@@ -5,6 +5,8 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import test.InfoTestClasses.TestGrabInfoProfile
 
+import scala.util.Success
+
 class GrabInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {

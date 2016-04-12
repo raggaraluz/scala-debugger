@@ -11,6 +11,123 @@ class ThreadInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   describe("ThreadInfoProfile") {
+    describe("#findVariableByName") {
+      it("should return None if no variable is found") {
+        val expected = None
+        val name = "someName"
+
+        val threadInfoProfile = new TestThreadInfoProfile {
+          // Return 0 frames to test no variable found
+          override def getTotalFrames: Int = 0
+        }
+        val actual = threadInfoProfile.findVariableByName(name)
+
+        actual should be (expected)
+      }
+
+      it("should return Some(variable) if found") {
+        val expected = Some(mock[VariableInfoProfile])
+        val name = "someName"
+
+        val mockFrame = mock[FrameInfoProfile]
+        (mockFrame.tryGetVariable _).expects(name)
+          .returning(Success(expected.get)).once()
+
+        val threadInfoProfile = new TestThreadInfoProfile {
+          override def getFrame(index: Int): FrameInfoProfile = mockFrame
+          override def getTotalFrames: Int = 1
+        }
+        val actual = threadInfoProfile.findVariableByName(name)
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#tryFindVariableByName") {
+      it("should wrap the unsafe call in a Try") {
+        val mockUnsafeMethod = mockFunction[String, Option[VariableInfoProfile]]
+
+        val threadInfoProfile = new TestThreadInfoProfile {
+          override def findVariableByName(
+            name: String
+          ): Option[VariableInfoProfile] = mockUnsafeMethod(name)
+        }
+
+        val a1 = "someName"
+        val r = Some(mock[VariableInfoProfile])
+        mockUnsafeMethod.expects(a1).returning(r).once()
+        threadInfoProfile.tryFindVariableByName(a1).get should be (r.get)
+      }
+    }
+
+    describe("#findVariableByIndex") {
+      it("should return None if no variable is found") {
+        val expected = None
+        val frameIndex = 1
+        val offsetIndex = 2
+
+        val mockFrame = mock[FrameInfoProfile]
+        (mockFrame.getLocalVariables _).expects()
+          .returning(Nil).once()
+
+        val threadInfoProfile = new TestThreadInfoProfile {
+          override def getFrame(index: Int): FrameInfoProfile = {
+            require(index == frameIndex)
+            mockFrame
+          }
+        }
+        val actual = threadInfoProfile.findVariableByIndex(
+          frameIndex,
+          offsetIndex
+        )
+
+        actual should be (expected)
+      }
+
+      it("should return Some(variable) if found") {
+        val expected = Some(mock[IndexedVariableInfoProfile])
+        val frameIndex = 1
+        val offsetIndex = 2
+
+        val mockFrame = mock[FrameInfoProfile]
+        (mockFrame.getLocalVariables _).expects()
+          .returning(Seq(expected.get)).once()
+
+        (expected.get.offsetIndex _).expects().returning(offsetIndex).once()
+
+        val threadInfoProfile = new TestThreadInfoProfile {
+          override def getFrame(index: Int): FrameInfoProfile = {
+            require(index == frameIndex)
+            mockFrame
+          }
+        }
+        val actual = threadInfoProfile.findVariableByIndex(
+          frameIndex,
+          offsetIndex
+        )
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#tryFindVariableByIndex") {
+      it("should wrap the unsafe call in a Try") {
+        val mockUnsafeMethod = mockFunction[Int, Int, Option[VariableInfoProfile]]
+
+        val threadInfoProfile = new TestThreadInfoProfile {
+          override def findVariableByIndex(
+            frameIndex: Int, offsetIndex: Int
+          ): Option[VariableInfoProfile] = mockUnsafeMethod(frameIndex, offsetIndex)
+        }
+
+        val a1 = 1
+        val a2 = 2
+        val r = Some(mock[VariableInfoProfile])
+        mockUnsafeMethod.expects(a1, a2).returning(r).once()
+        threadInfoProfile.tryFindVariableByIndex(a1, a2).get should be (r.get)
+      }
+    }
+
     describe("#toPrettyString") {
       it("should display the thread name and unique id as a hex code") {
         val expected = "Thread threadName (0xABCDE)"

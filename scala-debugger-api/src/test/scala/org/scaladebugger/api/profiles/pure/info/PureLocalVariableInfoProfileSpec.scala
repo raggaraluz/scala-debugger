@@ -1,7 +1,7 @@
 package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
-import org.scaladebugger.api.profiles.traits.info.ValueInfoProfile
+import org.scaladebugger.api.profiles.traits.info.{FrameInfoProfile, ValueInfoProfile}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
@@ -9,11 +9,13 @@ class PureLocalVariableInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   private val mockVirtualMachine = mock[VirtualMachine]
-  private val mockStackFrame = mock[StackFrame]
+  private val mockFrameInfoProfile = mock[FrameInfoProfile]
   private val mockLocalVariable = mock[LocalVariable]
+  private val TestOffsetIndex = 999
   private val pureLocalVariableInfoProfile = new PureLocalVariableInfoProfile(
-    mockStackFrame,
-    mockLocalVariable
+    mockFrameInfoProfile,
+    mockLocalVariable,
+    TestOffsetIndex
   )(mockVirtualMachine)
 
   describe("PureLocalVariableInfoProfile") {
@@ -90,6 +92,11 @@ class PureLocalVariableInfoProfileSpec extends FunSpec with Matchers
         (mockVirtualMachine.mirrorOf(_: String)).expects(expected)
           .returning(mockStringReference).once()
 
+        // Retrieve the underlying stack frame
+        val mockStackFrame = mock[StackFrame]
+        (mockFrameInfoProfile.toJdiInstance _).expects()
+          .returning(mockStackFrame).once()
+
         // Ensure setting value on stack frame is verified
         (mockStackFrame.setValue _)
           .expects(mockLocalVariable, mockStringReference)
@@ -106,6 +113,11 @@ class PureLocalVariableInfoProfileSpec extends FunSpec with Matchers
         (mockVirtualMachine.mirrorOf(_: Byte)).expects(expected)
           .returning(mockByteValue).once()
 
+        // Retrieve the underlying stack frame
+        val mockStackFrame = mock[StackFrame]
+        (mockFrameInfoProfile.toJdiInstance _).expects()
+          .returning(mockStackFrame).once()
+
         // Ensure setting value on stack frame is verified
         (mockStackFrame.setValue _)
           .expects(mockLocalVariable, mockByteValue)
@@ -120,14 +132,20 @@ class PureLocalVariableInfoProfileSpec extends FunSpec with Matchers
         val expected = mock[ValueInfoProfile]
         val mockValue = mock[Value]
 
+        // Retrieve the underlying stack frame
+        val mockStackFrame = mock[StackFrame]
+        (mockFrameInfoProfile.toJdiInstance _).expects()
+          .returning(mockStackFrame).once()
+
         // Retrieve the value from the stack frame
         (mockStackFrame.getValue _).expects(mockLocalVariable)
           .returning(mockValue).once()
 
         val mockNewValueProfile = mockFunction[Value, ValueInfoProfile]
         val pureLocalVariableInfoProfile = new PureLocalVariableInfoProfile(
-          mockStackFrame,
-          mockLocalVariable
+          mockFrameInfoProfile,
+          mockLocalVariable,
+          TestOffsetIndex
         )(mockVirtualMachine) {
           override protected def newValueProfile(value: Value): ValueInfoProfile =
             mockNewValueProfile(value)

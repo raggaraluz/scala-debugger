@@ -1,23 +1,27 @@
 package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
-import org.scaladebugger.api.profiles.traits.info.{LocationInfoProfile, ObjectInfoProfile, ThreadInfoProfile, VariableInfoProfile}
+import org.scaladebugger.api.profiles.traits.info._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class PureFrameInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
-  private val mockNewLocalVariableProfile = mockFunction[LocalVariable, VariableInfoProfile]
+  private val mockNewLocalVariableProfile = mockFunction[LocalVariable, Int, IndexedVariableInfoProfile]
   private val mockNewObjectProfile = mockFunction[ObjectReference, ObjectInfoProfile]
   private val mockNewThreadProfile = mockFunction[ThreadReference, ThreadInfoProfile]
   private val mockNewLocationProfile = mockFunction[Location, LocationInfoProfile]
 
+  private val TestFrameIndex = 999
   private val mockStackFrame = mock[StackFrame]
-  private val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame) {
+  private val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame, TestFrameIndex) {
     override protected def newLocalVariableProfile(
-      localVariable: LocalVariable
-    ): VariableInfoProfile = mockNewLocalVariableProfile(localVariable)
+      localVariable: LocalVariable, offsetIndex: Int
+    ): IndexedVariableInfoProfile = mockNewLocalVariableProfile(
+      localVariable,
+      offsetIndex
+    )
 
     override protected def newObjectProfile(
       objectReference: ObjectReference
@@ -38,6 +42,16 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         val expected = mockStackFrame
 
         val actual = pureFrameInfoProfile.toJdiInstance
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#index") {
+      it("should return the index of the frame") {
+        val expected = TestFrameIndex
+
+        val actual = pureFrameInfoProfile.index
 
         actual should be (expected)
       }
@@ -141,16 +155,19 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
 
     describe("#getVariable") {
       it("should return a local variable wrapped in a profile if it exists") {
-        val expected = mock[VariableInfoProfile]
+        val expected = mock[IndexedVariableInfoProfile]
 
         val name = "someName"
         val mockLocalVariable = mock[LocalVariable]
+        val testOffsetIndex = 0
 
         // Match found in visible variable collection
-        (mockStackFrame.visibleVariableByName _).expects(name)
-          .returning(mockLocalVariable).once()
-        mockNewLocalVariableProfile.expects(mockLocalVariable)
+        import scala.collection.JavaConverters._
+        (mockStackFrame.visibleVariables _).expects()
+          .returning(Seq(mockLocalVariable).asJava).once()
+        mockNewLocalVariableProfile.expects(mockLocalVariable, testOffsetIndex)
           .returning(expected).once()
+        (expected.name _).expects().returning(name).once()
 
         val actual = pureFrameInfoProfile.getVariable(name)
 
@@ -162,9 +179,10 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
 
         val name = "someName"
 
-        // No match found in visible variables, so return null
-        (mockStackFrame.visibleVariableByName _).expects(name)
-          .returning(null).once()
+        // No match found in visible variables, so return Nil
+        import scala.collection.JavaConverters._
+        (mockStackFrame.visibleVariables _).expects()
+          .returning(Seq[LocalVariable]().asJava).once()
 
         // 'this' object profile is created and used
         val mockObjectProfile = mock[ObjectInfoProfile]
@@ -184,9 +202,10 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
       it("should throw a NoSuchElement exception if no local variable or field matches") {
         val name = "someName"
 
-        // No match found in visible variables, so return null
-        (mockStackFrame.visibleVariableByName _).expects(name)
-          .returning(null).once()
+        // No match found in visible variables, so return Nil
+        import scala.collection.JavaConverters._
+        (mockStackFrame.visibleVariables _).expects()
+          .returning(Seq[LocalVariable]().asJava).once()
 
         // 'this' object profile is created and used
         val mockObjectProfile = mock[ObjectInfoProfile]
@@ -226,13 +245,13 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
     describe("#getAllVariables") {
       it("should return a combination of local and field variables") {
         val fieldVariables = Seq(mock[VariableInfoProfile])
-        val localVariables = Seq(mock[VariableInfoProfile])
+        val localVariables = Seq(mock[IndexedVariableInfoProfile])
         val expected = localVariables ++ fieldVariables
 
-        val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame) {
+        val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame, 0) {
           override def getFieldVariables: Seq[VariableInfoProfile] =
             fieldVariables
-          override def getLocalVariables: Seq[VariableInfoProfile] =
+          override def getLocalVariables: Seq[IndexedVariableInfoProfile] =
             localVariables
         }
 
@@ -244,7 +263,7 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
 
     describe("#getLocalVariables") {
       it("should return all visible variables wrapped in profiles") {
-        val expected = Seq(mock[VariableInfoProfile])
+        val expected = Seq(mock[IndexedVariableInfoProfile])
         val mockLocalVariables = Seq(mock[LocalVariable])
 
         // Raw local variables accessed from stack frame
@@ -253,8 +272,8 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
           .returning(mockLocalVariables.asJava).once()
 
         // Converted into profiles
-        mockLocalVariables.zip(expected).foreach { case (lv, e) =>
-          mockNewLocalVariableProfile.expects(lv).returning(e).once()
+        mockLocalVariables.zip(expected).zipWithIndex.foreach { case ((lv, e), i) =>
+          mockNewLocalVariableProfile.expects(lv, i).returning(e).once()
         }
 
         val actual = pureFrameInfoProfile.getLocalVariables
@@ -265,11 +284,11 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
 
     describe("#getNonArguments") {
       it("should return only non-argument visible variable profiles") {
-        val expected = Seq(mock[VariableInfoProfile])
-        val other = Seq(mock[VariableInfoProfile])
+        val expected = Seq(mock[IndexedVariableInfoProfile])
+        val other = Seq(mock[IndexedVariableInfoProfile])
 
-        val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame) {
-          override def getLocalVariables: Seq[VariableInfoProfile] =
+        val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame, TestFrameIndex) {
+          override def getLocalVariables: Seq[IndexedVariableInfoProfile] =
             expected ++ other
         }
 
@@ -284,11 +303,11 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
 
     describe("#getArguments") {
       it("should return only argument visible variable profiles") {
-        val expected = Seq(mock[VariableInfoProfile])
-        val other = Seq(mock[VariableInfoProfile])
+        val expected = Seq(mock[IndexedVariableInfoProfile])
+        val other = Seq(mock[IndexedVariableInfoProfile])
 
-        val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame) {
-          override def getLocalVariables: Seq[VariableInfoProfile] =
+        val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame, TestFrameIndex) {
+          override def getLocalVariables: Seq[IndexedVariableInfoProfile] =
             expected ++ other
         }
 

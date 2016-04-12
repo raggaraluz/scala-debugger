@@ -46,7 +46,9 @@ class PureThreadInfoProfile(
    */
   override def getFrames: Seq[FrameInfoProfile] = {
     import scala.collection.JavaConverters._
-    threadReference.frames().asScala.toSeq.map(newFrameProfile)
+    threadReference.frames().asScala.zipWithIndex.map { case (f, i) =>
+      newFrameProfile(f, i)
+    }
   }
 
   /**
@@ -57,7 +59,7 @@ class PureThreadInfoProfile(
    * @return The new frame profile instance
    */
   override def getFrame(index: Int): FrameInfoProfile = {
-    newFrameProfile(threadReference.frame(index))
+    newFrameProfile(threadReference.frame(index), index)
   }
 
   /**
@@ -67,6 +69,8 @@ class PureThreadInfoProfile(
    */
   override def getTotalFrames: Int = threadReference.frameCount()
 
-  protected def newFrameProfile(stackFrame: StackFrame): FrameInfoProfile =
-    new PureFrameInfoProfile(stackFrame)
+  protected def newFrameProfile(
+    stackFrame: StackFrame,
+    index: Int
+  ): FrameInfoProfile = new PureFrameInfoProfile(stackFrame, index)
 }

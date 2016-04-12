@@ -17,6 +17,13 @@ trait FrameInfoProfile extends CommonInfoProfile {
   override def toJdiInstance: StackFrame
 
   /**
+   * Returns the index of this frame relative to the frame stack.
+   *
+   * @return The index with 0 being the top frame
+   */
+  def index: Int
+
+  /**
    * Retrieves the object representing 'this' in the current frame scope.
    *
    * @return Success containing the profile of this object, otherwise a failure
@@ -91,7 +98,7 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of variables as their profile
    *         equivalents, otherwise a failure
    */
-  def tryGetArguments: Try[Seq[VariableInfoProfile]] = Try(getArguments)
+  def tryGetArguments: Try[Seq[IndexedVariableInfoProfile]] = Try(getArguments)
 
   /**
    * Retrieves all variables that do not represent arguments in this frame.
@@ -99,7 +106,7 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of variables as their profile
    *         equivalents, otherwise a failure
    */
-  def tryGetNonArguments: Try[Seq[VariableInfoProfile]] =
+  def tryGetNonArguments: Try[Seq[IndexedVariableInfoProfile]] =
     Try(getNonArguments)
 
   /**
@@ -108,7 +115,7 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of variables as their profile
    *         equivalents, otherwise a failure
    */
-  def tryGetLocalVariables: Try[Seq[VariableInfoProfile]] =
+  def tryGetLocalVariables: Try[Seq[IndexedVariableInfoProfile]] =
     Try(getLocalVariables)
 
   /**
@@ -132,21 +139,21 @@ trait FrameInfoProfile extends CommonInfoProfile {
    *
    * @return The collection of variables as their profile equivalents
    */
-  def getArguments: Seq[VariableInfoProfile]
+  def getArguments: Seq[IndexedVariableInfoProfile]
 
   /**
    * Retrieves all variables that do not represent arguments in this frame.
    *
    * @return The collection of variables as their profile equivalents
    */
-  def getNonArguments: Seq[VariableInfoProfile]
+  def getNonArguments: Seq[IndexedVariableInfoProfile]
 
   /**
    * Retrieves all variables that represent local variables in this frame.
    *
    * @return The collection of variables as their profile equivalents
    */
-  def getLocalVariables: Seq[VariableInfoProfile]
+  def getLocalVariables: Seq[IndexedVariableInfoProfile]
 
   /**
    * Retrieves all variables that represent field variables in this frame.
