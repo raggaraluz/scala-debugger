@@ -1,5 +1,5 @@
 package org.scaladebugger.api.virtualmachines
-import acyclic.file
+//import acyclic.file
 
 import com.sun.jdi._
 import org.scaladebugger.api.lowlevel.ManagerContainer
@@ -24,6 +24,13 @@ trait ScalaVirtualMachine extends SwappableDebugProfile with ProfileManager {
    * @return True if started, otherwise false
    */
   def isStarted: Boolean
+
+  /**
+   * Represents the cache of objects available on the virtual machine.
+   * Caching is done manually, so this cache is not populated as objects are
+   * created on the virtual machine.
+   */
+  val cache: ObjectCache
 
   /**
    * Represents the collection of low-level APIs for the virtual machine.

@@ -3,6 +3,7 @@ package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info.{ArrayInfoProfile, ObjectInfoProfile, PrimitiveInfoProfile, ValueInfoProfile}
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.util.Try
 
@@ -14,9 +15,12 @@ object PureValueInfoProfile {
  * Represents a pure implementation of a value profile that adds no custom
  * logic on top of the standard JDI.
  *
+ * @param scalaVirtualMachine The high-level virtual machine containing the
+ *                            value
  * @param value The reference to the underlying JDI value
  */
 class PureValueInfoProfile(
+  val scalaVirtualMachine: ScalaVirtualMachine,
   private val value: Value
 ) extends ValueInfoProfile {
   /**
@@ -125,11 +129,11 @@ class PureValueInfoProfile(
   override def isNull: Boolean = value == null
 
   protected def newPrimitiveProfile(primitiveValue: PrimitiveValue): PrimitiveInfoProfile =
-    new PurePrimitiveInfoProfile(primitiveValue)
+    new PurePrimitiveInfoProfile(scalaVirtualMachine, primitiveValue)
 
   protected def newObjectProfile(objectReference: ObjectReference): ObjectInfoProfile =
-    new PureObjectInfoProfile(objectReference)()
+    new PureObjectInfoProfile(scalaVirtualMachine, objectReference)()
 
   protected def newArrayProfile(arrayReference: ArrayReference): ArrayInfoProfile =
-    new PureArrayInfoProfile(arrayReference)()
+    new PureArrayInfoProfile(scalaVirtualMachine, arrayReference)()
 }

@@ -1,5 +1,5 @@
 package org.scaladebugger.api.virtualmachines
-import acyclic.file
+//import acyclic.file
 
 import com.sun.jdi._
 import org.scaladebugger.api.lowlevel.ManagerContainer
@@ -32,6 +32,12 @@ class DummyScalaVirtualMachine(
    * @return True if started, otherwise false
    */
   override def isStarted: Boolean = false
+
+  /**
+   * Represents the cache of objects available on the virtual machine. This
+   * is unused by the dummy virtual machine.
+   */
+  override lazy val cache: ObjectCache = new ObjectCache
 
   /**
    * A unique id assigned to the Scala virtual machine on the client (library)

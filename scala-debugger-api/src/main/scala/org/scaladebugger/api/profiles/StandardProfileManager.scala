@@ -1,5 +1,5 @@
 package org.scaladebugger.api.profiles
-import acyclic.file
+//import acyclic.file
 
 import java.util.concurrent.ConcurrentHashMap
 
@@ -81,7 +81,7 @@ object StandardProfileManager {
     //       null will cause usage of it to fail
     profileManager.register(PureDebugProfile.Name, new PureDebugProfile(
       null, managerContainer
-    ))
+    )(_virtualMachine = null))
 
     profileManager
   }

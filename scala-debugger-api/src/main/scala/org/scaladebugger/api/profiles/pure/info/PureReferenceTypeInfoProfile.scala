@@ -2,14 +2,18 @@ package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info.{ClassLoaderInfoProfile, ClassObjectInfoProfile, _}
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 /**
  * Represents a pure implementation of a reference type profile that adds no
  * custom logic on top of the standard JDI.
  *
+ * @param scalaVirtualMachine The high-level virtual machine containing the
+ *                            reference type
  * @param referenceType The reference to the underlying JDI reference type
  */
 class PureReferenceTypeInfoProfile(
+  val scalaVirtualMachine: ScalaVirtualMachine,
   private val referenceType: ReferenceType
 ) extends ReferenceTypeInfoProfile {
   private lazy val defaultStratum: String = referenceType.defaultStratum()
@@ -263,20 +267,21 @@ class PureReferenceTypeInfoProfile(
   override def getMinorVersion: Int = referenceType.minorVersion()
 
   protected def newFieldProfile(field: Field): VariableInfoProfile =
-    new PureFieldInfoProfile(null, field)()
+    new PureFieldInfoProfile(scalaVirtualMachine, null, field)()
 
   protected def newMethodProfile(method: Method): MethodInfoProfile =
-    new PureMethodInfoProfile(method)
+    new PureMethodInfoProfile(scalaVirtualMachine, method)
 
   protected def newObjectProfile(objectReference: ObjectReference): ObjectInfoProfile =
-    new PureObjectInfoProfile(objectReference)()
+    new PureObjectInfoProfile(scalaVirtualMachine, objectReference)()
 
   protected def newLocationProfile(location: Location): LocationInfoProfile =
-    new PureLocationInfoProfile(location)
+    new PureLocationInfoProfile(scalaVirtualMachine, location)
 
   protected def newClassObjectProfile(
     classObjectReference: ClassObjectReference
   ): ClassObjectInfoProfile = new PureClassObjectInfoProfile(
+    scalaVirtualMachine,
     classObjectReference
   )(
     referenceType = referenceType
@@ -285,6 +290,7 @@ class PureReferenceTypeInfoProfile(
   protected def newClassLoaderProfile(
     classLoaderReference: ClassLoaderReference
   ): ClassLoaderInfoProfile = new PureClassLoaderInfoProfile(
+    scalaVirtualMachine,
     classLoaderReference
   )(
     referenceType = referenceType
@@ -293,6 +299,7 @@ class PureReferenceTypeInfoProfile(
   protected def newReferenceTypeProfile(
     referenceType: ReferenceType
   ): ReferenceTypeInfoProfile = new PureReferenceTypeInfoProfile(
+    scalaVirtualMachine,
     referenceType
   )
 }

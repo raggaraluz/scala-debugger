@@ -3,14 +3,18 @@ package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi.Method
 import org.scaladebugger.api.profiles.traits.info.MethodInfoProfile
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 /**
  * Represents a pure implementation of a method profile that adds no
  * custom logic on top of the standard JDI.
  *
+ * @param scalaVirtualMachine The high-level virtual machine containing the
+ *                            method
  * @param method The reference to the underlying JDI method
  */
 class PureMethodInfoProfile(
+  val scalaVirtualMachine: ScalaVirtualMachine,
   private val method: Method
 ) extends MethodInfoProfile {
   /**

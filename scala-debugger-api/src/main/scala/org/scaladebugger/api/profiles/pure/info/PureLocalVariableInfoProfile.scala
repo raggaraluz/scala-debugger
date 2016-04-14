@@ -3,6 +3,7 @@ package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info.{FrameInfoProfile, IndexedVariableInfoProfile, ValueInfoProfile, VariableInfoProfile}
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.util.Try
 
@@ -10,6 +11,8 @@ import scala.util.Try
  * Represents a pure implementation of a local variable profile that adds no
  * custom logic on top of the standard JDI.
  *
+ * @param scalaVirtualMachine The high-level virtual machine containing the
+ *                            local variable
  * @param frame The frame associated with the local variable instance
  * @param localVariable The reference to the underlying JDI local variable
  * @param offsetIndex The offset of the variable relative to the frame's
@@ -18,6 +21,7 @@ import scala.util.Try
  *                       the remote JVM
  */
 class PureLocalVariableInfoProfile(
+  val scalaVirtualMachine: ScalaVirtualMachine,
   val frame: FrameInfoProfile,
   private val localVariable: LocalVariable,
   val offsetIndex: Int
@@ -103,5 +107,5 @@ class PureLocalVariableInfoProfile(
   )
 
   protected def newValueProfile(value: Value): ValueInfoProfile =
-    new PureValueInfoProfile(value)
+    new PureValueInfoProfile(scalaVirtualMachine, value)
 }

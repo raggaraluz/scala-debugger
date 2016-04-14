@@ -2,6 +2,7 @@ package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info._
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
@@ -15,8 +16,13 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
   private val mockNewValueProfile = mockFunction[Value, ValueInfoProfile]
 
   private val TestFrameIndex = 999
+  private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockStackFrame = mock[StackFrame]
-  private val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame, TestFrameIndex) {
+  private val pureFrameInfoProfile = new PureFrameInfoProfile(
+    mockScalaVirtualMachine,
+    mockStackFrame,
+    TestFrameIndex
+  ) {
     override protected def newLocalVariableProfile(
       localVariable: LocalVariable, offsetIndex: Int
     ): IndexedVariableInfoProfile = mockNewLocalVariableProfile(
@@ -252,7 +258,11 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         val localVariables = Seq(mock[IndexedVariableInfoProfile])
         val expected = localVariables ++ fieldVariables
 
-        val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame, 0) {
+        val pureFrameInfoProfile = new PureFrameInfoProfile(
+          mockScalaVirtualMachine,
+          mockStackFrame,
+          0
+        ) {
           override def getFieldVariables: Seq[VariableInfoProfile] =
             fieldVariables
           override def getLocalVariables: Seq[IndexedVariableInfoProfile] =
@@ -310,7 +320,11 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         val expected = Seq(mock[IndexedVariableInfoProfile])
         val other = Seq(mock[IndexedVariableInfoProfile])
 
-        val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame, TestFrameIndex) {
+        val pureFrameInfoProfile = new PureFrameInfoProfile(
+          mockScalaVirtualMachine,
+          mockStackFrame,
+          TestFrameIndex
+        ) {
           override def getLocalVariables: Seq[IndexedVariableInfoProfile] =
             expected ++ other
         }
@@ -329,7 +343,11 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         val expected = Seq(mock[IndexedVariableInfoProfile])
         val other = Seq(mock[IndexedVariableInfoProfile])
 
-        val pureFrameInfoProfile = new PureFrameInfoProfile(mockStackFrame, TestFrameIndex) {
+        val pureFrameInfoProfile = new PureFrameInfoProfile(
+          mockScalaVirtualMachine,
+          mockStackFrame,
+          TestFrameIndex
+        ) {
           override def getLocalVariables: Seq[IndexedVariableInfoProfile] =
             expected ++ other
         }

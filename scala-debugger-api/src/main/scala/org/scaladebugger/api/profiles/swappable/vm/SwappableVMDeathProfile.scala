@@ -1,5 +1,5 @@
 package org.scaladebugger.api.profiles.swappable.vm
-import acyclic.file
+//import acyclic.file
 
 import org.scaladebugger.api.lowlevel.JDIArgument
 import org.scaladebugger.api.lowlevel.vm.VMDeathRequestInfo

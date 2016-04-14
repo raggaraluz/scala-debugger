@@ -21,6 +21,7 @@ class ScalaVirtualMachineSpec extends FunSpec with Matchers
     _profileManager: ProfileManager
   ) =
     new Object with ScalaVirtualMachine {
+      override val cache: ObjectCache = null
       override val lowlevel: ManagerContainer = managerContainer
 
       override def initialize(startProcessingEvents: Boolean): Unit = {}

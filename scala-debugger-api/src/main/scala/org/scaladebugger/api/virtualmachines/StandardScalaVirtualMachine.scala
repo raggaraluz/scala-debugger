@@ -1,5 +1,5 @@
 package org.scaladebugger.api.virtualmachines
-import acyclic.file
+//import acyclic.file
 
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -62,6 +62,13 @@ class StandardScalaVirtualMachine(
     autoStartEventManager = false
   )
 
+  /**
+   * Represents the cache of objects available on the virtual machine.
+   * Caching is done manually, so this cache is not populated as objects are
+   * created on the virtual machine.
+   */
+  override lazy val cache: ObjectCache = new ObjectCache
+
   /** Represents the collection of low-level APIs for the virtual machine. */
   override lazy val lowlevel = newManagerContainer(loopingTaskRunner)
 
@@ -115,7 +122,7 @@ class StandardScalaVirtualMachine(
   private def registerStandardProfiles(): Unit = {
     this.register(
       PureDebugProfile.Name,
-      new PureDebugProfile(_virtualMachine, lowlevel)
+      new PureDebugProfile(this, lowlevel)(_virtualMachine)
     )
   }
 

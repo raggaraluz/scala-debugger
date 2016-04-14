@@ -1,5 +1,5 @@
 package org.scaladebugger.api.profiles.pure.steps
-import acyclic.file
+//import acyclic.file
 
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.event.StepEvent

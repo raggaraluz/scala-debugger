@@ -3,6 +3,7 @@ package org.scaladebugger.api.profiles.pure.info
 import com.sun.jdi.{ReferenceType, ThreadReference, VirtualMachine}
 import org.scaladebugger.api.lowlevel.wrappers.ReferenceTypeWrapper
 import org.scaladebugger.api.profiles.traits.info.ReferenceTypeInfoProfile
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
@@ -10,8 +11,10 @@ class PureGrabInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   private val mockNewReferenceTypeProfile = mockFunction[ReferenceType, ReferenceTypeInfoProfile]
+  private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockVirtualMachine = mock[VirtualMachine]
   private val pureGrabInfoProfile = new PureGrabInfoProfile {
+    override protected val scalaVirtualMachine: ScalaVirtualMachine = mockScalaVirtualMachine
     override protected val _virtualMachine: VirtualMachine = mockVirtualMachine
 
     override protected def newReferenceTypeProfile(

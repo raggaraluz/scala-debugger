@@ -3,6 +3,7 @@ package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info.{ArrayInfoProfile, ValueInfoProfile}
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.util.Try
 
@@ -10,6 +11,8 @@ import scala.util.Try
  * Represents a pure implementation of an array profile that adds no custom
  * logic on top of the standard JDI.
  *
+ * @param scalaVirtualMachine The high-level virtual machine containing the
+ *                            array
  * @param arrayReference The reference to the underlying JDI array
  * @param virtualMachine The virtual machine used to mirror local values on
  *                       the remote JVM
@@ -18,12 +21,13 @@ import scala.util.Try
  * @param referenceType The reference type for this array
  */
 class PureArrayInfoProfile(
+  override val scalaVirtualMachine: ScalaVirtualMachine,
   private val arrayReference: ArrayReference
 )(
   private val virtualMachine: VirtualMachine = arrayReference.virtualMachine(),
   private val threadReference: ThreadReference = arrayReference.owningThread(),
   private val referenceType: ReferenceType = arrayReference.referenceType()
-) extends PureObjectInfoProfile(arrayReference)(
+) extends PureObjectInfoProfile(scalaVirtualMachine, arrayReference)(
   virtualMachine = virtualMachine,
   threadReference = threadReference,
   referenceType = referenceType
@@ -129,5 +133,5 @@ class PureArrayInfoProfile(
   }
 
   override protected def newValueProfile(value: Value): ValueInfoProfile =
-    new PureValueInfoProfile(value)
+    new PureValueInfoProfile(scalaVirtualMachine, value)
 }

@@ -41,6 +41,18 @@ class DummyScalaVirtualMachineSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#cache") {
+      it("should return the same cache instance") {
+        val expected = dummyScalaVirtualMachine.cache
+
+        expected should not be (null)
+
+        val actual = dummyScalaVirtualMachine.cache
+
+        actual should be (expected)
+      }
+    }
+
     describe("#lowlevel") {
       it("should return a container of dummy managers") {
         val managerContainer = dummyScalaVirtualMachine.lowlevel

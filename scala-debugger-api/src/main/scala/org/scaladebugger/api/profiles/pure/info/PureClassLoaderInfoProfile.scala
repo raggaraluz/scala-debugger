@@ -5,6 +5,7 @@ package org.scaladebugger.api.profiles.pure.info
 import com.sun.jdi._
 import org.scaladebugger.api.lowlevel.{InvokeNonVirtualArgument, InvokeSingleThreadedArgument, JDIArgument}
 import org.scaladebugger.api.profiles.traits.info._
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.collection.JavaConverters._
 
@@ -12,6 +13,8 @@ import scala.collection.JavaConverters._
  * Represents a pure implementation of a class loader profile that adds no
  * custom logic on top of the standard JDI.
  *
+ * @param scalaVirtualMachine The high-level virtual machine containing the
+ *                            class loader
  * @param classLoaderReference The reference to the underlying JDI class loader
  * @param virtualMachine The virtual machine associated with the class loader
  * @param threadReference The thread associated with the class loader
@@ -19,12 +22,13 @@ import scala.collection.JavaConverters._
  * @param referenceType The reference type for this class loader
  */
 class PureClassLoaderInfoProfile(
+  override val scalaVirtualMachine: ScalaVirtualMachine,
   private val classLoaderReference: ClassLoaderReference
 )(
   private val virtualMachine: VirtualMachine = classLoaderReference.virtualMachine(),
   private val threadReference: ThreadReference = classLoaderReference.owningThread(),
   private val referenceType: ReferenceType = classLoaderReference.referenceType()
-) extends PureObjectInfoProfile(classLoaderReference)(
+) extends PureObjectInfoProfile(scalaVirtualMachine, classLoaderReference)(
   virtualMachine = virtualMachine,
   threadReference = threadReference,
   referenceType = referenceType

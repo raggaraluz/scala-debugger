@@ -2,16 +2,19 @@ package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info.ValueInfoProfile
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class PureFieldInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
+  private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockVirtualMachine = mock[VirtualMachine]
   private val mockObjectReference = mock[ObjectReference]
   private val mockField = mock[Field]
   private val pureFieldInfoProfile = new PureFieldInfoProfile(
+    mockScalaVirtualMachine,
     mockObjectReference,
     mockField
   )(mockVirtualMachine)
@@ -72,6 +75,7 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
     describe("#setValue") {
       it("should throw an exception if no object reference available") {
         val pureFieldInfoProfile = new PureFieldInfoProfile(
+          mockScalaVirtualMachine,
           null,
           mockField
         )(mockVirtualMachine)
@@ -122,6 +126,7 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
     describe("#toValue") {
       it("should throw an exception if no object reference available") {
         val pureFieldInfoProfile = new PureFieldInfoProfile(
+          mockScalaVirtualMachine,
           null,
           mockField
         )(mockVirtualMachine)
@@ -141,6 +146,7 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
 
         val mockNewValueProfile = mockFunction[Value, ValueInfoProfile]
         val pureFieldInfoProfile = new PureFieldInfoProfile(
+          mockScalaVirtualMachine,
           mockObjectReference,
           mockField
         )(mockVirtualMachine) {

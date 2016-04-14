@@ -2,6 +2,7 @@ package org.scaladebugger.api.dsl.info
 
 import com.sun.jdi.StackFrame
 import org.scaladebugger.api.profiles.traits.info._
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
@@ -227,6 +228,7 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
     }
   }
 
+  private val mockScalaVirtualMachineFunction = mockFunction[ScalaVirtualMachine]
   private val mockIndexFunction = mockFunction[Int]
   private val mockTryGetThisObjectFunction = mockFunction[Try[ObjectInfoProfile]]
   private val mockGetThisObjectFunction = mockFunction[ObjectInfoProfile]
@@ -251,6 +253,7 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
   private val mockToJdiInstanceFunction = mockFunction[StackFrame]
 
   private class TestFrameInfoProfile extends FrameInfoProfile {
+    override def scalaVirtualMachine: ScalaVirtualMachine = mockScalaVirtualMachineFunction()
     override def index: Int = mockIndexFunction()
     override def tryGetThisObject: Try[ObjectInfoProfile] = mockTryGetThisObjectFunction()
     override def getThisObject: ObjectInfoProfile = mockGetThisObjectFunction()

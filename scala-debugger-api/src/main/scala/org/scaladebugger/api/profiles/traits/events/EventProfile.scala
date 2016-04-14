@@ -1,5 +1,5 @@
 package org.scaladebugger.api.profiles.traits.events
-import acyclic.file
+//import acyclic.file
 
 import com.sun.jdi.event.Event
 import org.scaladebugger.api.lowlevel.JDIArgument

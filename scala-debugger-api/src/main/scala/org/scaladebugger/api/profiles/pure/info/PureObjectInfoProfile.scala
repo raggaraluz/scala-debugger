@@ -4,6 +4,7 @@ package org.scaladebugger.api.profiles.pure.info
 import com.sun.jdi._
 import org.scaladebugger.api.lowlevel.{InvokeNonVirtualArgument, InvokeSingleThreadedArgument, JDIArgument}
 import org.scaladebugger.api.profiles.traits.info._
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.util.Try
 import scala.collection.JavaConverters._
@@ -12,6 +13,8 @@ import scala.collection.JavaConverters._
  * Represents a pure implementation of an object profile that adds no custom
  * logic on top of the standard JDI.
  *
+ * @param scalaVirtualMachine The high-level virtual machine containing the
+ *                            object
  * @param objectReference The reference to the underlying JDI object
  * @param virtualMachine The virtual machine associated with the object
  * @param threadReference The thread associated with the object (for method
@@ -19,12 +22,16 @@ import scala.collection.JavaConverters._
  * @param referenceType The reference type for this object
  */
 class PureObjectInfoProfile(
+  override val scalaVirtualMachine: ScalaVirtualMachine,
   private val objectReference: ObjectReference
 )(
   private val virtualMachine: VirtualMachine = objectReference.virtualMachine(),
   private val threadReference: ThreadReference = objectReference.owningThread(),
   private val referenceType: ReferenceType = objectReference.referenceType()
-) extends PureValueInfoProfile(objectReference) with ObjectInfoProfile {
+) extends PureValueInfoProfile(
+  scalaVirtualMachine,
+  objectReference
+) with ObjectInfoProfile {
   private lazy val typeChecker = newTypeCheckerProfile()
 
   /**
@@ -156,17 +163,18 @@ class PureObjectInfoProfile(
   protected def newReferenceTypeProfile(
     referenceType: ReferenceType
   ): ReferenceTypeInfoProfile = new PureReferenceTypeInfoProfile(
+    scalaVirtualMachine,
     referenceType
   )
 
   protected def newFieldProfile(field: Field): VariableInfoProfile =
-    new PureFieldInfoProfile(objectReference, field)()
+    new PureFieldInfoProfile(scalaVirtualMachine, objectReference, field)()
 
   protected def newMethodProfile(method: Method): MethodInfoProfile =
-    new PureMethodInfoProfile(method)
+    new PureMethodInfoProfile(scalaVirtualMachine, method)
 
   protected def newValueProfile(value: Value): ValueInfoProfile =
-    new PureValueInfoProfile(value)
+    new PureValueInfoProfile(scalaVirtualMachine, value)
 
   protected def newTypeCheckerProfile(): TypeCheckerProfile =
     new PureTypeCheckerProfile
