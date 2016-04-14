@@ -124,6 +124,31 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
       }
     }
 
+    it("should be able to get a list of all argument values") {
+      val testClass = "org.scaladebugger.test.info.Variables"
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
+
+      @volatile var t: Option[ThreadReference] = None
+      val s = DummyScalaVirtualMachine.newInstance()
+
+      // NOTE: Do not resume so we can check the variables at the stack frame
+      s.withProfile(PureDebugProfile.Name)
+        .getOrCreateBreakpointRequest(testFile, 32, NoResume)
+        .foreach(e => t = Some(e.thread()))
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
+        logTimeTaken(eventually {
+          val frame = s.withProfile(PureDebugProfile.Name)
+            .getThread(t.get).getTopFrame
+          val values = frame.getArgumentValues.map(_.toLocalValue)
+
+          values should contain theSameElementsAs Seq(
+            frame.getVariable("args").toValue.toLocalValue
+          )
+        })
+      }
+    }
+
     it("should be able to get a list of all arguments") {
       val testClass = "org.scaladebugger.test.info.Variables"
       val testFile = JDITools.scalaClassStringToFileString(testClass)
@@ -140,7 +165,7 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
             .getThread(t.get).getTopFrame
-            .getArguments.map(_.name)
+            .getArgumentLocalVariables.map(_.name)
 
           variableNames should contain theSameElementsAs Seq(
             // Local argument variables
@@ -166,7 +191,7 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
             .getThread(t.get).getTopFrame
-            .getNonArguments.map(_.name)
+            .getNonArgumentLocalVariables.map(_.name)
 
           variableNames should contain theSameElementsAs Seq(
             // Local non-argument variables

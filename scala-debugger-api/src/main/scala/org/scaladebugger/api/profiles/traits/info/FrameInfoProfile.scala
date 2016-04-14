@@ -66,6 +66,23 @@ trait FrameInfoProfile extends CommonInfoProfile {
   def getLocation: LocationInfoProfile
 
   /**
+   * Retrieves the values of the arguments in this frame. As indicated by the
+   * JDI spec, this can return values when no variable information is present.
+   *
+   * @return Success containing the collection of argument values in order as
+   *         provided to the frame, otherwise a failure
+   */
+  def tryGetArgumentValues: Try[Seq[ValueInfoProfile]] = Try(getArgumentValues)
+
+  /**
+   * Retrieves the values of the arguments in this frame. As indicated by the
+   * JDI spec, this can return values when no variable information is present.
+   *
+   * @return The collection of argument values in order as provided to the frame
+   */
+  def getArgumentValues: Seq[ValueInfoProfile]
+
+  /**
    * Retrieves the variable with the specified name from the frame.
    *
    * @param name The name of the variable to retrieve
@@ -98,7 +115,8 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of variables as their profile
    *         equivalents, otherwise a failure
    */
-  def tryGetArguments: Try[Seq[IndexedVariableInfoProfile]] = Try(getArguments)
+  def tryGetArgumentLocalVariables: Try[Seq[IndexedVariableInfoProfile]] =
+    Try(getArgumentLocalVariables)
 
   /**
    * Retrieves all variables that do not represent arguments in this frame.
@@ -106,8 +124,8 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of variables as their profile
    *         equivalents, otherwise a failure
    */
-  def tryGetNonArguments: Try[Seq[IndexedVariableInfoProfile]] =
-    Try(getNonArguments)
+  def tryGetNonArgumentLocalVariables: Try[Seq[IndexedVariableInfoProfile]] =
+    Try(getNonArgumentLocalVariables)
 
   /**
    * Retrieves all variables that represent local variables in this frame.
@@ -139,14 +157,14 @@ trait FrameInfoProfile extends CommonInfoProfile {
    *
    * @return The collection of variables as their profile equivalents
    */
-  def getArguments: Seq[IndexedVariableInfoProfile]
+  def getArgumentLocalVariables: Seq[IndexedVariableInfoProfile]
 
   /**
    * Retrieves all variables that do not represent arguments in this frame.
    *
    * @return The collection of variables as their profile equivalents
    */
-  def getNonArguments: Seq[IndexedVariableInfoProfile]
+  def getNonArgumentLocalVariables: Seq[IndexedVariableInfoProfile]
 
   /**
    * Retrieves all variables that represent local variables in this frame.

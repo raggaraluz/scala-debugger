@@ -12,6 +12,7 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
   private val mockNewObjectProfile = mockFunction[ObjectReference, ObjectInfoProfile]
   private val mockNewThreadProfile = mockFunction[ThreadReference, ThreadInfoProfile]
   private val mockNewLocationProfile = mockFunction[Location, LocationInfoProfile]
+  private val mockNewValueProfile = mockFunction[Value, ValueInfoProfile]
 
   private val TestFrameIndex = 999
   private val mockStackFrame = mock[StackFrame]
@@ -34,6 +35,9 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
     override protected def newLocationProfile(
       location: Location
     ): LocationInfoProfile = mockNewLocationProfile(location)
+
+    override protected def newValueProfile(value: Value): ValueInfoProfile =
+      mockNewValueProfile(value)
   }
 
   describe("PureFrameInfoProfile") {
@@ -282,7 +286,26 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#getNonArguments") {
+    describe("#getArgumentValues") {
+      it("should return value profiles for the arguments in the frame") {
+        val expected = Seq(mock[ValueInfoProfile])
+        val values = expected.map(_ => mock[Value])
+
+        import scala.collection.JavaConverters._
+        (mockStackFrame.getArgumentValues _).expects()
+          .returning(values.asJava).once()
+
+        expected.zip(values).foreach { case (e, v) =>
+          mockNewValueProfile.expects(v).returning(e).once()
+        }
+
+        val actual = pureFrameInfoProfile.getArgumentValues
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#getNonArgumentLocalVariables") {
       it("should return only non-argument visible variable profiles") {
         val expected = Seq(mock[IndexedVariableInfoProfile])
         val other = Seq(mock[IndexedVariableInfoProfile])
@@ -295,13 +318,13 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         expected.foreach(v => (v.isArgument _).expects().returning(false).once())
         other.foreach(v => (v.isArgument _).expects().returning(true).once())
 
-        val actual = pureFrameInfoProfile.getNonArguments
+        val actual = pureFrameInfoProfile.getNonArgumentLocalVariables
 
         actual should be (expected)
       }
     }
 
-    describe("#getArguments") {
+    describe("#getArgumentLocalVariables") {
       it("should return only argument visible variable profiles") {
         val expected = Seq(mock[IndexedVariableInfoProfile])
         val other = Seq(mock[IndexedVariableInfoProfile])
@@ -314,7 +337,7 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
         expected.foreach(v => (v.isArgument _).expects().returning(true).once())
         other.foreach(v => (v.isArgument _).expects().returning(false).once())
 
-        val actual = pureFrameInfoProfile.getArguments
+        val actual = pureFrameInfoProfile.getArgumentLocalVariables
 
         actual should be (expected)
       }

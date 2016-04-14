@@ -52,6 +52,17 @@ class PureFrameInfoProfile(
   override def getLocation: LocationInfoProfile = locationProfile
 
   /**
+   * Retrieves the values of the arguments in this frame. As indicated by the
+   * JDI spec, this can return values when no variable information is present.
+   *
+   * @return The collection of argument values in order as provided to the frame
+   */
+  override def getArgumentValues: Seq[ValueInfoProfile] = {
+    import scala.collection.JavaConverters._
+    stackFrame.getArgumentValues.asScala.map(newValueProfile)
+  }
+
+  /**
    * Retrieves the variable with the specified name from the frame.
    *
    * @param name The name of the variable to retrieve
@@ -98,7 +109,7 @@ class PureFrameInfoProfile(
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def getNonArguments: Seq[IndexedVariableInfoProfile] = {
+  override def getNonArgumentLocalVariables: Seq[IndexedVariableInfoProfile] = {
     getLocalVariables.filterNot(_.isArgument)
   }
 
@@ -107,7 +118,7 @@ class PureFrameInfoProfile(
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def getArguments: Seq[IndexedVariableInfoProfile] = {
+  override def getArgumentLocalVariables: Seq[IndexedVariableInfoProfile] = {
     getLocalVariables.filter(_.isArgument)
   }
 
@@ -128,4 +139,7 @@ class PureFrameInfoProfile(
 
   protected def newLocationProfile(location: Location): LocationInfoProfile =
     new PureLocationInfoProfile(location)
+
+  protected def newValueProfile(value: Value): ValueInfoProfile =
+    new PureValueInfoProfile(value)
 }
