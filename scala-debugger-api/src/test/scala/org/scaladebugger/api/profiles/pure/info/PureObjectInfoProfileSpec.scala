@@ -3,6 +3,7 @@ package org.scaladebugger.api.profiles.pure.info
 import com.sun.jdi._
 import org.scaladebugger.api.lowlevel.{InvokeNonVirtualArgument, InvokeSingleThreadedArgument, JDIArgument}
 import org.scaladebugger.api.profiles.traits.info._
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
@@ -14,11 +15,13 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
   private val mockNewValueProfile = mockFunction[Value, ValueInfoProfile]
   private val mockNewTypeCheckerProfile = mockFunction[TypeCheckerProfile]
   private val mockNewReferenceTypeProfile = mockFunction[ReferenceType, ReferenceTypeInfoProfile]
+  private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockVirtualMachine = mock[VirtualMachine]
   private val mockReferenceType = mock[ReferenceType]
   private val mockThreadReference = mock[ThreadReference]
   private val mockObjectReference = mock[ObjectReference]
   private val pureObjectInfoProfile = new PureObjectInfoProfile(
+    mockScalaVirtualMachine,
     mockObjectReference
   )(
     threadReference = mockThreadReference,
@@ -102,6 +105,7 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         val mockUnsafeMethod = mockFunction[String, Seq[String], MethodInfoProfile]
 
         val pureObjectInfoProfile = new PureObjectInfoProfile(
+          mockScalaVirtualMachine,
           mockObjectReference
         )(
           threadReference = mockThreadReference,
@@ -146,7 +150,10 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         val expected = mock[ValueInfoProfile]
 
         val mockMethod = mock[Method]
-        val pureMethodInfoProfile = new PureMethodInfoProfile(mockMethod)
+        val pureMethodInfoProfile = new PureMethodInfoProfile(
+          mockScalaVirtualMachine,
+          mockMethod
+        )
 
         // Object method is invoked
         val mockValue = mock[Value]
@@ -173,7 +180,10 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         val arguments = Seq(1)
 
         val mockMethod = mock[Method]
-        val pureMethodInfoProfile = new PureMethodInfoProfile(mockMethod)
+        val pureMethodInfoProfile = new PureMethodInfoProfile(
+          mockScalaVirtualMachine,
+          mockMethod
+        )
 
         // Arguments are mirrored remotely
         val mockValues = Seq(mock[IntegerValue])
@@ -208,7 +218,10 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         )
 
         val mockMethod = mock[Method]
-        val pureMethodInfoProfile = new PureMethodInfoProfile(mockMethod)
+        val pureMethodInfoProfile = new PureMethodInfoProfile(
+          mockScalaVirtualMachine,
+          mockMethod
+        )
 
         // Object method is invoked
         // NOTE: Both arguments OR'd together is 3 (1 | 2)

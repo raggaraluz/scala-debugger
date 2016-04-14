@@ -2,12 +2,14 @@ package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info.{ArrayInfoProfile, ObjectInfoProfile, PrimitiveInfoProfile}
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
+  private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockPrimitiveValue = mock[PrimitiveValue]
 
   describe("PurePrimitiveInfoProfile") {
@@ -16,6 +18,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = mockPrimitiveValue
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mockPrimitiveValue
         )
 
@@ -30,6 +33,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = true
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[BooleanValue]
         )
 
@@ -42,6 +46,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[PrimitiveValue]
         )
 
@@ -56,6 +61,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = true
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[ByteValue]
         )
 
@@ -68,6 +74,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[PrimitiveValue]
         )
 
@@ -82,6 +89,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = true
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[CharValue]
         )
 
@@ -94,6 +102,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[PrimitiveValue]
         )
 
@@ -108,6 +117,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = true
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[IntegerValue]
         )
 
@@ -120,6 +130,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[PrimitiveValue]
         )
 
@@ -134,6 +145,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = true
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[LongValue]
         )
 
@@ -146,6 +158,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[PrimitiveValue]
         )
 
@@ -160,6 +173,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = true
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[ShortValue]
         )
 
@@ -172,6 +186,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[PrimitiveValue]
         )
 
@@ -186,6 +201,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = true
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[DoubleValue]
         )
 
@@ -198,6 +214,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[PrimitiveValue]
         )
 
@@ -212,6 +229,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = true
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[FloatValue]
         )
 
@@ -224,6 +242,7 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
         val expected = false
 
         val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
           mock[PrimitiveValue]
         )
 

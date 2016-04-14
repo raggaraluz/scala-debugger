@@ -3,6 +3,7 @@ package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info.{ValueInfoProfile, VariableInfoProfile}
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.util.Try
 
@@ -10,12 +11,15 @@ import scala.util.Try
  * Represents a pure implementation of a field profile that adds no custom
  * logic on top of the standard JDI.
  *
+ * @param scalaVirtualMachine The high-level virtual machine containing the
+ *                            field
  * @param objectReference The object associated with the field instance
  * @param field The reference to the underlying JDI field
  * @param virtualMachine The virtual machine used to mirror local values on
  *                       the remote JVM
  */
 class PureFieldInfoProfile(
+  val scalaVirtualMachine: ScalaVirtualMachine,
   private val objectReference: ObjectReference,
   private val field: Field
 )(
@@ -103,5 +107,5 @@ class PureFieldInfoProfile(
   }
 
   protected def newValueProfile(value: Value): ValueInfoProfile =
-    new PureValueInfoProfile(value)
+    new PureValueInfoProfile(scalaVirtualMachine, value)
 }

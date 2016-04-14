@@ -1,5 +1,5 @@
 package org.scaladebugger.api.profiles.traits.monitors
-import acyclic.file
+//import acyclic.file
 
 import com.sun.jdi.event.MonitorWaitEvent
 import org.scaladebugger.api.lowlevel.JDIArgument

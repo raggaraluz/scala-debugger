@@ -22,6 +22,18 @@ class StandardScalaVirtualMachineSpec extends FunSpec with Matchers
   )
 
   describe("ScalaVirtualMachine") {
+    describe("#cache") {
+      it("should return the same cache instance") {
+        val expected = scalaVirtualMachine.cache
+
+        expected should not be (null)
+
+        val actual = scalaVirtualMachine.cache
+
+        actual should be(expected)
+      }
+    }
+
     describe("#register") {
       it("should invoke the underlying profile manager") {
         val testName = "some name"

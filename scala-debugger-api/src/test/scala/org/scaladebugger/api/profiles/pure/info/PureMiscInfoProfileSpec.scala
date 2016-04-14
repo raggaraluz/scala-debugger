@@ -5,6 +5,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.lowlevel.classes.ClassManager
 import org.scaladebugger.api.profiles.traits.info.ReferenceTypeInfoProfile
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import test.JDIMockHelpers
 
 import scala.util.{Failure, Success}
@@ -12,6 +13,7 @@ import scala.util.{Failure, Success}
 class PureMiscInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory with JDIMockHelpers
 {
+  private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockVirtualMachine = mock[VirtualMachine]
   private val mockClassManager = mock[ClassManager]
 
@@ -29,6 +31,7 @@ class PureMiscInfoProfileSpec extends FunSpec with Matchers
     ): ReferenceTypeInfoProfile = mockMiscNewReferenceTypeProfile(referenceType)
 
     override protected val classManager: ClassManager = mockClassManager
+    override protected val scalaVirtualMachine: ScalaVirtualMachine = mockScalaVirtualMachine
     override protected val _virtualMachine: VirtualMachine = mockVirtualMachine
   }
 

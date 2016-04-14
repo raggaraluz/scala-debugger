@@ -3,6 +3,7 @@ package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info._
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.util.{Failure, Try}
 import scala.collection.JavaConverters._
@@ -11,10 +12,13 @@ import scala.collection.JavaConverters._
  * Represents a pure implementation of a stack frame profile that adds no custom
  * logic on top of the standard JDI.
  *
+ * @param scalaVirtualMachine The high-level virtual machine containing the
+ *                            stack frame
  * @param stackFrame The reference to the underlying JDI stack frame instance
  * @param index The index of the frame relative to the frame stack
  */
 class PureFrameInfoProfile(
+  val scalaVirtualMachine: ScalaVirtualMachine,
   private val stackFrame: StackFrame,
   val index: Int
 ) extends FrameInfoProfile {
@@ -126,20 +130,23 @@ class PureFrameInfoProfile(
     localVariable: LocalVariable,
     offsetIndex: Int
   ): IndexedVariableInfoProfile = new PureLocalVariableInfoProfile(
+    scalaVirtualMachine,
     this,
     localVariable,
     offsetIndex
   )()
 
   protected def newObjectProfile(objectReference: ObjectReference): ObjectInfoProfile =
-    new PureObjectInfoProfile(objectReference)(threadReference = threadReference)
+    new PureObjectInfoProfile(scalaVirtualMachine, objectReference)(
+      threadReference = threadReference
+    )
 
   protected def newThreadProfile(threadReference: ThreadReference): ThreadInfoProfile =
-    new PureThreadInfoProfile(threadReference)()
+    new PureThreadInfoProfile(scalaVirtualMachine, threadReference)()
 
   protected def newLocationProfile(location: Location): LocationInfoProfile =
-    new PureLocationInfoProfile(location)
+    new PureLocationInfoProfile(scalaVirtualMachine, location)
 
   protected def newValueProfile(value: Value): ValueInfoProfile =
-    new PureValueInfoProfile(value)
+    new PureValueInfoProfile(scalaVirtualMachine, value)
 }

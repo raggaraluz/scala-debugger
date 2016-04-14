@@ -3,6 +3,7 @@ package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info.{FrameInfoProfile, ThreadInfoProfile}
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.util.Try
 
@@ -10,17 +11,20 @@ import scala.util.Try
  * Represents a pure implementation of a thread profile that adds no
  * custom logic on top of the standard JDI.
  *
+ * @param scalaVirtualMachine The high-level virtual machine containing the
+ *                            thread
  * @param threadReference The reference to the underlying JDI thread
  * @param virtualMachine The virtual machine used to mirror local values on
  *                       the remote JVM
  * @param referenceType The reference type for this thread
  */
 class PureThreadInfoProfile(
+  override val scalaVirtualMachine: ScalaVirtualMachine,
   private val threadReference: ThreadReference
 )(
   private val virtualMachine: VirtualMachine = threadReference.virtualMachine(),
   private val referenceType: ReferenceType = threadReference.referenceType()
-) extends PureObjectInfoProfile(threadReference)(
+) extends PureObjectInfoProfile(scalaVirtualMachine, threadReference)(
   virtualMachine = virtualMachine,
   threadReference = threadReference,
   referenceType = referenceType
@@ -72,5 +76,9 @@ class PureThreadInfoProfile(
   protected def newFrameProfile(
     stackFrame: StackFrame,
     index: Int
-  ): FrameInfoProfile = new PureFrameInfoProfile(stackFrame, index)
+  ): FrameInfoProfile = new PureFrameInfoProfile(
+    scalaVirtualMachine,
+    stackFrame,
+    index
+  )
 }

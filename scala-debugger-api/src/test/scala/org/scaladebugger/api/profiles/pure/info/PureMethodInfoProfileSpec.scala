@@ -1,14 +1,19 @@
 package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi.Method
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 class PureMethodInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
+  private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockMethod = mock[Method]
-  private val pureMethodInfoProfile = new PureMethodInfoProfile(mockMethod)
+  private val pureMethodInfoProfile = new PureMethodInfoProfile(
+    mockScalaVirtualMachine,
+    mockMethod
+  )
 
   describe("PureMethodInfoProfile") {
     describe("#toJdiInstance") {

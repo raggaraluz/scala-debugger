@@ -1,27 +1,27 @@
 package org.scaladebugger.api.dsl
 
 import org.scaladebugger.api.dsl.breakpoints.BreakpointDSLWrapper
-import org.scaladebugger.api.dsl.classes.{ClassUnloadDSLWrapper, ClassPrepareDSLWrapper}
+import org.scaladebugger.api.dsl.classes.{ClassPrepareDSLWrapper, ClassUnloadDSLWrapper}
 import org.scaladebugger.api.dsl.events.EventDSLWrapper
 import org.scaladebugger.api.dsl.exceptions.ExceptionDSLWrapper
-import org.scaladebugger.api.dsl.info.{GrabInfoDSLWrapper, FrameInfoDSLWrapper}
-import org.scaladebugger.api.dsl.methods.{MethodExitDSLWrapper, MethodEntryDSLWrapper}
-import org.scaladebugger.api.dsl.monitors.{MonitorWaitDSLWrapper, MonitorWaitedDSLWrapper, MonitorContendedEnterDSLWrapper, MonitorContendedEnteredDSLWrapper}
+import org.scaladebugger.api.dsl.info.{FrameInfoDSLWrapper, GrabInfoDSLWrapper, ObjectInfoDSLWrapper}
+import org.scaladebugger.api.dsl.methods.{MethodEntryDSLWrapper, MethodExitDSLWrapper}
+import org.scaladebugger.api.dsl.monitors.{MonitorContendedEnterDSLWrapper, MonitorContendedEnteredDSLWrapper, MonitorWaitDSLWrapper, MonitorWaitedDSLWrapper}
 import org.scaladebugger.api.dsl.steps.StepDSLWrapper
-import org.scaladebugger.api.dsl.threads.{ThreadStartDSLWrapper, ThreadDeathDSLWrapper}
-import org.scaladebugger.api.dsl.vm.{VMStartDSLWrapper, VMDisconnectDSLWrapper, VMDeathDSLWrapper}
-import org.scaladebugger.api.dsl.watchpoints.{ModificationWatchpointDSLWrapper, AccessWatchpointDSLWrapper}
+import org.scaladebugger.api.dsl.threads.{ThreadDeathDSLWrapper, ThreadStartDSLWrapper}
+import org.scaladebugger.api.dsl.vm.{VMDeathDSLWrapper, VMDisconnectDSLWrapper, VMStartDSLWrapper}
+import org.scaladebugger.api.dsl.watchpoints.{AccessWatchpointDSLWrapper, ModificationWatchpointDSLWrapper}
 import org.scaladebugger.api.profiles.traits.breakpoints.BreakpointProfile
-import org.scaladebugger.api.profiles.traits.classes.{ClassUnloadProfile, ClassPrepareProfile}
+import org.scaladebugger.api.profiles.traits.classes.{ClassPrepareProfile, ClassUnloadProfile}
 import org.scaladebugger.api.profiles.traits.events.EventProfile
 import org.scaladebugger.api.profiles.traits.exceptions.ExceptionProfile
-import org.scaladebugger.api.profiles.traits.info.{GrabInfoProfile, FrameInfoProfile}
-import org.scaladebugger.api.profiles.traits.methods.{MethodExitProfile, MethodEntryProfile}
-import org.scaladebugger.api.profiles.traits.monitors.{MonitorWaitProfile, MonitorWaitedProfile, MonitorContendedEnterProfile, MonitorContendedEnteredProfile}
+import org.scaladebugger.api.profiles.traits.info.{FrameInfoProfile, GrabInfoProfile, ObjectInfoProfile}
+import org.scaladebugger.api.profiles.traits.methods.{MethodEntryProfile, MethodExitProfile}
+import org.scaladebugger.api.profiles.traits.monitors.{MonitorContendedEnterProfile, MonitorContendedEnteredProfile, MonitorWaitProfile, MonitorWaitedProfile}
 import org.scaladebugger.api.profiles.traits.steps.StepProfile
-import org.scaladebugger.api.profiles.traits.threads.{ThreadStartProfile, ThreadDeathProfile}
-import org.scaladebugger.api.profiles.traits.vm.{VMStartProfile, VMDisconnectProfile, VMDeathProfile}
-import org.scaladebugger.api.profiles.traits.watchpoints.{ModificationWatchpointProfile, AccessWatchpointProfile}
+import org.scaladebugger.api.profiles.traits.threads.{ThreadDeathProfile, ThreadStartProfile}
+import org.scaladebugger.api.profiles.traits.vm.{VMDeathProfile, VMDisconnectProfile, VMStartProfile}
+import org.scaladebugger.api.profiles.traits.watchpoints.{AccessWatchpointProfile, ModificationWatchpointProfile}
 
 /**
  * Contains implicit classes to provide DSL-like methods to the debugger API.
@@ -93,6 +93,11 @@ object Implicits {
   implicit def MonitorWaitDSL(
     monitorWaitProfile: MonitorWaitProfile
   ): MonitorWaitDSLWrapper = new MonitorWaitDSLWrapper(monitorWaitProfile)
+
+  /** Converts object info profile to implicit DSL wrapping. */
+  implicit def ObjectInfoDSL(
+    objectInfoProfile: ObjectInfoProfile
+  ): ObjectInfoDSLWrapper = new ObjectInfoDSLWrapper(objectInfoProfile)
 
   /** Converts step profile to implicit DSL wrapping. */
   implicit def StepDSL(

@@ -2,6 +2,7 @@ package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info._
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
@@ -15,8 +16,10 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
   private val mockNewClassLoaderProfile = mockFunction[ClassLoaderReference, ClassLoaderInfoProfile]
   private val mockNewClassObjectProfile = mockFunction[ClassObjectReference, ClassObjectInfoProfile]
   private val mockNewReferenceTypeProfile = mockFunction[ReferenceType, ReferenceTypeInfoProfile]
+  private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockReferenceType = mock[ReferenceType]
   private val pureReferenceTypeInfoProfile = new PureReferenceTypeInfoProfile(
+    scalaVirtualMachine = mockScalaVirtualMachine,
     referenceType = mockReferenceType
   ) {
     override protected def newFieldProfile(

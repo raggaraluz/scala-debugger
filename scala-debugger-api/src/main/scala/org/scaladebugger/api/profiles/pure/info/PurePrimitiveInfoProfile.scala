@@ -4,17 +4,24 @@ package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info.{ArrayInfoProfile, ObjectInfoProfile, PrimitiveInfoProfile, ValueInfoProfile}
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 
 /**
  * Represents a pure implementation of a value profile that adds no custom
  * logic on top of the standard JDI.
  *
+ * @param scalaVirtualMachine The high-level virtual machine containing the
+ *                            primitive
  * @param primitiveValue The reference to the underlying JDI value
  */
 class PurePrimitiveInfoProfile(
+  override val scalaVirtualMachine: ScalaVirtualMachine,
   private val primitiveValue: PrimitiveValue
-) extends PureValueInfoProfile(primitiveValue) with PrimitiveInfoProfile {
+) extends PureValueInfoProfile(
+  scalaVirtualMachine,
+  primitiveValue
+) with PrimitiveInfoProfile {
   /**
    * Returns the JDI representation this profile instance wraps.
    *

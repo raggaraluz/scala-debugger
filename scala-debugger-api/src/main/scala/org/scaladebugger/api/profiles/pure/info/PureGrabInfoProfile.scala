@@ -1,8 +1,9 @@
 package org.scaladebugger.api.profiles.pure.info
 //import acyclic.file
 
-import com.sun.jdi.{ReferenceType, VirtualMachine, ThreadReference}
-import org.scaladebugger.api.profiles.traits.info.{ReferenceTypeInfoProfile, ThreadInfoProfile, GrabInfoProfile}
+import com.sun.jdi.{ReferenceType, ThreadReference, VirtualMachine}
+import org.scaladebugger.api.profiles.traits.info.{GrabInfoProfile, ReferenceTypeInfoProfile, ThreadInfoProfile}
+import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.util.{Success, Try}
 
@@ -11,6 +12,7 @@ import scala.util.{Success, Try}
  * and other objects that adds no extra logic on top of the standard JDI.
  */
 trait PureGrabInfoProfile extends GrabInfoProfile {
+  protected val scalaVirtualMachine: ScalaVirtualMachine
   protected val _virtualMachine: VirtualMachine
 
   /**
@@ -51,9 +53,15 @@ trait PureGrabInfoProfile extends GrabInfoProfile {
   }
 
   protected def newThreadProfile(threadReference: ThreadReference): ThreadInfoProfile =
-    new PureThreadInfoProfile(threadReference)(virtualMachine = _virtualMachine)
+    new PureThreadInfoProfile(
+      scalaVirtualMachine,
+      threadReference
+    )(virtualMachine = _virtualMachine)
 
   protected def newReferenceTypeProfile(
     referenceType: ReferenceType
-  ): ReferenceTypeInfoProfile = new PureReferenceTypeInfoProfile(referenceType)
+  ): ReferenceTypeInfoProfile = new PureReferenceTypeInfoProfile(
+    scalaVirtualMachine,
+    referenceType
+  )
 }

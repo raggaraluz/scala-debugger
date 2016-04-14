@@ -1,5 +1,5 @@
 package org.scaladebugger.api.profiles.swappable.info
-import acyclic.file
+//import acyclic.file
 
 import com.sun.jdi.ThreadReference
 import org.scaladebugger.api.profiles.swappable.SwappableDebugProfileManagement
