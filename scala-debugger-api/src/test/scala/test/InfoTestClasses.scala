@@ -94,8 +94,9 @@ object InfoTestClasses {
     override def getVariable(name: String): VariableInfoProfile = throwException()
     override def getAllVariables: Seq[VariableInfoProfile] = throwException()
     override def getLocalVariables: Seq[IndexedVariableInfoProfile] = throwException()
-    override def getNonArguments: Seq[IndexedVariableInfoProfile] = throwException()
-    override def getArguments: Seq[IndexedVariableInfoProfile] = throwException()
+    override def getArgumentValues: Seq[ValueInfoProfile] = throwException()
+    override def getNonArgumentLocalVariables: Seq[IndexedVariableInfoProfile] = throwException()
+    override def getArgumentLocalVariables: Seq[IndexedVariableInfoProfile] = throwException()
     override def toJdiInstance: StackFrame = throwException()
   }
 

@@ -38,13 +38,13 @@ class FrameInfoDSLWrapper private[dsl] (
   def forAllVariables: Try[Seq[VariableInfoProfile]] =
     frameInfoProfile.tryGetAllVariables
 
-  /** @see FrameInfoProfile#tryGetArguments() */
+  /** @see FrameInfoProfile#tryGetArgumentLocalVariables() */
   def forArguments: Try[Seq[VariableInfoProfile]] =
-    frameInfoProfile.tryGetArguments
+    frameInfoProfile.tryGetArgumentLocalVariables
 
-  /** @see FrameInfoProfile#tryGetNonArguments() */
+  /** @see FrameInfoProfile#tryGetNonArgumentLocalVariables() */
   def forNonArguments: Try[Seq[VariableInfoProfile]] =
-    frameInfoProfile.tryGetNonArguments
+    frameInfoProfile.tryGetNonArgumentLocalVariables
 
   /** @see FrameInfoProfile#tryGetLocalVariables() */
   def forLocalVariables: Try[Seq[VariableInfoProfile]] =
@@ -58,13 +58,13 @@ class FrameInfoDSLWrapper private[dsl] (
   def forUnsafeAllVariables: Seq[VariableInfoProfile] =
     frameInfoProfile.getAllVariables
 
-  /** @see FrameInfoProfile#getArguments() */
+  /** @see FrameInfoProfile#getArgumentLocalVariables() */
   def forUnsafeArguments: Seq[VariableInfoProfile] =
-    frameInfoProfile.getArguments
+    frameInfoProfile.getArgumentLocalVariables
 
-  /** @see FrameInfoProfile#getNonArguments() */
+  /** @see FrameInfoProfile#getNonArgumentLocalVariables() */
   def forUnsafeNonArguments: Seq[VariableInfoProfile] =
-    frameInfoProfile.getNonArguments
+    frameInfoProfile.getNonArgumentLocalVariables
 
   /** @see FrameInfoProfile#getLocalVariables() */
   def forUnsafeLocalVariables: Seq[VariableInfoProfile] =
