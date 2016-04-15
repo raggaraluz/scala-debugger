@@ -53,6 +53,7 @@ class ObjectCache(
   /**
    * Returns whether or not the cache has an object with the specified id.
    *
+   * @param cacheId The id of the object
    * @return True if the cache has the object, otherwise false
    */
   def has(cacheId: CacheId): Boolean = internalCache.contains(cacheId)
@@ -60,6 +61,7 @@ class ObjectCache(
   /**
    * Returns whether or not the cache has the specified object.
    *
+   * @param cacheValue The object whose id to use
    * @return True if the cache has the object, otherwise false
    */
   def has(cacheValue: CacheValue): Boolean =
@@ -73,6 +75,16 @@ class ObjectCache(
    */
   def remove(cacheId: CacheId): Option[CacheValue] = {
     internalCache.remove(cacheId)
+  }
+
+  /**
+   * Removes an object from the cache.
+   *
+   * @param cacheValue The object to remove
+   * @return Some object if the object existed and was removed, otherwise None
+   */
+  def remove(cacheValue: CacheValue): Option[CacheValue] = {
+    Try(cacheValue.uniqueId).toOption.flatMap(internalCache.remove)
   }
 
   /**

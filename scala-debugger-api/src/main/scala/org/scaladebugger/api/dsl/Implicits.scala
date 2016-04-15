@@ -4,7 +4,7 @@ import org.scaladebugger.api.dsl.breakpoints.BreakpointDSLWrapper
 import org.scaladebugger.api.dsl.classes.{ClassPrepareDSLWrapper, ClassUnloadDSLWrapper}
 import org.scaladebugger.api.dsl.events.EventDSLWrapper
 import org.scaladebugger.api.dsl.exceptions.ExceptionDSLWrapper
-import org.scaladebugger.api.dsl.info.{FrameInfoDSLWrapper, GrabInfoDSLWrapper, ObjectInfoDSLWrapper}
+import org.scaladebugger.api.dsl.info.{FrameInfoDSLWrapper, GrabInfoDSLWrapper, ObjectInfoDSLWrapper, VariableInfoDSLWrapper}
 import org.scaladebugger.api.dsl.methods.{MethodEntryDSLWrapper, MethodExitDSLWrapper}
 import org.scaladebugger.api.dsl.monitors.{MonitorContendedEnterDSLWrapper, MonitorContendedEnteredDSLWrapper, MonitorWaitDSLWrapper, MonitorWaitedDSLWrapper}
 import org.scaladebugger.api.dsl.steps.StepDSLWrapper
@@ -15,7 +15,7 @@ import org.scaladebugger.api.profiles.traits.breakpoints.BreakpointProfile
 import org.scaladebugger.api.profiles.traits.classes.{ClassPrepareProfile, ClassUnloadProfile}
 import org.scaladebugger.api.profiles.traits.events.EventProfile
 import org.scaladebugger.api.profiles.traits.exceptions.ExceptionProfile
-import org.scaladebugger.api.profiles.traits.info.{FrameInfoProfile, GrabInfoProfile, ObjectInfoProfile}
+import org.scaladebugger.api.profiles.traits.info.{FrameInfoProfile, GrabInfoProfile, ObjectInfoProfile, VariableInfoProfile}
 import org.scaladebugger.api.profiles.traits.methods.{MethodEntryProfile, MethodExitProfile}
 import org.scaladebugger.api.profiles.traits.monitors.{MonitorContendedEnterProfile, MonitorContendedEnteredProfile, MonitorWaitProfile, MonitorWaitedProfile}
 import org.scaladebugger.api.profiles.traits.steps.StepProfile
@@ -113,6 +113,11 @@ object Implicits {
   implicit def ThreadStartDSL(
     threadStartProfile: ThreadStartProfile
   ): ThreadStartDSLWrapper = new ThreadStartDSLWrapper(threadStartProfile)
+
+  /** Converts variable info profile to implicit DSL wrapping. */
+  implicit def VariableInfoDSL(
+    variableInfoProfile: VariableInfoProfile
+  ): VariableInfoDSLWrapper = new VariableInfoDSLWrapper(variableInfoProfile)
 
   /** Converts vm death profile to implicit DSL wrapping. */
   implicit def VMDeathDSL(
