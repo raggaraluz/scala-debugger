@@ -20,11 +20,8 @@ class VariableInfoDSLWrapper private[dsl] (
   def cache()(
     implicit objectCache: ObjectCache = variableInfo.scalaVirtualMachine.cache
   ): VariableInfoProfile = {
-    // If the value is an object, cache it
-    variableInfo.toValue match {
-      case obj: ObjectInfoProfile => objectCache.save(obj)
-      case _                      =>
-    }
+    import org.scaladebugger.api.dsl.Implicits.ValueInfoDSL
+    variableInfo.toValue.cache()
 
     variableInfo
   }
@@ -38,11 +35,8 @@ class VariableInfoDSLWrapper private[dsl] (
   def uncache()(
     implicit objectCache: ObjectCache = variableInfo.scalaVirtualMachine.cache
   ): VariableInfoProfile = {
-    // If the value is an object, remove it
-    variableInfo.toValue match {
-      case obj: ObjectInfoProfile => objectCache.remove(obj)
-      case _                      =>
-    }
+    import org.scaladebugger.api.dsl.Implicits.ValueInfoDSL
+    variableInfo.toValue.uncache()
 
     variableInfo
   }
