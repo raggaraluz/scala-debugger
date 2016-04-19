@@ -20,47 +20,47 @@ class SwappableGrabInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("SwappableGrabInfoProfile") {
-    describe("#getThread") {
+    describe("#thread") {
       it("should invoke the method on the underlying profile") {
         val expected = mock[ThreadInfoProfile]
 
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).twice()
 
-        (mockDebugProfile.getThread(_: Long)).expects(*)
+        (mockDebugProfile.thread(_: Long)).expects(*)
           .returning(expected).once()
 
-        (mockDebugProfile.getThread(_: ThreadReference)).expects(*)
+        (mockDebugProfile.thread(_: ThreadReference)).expects(*)
           .returning(expected).once()
 
-        swappableDebugProfile.getThread(0L) should be(expected)
-        swappableDebugProfile.getThread(mock[ThreadReference]) should be(expected)
+        swappableDebugProfile.thread(0L) should be(expected)
+        swappableDebugProfile.thread(mock[ThreadReference]) should be(expected)
       }
 
       it("should throw an exception if there is no underlying profile") {
         intercept[AssertionError] {
           (mockProfileManager.retrieve _).expects(*).returning(None).once()
-          swappableDebugProfile.getThread(0L)
+          swappableDebugProfile.thread(0L)
         }
 
         intercept[AssertionError] {
           (mockProfileManager.retrieve _).expects(*).returning(None).once()
-          swappableDebugProfile.getThread(mock[ThreadReference])
+          swappableDebugProfile.thread(mock[ThreadReference])
         }
       }
     }
 
-    describe("#getClasses") {
+    describe("#classes") {
       it("should invoke the method on the underlying profile") {
         val expected = Seq(mock[ReferenceTypeInfoProfile])
 
         (mockProfileManager.retrieve _).expects(*)
           .returning(Some(mockDebugProfile)).once()
 
-        (mockDebugProfile.getClasses _).expects()
+        (mockDebugProfile.classes _).expects()
           .returning(expected).once()
 
-        val actual = swappableDebugProfile.getClasses
+        val actual = swappableDebugProfile.classes
 
         actual should be (expected)
       }
@@ -68,7 +68,7 @@ class SwappableGrabInfoProfileSpec extends FunSpec with Matchers
       it("should throw an exception if there is no underlying profile") {
         intercept[AssertionError] {
           (mockProfileManager.retrieve _).expects(*).returning(None).once()
-          swappableDebugProfile.getClasses
+          swappableDebugProfile.classes
         }
       }
     }

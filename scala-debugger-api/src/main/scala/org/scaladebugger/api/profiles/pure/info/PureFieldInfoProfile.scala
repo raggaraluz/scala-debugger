@@ -13,17 +13,17 @@ import scala.util.Try
  *
  * @param scalaVirtualMachine The high-level virtual machine containing the
  *                            field
- * @param objectReference The object associated with the field instance
- * @param field The reference to the underlying JDI field
- * @param virtualMachine The virtual machine used to mirror local values on
+ * @param _objectReference The object associated with the field instance
+ * @param _field The reference to the underlying JDI field
+ * @param _virtualMachine The virtual machine used to mirror local values on
  *                       the remote JVM
  */
 class PureFieldInfoProfile(
   val scalaVirtualMachine: ScalaVirtualMachine,
-  private val objectReference: ObjectReference,
-  private val field: Field
+  private val _objectReference: ObjectReference,
+  private val _field: Field
 )(
-  private val virtualMachine: VirtualMachine = field.virtualMachine()
+  private val _virtualMachine: VirtualMachine = _field.virtualMachine()
 ) extends VariableInfoProfile {
 
   /**
@@ -31,14 +31,14 @@ class PureFieldInfoProfile(
    *
    * @return The JDI instance
    */
-  override def toJdiInstance: Field = field
+  override def toJdiInstance: Field = _field
 
   /**
    * Returns the name of the variable.
    *
    * @return The name of the variable
    */
-  override def name: String = field.name()
+  override def name: String = _field.name()
 
   /**
    * Returns whether or not this variable represents a field.
@@ -69,7 +69,7 @@ class PureFieldInfoProfile(
    */
   override def setValue(value: AnyVal): AnyVal = {
     import org.scaladebugger.api.lowlevel.wrappers.Implicits._
-    val mirrorValue = virtualMachine.mirrorOf(value)
+    val mirrorValue = _virtualMachine.mirrorOf(value)
     setFieldValue(mirrorValue)
     value
   }
@@ -81,15 +81,15 @@ class PureFieldInfoProfile(
    * @return The new value
    */
   override def setValue(value: String): String = {
-    val mirrorValue = virtualMachine.mirrorOf(value)
+    val mirrorValue = _virtualMachine.mirrorOf(value)
     setFieldValue(mirrorValue)
     value
   }
 
   private def setFieldValue(value: Value): Unit = {
-    assert(objectReference != null, "Cannot set field value on reference type!")
+    assert(_objectReference != null, "Cannot set field value on reference type!")
 
-    objectReference.setValue(field, value)
+    _objectReference.setValue(_field, value)
   }
 
   /**
@@ -98,11 +98,11 @@ class PureFieldInfoProfile(
    * @return The profile representing the value
    */
   override def toValue: ValueInfoProfile = {
-    assert(objectReference != null,
+    assert(_objectReference != null,
       "Cannot get field value from reference type!")
 
     newValueProfile(
-      objectReference.getValue(field)
+      _objectReference.getValue(_field)
     )
   }
 

@@ -18,7 +18,7 @@ trait ClassLoaderInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    *
    * @return The collection of reference types for the loaded classes
    */
-  def getDefinedClasses: Seq[ReferenceTypeInfoProfile]
+  def definedClasses: Seq[ReferenceTypeInfoProfile]
 
   /**
    * Retrieves all classes for which this class loader served as the initiating
@@ -26,5 +26,5 @@ trait ClassLoaderInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    *
    * @return The collection of reference types for the initiated classes
    */
-  def getVisibleClasses: Seq[ReferenceTypeInfoProfile]
+  def visibleClasses: Seq[ReferenceTypeInfoProfile]
 }

@@ -35,8 +35,8 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variable = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("h")
+            .thread(t.get).topFrame
+            .variable("h")
 
           variable.name should be ("h")
         })
@@ -58,8 +58,8 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variable = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("h")
+            .thread(t.get).topFrame
+            .variable("h")
 
           variable.isField should be (false)
         })
@@ -81,8 +81,8 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variable = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("h")
+            .thread(t.get).topFrame
+            .variable("h")
 
           variable.isLocal should be (true)
         })
@@ -104,13 +104,13 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("h")
+            .thread(t.get).topFrame
+            .variable("h")
             .isArgument should be (false)
 
           s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("args")
+            .thread(t.get).topFrame
+            .variable("args")
             .isArgument should be (true)
         })
       }
@@ -131,8 +131,8 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variable = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("g")
+            .thread(t.get).topFrame
+            .variable("g")
 
           variable.setValue(888.0) should be (888.0)
         })
@@ -154,8 +154,8 @@ class PureLocalVariableInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val field = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("h")
+            .thread(t.get).topFrame
+            .variable("h")
 
           intercept[InvalidTypeException] {
             field.setValue("some value")

@@ -25,12 +25,12 @@ class PureReferenceTypeInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       withVirtualMachine(testClass) { (s) =>
         logTimeTaken(eventually {
-          val ccc = s.withProfile(PureDebugProfile.Name).getClasses
+          val ccc = s.withProfile(PureDebugProfile.Name).classes
           val fieldName = s.withProfile(PureDebugProfile.Name)
-            .getClasses
-            .find(_.getName == "org.scaladebugger.test.info.ExternalCaseClass")
+            .classes
+            .find(_.name == "org.scaladebugger.test.info.ExternalCaseClass")
             .get
-            .getField("x").name
+            .field("x").name
 
           fieldName should be ("x")
         })
@@ -44,10 +44,10 @@ class PureReferenceTypeInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass) { (s) =>
         logTimeTaken(eventually {
           val fieldNames = s.withProfile(PureDebugProfile.Name)
-            .getClasses
-            .find(_.getName == "org.scaladebugger.test.info.ExternalCaseClass")
+            .classes
+            .find(_.name == "org.scaladebugger.test.info.ExternalCaseClass")
             .get
-            .getAllFields
+            .allFields
             .map(_.name)
 
           fieldNames should contain theSameElementsAs Seq(
@@ -64,10 +64,10 @@ class PureReferenceTypeInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass) { (s) =>
         logTimeTaken(eventually {
           val methodNames = s.withProfile(PureDebugProfile.Name)
-            .getClasses
-            .find(_.getName == "org.scaladebugger.test.info.ExternalNormalClass")
+            .classes
+            .find(_.name == "org.scaladebugger.test.info.ExternalNormalClass")
             .get
-            .getMethods("method1")
+            .methods("method1")
             .map(_.name)
 
           methodNames should be (Seq("method1"))
@@ -82,10 +82,10 @@ class PureReferenceTypeInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass) { (s) =>
         logTimeTaken(eventually {
           val methodNames = s.withProfile(PureDebugProfile.Name)
-            .getClasses
-            .find(_.getName == "org.scaladebugger.test.info.ExternalNormalClass")
+            .classes
+            .find(_.name == "org.scaladebugger.test.info.ExternalNormalClass")
             .get
-            .getAllMethods
+            .allMethods
             .map(_.name)
 
           methodNames should contain theSameElementsAs Seq(

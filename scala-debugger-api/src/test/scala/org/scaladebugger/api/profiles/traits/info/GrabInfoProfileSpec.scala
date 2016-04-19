@@ -11,50 +11,50 @@ class GrabInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   describe("GrabInfoProfile") {
-    describe("#tryGetThread(threadId)") {
+    describe("#tryThread(threadId)") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Long, ThreadInfoProfile]
 
         val grabInfoProfile = new TestGrabInfoProfile {
-          override def getThread(threadId: Long): ThreadInfoProfile =
+          override def thread(threadId: Long): ThreadInfoProfile =
             mockUnsafeMethod(threadId)
         }
 
         val a1 = 999L
         val r = mock[ThreadInfoProfile]
         mockUnsafeMethod.expects(a1).returning(r).once()
-        grabInfoProfile.tryGetThread(a1).get should be (r)
+        grabInfoProfile.tryThread(a1).get should be (r)
       }
     }
 
-    describe("#tryGetThread(threadReference)") {
+    describe("#tryThread(threadReference)") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[ThreadReference, ThreadInfoProfile]
 
         val grabInfoProfile = new TestGrabInfoProfile {
-          override def getThread(threadReference: ThreadReference): ThreadInfoProfile =
+          override def thread(threadReference: ThreadReference): ThreadInfoProfile =
             mockUnsafeMethod(threadReference)
         }
 
         val a1 = mock[ThreadReference]
         val r = mock[ThreadInfoProfile]
         mockUnsafeMethod.expects(a1).returning(r).once()
-        grabInfoProfile.tryGetThread(a1).get should be (r)
+        grabInfoProfile.tryThread(a1).get should be (r)
       }
     }
 
-    describe("#tryGetClasses") {
+    describe("#tryClasses") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Seq[ReferenceTypeInfoProfile]]
 
         val grabInfoProfile = new TestGrabInfoProfile {
-          override def getClasses: Seq[ReferenceTypeInfoProfile] =
+          override def classes: Seq[ReferenceTypeInfoProfile] =
             mockUnsafeMethod()
         }
 
         val r = Seq(mock[ReferenceTypeInfoProfile])
         mockUnsafeMethod.expects().returning(r).once()
-        grabInfoProfile.tryGetClasses.get should be (r)
+        grabInfoProfile.tryClasses.get should be (r)
       }
     }
   }

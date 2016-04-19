@@ -34,8 +34,8 @@ class PureMethodInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val method = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame.getThisObject
-            .getMethod("publicMethod")
+            .thread(t.get).topFrame.thisObject
+            .method("publicMethod")
 
           method.name should be ("publicMethod")
         })
@@ -57,10 +57,10 @@ class PureMethodInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val method = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame.getThisObject
-            .getMethod("publicMethod")
+            .thread(t.get).topFrame.thisObject
+            .method("publicMethod")
 
-          method.getParameterTypeNames should be (Seq("int", "java.lang.String"))
+          method.parameterTypeNames should be (Seq("int", "java.lang.String"))
         })
       }
     }
@@ -80,10 +80,10 @@ class PureMethodInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val method = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame.getThisObject
-            .getMethod("publicMethod")
+            .thread(t.get).topFrame.thisObject
+            .method("publicMethod")
 
-          method.getReturnTypeName should be ("java.lang.String")
+          method.returnTypeName should be ("java.lang.String")
         })
       }
     }

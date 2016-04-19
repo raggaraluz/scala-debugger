@@ -28,42 +28,42 @@ trait FrameInfoProfile extends CommonInfoProfile {
    *
    * @return Success containing the profile of this object, otherwise a failure
    */
-  def tryGetThisObject: Try[ObjectInfoProfile] = Try(getThisObject)
+  def tryThisObject: Try[ObjectInfoProfile] = Try(thisObject)
 
   /**
    * Retrieves the object representing 'this' in the current frame scope.
    *
    * @return The profile of this object
    */
-  def getThisObject: ObjectInfoProfile
+  def thisObject: ObjectInfoProfile
 
   /**
    * Retrieves the thread associated with this frame.
    *
    * @return Success containing the profile of the thread, otherwise a failure
    */
-  def tryGetCurrentThread: Try[ThreadInfoProfile] = Try(getCurrentThread)
+  def tryCurrentThread: Try[ThreadInfoProfile] = Try(currentThread)
 
   /**
    * Retrieves the thread associated with this frame.
    *
    * @return The profile of the thread
    */
-  def getCurrentThread: ThreadInfoProfile
+  def currentThread: ThreadInfoProfile
 
   /**
    * Retrieves the location associated with this frame.
    *
    * @return Success containing the profile of the location, otherwise a failure
    */
-  def tryGetLocation: Try[LocationInfoProfile] = Try(getLocation)
+  def tryLocation: Try[LocationInfoProfile] = Try(location)
 
   /**
    * Retrieves the location associated with this frame.
    *
    * @return The profile of the location
    */
-  def getLocation: LocationInfoProfile
+  def location: LocationInfoProfile
 
   /**
    * Retrieves the values of the arguments in this frame. As indicated by the
@@ -72,7 +72,7 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of argument values in order as
    *         provided to the frame, otherwise a failure
    */
-  def tryGetArgumentValues: Try[Seq[ValueInfoProfile]] = Try(getArgumentValues)
+  def tryArgumentValues: Try[Seq[ValueInfoProfile]] = Try(argumentValues)
 
   /**
    * Retrieves the values of the arguments in this frame. As indicated by the
@@ -80,7 +80,7 @@ trait FrameInfoProfile extends CommonInfoProfile {
    *
    * @return The collection of argument values in order as provided to the frame
    */
-  def getArgumentValues: Seq[ValueInfoProfile]
+  def argumentValues: Seq[ValueInfoProfile]
 
   /**
    * Retrieves the variable with the specified name from the frame.
@@ -89,8 +89,8 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return Success containing profile of the variable if found, otherwise
    *         a failure
    */
-  def tryGetVariable(name: String): Try[VariableInfoProfile] =
-    Try(getVariable(name))
+  def tryVariable(name: String): Try[VariableInfoProfile] =
+    Try(variable(name))
 
   /**
    * Retrieves the variable with the specified name from the frame.
@@ -98,7 +98,7 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @param name The name of the variable to retrieve
    * @return Profile of the variable or throws an exception
    */
-  def getVariable(name: String): VariableInfoProfile
+  def variable(name: String): VariableInfoProfile
 
   /**
    * Retrieves all variables in this frame.
@@ -106,8 +106,8 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of variables as their profile
    *         equivalents, otherwise a failure
    */
-  def tryGetAllVariables: Try[Seq[VariableInfoProfile]] =
-    Try(getAllVariables)
+  def tryAllVariables: Try[Seq[VariableInfoProfile]] =
+    Try(allVariables)
 
   /**
    * Retrieves all variables that represent arguments in this frame.
@@ -115,8 +115,8 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of variables as their profile
    *         equivalents, otherwise a failure
    */
-  def tryGetArgumentLocalVariables: Try[Seq[IndexedVariableInfoProfile]] =
-    Try(getArgumentLocalVariables)
+  def tryArgumentLocalVariables: Try[Seq[IndexedVariableInfoProfile]] =
+    Try(argumentLocalVariables)
 
   /**
    * Retrieves all variables that do not represent arguments in this frame.
@@ -124,8 +124,8 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of variables as their profile
    *         equivalents, otherwise a failure
    */
-  def tryGetNonArgumentLocalVariables: Try[Seq[IndexedVariableInfoProfile]] =
-    Try(getNonArgumentLocalVariables)
+  def tryNonArgumentLocalVariables: Try[Seq[IndexedVariableInfoProfile]] =
+    Try(nonArgumentLocalVariables)
 
   /**
    * Retrieves all variables that represent local variables in this frame.
@@ -133,8 +133,8 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of variables as their profile
    *         equivalents, otherwise a failure
    */
-  def tryGetLocalVariables: Try[Seq[IndexedVariableInfoProfile]] =
-    Try(getLocalVariables)
+  def tryLocalVariables: Try[Seq[IndexedVariableInfoProfile]] =
+    Try(localVariables)
 
   /**
    * Retrieves all variables that represent field variables in this frame.
@@ -142,43 +142,43 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of variables as their profile
    *         equivalents, otherwise a failure
    */
-  def tryGetFieldVariables: Try[Seq[VariableInfoProfile]] =
-    Try(getFieldVariables)
+  def tryFieldVariables: Try[Seq[VariableInfoProfile]] =
+    Try(fieldVariables)
 
   /**
    * Retrieves all variables in this frame.
    *
    * @return The collection of variables as their profile equivalents
    */
-  def getAllVariables: Seq[VariableInfoProfile]
+  def allVariables: Seq[VariableInfoProfile]
 
   /**
    * Retrieves all variables that represent arguments in this frame.
    *
    * @return The collection of variables as their profile equivalents
    */
-  def getArgumentLocalVariables: Seq[IndexedVariableInfoProfile]
+  def argumentLocalVariables: Seq[IndexedVariableInfoProfile]
 
   /**
    * Retrieves all variables that do not represent arguments in this frame.
    *
    * @return The collection of variables as their profile equivalents
    */
-  def getNonArgumentLocalVariables: Seq[IndexedVariableInfoProfile]
+  def nonArgumentLocalVariables: Seq[IndexedVariableInfoProfile]
 
   /**
    * Retrieves all variables that represent local variables in this frame.
    *
    * @return The collection of variables as their profile equivalents
    */
-  def getLocalVariables: Seq[IndexedVariableInfoProfile]
+  def localVariables: Seq[IndexedVariableInfoProfile]
 
   /**
    * Retrieves all variables that represent field variables in this frame.
    *
    * @return The collection of variables as their profile equivalents
    */
-  def getFieldVariables: Seq[VariableInfoProfile]
+  def fieldVariables: Seq[VariableInfoProfile]
 
   /**
    * Returns a string presenting a better human-readable description of
@@ -187,7 +187,7 @@ trait FrameInfoProfile extends CommonInfoProfile {
    * @return The human-readable description
    */
   override def toPrettyString: String = {
-    val loc = this.tryGetLocation.map(_.toPrettyString).getOrElse("???")
+    val loc = this.tryLocation.map(_.toPrettyString).getOrElse("???")
     s"Frame $index at ($loc)"
   }
 }

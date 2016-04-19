@@ -22,7 +22,7 @@ import org.scaladebugger.api.utils.JDITools
 object LaunchingDebuggerExample extends App {
   // Get the executing class name (remove $ from object class name)
   val klass = SomeLaunchingMainClass.getClass
-  val className = klass.getName.replaceAllLiterally("$", "")
+  val className = klass.name.replaceAllLiterally("$", "")
 
   // Add our main class to the classpath used to launch the class
   val classpath = JDITools.jvmClassPath

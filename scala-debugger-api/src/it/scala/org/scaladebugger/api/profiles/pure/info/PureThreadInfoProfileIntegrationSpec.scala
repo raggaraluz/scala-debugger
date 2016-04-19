@@ -34,25 +34,25 @@ class PureThreadInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
-          val thread = s.withProfile(PureDebugProfile.Name).getThread(t.get)
+          val thread = s.withProfile(PureDebugProfile.Name).thread(t.get)
 
           // Should be 5
-          val totalFrames = thread.getTotalFrames
+          val totalFrames = thread.totalFrames
 
           val index = 1
           val length = 2
 
           // Valid list of frames
-          thread.getFrames.slice(index, length + 1).map(_.toPrettyString) should
-            be (thread.getFrames(index, length).map(_.toPrettyString))
+          thread.frames.slice(index, length + 1).map(_.toPrettyString) should
+            be (thread.frames(index, length).map(_.toPrettyString))
 
           // Length too long when retrieving should revert to all frames
-          thread.getFrames.slice(index, totalFrames).map(_.toPrettyString) should
-            be (thread.getFrames(index, totalFrames + 1).map(_.toPrettyString))
+          thread.frames.slice(index, totalFrames).map(_.toPrettyString) should
+            be (thread.frames(index, totalFrames + 1).map(_.toPrettyString))
 
           // Length of -1 should return all remaining frames
-          thread.getFrames.slice(index, totalFrames).map(_.toPrettyString) should
-            be (thread.getFrames(index, -1).map(_.toPrettyString))
+          thread.frames.slice(index, totalFrames).map(_.toPrettyString) should
+            be (thread.frames(index, -1).map(_.toPrettyString))
         })
       }
     }
@@ -71,7 +71,7 @@ class PureThreadInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
-          val thread = s.withProfile(PureDebugProfile.Name).getThread(t.get)
+          val thread = s.withProfile(PureDebugProfile.Name).thread(t.get)
 
           // Should support retrieving local variables
           val localVariable = thread.findVariableByName("a").get
@@ -100,7 +100,7 @@ class PureThreadInfoProfileIntegrationSpec extends FunSpec with Matchers
 
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
-          val thread = s.withProfile(PureDebugProfile.Name).getThread(t.get)
+          val thread = s.withProfile(PureDebugProfile.Name).thread(t.get)
 
           // Local variables are always indexed
           val localVariable = thread.findVariableByName("a").get

@@ -12,65 +12,65 @@ import scala.util.Try
 class FrameInfoDSLWrapper private[dsl] (
   private val frameInfoProfile: FrameInfoProfile
 ) {
-  /** @see FrameInfoProfile#tryGetThisObject() */
-  def withThisObject: Try[ObjectInfoProfile] = frameInfoProfile.tryGetThisObject
+  /** @see FrameInfoProfile#tryThisObject() */
+  def withThisObject: Try[ObjectInfoProfile] = frameInfoProfile.tryThisObject
 
-  /** @see FrameInfoProfile#getThisObject() */
-  def withUnsafeThisObject: ObjectInfoProfile = frameInfoProfile.getThisObject
+  /** @see FrameInfoProfile#thisObject() */
+  def withUnsafeThisObject: ObjectInfoProfile = frameInfoProfile.thisObject
 
-  /** @see FrameInfoProfile#tryGetCurrentThread() */
+  /** @see FrameInfoProfile#tryCurrentThread() */
   def withCurrentThread: Try[ThreadInfoProfile] =
-    frameInfoProfile.tryGetCurrentThread
+    frameInfoProfile.tryCurrentThread
 
-  /** @see FrameInfoProfile#getCurrentThread() */
+  /** @see FrameInfoProfile#currentThread() */
   def withUnsafeCurrentThread: ThreadInfoProfile =
-    frameInfoProfile.getCurrentThread
+    frameInfoProfile.currentThread
 
-  /** @see FrameInfoProfile#tryGetVariable(String) */
+  /** @see FrameInfoProfile#tryVariable(String) */
   def forVariable(name: String): Try[VariableInfoProfile] =
-    frameInfoProfile.tryGetVariable(name)
+    frameInfoProfile.tryVariable(name)
 
-  /** @see FrameInfoProfile#getVariable(String) */
+  /** @see FrameInfoProfile#variable(String) */
   def forUnsafeVariable(name: String): VariableInfoProfile =
-    frameInfoProfile.getVariable(name)
+    frameInfoProfile.variable(name)
 
-  /** @see FrameInfoProfile#tryGetAllVariables() */
+  /** @see FrameInfoProfile#tryAllVariables() */
   def forAllVariables: Try[Seq[VariableInfoProfile]] =
-    frameInfoProfile.tryGetAllVariables
+    frameInfoProfile.tryAllVariables
 
-  /** @see FrameInfoProfile#tryGetArgumentLocalVariables() */
+  /** @see FrameInfoProfile#tryArgumentLocalVariables() */
   def forArguments: Try[Seq[VariableInfoProfile]] =
-    frameInfoProfile.tryGetArgumentLocalVariables
+    frameInfoProfile.tryArgumentLocalVariables
 
-  /** @see FrameInfoProfile#tryGetNonArgumentLocalVariables() */
+  /** @see FrameInfoProfile#tryNonArgumentLocalVariables() */
   def forNonArguments: Try[Seq[VariableInfoProfile]] =
-    frameInfoProfile.tryGetNonArgumentLocalVariables
+    frameInfoProfile.tryNonArgumentLocalVariables
 
-  /** @see FrameInfoProfile#tryGetLocalVariables() */
+  /** @see FrameInfoProfile#tryLocalVariables() */
   def forLocalVariables: Try[Seq[VariableInfoProfile]] =
-    frameInfoProfile.tryGetLocalVariables
+    frameInfoProfile.tryLocalVariables
 
-  /** @see FrameInfoProfile#tryGetFieldVariables() */
+  /** @see FrameInfoProfile#tryFieldVariables() */
   def forFieldVariables: Try[Seq[VariableInfoProfile]] =
-    frameInfoProfile.tryGetFieldVariables
+    frameInfoProfile.tryFieldVariables
 
-  /** @see FrameInfoProfile#getAllVariables() */
+  /** @see FrameInfoProfile#allVariables() */
   def forUnsafeAllVariables: Seq[VariableInfoProfile] =
-    frameInfoProfile.getAllVariables
+    frameInfoProfile.allVariables
 
-  /** @see FrameInfoProfile#getArgumentLocalVariables() */
+  /** @see FrameInfoProfile#argumentLocalVariables() */
   def forUnsafeArguments: Seq[VariableInfoProfile] =
-    frameInfoProfile.getArgumentLocalVariables
+    frameInfoProfile.argumentLocalVariables
 
-  /** @see FrameInfoProfile#getNonArgumentLocalVariables() */
+  /** @see FrameInfoProfile#nonArgumentLocalVariables() */
   def forUnsafeNonArguments: Seq[VariableInfoProfile] =
-    frameInfoProfile.getNonArgumentLocalVariables
+    frameInfoProfile.nonArgumentLocalVariables
 
-  /** @see FrameInfoProfile#getLocalVariables() */
+  /** @see FrameInfoProfile#localVariables() */
   def forUnsafeLocalVariables: Seq[VariableInfoProfile] =
-    frameInfoProfile.getLocalVariables
+    frameInfoProfile.localVariables
 
-  /** @see FrameInfoProfile#getFieldVariables() */
+  /** @see FrameInfoProfile#fieldVariables() */
   def forUnsafeFieldVariables: Seq[VariableInfoProfile] =
-    frameInfoProfile.getFieldVariables
+    frameInfoProfile.fieldVariables
 }

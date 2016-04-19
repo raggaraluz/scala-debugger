@@ -15,39 +15,39 @@ import scala.collection.JavaConverters._
  *
  * @param scalaVirtualMachine The high-level virtual machine containing the
  *                            class loader
- * @param classLoaderReference The reference to the underlying JDI class loader
- * @param virtualMachine The virtual machine associated with the class loader
- * @param threadReference The thread associated with the class loader
+ * @param _classLoaderReference The reference to the underlying JDI class loader
+ * @param _virtualMachine The virtual machine associated with the class loader
+ * @param _threadReference The thread associated with the class loader
  *                        (for method invocation)
- * @param referenceType The reference type for this class loader
+ * @param _referenceType The reference type for this class loader
  */
 class PureClassLoaderInfoProfile(
   override val scalaVirtualMachine: ScalaVirtualMachine,
-  private val classLoaderReference: ClassLoaderReference
+  private val _classLoaderReference: ClassLoaderReference
 )(
-  private val virtualMachine: VirtualMachine = classLoaderReference.virtualMachine(),
-  private val threadReference: ThreadReference = classLoaderReference.owningThread(),
-  private val referenceType: ReferenceType = classLoaderReference.referenceType()
-) extends PureObjectInfoProfile(scalaVirtualMachine, classLoaderReference)(
-  virtualMachine = virtualMachine,
-  threadReference = threadReference,
-  referenceType = referenceType
+  private val _virtualMachine: VirtualMachine = _classLoaderReference.virtualMachine(),
+  private val _threadReference: ThreadReference = _classLoaderReference.owningThread(),
+  private val _referenceType: ReferenceType = _classLoaderReference.referenceType()
+) extends PureObjectInfoProfile(scalaVirtualMachine, _classLoaderReference)(
+  _virtualMachine = _virtualMachine,
+  _threadReference = _threadReference,
+  _referenceType = _referenceType
 ) with ClassLoaderInfoProfile {
   /**
    * Returns the JDI representation this profile instance wraps.
    *
    * @return The JDI instance
    */
-  override def toJdiInstance: ClassLoaderReference = classLoaderReference
+  override def toJdiInstance: ClassLoaderReference = _classLoaderReference
 
   /**
    * Retrieves all loaded classes defined by this class loader.
    *
    * @return The collection of reference types for the loaded classes
    */
-  override def getDefinedClasses: Seq[ReferenceTypeInfoProfile] = {
+  override def definedClasses: Seq[ReferenceTypeInfoProfile] = {
     import scala.collection.JavaConverters._
-    classLoaderReference.definedClasses().asScala.map(newReferenceTypeProfile)
+    _classLoaderReference.definedClasses().asScala.map(newReferenceTypeProfile)
   }
 
   /**
@@ -56,8 +56,8 @@ class PureClassLoaderInfoProfile(
    *
    * @return The collection of reference types for the initiated classes
    */
-  override def getVisibleClasses: Seq[ReferenceTypeInfoProfile] = {
+  override def visibleClasses: Seq[ReferenceTypeInfoProfile] = {
     import scala.collection.JavaConverters._
-    classLoaderReference.visibleClasses().asScala.map(newReferenceTypeProfile)
+    _classLoaderReference.visibleClasses().asScala.map(newReferenceTypeProfile)
   }
 }

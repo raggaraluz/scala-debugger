@@ -20,7 +20,7 @@ class GrabInfoDSLWrapperSpec extends FunSpec with Matchers
         val threadReference = mock[ThreadReference]
         val returnValue = Success(mock[ThreadInfoProfile])
 
-        (mockGrabInfoProfile.tryGetThread(_: ThreadReference))
+        (mockGrabInfoProfile.tryThread(_: ThreadReference))
           .expects(threadReference)
           .returning(returnValue).once()
 
@@ -35,7 +35,7 @@ class GrabInfoDSLWrapperSpec extends FunSpec with Matchers
         val threadReference = mock[ThreadReference]
         val returnValue = mock[ThreadInfoProfile]
 
-        (mockGrabInfoProfile.getThread(_: ThreadReference))
+        (mockGrabInfoProfile.thread(_: ThreadReference))
           .expects(threadReference)
           .returning(returnValue).once()
 
@@ -50,7 +50,7 @@ class GrabInfoDSLWrapperSpec extends FunSpec with Matchers
         val threadId = 999L
         val returnValue = Success(mock[ThreadInfoProfile])
 
-        (mockGrabInfoProfile.tryGetThread(_: Long))
+        (mockGrabInfoProfile.tryThread(_: Long))
           .expects(threadId)
           .returning(returnValue).once()
 
@@ -65,7 +65,7 @@ class GrabInfoDSLWrapperSpec extends FunSpec with Matchers
         val threadId = 999L
         val returnValue = mock[ThreadInfoProfile]
 
-        (mockGrabInfoProfile.getThread(_: Long))
+        (mockGrabInfoProfile.thread(_: Long))
           .expects(threadId)
           .returning(returnValue).once()
 

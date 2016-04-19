@@ -18,9 +18,9 @@ class PureClassLoaderInfoProfileSpec extends FunSpec with Matchers
   private val pureClassLoaderInfoProfile = new PureClassLoaderInfoProfile(
     mockScalaVirtualMachine, mockClassLoaderReference
   )(
-    threadReference = mockThreadReference,
-    virtualMachine = mockVirtualMachine,
-    referenceType = mockReferenceType
+    _threadReference = mockThreadReference,
+    _virtualMachine = mockVirtualMachine,
+    _referenceType = mockReferenceType
   ) {
     override protected def newReferenceTypeProfile(
       referenceType: ReferenceType
@@ -38,7 +38,7 @@ class PureClassLoaderInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#getDefinedClasses") {
+    describe("#definedClasses") {
       it("should return a collection of profile wrappers for reference types of defined classes") {
         val expected = Seq(mock[ReferenceTypeInfoProfile])
         val referenceTypes = Seq(mock[ReferenceType])
@@ -51,13 +51,13 @@ class PureClassLoaderInfoProfileSpec extends FunSpec with Matchers
           mockNewReferenceTypeProfile.expects(r).returning(e).once()
         }
 
-        val actual = pureClassLoaderInfoProfile.getDefinedClasses
+        val actual = pureClassLoaderInfoProfile.definedClasses
 
         actual should be (expected)
       }
     }
 
-    describe("#getVisibleClasses") {
+    describe("#visibleClasses") {
       it("should return a collection of profile wrappers for reference types of visible classes") {
         val expected = Seq(mock[ReferenceTypeInfoProfile])
         val referenceTypes = Seq(mock[ReferenceType])
@@ -70,7 +70,7 @@ class PureClassLoaderInfoProfileSpec extends FunSpec with Matchers
           mockNewReferenceTypeProfile.expects(r).returning(e).once()
         }
 
-        val actual = pureClassLoaderInfoProfile.getVisibleClasses
+        val actual = pureClassLoaderInfoProfile.visibleClasses
 
         actual should be (expected)
       }

@@ -38,10 +38,9 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
    * @note Returns the specific type of this object, not any interface or
    *       superclass that it inherits. So, val x: AnyRef = "a string" would
    *       yield the reference type for String, not AnyRef.
-   *
    * @return The reference type information
    */
-  def getReferenceType: ReferenceTypeInfoProfile
+  def referenceType: ReferenceTypeInfoProfile
 
   /**
    * Invokes the object's method with matching name and arguments.
@@ -167,14 +166,14 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
    * @return Success containing the profiles wrapping the visible fields in
    *         this object, otherwise a failure
    */
-  def tryGetFields: Try[Seq[VariableInfoProfile]] = Try(getFields)
+  def tryFields: Try[Seq[VariableInfoProfile]] = Try(fields)
 
   /**
    * Returns all visible fields contained in this object.
    *
    * @return The profiles wrapping the visible fields in this object
    */
-  def getFields: Seq[VariableInfoProfile]
+  def fields: Seq[VariableInfoProfile]
 
   /**
    * Returns the object's field with the specified name.
@@ -183,7 +182,7 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
    * @return Success containing the profile wrapping the field, otherwise
    *         a failure
    */
-  def tryGetField(name: String): Try[VariableInfoProfile] = Try(getField(name))
+  def tryField(name: String): Try[VariableInfoProfile] = Try(field(name))
 
   /**
    * Returns the object's field with the specified name.
@@ -191,7 +190,7 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
    * @param name The name of the field
    * @return The profile wrapping the field
    */
-  def getField(name: String): VariableInfoProfile
+  def field(name: String): VariableInfoProfile
 
   /**
    * Returns all visible methods contained in this object.
@@ -199,14 +198,14 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
    * @return Success containing the profiles wrapping the visible methods in
    *         this object, otherwise a failure
    */
-  def tryGetMethods: Try[Seq[MethodInfoProfile]] = Try(getMethods)
+  def tryMethods: Try[Seq[MethodInfoProfile]] = Try(methods)
 
   /**
    * Returns all visible methods contained in this object.
    *
    * @return The profiles wrapping the visible methods in this object
    */
-  def getMethods: Seq[MethodInfoProfile]
+  def methods: Seq[MethodInfoProfile]
 
   /**
    * Returns the object's method with the specified name.
@@ -217,10 +216,10 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
    * @return Success containing the profile wrapping the method, otherwise
    *         a failure
    */
-  def tryGetMethod(
+  def tryMethod(
     name: String,
     parameterTypeNames: String*
-  ): Try[MethodInfoProfile] = Try(getMethod(name, parameterTypeNames: _*))
+  ): Try[MethodInfoProfile] = Try(method(name, parameterTypeNames: _*))
 
   /**
    * Returns the object's method with the specified name.
@@ -230,7 +229,7 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
    *                           of the method to find
    * @return The profile wrapping the method
    */
-  def getMethod(
+  def method(
     name: String,
     parameterTypeNames: String*
   ): MethodInfoProfile
@@ -242,7 +241,7 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
    * @return The human-readable description
    */
   override def toPrettyString: String = {
-    val typeName = this.getReferenceType.getName
+    val typeName = this.referenceType.name
     val uniqueHexCode = this.uniqueId.toHexString.toUpperCase()
     s"Instance of $typeName (0x$uniqueHexCode)"
   }

@@ -15,9 +15,9 @@ class LocationInfoProfileSpec extends FunSpec with Matchers
         val expected = "path/to/file.scala : 999"
 
         val locationInfoProfile = new TestLocationInfoProfile {
-          override def tryGetSourcePath: Try[String] =
+          override def trySourcePath: Try[String] =
             Success("path/to/file.scala")
-          override def getLineNumber: Int = 999
+          override def lineNumber: Int = 999
         }
 
         val actual = locationInfoProfile.toPrettyString
@@ -29,8 +29,8 @@ class LocationInfoProfileSpec extends FunSpec with Matchers
         val expected = "??? : 999"
 
         val locationInfoProfile = new TestLocationInfoProfile {
-          override def tryGetSourcePath: Try[String] = Failure(new Throwable)
-          override def getLineNumber: Int = 999
+          override def trySourcePath: Try[String] = Failure(new Throwable)
+          override def lineNumber: Int = 999
         }
 
         val actual = locationInfoProfile.toPrettyString
@@ -39,15 +39,15 @@ class LocationInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#getCodeIndexOption") {
+    describe("#codeIndexOption") {
       it("should return Some(code position) if position is 0 or greater") {
         val expected = Some(999)
 
         val locationInfoProfile = new TestLocationInfoProfile {
-          override def getCodeIndex: Long = expected.get
+          override def codeIndex: Long = expected.get
         }
 
-        val actual = locationInfoProfile.getCodeIndexOption
+        val actual = locationInfoProfile.codeIndexOption
 
         actual should be (expected)
       }
@@ -56,24 +56,24 @@ class LocationInfoProfileSpec extends FunSpec with Matchers
         val expected = None
 
         val locationInfoProfile = new TestLocationInfoProfile {
-          override def getCodeIndex: Long = -1
+          override def codeIndex: Long = -1
         }
 
-        val actual = locationInfoProfile.getCodeIndexOption
+        val actual = locationInfoProfile.codeIndexOption
 
         actual should be (expected)
       }
     }
 
-    describe("#getLineNumberOption") {
+    describe("#lineNumberOption") {
       it("should return Some(line number) if line is 0 or greater") {
         val expected = Some(999)
 
         val locationInfoProfile = new TestLocationInfoProfile {
-          override def getLineNumber: Int = expected.get
+          override def lineNumber: Int = expected.get
         }
 
-        val actual = locationInfoProfile.getLineNumberOption
+        val actual = locationInfoProfile.lineNumberOption
 
         actual should be (expected)
       }
@@ -82,10 +82,10 @@ class LocationInfoProfileSpec extends FunSpec with Matchers
         val expected = None
 
         val locationInfoProfile = new TestLocationInfoProfile {
-          override def getLineNumber: Int = -1
+          override def lineNumber: Int = -1
         }
 
-        val actual = locationInfoProfile.getLineNumberOption
+        val actual = locationInfoProfile.lineNumberOption
 
         actual should be (expected)
       }

@@ -15,7 +15,7 @@ class PureLocationInfoProfileSpec extends FunSpec with Matchers
   private val mockLocation = mock[Location]
   private val pureLocationInfoProfile = new PureLocationInfoProfile(
     scalaVirtualMachine = mockScalaVirtualMachine,
-    location = mockLocation
+    _location = mockLocation
   ) {
     override protected def newReferenceTypeProfile(
       referenceType: ReferenceType
@@ -37,7 +37,7 @@ class PureLocationInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#getDeclaringType") {
+    describe("#declaringType") {
       it("should return a wrapper profile for the declaring type of the location") {
         val expected = mock[ReferenceTypeInfoProfile]
         val referenceType = mock[ReferenceType]
@@ -48,13 +48,13 @@ class PureLocationInfoProfileSpec extends FunSpec with Matchers
         mockNewReferenceTypeProfile.expects(referenceType)
           .returning(expected).once()
 
-        val actual = pureLocationInfoProfile.getDeclaringType
+        val actual = pureLocationInfoProfile.declaringType
 
         actual should be (expected)
       }
     }
 
-    describe("#getMethod") {
+    describe("#method") {
       it("should return a wrapper profile for the method of the location") {
         val expected = mock[MethodInfoProfile]
         val referenceType = mock[Method]
@@ -65,58 +65,58 @@ class PureLocationInfoProfileSpec extends FunSpec with Matchers
         mockNewMethodProfile.expects(referenceType)
           .returning(expected).once()
 
-        val actual = pureLocationInfoProfile.getMethod
+        val actual = pureLocationInfoProfile.method
 
         actual should be (expected)
       }
     }
 
-    describe("#getCodeIndex") {
+    describe("#codeIndex") {
       it("should return the code index of the underlying location") {
         val expected = 999
 
         (mockLocation.codeIndex _).expects().returning(expected).once()
 
-        val actual = pureLocationInfoProfile.getCodeIndex
+        val actual = pureLocationInfoProfile.codeIndex
 
         actual should be (expected)
       }
     }
 
-    describe("#getLineNumber") {
+    describe("#lineNumber") {
       it("should return the line number of the underlying location") {
         val expected = 999
 
         (mockLocation.lineNumber: Function0[Int]).expects()
           .returning(expected).once()
 
-        val actual = pureLocationInfoProfile.getLineNumber
+        val actual = pureLocationInfoProfile.lineNumber
 
         actual should be (expected)
       }
     }
 
-    describe("#getSourceName") {
+    describe("#sourceName") {
       it("should return the source name of the underlying location") {
         val expected = "file.scala"
 
         (mockLocation.sourceName: Function0[String]).expects()
           .returning(expected).once()
 
-        val actual = pureLocationInfoProfile.getSourceName
+        val actual = pureLocationInfoProfile.sourceName
 
         actual should be (expected)
       }
     }
 
-    describe("#getSourcePath") {
+    describe("#sourcePath") {
       it("should return the source path of the underlying location") {
         val expected = "path/to/file.scala"
 
         (mockLocation.sourcePath: Function0[String]).expects()
           .returning(expected).once()
 
-        val actual = pureLocationInfoProfile.getSourcePath
+        val actual = pureLocationInfoProfile.sourcePath
 
         actual should be (expected)
       }

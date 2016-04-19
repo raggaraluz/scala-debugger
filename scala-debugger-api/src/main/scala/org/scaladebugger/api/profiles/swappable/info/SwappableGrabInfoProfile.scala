@@ -11,14 +11,14 @@ import org.scaladebugger.api.profiles.traits.info.{ReferenceTypeInfoProfile, Thr
  */
 trait SwappableGrabInfoProfile extends GrabInfoProfile {
   this: SwappableDebugProfileManagement =>
-  override def getThread(
+  override def thread(
     threadReference: ThreadReference
-  ): ThreadInfoProfile = withCurrentProfile.getThread(threadReference)
+  ): ThreadInfoProfile = withCurrentProfile.thread(threadReference)
 
-  override def getThread(
+  override def thread(
     threadId: Long
-  ): ThreadInfoProfile = withCurrentProfile.getThread(threadId)
+  ): ThreadInfoProfile = withCurrentProfile.thread(threadId)
 
-  override def getClasses: Seq[ReferenceTypeInfoProfile] =
-    withCurrentProfile.getClasses
+  override def classes: Seq[ReferenceTypeInfoProfile] =
+    withCurrentProfile.classes
 }

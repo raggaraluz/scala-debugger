@@ -277,7 +277,6 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
    * @param startingLine The line in the file to start on
    * @param expectedLine The line in the file to reach
    * @tparam T The return type of the step method
-   *
    * @return The function to execute to start the actual verification check
    */
   private def verifyStepsFromTo[T](
@@ -299,7 +298,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
       s.withProfile(PureDebugProfile.Name)
         .getOrCreateBreakpointRequest(testFile, startingLine)
         .map(_.thread())
-        .map(s.getThread)
+        .map(s.thread)
         .foreach(thread => {
           s.withProfile(PureDebugProfile.Name).createStepListener(thread).foreach(stepEvent => {
             val className = stepEvent.location().declaringType().name()
@@ -333,7 +332,6 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
    *                       reached do not exactly match the lines provided
    * @param maxDuration The maximum duration (digit, unit) to wait
    * @tparam T The return type of the step method
-   *
    * @return The function to execute to start the actual verification check
    */
   private def verifyStepsOnEach[T](
@@ -368,7 +366,7 @@ class PureStepProfileIntegrationSpec extends FunSpec with Matchers
           // On receiving a step request, verify that we are in the right
           // location
           s.withProfile(PureDebugProfile.Name)
-            .createStepListener(s.getThread(thread))
+            .createStepListener(s.thread(thread))
             .foreach(stepEvent => {
               val className = stepEvent.location().declaringType().name()
               val lineNumber = stepEvent.location().lineNumber()

@@ -14,19 +14,19 @@ import scala.util.Try
  * @param scalaVirtualMachine The high-level virtual machine containing the
  *                            local variable
  * @param frame The frame associated with the local variable instance
- * @param localVariable The reference to the underlying JDI local variable
+ * @param _localVariable The reference to the underlying JDI local variable
  * @param offsetIndex The offset of the variable relative to the frame's
  *                    contained local variables
- * @param virtualMachine The virtual machine used to mirror local values on
+ * @param _virtualMachine The virtual machine used to mirror local values on
  *                       the remote JVM
  */
 class PureLocalVariableInfoProfile(
   val scalaVirtualMachine: ScalaVirtualMachine,
   val frame: FrameInfoProfile,
-  private val localVariable: LocalVariable,
+  private val _localVariable: LocalVariable,
   val offsetIndex: Int
 )(
-  private val virtualMachine: VirtualMachine = localVariable.virtualMachine()
+  private val _virtualMachine: VirtualMachine = _localVariable.virtualMachine()
 ) extends IndexedVariableInfoProfile {
   private lazy val stackFrame = frame.toJdiInstance
 
@@ -35,14 +35,14 @@ class PureLocalVariableInfoProfile(
    *
    * @return The JDI instance
    */
-  override def toJdiInstance: LocalVariable = localVariable
+  override def toJdiInstance: LocalVariable = _localVariable
 
   /**
    * Returns the name of the variable.
    *
    * @return The name of the variable
    */
-  override def name: String = localVariable.name()
+  override def name: String = _localVariable.name()
 
   /**
    * Returns the index of the stack frame where this variable is located.
@@ -63,7 +63,7 @@ class PureLocalVariableInfoProfile(
    *
    * @return True if an argument, otherwise false
    */
-  override def isArgument: Boolean = localVariable.isArgument
+  override def isArgument: Boolean = _localVariable.isArgument
 
   /**
    * Returns whether or not this variable represents a local variable.
@@ -80,8 +80,8 @@ class PureLocalVariableInfoProfile(
    */
   override def setValue(value: AnyVal): AnyVal = {
     import org.scaladebugger.api.lowlevel.wrappers.Implicits._
-    val mirrorValue = virtualMachine.mirrorOf(value)
-    stackFrame.setValue(localVariable, mirrorValue)
+    val mirrorValue = _virtualMachine.mirrorOf(value)
+    stackFrame.setValue(_localVariable, mirrorValue)
     value
   }
 
@@ -92,8 +92,8 @@ class PureLocalVariableInfoProfile(
    * @return The new value
    */
   override def setValue(value: String): String = {
-    val mirrorValue = virtualMachine.mirrorOf(value)
-    stackFrame.setValue(localVariable, mirrorValue)
+    val mirrorValue = _virtualMachine.mirrorOf(value)
+    stackFrame.setValue(_localVariable, mirrorValue)
     value
   }
 
@@ -103,7 +103,7 @@ class PureLocalVariableInfoProfile(
    * @return The profile representing the value
    */
   override def toValue: ValueInfoProfile = newValueProfile(
-    stackFrame.getValue(localVariable)
+    stackFrame.getValue(_localVariable)
   )
 
   protected def newValueProfile(value: Value): ValueInfoProfile =

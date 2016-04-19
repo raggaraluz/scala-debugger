@@ -13,19 +13,19 @@ import scala.util.Try
 class GrabInfoDSLWrapper private[dsl] (
   private val grabInfoProfile: GrabInfoProfile
 ) {
-  /** @see GrabInfoProfile#tryGetThread(ThreadReference) */
+  /** @see GrabInfoProfile#tryThread(ThreadReference) */
   def forThread(threadReference: ThreadReference): Try[ThreadInfoProfile] =
-    grabInfoProfile.tryGetThread(threadReference)
+    grabInfoProfile.tryThread(threadReference)
 
-  /** @see GrabInfoProfile#getThread(ThreadReference) */
+  /** @see GrabInfoProfile#thread(ThreadReference) */
   def forUnsafeThread(threadReference: ThreadReference): ThreadInfoProfile =
-    grabInfoProfile.getThread(threadReference)
+    grabInfoProfile.thread(threadReference)
 
-  /** @see GrabInfoProfile#tryGetThread(Long) */
+  /** @see GrabInfoProfile#tryThread(Long) */
   def forThread(threadId: Long): Try[ThreadInfoProfile] =
-    grabInfoProfile.tryGetThread(threadId)
+    grabInfoProfile.tryThread(threadId)
 
-  /** @see GrabInfoProfile#getThread(Long) */
+  /** @see GrabInfoProfile#thread(Long) */
   def forUnsafeThread(threadId: Long): ThreadInfoProfile =
-    grabInfoProfile.getThread(threadId)
+    grabInfoProfile.thread(threadId)
 }

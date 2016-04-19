@@ -15,22 +15,22 @@ import scala.collection.JavaConverters._
  *
  * @param scalaVirtualMachine The high-level virtual machine containing the
  *                            object
- * @param objectReference The reference to the underlying JDI object
- * @param virtualMachine The virtual machine associated with the object
- * @param threadReference The thread associated with the object (for method
+ * @param _objectReference The reference to the underlying JDI object
+ * @param _virtualMachine The virtual machine associated with the object
+ * @param _threadReference The thread associated with the object (for method
  *                        invocation)
- * @param referenceType The reference type for this object
+ * @param _referenceType The reference type for this object
  */
 class PureObjectInfoProfile(
   override val scalaVirtualMachine: ScalaVirtualMachine,
-  private val objectReference: ObjectReference
+  private val _objectReference: ObjectReference
 )(
-  private val virtualMachine: VirtualMachine = objectReference.virtualMachine(),
-  private val threadReference: ThreadReference = objectReference.owningThread(),
-  private val referenceType: ReferenceType = objectReference.referenceType()
+  private val _virtualMachine: VirtualMachine = _objectReference.virtualMachine(),
+  private val _threadReference: ThreadReference = _objectReference.owningThread(),
+  private val _referenceType: ReferenceType = _objectReference.referenceType()
 ) extends PureValueInfoProfile(
   scalaVirtualMachine,
-  objectReference
+  _objectReference
 ) with ObjectInfoProfile {
   private lazy val typeChecker = newTypeCheckerProfile()
 
@@ -39,14 +39,14 @@ class PureObjectInfoProfile(
    *
    * @return The JDI instance
    */
-  override def toJdiInstance: ObjectReference = objectReference
+  override def toJdiInstance: ObjectReference = _objectReference
 
   /**
    * Represents the unique id of this object.
    *
    * @return The unique id as a long
    */
-  override def uniqueId: Long = objectReference.uniqueID()
+  override def uniqueId: Long = _objectReference.uniqueID()
 
   /**
    * Returns the reference type information for this object.
@@ -56,8 +56,8 @@ class PureObjectInfoProfile(
    *       yield the reference type for String, not AnyRef.
    * @return The reference type information
    */
-  override def getReferenceType: ReferenceTypeInfoProfile =
-    newReferenceTypeProfile(objectReference.referenceType())
+  override def referenceType: ReferenceTypeInfoProfile =
+    newReferenceTypeProfile(_objectReference.referenceType())
 
   /**
    * Invokes the object's method.
@@ -76,14 +76,14 @@ class PureObjectInfoProfile(
     val m = methodInfoProfile.toJdiInstance
 
     import org.scaladebugger.api.lowlevel.wrappers.Implicits._
-    val v = arguments.map(virtualMachine.mirrorOf(_: Any))
+    val v = arguments.map(_virtualMachine.mirrorOf(_: Any))
 
     val o = jdiArguments.map {
       case InvokeSingleThreadedArgument => ObjectReference.INVOKE_SINGLE_THREADED
       case InvokeNonVirtualArgument     => ObjectReference.INVOKE_NONVIRTUAL
     }.fold(0)(_ | _)
 
-    val r = objectReference.invokeMethod(threadReference, m, v.asJava, o)
+    val r = _objectReference.invokeMethod(_threadReference, m, v.asJava, o)
     newValueProfile(r)
   }
 
@@ -108,7 +108,7 @@ class PureObjectInfoProfile(
       "Inconsistent number of parameter types versus arguments!")
 
     invoke(
-      getMethod(methodName, parameterTypeNames: _*),
+      method(methodName, parameterTypeNames: _*),
       arguments,
       jdiArguments: _*
     )
@@ -119,8 +119,8 @@ class PureObjectInfoProfile(
    *
    * @return The profiles wrapping the visible methods in this object
    */
-  override def getMethods: Seq[MethodInfoProfile] = {
-    referenceType.visibleMethods().asScala.map(newMethodProfile)
+  override def methods: Seq[MethodInfoProfile] = {
+    _referenceType.visibleMethods().asScala.map(newMethodProfile)
   }
 
   /**
@@ -131,11 +131,11 @@ class PureObjectInfoProfile(
    *                           of the method to find
    * @return The profile wrapping the method
    */
-  override def getMethod(
+  override def method(
     name: String,
     parameterTypeNames: String*
   ): MethodInfoProfile = {
-    referenceType.methodsByName(name).asScala.find(
+    _referenceType.methodsByName(name).asScala.find(
       _.argumentTypeNames().asScala.zip(parameterTypeNames)
         .forall(s => typeChecker.equalTypeNames(s._1, s._2))
     ).map(newMethodProfile).get
@@ -146,8 +146,8 @@ class PureObjectInfoProfile(
    *
    * @return The profiles wrapping the visible fields in this object
    */
-  override def getFields: Seq[VariableInfoProfile] = {
-    referenceType.visibleFields().asScala.map(newFieldProfile)
+  override def fields: Seq[VariableInfoProfile] = {
+    _referenceType.visibleFields().asScala.map(newFieldProfile)
   }
 
   /**
@@ -156,8 +156,8 @@ class PureObjectInfoProfile(
    * @param name The name of the field
    * @return The profile wrapping the field
    */
-  override def getField(name: String): VariableInfoProfile = {
-    newFieldProfile(Option(referenceType.fieldByName(name)).get)
+  override def field(name: String): VariableInfoProfile = {
+    newFieldProfile(Option(_referenceType.fieldByName(name)).get)
   }
 
   protected def newReferenceTypeProfile(
@@ -168,7 +168,7 @@ class PureObjectInfoProfile(
   )
 
   protected def newFieldProfile(field: Field): VariableInfoProfile =
-    new PureFieldInfoProfile(scalaVirtualMachine, objectReference, field)()
+    new PureFieldInfoProfile(scalaVirtualMachine, _objectReference, field)()
 
   protected def newMethodProfile(method: Method): MethodInfoProfile =
     new PureMethodInfoProfile(scalaVirtualMachine, method)

@@ -10,32 +10,32 @@ import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
  *
  * @param scalaVirtualMachine The high-level virtual machine containing the
  *                            location
- * @param location The reference to the underlying JDI location
+ * @param _location The reference to the underlying JDI location
  */
 class PureLocationInfoProfile(
   val scalaVirtualMachine: ScalaVirtualMachine,
-  private val location: Location
+  private val _location: Location
 ) extends LocationInfoProfile {
   /**
    * Returns the JDI representation this profile instance wraps.
    *
    * @return The JDI instance
    */
-  override def toJdiInstance: Location = location
+  override def toJdiInstance: Location = _location
 
   /**
    * Retrieves the code position within the location's method.
    *
    * @return The code position, or -1 if not available
    */
-  override def getCodeIndex: Long = location.codeIndex()
+  override def codeIndex: Long = _location.codeIndex()
 
   /**
    * Retrieves the line number associated with the location.
    *
    * @return The line number, or -1 if not available
    */
-  override def getLineNumber: Int = location.lineNumber()
+  override def lineNumber: Int = _location.lineNumber()
 
   /**
    * Retrieves the identifying name for the source corresponding to this
@@ -43,14 +43,14 @@ class PureLocationInfoProfile(
    *
    * @return The identifying name
    */
-  override def getSourceName: String = location.sourceName()
+  override def sourceName: String = _location.sourceName()
 
   /**
    * Retrieves the path to the source corresponding to this location.
    *
    * @return The source path
    */
-  override def getSourcePath: String = location.sourcePath()
+  override def sourcePath: String = _location.sourcePath()
 
   /**
    * Retrieves the reference type information for the type containing this
@@ -58,16 +58,16 @@ class PureLocationInfoProfile(
    *
    * @return The reference type information
    */
-  override def getDeclaringType: ReferenceTypeInfoProfile =
-    newReferenceTypeProfile(location.declaringType())
+  override def declaringType: ReferenceTypeInfoProfile =
+    newReferenceTypeProfile(_location.declaringType())
 
   /**
    * Retrieves the method information for the method containing this location.
    *
    * @return The method information
    */
-  override def getMethod: MethodInfoProfile =
-    newMethodProfile(location.method())
+  override def method: MethodInfoProfile =
+    newMethodProfile(_location.method())
 
   protected def newReferenceTypeProfile(
     referenceType: ReferenceType

@@ -28,12 +28,12 @@ class ObjectInfoProfileSpec extends FunSpec with Matchers
         val expected = "Instance of some.class.name (0xABCDE)"
 
         val mockReferenceTypeInfoProfile = mock[ReferenceTypeInfoProfile]
-        (mockReferenceTypeInfoProfile.getName _).expects()
+        (mockReferenceTypeInfoProfile.name _).expects()
           .returning("some.class.name").once()
 
         val objectInfoProfile = new TestObjectInfoProfile {
           override def uniqueId: Long = Integer.parseInt("ABCDE", 16)
-          override def getReferenceType: ReferenceTypeInfoProfile =
+          override def referenceType: ReferenceTypeInfoProfile =
             mockReferenceTypeInfoProfile
         }
 
@@ -183,56 +183,56 @@ class ObjectInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#tryGetFields") {
+    describe("#tryFields") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Seq[VariableInfoProfile]]
 
         val objectInfoProfile = new TestObjectInfoProfile {
-          override def getFields: Seq[VariableInfoProfile] = mockUnsafeMethod()
+          override def fields: Seq[VariableInfoProfile] = mockUnsafeMethod()
         }
 
         val r = Seq(mock[VariableInfoProfile])
         mockUnsafeMethod.expects().returning(r).once()
-        objectInfoProfile.tryGetFields.get should be (r)
+        objectInfoProfile.tryFields.get should be (r)
       }
     }
 
-    describe("#tryGetField") {
+    describe("#tryField") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[String, VariableInfoProfile]
 
         val objectInfoProfile = new TestObjectInfoProfile {
-          override def getField(name: String): VariableInfoProfile =
+          override def field(name: String): VariableInfoProfile =
             mockUnsafeMethod(name)
         }
 
         val a1 = "someName"
         val r = mock[VariableInfoProfile]
         mockUnsafeMethod.expects(a1).returning(r).once()
-        objectInfoProfile.tryGetField(a1).get should be (r)
+        objectInfoProfile.tryField(a1).get should be (r)
       }
     }
 
-    describe("#tryGetMethods") {
+    describe("#tryMethods") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Seq[MethodInfoProfile]]
 
         val objectInfoProfile = new TestObjectInfoProfile {
-          override def getMethods: Seq[MethodInfoProfile] = mockUnsafeMethod()
+          override def methods: Seq[MethodInfoProfile] = mockUnsafeMethod()
         }
 
         val r = Seq(mock[MethodInfoProfile])
         mockUnsafeMethod.expects().returning(r).once()
-        objectInfoProfile.tryGetMethods.get should be (r)
+        objectInfoProfile.tryMethods.get should be (r)
       }
     }
 
-    describe("#tryGetMethod") {
+    describe("#tryMethod") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[String, Seq[String], MethodInfoProfile]
 
         val objectInfoProfile = new TestObjectInfoProfile {
-          override def getMethod(
+          override def method(
             name: String,
             parameterTypeNames: String*
           ): MethodInfoProfile = mockUnsafeMethod(name, parameterTypeNames)
@@ -242,7 +242,7 @@ class ObjectInfoProfileSpec extends FunSpec with Matchers
         val a2 = Seq("param.type")
         val r = mock[MethodInfoProfile]
         mockUnsafeMethod.expects(a1, a2).returning(r).once()
-        objectInfoProfile.tryGetMethod(a1, a2: _*).get should be (r)
+        objectInfoProfile.tryMethod(a1, a2: _*).get should be (r)
       }
     }
   }

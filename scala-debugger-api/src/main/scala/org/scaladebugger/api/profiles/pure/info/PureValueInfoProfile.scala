@@ -17,18 +17,18 @@ object PureValueInfoProfile {
  *
  * @param scalaVirtualMachine The high-level virtual machine containing the
  *                            value
- * @param value The reference to the underlying JDI value
+ * @param _value The reference to the underlying JDI value
  */
 class PureValueInfoProfile(
   val scalaVirtualMachine: ScalaVirtualMachine,
-  private val value: Value
+  private val _value: Value
 ) extends ValueInfoProfile {
   /**
    * Returns the JDI representation this profile instance wraps.
    *
    * @return The JDI instance
    */
-  override def toJdiInstance: Value = value
+  override def toJdiInstance: Value = _value
 
   /**
    * Returns the type name of this value.
@@ -36,7 +36,7 @@ class PureValueInfoProfile(
    * @return The type name (typically a fully-qualified class name)
    */
   override def typeName: String =
-    if (!isNull) value.`type`().name()
+    if (!isNull) _value.`type`().name()
     else PureValueInfoProfile.DefaultNullTypeName
 
   /**
@@ -47,7 +47,7 @@ class PureValueInfoProfile(
   @throws[AssertionError]
   override def toArray: ArrayInfoProfile = {
     assert(isArray, "Value must be an array!")
-    newArrayProfile(value.asInstanceOf[ArrayReference])
+    newArrayProfile(_value.asInstanceOf[ArrayReference])
   }
 
   /**
@@ -57,7 +57,7 @@ class PureValueInfoProfile(
    */
   override def toLocalValue: Any = {
     import org.scaladebugger.api.lowlevel.wrappers.Implicits._
-    if (!isNull) value.value()
+    if (!isNull) _value.value()
     else null
   }
 
@@ -69,7 +69,7 @@ class PureValueInfoProfile(
   @throws[AssertionError]
   override def toObject: ObjectInfoProfile = {
     assert(isObject, "Value must be an object!")
-    newObjectProfile(value.asInstanceOf[ObjectReference])
+    newObjectProfile(_value.asInstanceOf[ObjectReference])
   }
 
   /**
@@ -79,7 +79,7 @@ class PureValueInfoProfile(
    */
   override def toPrimitive: PrimitiveInfoProfile = {
     assert(isPrimitive, "Value must be a primitive!")
-    newPrimitiveProfile(value.asInstanceOf[PrimitiveValue])
+    newPrimitiveProfile(_value.asInstanceOf[PrimitiveValue])
   }
 
   /**
@@ -88,7 +88,7 @@ class PureValueInfoProfile(
    * @return True if a primitive, otherwise false
    */
   override def isPrimitive: Boolean =
-    !isNull && value.isInstanceOf[PrimitiveValue]
+    !isNull && _value.isInstanceOf[PrimitiveValue]
 
   /**
    * Returns whether or not this value represents an array.
@@ -96,7 +96,7 @@ class PureValueInfoProfile(
    * @return True if an array, otherwise false
    */
   override def isArray: Boolean =
-    !isNull && value.isInstanceOf[ArrayReference]
+    !isNull && _value.isInstanceOf[ArrayReference]
 
   /**
    * Returns whether or not this value represents an object.
@@ -104,7 +104,7 @@ class PureValueInfoProfile(
    * @return True if an object, otherwise false
    */
   override def isObject: Boolean =
-    !isNull && value.isInstanceOf[ObjectReference]
+    !isNull && _value.isInstanceOf[ObjectReference]
 
   /**
    * Returns whether or not this value represents a string.
@@ -112,21 +112,21 @@ class PureValueInfoProfile(
    * @return True if a string, otherwise false
    */
   override def isString: Boolean =
-    !isNull && value.isInstanceOf[StringReference]
+    !isNull && _value.isInstanceOf[StringReference]
 
   /**
    * Returns whether or not this value is void.
    *
    * @return True if void, otherwise false
    */
-  override def isVoid: Boolean = !isNull && value.isInstanceOf[VoidValue]
+  override def isVoid: Boolean = !isNull && _value.isInstanceOf[VoidValue]
 
   /**
    * Returns whether or not this value is null.
    *
    * @return True if null, otherwise false
    */
-  override def isNull: Boolean = value == null
+  override def isNull: Boolean = _value == null
 
   protected def newPrimitiveProfile(primitiveValue: PrimitiveValue): PrimitiveInfoProfile =
     new PurePrimitiveInfoProfile(scalaVirtualMachine, primitiveValue)

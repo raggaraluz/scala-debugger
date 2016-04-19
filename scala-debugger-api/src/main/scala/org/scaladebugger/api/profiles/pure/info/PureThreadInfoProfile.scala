@@ -13,44 +13,44 @@ import scala.util.Try
  *
  * @param scalaVirtualMachine The high-level virtual machine containing the
  *                            thread
- * @param threadReference The reference to the underlying JDI thread
- * @param virtualMachine The virtual machine used to mirror local values on
+ * @param _threadReference The reference to the underlying JDI thread
+ * @param _virtualMachine The virtual machine used to mirror local values on
  *                       the remote JVM
- * @param referenceType The reference type for this thread
+ * @param _referenceType The reference type for this thread
  */
 class PureThreadInfoProfile(
   override val scalaVirtualMachine: ScalaVirtualMachine,
-  private val threadReference: ThreadReference
+  private val _threadReference: ThreadReference
 )(
-  private val virtualMachine: VirtualMachine = threadReference.virtualMachine(),
-  private val referenceType: ReferenceType = threadReference.referenceType()
-) extends PureObjectInfoProfile(scalaVirtualMachine, threadReference)(
-  virtualMachine = virtualMachine,
-  threadReference = threadReference,
-  referenceType = referenceType
+  private val _virtualMachine: VirtualMachine = _threadReference.virtualMachine(),
+  private val _referenceType: ReferenceType = _threadReference.referenceType()
+) extends PureObjectInfoProfile(scalaVirtualMachine, _threadReference)(
+  _virtualMachine = _virtualMachine,
+  _threadReference = _threadReference,
+  _referenceType = _referenceType
 ) with ThreadInfoProfile {
   /**
    * Returns the JDI representation this profile instance wraps.
    *
    * @return The JDI instance
    */
-  override def toJdiInstance: ThreadReference = threadReference
+  override def toJdiInstance: ThreadReference = _threadReference
 
   /**
    * Represents the name of the thread.
    *
    * @return The thread name as a string
    */
-  override def name: String = threadReference.name()
+  override def name: String = _threadReference.name()
 
   /**
    * Retrieves profiles for all frames in the stack.
    *
    * @return The collection of frame profiles
    */
-  override def getFrames: Seq[FrameInfoProfile] = {
+  override def frames: Seq[FrameInfoProfile] = {
     import scala.collection.JavaConverters._
-    threadReference.frames().asScala.zipWithIndex.map { case (f, i) =>
+    _threadReference.frames().asScala.zipWithIndex.map { case (f, i) =>
       newFrameProfile(f, i)
     }
   }
@@ -71,7 +71,7 @@ class PureThreadInfoProfile(
   ): Seq[FrameInfoProfile] = {
     import scala.collection.JavaConverters._
 
-    threadReference.frames(index, length).asScala
+    _threadReference.frames(index, length).asScala
       .zipWithIndex.map { case (f, i) => newFrameProfile(f, i + index) }
   }
 
@@ -82,8 +82,8 @@ class PureThreadInfoProfile(
    *              profile to retrieve
    * @return The new frame profile instance
    */
-  override def getFrame(index: Int): FrameInfoProfile = {
-    newFrameProfile(threadReference.frame(index), index)
+  override def frame(index: Int): FrameInfoProfile = {
+    newFrameProfile(_threadReference.frame(index), index)
   }
 
   /**
@@ -91,7 +91,7 @@ class PureThreadInfoProfile(
    *
    * @return The total number of frames
    */
-  override def getTotalFrames: Int = threadReference.frameCount()
+  override def totalFrames: Int = _threadReference.frameCount()
 
   protected def newFrameProfile(
     stackFrame: StackFrame,

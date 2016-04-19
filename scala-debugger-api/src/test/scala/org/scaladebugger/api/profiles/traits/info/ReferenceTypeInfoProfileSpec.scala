@@ -15,7 +15,7 @@ class ReferenceTypeInfoProfileSpec extends FunSpec with Matchers
         val expected = "some.class.name"
 
         val referenceTypeInfoProfile = new TestReferenceTypeInfoProfile {
-          override def getName: String = "some.class.name"
+          override def name: String = "some.class.name"
         }
 
         val actual = referenceTypeInfoProfile.toPrettyString

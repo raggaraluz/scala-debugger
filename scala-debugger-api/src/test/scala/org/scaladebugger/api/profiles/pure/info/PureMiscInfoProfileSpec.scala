@@ -83,7 +83,7 @@ class PureMiscInfoProfileSpec extends FunSpec with Matchers
 
         // Accessing the source names can fail
         referenceTypeProfiles.foreach(p =>
-          (p.tryGetSourceNames _).expects()
+          (p.trySourceNames _).expects()
             .returning(Failure(new AbsentInformationException)).once()
         )
 
@@ -110,13 +110,13 @@ class PureMiscInfoProfileSpec extends FunSpec with Matchers
 
         // Filtering by source name (return matching name)
         referenceTypeProfiles.foreach(p =>
-          (p.tryGetSourceNames _).expects()
+          (p.trySourceNames _).expects()
             .returning(Success(Seq(sourceName))).once()
         )
 
         // Accessing the source paths can fail
         referenceTypeProfiles.foreach(p =>
-          (p.tryGetSourcePaths _).expects()
+          (p.trySourcePaths _).expects()
             .returning(Failure(new AbsentInformationException)).once()
         )
 
@@ -143,14 +143,14 @@ class PureMiscInfoProfileSpec extends FunSpec with Matchers
 
         // Filtering by source name (return matching name)
         referenceTypeProfiles.foreach(p =>
-          (p.tryGetSourceNames _).expects()
+          (p.trySourceNames _).expects()
             .returning(Success(Seq(sourceName))).once()
         )
 
         // Source paths returned by each reference type profile are included
         // in final results
         referenceTypeProfiles.foreach(p =>
-          (p.tryGetSourcePaths _).expects()
+          (p.trySourcePaths _).expects()
             .returning(Success(expected)).once()
         )
 

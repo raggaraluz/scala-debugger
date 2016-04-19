@@ -35,14 +35,14 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    *
    * @return Success of collection of frame profiles, otherwise a failure
    */
-  def tryGetFrames: Try[Seq[FrameInfoProfile]] = Try(getFrames)
+  def tryFrames: Try[Seq[FrameInfoProfile]] = Try(frames)
 
   /**
    * Retrieves profiles for all frames in the stack.
    *
    * @return The collection of frame profiles
    */
-  def getFrames: Seq[FrameInfoProfile]
+  def frames: Seq[FrameInfoProfile]
 
   /**
    * Retrieves profiles for all frames in the stack starting from the specified
@@ -55,8 +55,8 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    *               should be retrieved
    * @return Success of collection of frame profiles, otherwise a failure
    */
-  def tryGetFrames(index: Int, length: Int): Try[Seq[FrameInfoProfile]] =
-    Try(getFrames(index, length))
+  def tryFrames(index: Int, length: Int): Try[Seq[FrameInfoProfile]] =
+    Try(frames(index, length))
 
   /**
    * Retrieves profiles for all frames in the stack starting from the specified
@@ -69,10 +69,10 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    *               should be retrieved
    * @return The collection of frame profiles
    */
-  def getFrames(index: Int, length: Int): Seq[FrameInfoProfile] = {
+  def frames(index: Int, length: Int): Seq[FrameInfoProfile] = {
     // Cap the length to prevent throwing an exception on index out of bounds
     // with regard to desired total frames
-    val maxFrames = getTotalFrames
+    val maxFrames = totalFrames
     val actualLength =
       if (index + length > maxFrames) maxFrames - index
       else if (length < 0) maxFrames - index
@@ -98,14 +98,14 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    *
    * @return Success containing the total number of frames, otherwise a failure
    */
-  def tryGetTotalFrames: Try[Int] = Try(getTotalFrames)
+  def tryTotalFrames: Try[Int] = Try(totalFrames)
 
   /**
    * Returns the total frames held in the current frame stack.
    *
    * @return The total number of frames
    */
-  def getTotalFrames: Int
+  def totalFrames: Int
 
   /**
    * Retrieves the profile for the specified frame in the stack.
@@ -115,7 +115,7 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    * @return Success containing the new frame profile instance, otherwise
    *         a failure
    */
-  def tryGetFrame(index: Int): Try[FrameInfoProfile] = Try(getFrame(index))
+  def tryFrame(index: Int): Try[FrameInfoProfile] = Try(frame(index))
 
   /**
    * Retrieves the profile for the specified frame in the stack.
@@ -124,7 +124,7 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    *              profile to retrieve
    * @return The new frame profile instance
    */
-  def getFrame(index: Int): FrameInfoProfile
+  def frame(index: Int): FrameInfoProfile
 
   /**
    * Retrieves the profile for the top (current) frame in the stack.
@@ -132,14 +132,14 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    * @return Success containing the new frame profile instance, otherwise
    *         a failure
    */
-  def tryGetTopFrame: Try[FrameInfoProfile] = tryGetFrame(0)
+  def tryTopFrame: Try[FrameInfoProfile] = tryFrame(0)
 
   /**
    * Retrieves the profile for the top (current) frame in the stack.
    *
    * @return The new frame profile instance
    */
-  def getTopFrame: FrameInfoProfile = getFrame(0)
+  def topFrame: FrameInfoProfile = frame(0)
 
   /**
    * Retrieves an active variable within the thread's stack frames with the
@@ -150,9 +150,9 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    */
   def findVariableByName(name: String): Option[VariableInfoProfile] = {
     // NOTE: Using for loop to reduce data retrieval (finding earlier is better)
-    for (frameIndex <- 0 until this.getTotalFrames) {
-      val frame = this.getFrame(frameIndex)
-      val variable = frame.tryGetVariable(name).toOption
+    for (frameIndex <- 0 until this.totalFrames) {
+      val frame = this.frame(frameIndex)
+      val variable = frame.tryVariable(name).toOption
       if (variable.nonEmpty) return variable
     }
 
@@ -182,8 +182,8 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
     frameIndex: Int,
     offsetIndex: Int
   ): Option[VariableInfoProfile] = {
-    this.getFrame(frameIndex)
-      .getLocalVariables
+    this.frame(frameIndex)
+      .localVariables
       .find(_.offsetIndex == offsetIndex)
   }
 
