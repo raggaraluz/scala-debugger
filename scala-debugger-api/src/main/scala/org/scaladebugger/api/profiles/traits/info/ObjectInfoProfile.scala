@@ -25,6 +25,14 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
   def uniqueId: Long
 
   /**
+   * Represents the unique id of this object in hex form. There is no 0x
+   * prepended to the value.
+   *
+   * @return The raw hex string
+   */
+  def uniqueIdHexString: String = uniqueId.toHexString.toUpperCase()
+
+  /**
    * Returns the reference type information for this object.
    *
    * @note Returns the specific type of this object, not any interface or

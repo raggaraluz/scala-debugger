@@ -20,6 +20,7 @@ object InfoTestClasses {
   class TestThreadInfoProfile extends TestObjectInfoProfile with ThreadInfoProfile {
     override def scalaVirtualMachine: ScalaVirtualMachine = throwException()
     override def getFrames: Seq[FrameInfoProfile] = throwException()
+    override def rawFrames(index: Int, length: Int): Seq[FrameInfoProfile] = throwException()
     override def name: String = throwException()
     override def getFrame(index: Int): FrameInfoProfile = throwException()
     override def getTotalFrames: Int = throwException()

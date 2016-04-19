@@ -9,6 +9,20 @@ class ObjectInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
   describe("ObjectInfoProfile") {
+    describe("#uniqueIdHexString") {
+      it("should return the hex string representing the unique id") {
+        val expected = "ABCDE"
+
+        val objectInfoProfile = new TestObjectInfoProfile {
+          override def uniqueId: Long = Integer.parseInt(expected, 16)
+        }
+
+        val actual = objectInfoProfile.uniqueIdHexString
+
+        actual should be(expected)
+      }
+    }
+
     describe("#toPrettyString") {
       it("should display the reference type name and unique id as a hex code") {
         val expected = "Instance of some.class.name (0xABCDE)"

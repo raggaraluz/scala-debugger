@@ -12,10 +12,11 @@ class FrameInfoProfileSpec extends FunSpec with Matchers
   describe("FrameInfoProfile") {
     describe("#toPrettyString") {
       it("should include the frame's location if available") {
-        val expected = "Frame at (LOCATION)"
+        val expected = "Frame 1 at (LOCATION)"
         val mockUnsafeMethod = mockFunction[Try[LocationInfoProfile]]
 
         val frameInfoProfile = new TestFrameInfoProfile {
+          override def index: Int = 1
           override def tryGetLocation: Try[LocationInfoProfile] =
             mockUnsafeMethod()
         }
@@ -30,10 +31,11 @@ class FrameInfoProfileSpec extends FunSpec with Matchers
       }
 
       it("should use ??? if the frame's location is unavailable") {
-        val expected = "Frame at (???)"
+        val expected = "Frame 1 at (???)"
         val mockUnsafeMethod = mockFunction[Try[LocationInfoProfile]]
 
         val frameInfoProfile = new TestFrameInfoProfile {
+          override def index: Int = 1
           override def tryGetLocation: Try[LocationInfoProfile] =
             mockUnsafeMethod()
         }

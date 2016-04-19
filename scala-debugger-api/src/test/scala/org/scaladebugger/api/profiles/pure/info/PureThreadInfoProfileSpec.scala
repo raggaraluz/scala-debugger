@@ -50,7 +50,7 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#getFrames") {
+    describe("#getFrames()") {
       it("should return a collection of profiles wrapping the frames of the suspended thread") {
         val expected = Seq(mock[FrameInfoProfile])
 
@@ -69,6 +69,37 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
         }
 
         val actual = pureThreadInfoProfile.getFrames
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#getFrames(index, length)") {
+      it("should return a collection of profiles wrapping the frames of the suspended thread") {
+        val index = 1
+        val length = 2
+        val totalFrames = 4
+
+        val expected = (1 to totalFrames).map(_ => mock[FrameInfoProfile])
+        val mockStackFrames = (1 to totalFrames).map(_ => mock[StackFrame])
+
+        // Retrieve raw stack frame
+        import scala.collection.JavaConverters._
+
+        (mockThreadReference.frameCount _).expects()
+          .returning(totalFrames).once()
+
+        (mockThreadReference.frames(_: Int, _: Int))
+          .expects(index, length)
+          .returning(mockStackFrames.asJava)
+          .once()
+
+        // Wrap stack frame in profile instance (with index used as offset)
+        mockStackFrames.zip(expected).zipWithIndex.foreach { case ((sf, e), i) =>
+          mockNewFrameProfile.expects(sf, i + index).returning(e).once()
+        }
+
+        val actual = pureThreadInfoProfile.getFrames(index, length)
 
         actual should be (expected)
       }
