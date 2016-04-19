@@ -39,8 +39,8 @@ trait PureMiscInfoProfile extends MiscInfoProfile with JDIHelperMethods {
   override def sourceNameToPaths(sourceName: String): Seq[String] =
     classManager.allClasses
       .map(miscNewReferenceTypeProfile)
-      .filter(r => r.tryGetSourceNames.getOrElse(Nil).contains(sourceName))
-      .flatMap(r => r.tryGetSourcePaths.getOrElse(Nil))
+      .filter(r => r.trySourceNames.getOrElse(Nil).contains(sourceName))
+      .flatMap(r => r.trySourcePaths.getOrElse(Nil))
       .distinct
 
   /**

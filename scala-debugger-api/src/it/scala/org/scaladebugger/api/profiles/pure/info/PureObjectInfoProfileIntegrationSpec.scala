@@ -34,7 +34,7 @@ class PureObjectInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val result = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame.getThisObject
+            .thread(t.get).topFrame.thisObject
             .invoke("publicMethod", Seq(3, "test")).toLocalValue
 
           result should be ("3test")
@@ -57,8 +57,8 @@ class PureObjectInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val fieldName = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame.getThisObject
-            .getField("z1").name
+            .thread(t.get).topFrame.thisObject
+            .field("z1").name
 
           fieldName should be ("z1")
         })
@@ -80,8 +80,8 @@ class PureObjectInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val fieldNames = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame.getThisObject
-            .getFields.map(_.name)
+            .thread(t.get).topFrame.thisObject
+            .fields.map(_.name)
 
           fieldNames should contain theSameElementsAs Seq(
             "MODULE$", "z1", "z2", "z3"
@@ -105,8 +105,8 @@ class PureObjectInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val methodName = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame.getThisObject
-            .getMethod("publicMethod").name
+            .thread(t.get).topFrame.thisObject
+            .method("publicMethod").name
 
           methodName should be ("publicMethod")
         })
@@ -128,8 +128,8 @@ class PureObjectInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val methodNames = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame.getThisObject
-            .getMethods.map(_.name)
+            .thread(t.get).topFrame.thisObject
+            .methods.map(_.name)
 
           methodNames should contain theSameElementsAs Seq(
             // Defined methods

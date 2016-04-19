@@ -126,7 +126,7 @@ class ValueWrapper(private val _value: Value) {
     //       ClassloaderReference
     _value match {
       case objectReference: ObjectReference =>
-        // TODO: Use objectReference.getValues(
+        // TODO: Use objectReference.values(
         // objectReference.referenceType().visibleFields())
         // TODO: Filter out reference that equals this object instead of
         //       checking exclusively for MODULE$

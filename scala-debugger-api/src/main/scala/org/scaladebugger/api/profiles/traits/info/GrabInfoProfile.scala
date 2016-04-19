@@ -17,8 +17,8 @@ trait GrabInfoProfile {
    *                        a thread info profile
    * @return Success containing the thread profile, otherwise a failure
    */
-  def tryGetThread(threadReference: ThreadReference): Try[ThreadInfoProfile] =
-    Try(getThread(threadReference))
+  def tryThread(threadReference: ThreadReference): Try[ThreadInfoProfile] =
+    Try(thread(threadReference))
 
   /**
    * Retrieves a thread profile for the given JDI thread reference.
@@ -27,7 +27,7 @@ trait GrabInfoProfile {
    *                        a thread info profile
    * @return The new thread info profile
    */
-  def getThread(threadReference: ThreadReference): ThreadInfoProfile
+  def thread(threadReference: ThreadReference): ThreadInfoProfile
 
   /**
    * Retrieves a thread profile for the thread reference whose unique id
@@ -37,8 +37,8 @@ trait GrabInfoProfile {
    * @return Success containing the thread profile if found, otherwise
    *         a failure
    */
-  def tryGetThread(threadId: Long): Try[ThreadInfoProfile] =
-    Try(getThread(threadId))
+  def tryThread(threadId: Long): Try[ThreadInfoProfile] =
+    Try(thread(threadId))
 
   /**
    * Retrieves a thread profile for the thread reference whose unique id
@@ -47,7 +47,7 @@ trait GrabInfoProfile {
    * @param threadId The id of the thread
    * @return The profile of the matching thread, or throws an exception
    */
-  def getThread(threadId: Long): ThreadInfoProfile
+  def thread(threadId: Long): ThreadInfoProfile
 
   /**
    * Retrieves all classes contained in the remote JVM in the form of
@@ -56,7 +56,7 @@ trait GrabInfoProfile {
    * @return Success containing the collection of reference type info profiles,
    *         otherwise a failure
    */
-  def tryGetClasses: Try[Seq[ReferenceTypeInfoProfile]] = Try(getClasses)
+  def tryClasses: Try[Seq[ReferenceTypeInfoProfile]] = Try(classes)
 
   /**
    * Retrieves all classes contained in the remote JVM in the form of
@@ -64,5 +64,5 @@ trait GrabInfoProfile {
    *
    * @return The collection of reference type info profiles
    */
-  def getClasses: Seq[ReferenceTypeInfoProfile]
+  def classes: Seq[ReferenceTypeInfoProfile]
 }

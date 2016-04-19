@@ -35,11 +35,11 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val location = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getLocation
+            .thread(t.get).topFrame
+            .location
 
-          location.getSourcePath should be (testFile)
-          location.getLineNumber should be (32)
+          location.sourcePath should be (testFile)
+          location.lineNumber should be (32)
         })
       }
     }
@@ -59,8 +59,8 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val thisTypeName = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getThisObject.typeName
+            .thread(t.get).topFrame
+            .thisObject.typeName
 
           thisTypeName should be ("org.scaladebugger.test.info.Variables$")
         })
@@ -82,9 +82,9 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val thread = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get)
+            .thread(t.get)
 
-          thread.uniqueId should be (thread.getTopFrame.getCurrentThread.uniqueId)
+          thread.uniqueId should be (thread.topFrame.currentThread.uniqueId)
         })
       }
     }
@@ -104,8 +104,8 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getAllVariables.map(_.name)
+            .thread(t.get).topFrame
+            .allVariables.map(_.name)
 
           variableNames should contain theSameElementsAs Seq(
             // Scala-specific variable
@@ -139,11 +139,11 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val frame = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-          val values = frame.getArgumentValues.map(_.toLocalValue)
+            .thread(t.get).topFrame
+          val values = frame.argumentValues.map(_.toLocalValue)
 
           values should contain theSameElementsAs Seq(
-            frame.getVariable("args").toValue.toLocalValue
+            frame.variable("args").toValue.toLocalValue
           )
         })
       }
@@ -164,8 +164,8 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getArgumentLocalVariables.map(_.name)
+            .thread(t.get).topFrame
+            .argumentLocalVariables.map(_.name)
 
           variableNames should contain theSameElementsAs Seq(
             // Local argument variables
@@ -190,8 +190,8 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getNonArgumentLocalVariables.map(_.name)
+            .thread(t.get).topFrame
+            .nonArgumentLocalVariables.map(_.name)
 
           variableNames should contain theSameElementsAs Seq(
             // Local non-argument variables
@@ -216,8 +216,8 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getFieldVariables.map(_.name)
+            .thread(t.get).topFrame
+            .fieldVariables.map(_.name)
 
           variableNames should contain theSameElementsAs Seq(
             // Scala-specific variable
@@ -245,8 +245,8 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getLocalVariables.map(_.name)
+            .thread(t.get).topFrame
+            .localVariables.map(_.name)
 
           variableNames should contain theSameElementsAs Seq(
             // Local argument variables
@@ -275,23 +275,23 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
         logTimeTaken(eventually {
           // Scala specific
           s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("MODULE$").name should be ("MODULE$")
+            .thread(t.get).topFrame
+            .variable("MODULE$").name should be ("MODULE$")
 
           // Argument
           s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("args").name should be ("args")
+            .thread(t.get).topFrame
+            .variable("args").name should be ("args")
 
           // Local
           s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("a").name should be ("a")
+            .thread(t.get).topFrame
+            .variable("a").name should be ("a")
 
           // Field
           s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("z1").name should be ("z1")
+            .thread(t.get).topFrame
+            .variable("z1").name should be ("z1")
         })
       }
     }
@@ -311,8 +311,8 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val variableNames = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getAllVariables.map(_.name)
+            .thread(t.get).topFrame
+            .allVariables.map(_.name)
 
           // NOTE: As there is no custom logic, this depicts the raw, top-level
           //       variables seen within the closure

@@ -20,7 +20,7 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
   private val mockReferenceType = mock[ReferenceType]
   private val pureReferenceTypeInfoProfile = new PureReferenceTypeInfoProfile(
     scalaVirtualMachine = mockScalaVirtualMachine,
-    referenceType = mockReferenceType
+    _referenceType = mockReferenceType
   ) {
     override protected def newFieldProfile(
       field: Field
@@ -62,7 +62,7 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#getAllFields") {
+    describe("#allFields") {
       it("should return a collection of profiles wrapping all fields in the underlying reference type") {
         val expected = Seq(mock[VariableInfoProfile])
         val fields = Seq(mock[Field])
@@ -75,13 +75,13 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
           mockNewFieldProfile.expects(f).returning(e).once()
         }
 
-        val actual = pureReferenceTypeInfoProfile.getAllFields
+        val actual = pureReferenceTypeInfoProfile.allFields
 
         actual should be (expected)
       }
     }
 
-    describe("#getVisibleFields") {
+    describe("#visibleFields") {
       it("should return a collection of profiles wrapping visible fields in the underlying reference type") {
         val expected = Seq(mock[VariableInfoProfile])
         val fields = Seq(mock[Field])
@@ -94,13 +94,13 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
           mockNewFieldProfile.expects(f).returning(e).once()
         }
 
-        val actual = pureReferenceTypeInfoProfile.getVisibleFields
+        val actual = pureReferenceTypeInfoProfile.visibleFields
 
         actual should be (expected)
       }
     }
 
-    describe("#getField") {
+    describe("#field") {
       it("should throw a NoSuchElement exception if no field with matching name is found") {
         val name = "someName"
 
@@ -109,7 +109,7 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
           .returning(null).once()
 
         intercept[NoSuchElementException] {
-          pureReferenceTypeInfoProfile.getField(name)
+          pureReferenceTypeInfoProfile.field(name)
         }
       }
 
@@ -125,13 +125,13 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
         // Create the new profile
         mockNewFieldProfile.expects(mockField).returning(expected).once()
 
-        val actual = pureReferenceTypeInfoProfile.getField(name)
+        val actual = pureReferenceTypeInfoProfile.field(name)
 
         actual should be (expected)
       }
     }
 
-    describe("#getAllMethods") {
+    describe("#allMethods") {
       it("should return a collection of profiles wrapping all methods in the underlying reference type") {
         val expected = Seq(mock[MethodInfoProfile])
         val methods = Seq(mock[Method])
@@ -144,13 +144,13 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
           mockNewMethodProfile.expects(m).returning(e).once()
         }
 
-        val actual = pureReferenceTypeInfoProfile.getAllMethods
+        val actual = pureReferenceTypeInfoProfile.allMethods
 
         actual should be (expected)
       }
     }
 
-    describe("#getVisibleMethods") {
+    describe("#visibleMethods") {
       it("should return a collection of profiles wrapping visible methods in the underlying reference type") {
         val expected = Seq(mock[MethodInfoProfile])
         val methods = Seq(mock[Method])
@@ -163,13 +163,13 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
           mockNewMethodProfile.expects(m).returning(e).once()
         }
 
-        val actual = pureReferenceTypeInfoProfile.getVisibleMethods
+        val actual = pureReferenceTypeInfoProfile.visibleMethods
 
         actual should be (expected)
       }
     }
 
-    describe("#getMethods") {
+    describe("#methods") {
       it("should return a collection of profiles wrapping methods with matching names in the underlying reference type") {
         val expected = Seq(mock[MethodInfoProfile])
         val methods = Seq(mock[Method])
@@ -183,13 +183,13 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
           mockNewMethodProfile.expects(m).returning(e).once()
         }
 
-        val actual = pureReferenceTypeInfoProfile.getMethods(name)
+        val actual = pureReferenceTypeInfoProfile.methods(name)
 
         actual should be (expected)
       }
     }
 
-    describe("#getClassLoader") {
+    describe("#classLoader") {
       it("should return a profile wrapping the class loader of the reference type") {
         val expected = mock[ClassLoaderInfoProfile]
         val classLoader = mock[ClassLoaderReference]
@@ -200,13 +200,13 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
         mockNewClassLoaderProfile.expects(classLoader)
           .returning(expected).once()
 
-        val actual = pureReferenceTypeInfoProfile.getClassLoader
+        val actual = pureReferenceTypeInfoProfile.classLoader
 
         actual should be (expected)
       }
     }
 
-    describe("#getClassObject") {
+    describe("#classObject") {
       it("should return a profile wrapping the class object of the reference type") {
         val expected = mock[ClassObjectInfoProfile]
         val classObject = mock[ClassObjectReference]
@@ -217,20 +217,20 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
         mockNewClassObjectProfile.expects(classObject)
           .returning(expected).once()
 
-        val actual = pureReferenceTypeInfoProfile.getClassObject
+        val actual = pureReferenceTypeInfoProfile.classObject
 
         actual should be (expected)
       }
     }
 
-    describe("#getGenericSignature") {
+    describe("#genericSignature") {
       it("should return Some(signature) if it exists") {
         val expected = Some("signature")
 
         (mockReferenceType.genericSignature _).expects()
           .returning(expected.get).once()
 
-        val actual = pureReferenceTypeInfoProfile.getGenericSignature
+        val actual = pureReferenceTypeInfoProfile.genericSignature
 
         actual should be (expected)
       }
@@ -241,16 +241,16 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
         (mockReferenceType.genericSignature _).expects()
           .returning(null).once()
 
-        val actual = pureReferenceTypeInfoProfile.getGenericSignature
+        val actual = pureReferenceTypeInfoProfile.genericSignature
 
         actual should be (expected)
       }
     }
 
-    describe("#getInstances") {
+    describe("#instances") {
       it("should throw an exception if a negative value is provided") {
         intercept[IllegalArgumentException] {
-          pureReferenceTypeInfoProfile.getInstances(-1)
+          pureReferenceTypeInfoProfile.instances(-1)
         }
       }
 
@@ -266,7 +266,7 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
           mockNewObjectProfile.expects(o).returning(e).once()
         }
 
-        val actual = pureReferenceTypeInfoProfile.getInstances(0)
+        val actual = pureReferenceTypeInfoProfile.instances(0)
 
         actual should be (expected)
       }
@@ -332,7 +332,7 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#getAllLineLocations") {
+    describe("#allLineLocations") {
       it("should return a collection of profiles wrapping all line locations in the underlying reference type") {
         val expected = Seq(mock[LocationInfoProfile])
         val locations = Seq(mock[Location])
@@ -347,13 +347,13 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
           mockNewLocationProfile.expects(l).returning(e).once()
         }
 
-        val actual = pureReferenceTypeInfoProfile.getAllLineLocations
+        val actual = pureReferenceTypeInfoProfile.allLineLocations
 
         actual should be (expected)
       }
     }
 
-    describe("#getLocationsOfLine") {
+    describe("#locationsOfLine") {
       it("should return a collection of profiles wrapping all locations for the specified line in the underlying reference type") {
         val expected = Seq(mock[LocationInfoProfile])
         val locations = Seq(mock[Location])
@@ -367,49 +367,49 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
           mockNewLocationProfile.expects(l).returning(e).once()
         }
 
-        val actual = pureReferenceTypeInfoProfile.getLocationsOfLine(line)
+        val actual = pureReferenceTypeInfoProfile.locationsOfLine(line)
 
         actual should be (expected)
       }
     }
 
-    describe("#getMajorVersion") {
+    describe("#majorVersion") {
       it("should return the major version of the underlying reference type") {
         val expected = 999
 
         (mockReferenceType.majorVersion _).expects().returning(expected).once()
 
-        val actual = pureReferenceTypeInfoProfile.getMajorVersion
+        val actual = pureReferenceTypeInfoProfile.majorVersion
 
         actual should be (expected)
       }
     }
 
-    describe("#getMinorVersion") {
+    describe("#minorVersion") {
       it("should return the minor version of the underlying reference type") {
         val expected = 999
 
         (mockReferenceType.minorVersion _).expects().returning(expected).once()
 
-        val actual = pureReferenceTypeInfoProfile.getMinorVersion
+        val actual = pureReferenceTypeInfoProfile.minorVersion
 
         actual should be (expected)
       }
     }
 
-    describe("#getName") {
+    describe("#name") {
       it("should return the name of the underlying reference type") {
         val expected = "some.class.name"
 
         (mockReferenceType.name _).expects().returning(expected).once()
 
-        val actual = pureReferenceTypeInfoProfile.getName
+        val actual = pureReferenceTypeInfoProfile.name
 
         actual should be (expected)
       }
     }
 
-    describe("#getNestedTypes") {
+    describe("#nestedTypes") {
       it("should return a collection of profiles wrapping all nested types in the underlying reference type") {
         val expected = Seq(mock[ReferenceTypeInfoProfile])
         val referenceTypes = Seq(mock[ReferenceType])
@@ -422,26 +422,26 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
           mockNewReferenceTypeProfile.expects(r).returning(e).once()
         }
 
-        val actual = pureReferenceTypeInfoProfile.getNestedTypes
+        val actual = pureReferenceTypeInfoProfile.nestedTypes
 
         actual should be (expected)
       }
     }
 
-    describe("#getSourceDebugExtension") {
+    describe("#sourceDebugExtension") {
       it("should return the source debug extension of the underlying reference type") {
         val expected = "debug"
 
         (mockReferenceType.sourceDebugExtension _).expects()
           .returning(expected).once()
 
-        val actual = pureReferenceTypeInfoProfile.getSourceDebugExtension
+        val actual = pureReferenceTypeInfoProfile.sourceDebugExtension
 
         actual should be (expected)
       }
     }
 
-    describe("#getSourceNames") {
+    describe("#sourceNames") {
       it("should return all source names for the underlying reference type") {
         val expected = Seq("file1.scala", "file2.scala")
         val stratumName = "some name"
@@ -453,13 +453,13 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
         (mockReferenceType.sourceNames _).expects(stratumName)
           .returning(expected.asJava).once()
 
-        val actual = pureReferenceTypeInfoProfile.getSourceNames
+        val actual = pureReferenceTypeInfoProfile.sourceNames
 
         actual should be (expected)
       }
     }
 
-    describe("#getSourcePaths") {
+    describe("#sourcePaths") {
       it("should return all source paths for the underlying reference type") {
         val expected = Seq("path/to/file1.scala", "path/to/file2.scala")
         val stratumName = "some name"
@@ -471,7 +471,7 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
         (mockReferenceType.sourcePaths _).expects(stratumName)
           .returning(expected.asJava).once()
 
-        val actual = pureReferenceTypeInfoProfile.getSourcePaths
+        val actual = pureReferenceTypeInfoProfile.sourcePaths
 
         actual should be (expected)
       }

@@ -19,5 +19,5 @@ trait ClassObjectInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    *
    * @return The reference type information
    */
-  def getReflectedType: ReferenceTypeInfoProfile
+  def reflectedType: ReferenceTypeInfoProfile
 }

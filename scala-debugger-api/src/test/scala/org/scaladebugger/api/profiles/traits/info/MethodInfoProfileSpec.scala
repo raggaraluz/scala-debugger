@@ -16,9 +16,9 @@ class MethodInfoProfileSpec extends FunSpec with Matchers
 
         val methodInfoProfile = new TestMethodInfoProfile {
           override def name: String = "methodName"
-          override def tryGetParameterTypeNames: Try[Seq[String]] =
+          override def tryParameterTypeNames: Try[Seq[String]] =
             Success(Seq("type1", "type2"))
-          override def tryGetReturnTypeName: Try[String] = Success("returnType")
+          override def tryReturnTypeName: Try[String] = Success("returnType")
         }
 
         val actual = methodInfoProfile.toPrettyString
@@ -31,9 +31,9 @@ class MethodInfoProfileSpec extends FunSpec with Matchers
 
         val methodInfoProfile = new TestMethodInfoProfile {
           override def name: String = "methodName"
-          override def tryGetParameterTypeNames: Try[Seq[String]] =
+          override def tryParameterTypeNames: Try[Seq[String]] =
             Failure(new Throwable)
-          override def tryGetReturnTypeName: Try[String] = Success("returnType")
+          override def tryReturnTypeName: Try[String] = Success("returnType")
         }
 
         val actual = methodInfoProfile.toPrettyString
@@ -45,9 +45,9 @@ class MethodInfoProfileSpec extends FunSpec with Matchers
 
         val methodInfoProfile = new TestMethodInfoProfile {
           override def name: String = "methodName"
-          override def tryGetParameterTypeNames: Try[Seq[String]] =
+          override def tryParameterTypeNames: Try[Seq[String]] =
             Success(Seq("type1", "type2"))
-          override def tryGetReturnTypeName: Try[String] =
+          override def tryReturnTypeName: Try[String] =
             Failure(new Throwable)
         }
 
@@ -56,31 +56,31 @@ class MethodInfoProfileSpec extends FunSpec with Matchers
         actual should be (expected)      }
     }
 
-    describe("#tryGetReturnTypeName") {
+    describe("#tryReturnTypeName") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[String]
 
         val methodInfoProfile = new TestMethodInfoProfile {
-          override def getReturnTypeName: String = mockUnsafeMethod()
+          override def returnTypeName: String = mockUnsafeMethod()
         }
 
         val r = "some.return.type"
         mockUnsafeMethod.expects().returning(r).once()
-        methodInfoProfile.tryGetReturnTypeName.get should be (r)
+        methodInfoProfile.tryReturnTypeName.get should be (r)
       }
     }
 
-    describe("#tryGetParameterTypeNames") {
+    describe("#tryParameterTypeNames") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Seq[String]]
 
         val methodInfoProfile = new TestMethodInfoProfile {
-          override def getParameterTypeNames: Seq[String] = mockUnsafeMethod()
+          override def parameterTypeNames: Seq[String] = mockUnsafeMethod()
         }
 
         val r = Seq("some.param.type")
         mockUnsafeMethod.expects().returning(r).once()
-        methodInfoProfile.tryGetParameterTypeNames.get should be (r)
+        methodInfoProfile.tryParameterTypeNames.get should be (r)
       }
     }
   }

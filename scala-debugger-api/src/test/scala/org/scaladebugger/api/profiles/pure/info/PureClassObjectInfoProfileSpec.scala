@@ -19,9 +19,9 @@ class PureClassObjectInfoProfileSpec extends FunSpec with Matchers
   private val pureClassObjectInfoProfile = new PureClassObjectInfoProfile(
     mockScalaVirtualMachine, mockClassObjectReference
   )(
-    threadReference = mockThreadReference,
-    virtualMachine = mockVirtualMachine,
-    referenceType = mockReferenceType
+    _threadReference = mockThreadReference,
+    _virtualMachine = mockVirtualMachine,
+    _referenceType = mockReferenceType
   ) {
     override protected def newReferenceTypeProfile(
       referenceType: ReferenceType
@@ -39,7 +39,7 @@ class PureClassObjectInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#getReflectedType") {
+    describe("#reflectedType") {
       it("should return a profile wrapper around the reference type represented by the class") {
         val expected = mock[ReferenceTypeInfoProfile]
         val referenceType = mock[ReferenceType]
@@ -50,7 +50,7 @@ class PureClassObjectInfoProfileSpec extends FunSpec with Matchers
         mockNewReferenceTypeProfile.expects(referenceType)
           .returning(expected).once()
 
-        val actual = pureClassObjectInfoProfile.getReflectedType
+        val actual = pureClassObjectInfoProfile.reflectedType
 
         actual should be (expected)
       }

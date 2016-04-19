@@ -14,46 +14,46 @@ import scala.collection.JavaConverters._
  *
  * @param scalaVirtualMachine The high-level virtual machine containing the
  *                            stack frame
- * @param stackFrame The reference to the underlying JDI stack frame instance
+ * @param _stackFrame The reference to the underlying JDI stack frame instance
  * @param index The index of the frame relative to the frame stack
  */
 class PureFrameInfoProfile(
   val scalaVirtualMachine: ScalaVirtualMachine,
-  private val stackFrame: StackFrame,
+  private val _stackFrame: StackFrame,
   val index: Int
 ) extends FrameInfoProfile {
-  private lazy val threadReference = stackFrame.thread()
-  private lazy val thisObjectProfile = newObjectProfile(stackFrame.thisObject())
-  private lazy val currentThreadProfile = newThreadProfile(threadReference)
-  private lazy val locationProfile = newLocationProfile(stackFrame.location())
+  private lazy val _threadReference = _stackFrame.thread()
+  private lazy val _thisObjectProfile = newObjectProfile(_stackFrame.thisObject())
+  private lazy val _currentThreadProfile = newThreadProfile(_threadReference)
+  private lazy val _locationProfile = newLocationProfile(_stackFrame.location())
 
   /**
    * Returns the JDI representation this profile instance wraps.
    *
    * @return The JDI instance
    */
-  override def toJdiInstance: StackFrame = stackFrame
+  override def toJdiInstance: StackFrame = _stackFrame
 
   /**
    * Retrieves the object representing 'this' in the current frame scope.
    *
    * @return The profile of this object
    */
-  override def getThisObject: ObjectInfoProfile = thisObjectProfile
+  override def thisObject: ObjectInfoProfile = _thisObjectProfile
 
   /**
    * Retrieves the thread associated with this frame.
    *
    * @return The profile of the thread
    */
-  override def getCurrentThread: ThreadInfoProfile = currentThreadProfile
+  override def currentThread: ThreadInfoProfile = _currentThreadProfile
 
   /**
    * Retrieves the location associated with this frame.
    *
    * @return The profile of the location
    */
-  override def getLocation: LocationInfoProfile = locationProfile
+  override def location: LocationInfoProfile = _locationProfile
 
   /**
    * Retrieves the values of the arguments in this frame. As indicated by the
@@ -61,9 +61,9 @@ class PureFrameInfoProfile(
    *
    * @return The collection of argument values in order as provided to the frame
    */
-  override def getArgumentValues: Seq[ValueInfoProfile] = {
+  override def argumentValues: Seq[ValueInfoProfile] = {
     import scala.collection.JavaConverters._
-    stackFrame.getArgumentValues.asScala.map(newValueProfile)
+    _stackFrame.getArgumentValues.asScala.map(newValueProfile)
   }
 
   /**
@@ -72,12 +72,12 @@ class PureFrameInfoProfile(
    * @param name The name of the variable to retrieve
    * @return Profile of the variable or throws an exception
    */
-  override def getVariable(name: String): VariableInfoProfile = {
+  override def variable(name: String): VariableInfoProfile = {
     // NOTE: Had to switch from name lookup in local variables to find method
     //       so we could include index information
     // NOTE: Ensime implementation looks for last match, so we will do the same
-    getLocalVariables.reverseIterator.find(_.name == name)
-      .getOrElse(thisObjectProfile.getField(name))
+    localVariables.reverseIterator.find(_.name == name)
+      .getOrElse(_thisObjectProfile.field(name))
   }
 
   /**
@@ -85,8 +85,8 @@ class PureFrameInfoProfile(
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def getFieldVariables: Seq[VariableInfoProfile] = {
-    thisObjectProfile.getFields
+  override def fieldVariables: Seq[VariableInfoProfile] = {
+    _thisObjectProfile.fields
   }
 
   /**
@@ -94,16 +94,16 @@ class PureFrameInfoProfile(
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def getAllVariables: Seq[VariableInfoProfile] =
-    getLocalVariables ++ getFieldVariables
+  override def allVariables: Seq[VariableInfoProfile] =
+    localVariables ++ fieldVariables
 
   /**
    * Retrieves all variables that represent local variables in this frame.
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def getLocalVariables: Seq[IndexedVariableInfoProfile] = {
-    stackFrame.visibleVariables().asScala.zipWithIndex.map { case (v, i) =>
+  override def localVariables: Seq[IndexedVariableInfoProfile] = {
+    _stackFrame.visibleVariables().asScala.zipWithIndex.map { case (v, i) =>
       newLocalVariableProfile(v, i)
     }
   }
@@ -113,8 +113,8 @@ class PureFrameInfoProfile(
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def getNonArgumentLocalVariables: Seq[IndexedVariableInfoProfile] = {
-    getLocalVariables.filterNot(_.isArgument)
+  override def nonArgumentLocalVariables: Seq[IndexedVariableInfoProfile] = {
+    localVariables.filterNot(_.isArgument)
   }
 
   /**
@@ -122,8 +122,8 @@ class PureFrameInfoProfile(
    *
    * @return The collection of variables as their profile equivalents
    */
-  override def getArgumentLocalVariables: Seq[IndexedVariableInfoProfile] = {
-    getLocalVariables.filter(_.isArgument)
+  override def argumentLocalVariables: Seq[IndexedVariableInfoProfile] = {
+    localVariables.filter(_.isArgument)
   }
 
   protected def newLocalVariableProfile(
@@ -138,7 +138,7 @@ class PureFrameInfoProfile(
 
   protected def newObjectProfile(objectReference: ObjectReference): ObjectInfoProfile =
     new PureObjectInfoProfile(scalaVirtualMachine, objectReference)(
-      threadReference = threadReference
+      _threadReference = _threadReference
     )
 
   protected def newThreadProfile(threadReference: ThreadReference): ThreadInfoProfile =

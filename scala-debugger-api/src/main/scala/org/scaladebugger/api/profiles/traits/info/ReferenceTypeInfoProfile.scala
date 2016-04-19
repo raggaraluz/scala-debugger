@@ -21,7 +21,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *
    * @return The collection of fields as variable info profiles
    */
-  def getAllFields: Seq[VariableInfoProfile]
+  def allFields: Seq[VariableInfoProfile]
 
   /**
    * Retrieves all fields declared in this type, its superclasses, implemented
@@ -30,7 +30,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of fields as variable info
    *         profiles, otherwise a failure
    */
-  def tryGetAllFields: Try[Seq[VariableInfoProfile]] = Try(getAllFields)
+  def tryAllFields: Try[Seq[VariableInfoProfile]] = Try(allFields)
 
   /**
    * Retrieves unhidden and unambiguous fields in this type. Fields hidden
@@ -40,7 +40,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *
    * @return The collection of fields as variable info profiles
    */
-  def getVisibleFields: Seq[VariableInfoProfile]
+  def visibleFields: Seq[VariableInfoProfile]
 
   /**
    * Retrieves unhidden and unambiguous fields in this type. Fields hidden
@@ -51,7 +51,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of fields as variable info
    *         profiles, otherwise a failure
    */
-  def tryGetVisibleFields: Try[Seq[VariableInfoProfile]] = Try(getVisibleFields)
+  def tryVisibleFields: Try[Seq[VariableInfoProfile]] = Try(visibleFields)
 
   /**
    * Retrieves the visible field with the matching name.
@@ -59,7 +59,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @param name The name of the field to retrieve
    * @return The field as a variable info profile
    */
-  def getField(name: String): VariableInfoProfile
+  def field(name: String): VariableInfoProfile
 
   /**
    * Retrieves the visible field with the matching name.
@@ -68,7 +68,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @return Success containing the field as a variable info profile, otherwise
    *         a failure
    */
-  def tryGetField(name: String): Try[VariableInfoProfile] = Try(getField(name))
+  def tryField(name: String): Try[VariableInfoProfile] = Try(field(name))
 
   /**
    * Retrieves all methods declared in this type, its superclasses, implemented
@@ -76,7 +76,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *
    * @return The collection of methods as method info profiles
    */
-  def getAllMethods: Seq[MethodInfoProfile]
+  def allMethods: Seq[MethodInfoProfile]
 
   /**
    * Retrieves all methods declared in this type, its superclasses, implemented
@@ -85,7 +85,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of methods as method info
    *         profiles, otherwise a failure
    */
-  def tryGetAllMethods: Try[Seq[MethodInfoProfile]] = Try(getAllMethods)
+  def tryAllMethods: Try[Seq[MethodInfoProfile]] = Try(allMethods)
 
   /**
    * Retrieves unhidden and unambiguous methods in this type. Methods hidden
@@ -95,7 +95,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *
    * @return The collection of methods as method info profiles
    */
-  def getVisibleMethods: Seq[MethodInfoProfile]
+  def visibleMethods: Seq[MethodInfoProfile]
 
   /**
    * Retrieves unhidden and unambiguous methods in this type. Methods hidden
@@ -106,7 +106,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of methods as method info
    *         profiles, otherwise a failure
    */
-  def tryGetVisibleMethods: Try[Seq[MethodInfoProfile]] = Try(getVisibleMethods)
+  def tryVisibleMethods: Try[Seq[MethodInfoProfile]] = Try(visibleMethods)
 
   /**
    * Retrieves the visible methods with the matching name.
@@ -114,7 +114,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @param name The name of the method to retrieve
    * @return The collection of method info profiles
    */
-  def getMethods(name: String): Seq[MethodInfoProfile]
+  def methods(name: String): Seq[MethodInfoProfile]
 
   /**
    * Retrieves the visible method with the matching name.
@@ -123,8 +123,8 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @return Success containing the method as a method info profile, otherwise
    *         a failure
    */
-  def tryGetMethods(name: String): Try[Seq[MethodInfoProfile]] =
-    Try(getMethods(name))
+  def tryMethods(name: String): Try[Seq[MethodInfoProfile]] =
+    Try(methods(name))
 
   /**
    * Retrieves the classloader object which loaded the class associated with
@@ -132,21 +132,21 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *
    * @return The profile representing the classloader
    */
-  def getClassLoader: ClassLoaderInfoProfile
+  def classLoader: ClassLoaderInfoProfile
 
   /**
    * Retrieves the class object associated with this type.
    *
    * @return The profile representing the class
    */
-  def getClassObject: ClassObjectInfoProfile
+  def classObject: ClassObjectInfoProfile
 
   /**
    * Retrieves the generic signature type if it exists.
    *
    * @return Some signature if it exists, otherwise None
    */
-  def getGenericSignature: Option[String]
+  def genericSignature: Option[String]
 
   /**
    * Retrieves reachable instances of this type.
@@ -155,7 +155,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *                     to get all reachable instances
    * @return The collection of object instances
    */
-  def getInstances(maxInstances: Long): Seq[ObjectInfoProfile]
+  def instances(maxInstances: Long): Seq[ObjectInfoProfile]
 
   /**
    * Retrieves reachable instances of this type.
@@ -165,15 +165,15 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of object instances, otherwise
    *         a failure
    */
-  def tryGetInstances(maxInstances: Long): Try[Seq[ObjectInfoProfile]] =
-    Try(getInstances(maxInstances))
+  def tryInstances(maxInstances: Long): Try[Seq[ObjectInfoProfile]] =
+    Try(instances(maxInstances))
 
   /**
    * Retrieves all reachable instances of this type.
    *
    * @return The collection of object instances
    */
-  def getAllInstances: Seq[ObjectInfoProfile] = getInstances(0)
+  def allInstances: Seq[ObjectInfoProfile] = instances(0)
 
   /**
    * Retrieves all reachable instances of this type.
@@ -181,7 +181,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of object instances, otherwise
    *         a failure
    */
-  def tryGetAllInstances: Try[Seq[ObjectInfoProfile]] = Try(getAllInstances)
+  def tryAllInstances: Try[Seq[ObjectInfoProfile]] = Try(allInstances)
 
   /**
    * Indicates whether or not this type is abstract.
@@ -235,7 +235,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *
    * @return The collection of location information
    */
-  def getAllLineLocations: Seq[LocationInfoProfile]
+  def allLineLocations: Seq[LocationInfoProfile]
 
   /**
    * Retrieves and returns all valid locations for executable lines within
@@ -244,8 +244,8 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of location information,
    *         otherwise a failure
    */
-  def tryGetAllLineLocations: Try[Seq[LocationInfoProfile]] =
-    Try(getAllLineLocations)
+  def tryAllLineLocations: Try[Seq[LocationInfoProfile]] =
+    Try(allLineLocations)
 
   /**
    * Retrieves and returns all valid locations for a specific executable line
@@ -253,7 +253,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *
    * @return The collection of location information
    */
-  def getLocationsOfLine(line: Int): Seq[LocationInfoProfile]
+  def locationsOfLine(line: Int): Seq[LocationInfoProfile]
 
   /**
    * Retrieves and returns all valid locations for a specific executable line
@@ -262,8 +262,8 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of location information,
    *         otherwise a failure
    */
-  def tryGetLocationsOfLine(line: Int): Try[Seq[LocationInfoProfile]] =
-    Try(getLocationsOfLine(line))
+  def tryLocationsOfLine(line: Int): Try[Seq[LocationInfoProfile]] =
+    Try(locationsOfLine(line))
 
   /**
    * Retrieves the major class version number defined in the class file format
@@ -271,7 +271,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *
    * @return The major version number
    */
-  def getMajorVersion: Int
+  def majorVersion: Int
 
   /**
    * Retrieves the major class version number defined in the class file format
@@ -279,7 +279,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *
    * @return Success containing the major version number, otherwise a failure
    */
-  def tryGetMajorVersion: Try[Int] = Try(getMajorVersion)
+  def tryMajorVersion: Try[Int] = Try(majorVersion)
 
   /**
    * Retrieves the minor class version number defined in the class file format
@@ -287,7 +287,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *
    * @return The minor version number
    */
-  def getMinorVersion: Int
+  def minorVersion: Int
 
   /**
    * Retrieves the minor class version number defined in the class file format
@@ -295,14 +295,14 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *
    * @return Success containing the minor version number, otherwise a failure
    */
-  def tryGetMinorVersion: Try[Int] = Try(getMinorVersion)
+  def tryMinorVersion: Try[Int] = Try(minorVersion)
 
   /**
    * Retrieves the fully-qualified class name of this type.
    *
    * @return The fully-qualified class name
    */
-  def getName: String
+  def name: String
 
   /**
    * Retrieves reference type information for all types declared inside this
@@ -310,21 +310,21 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *
    * @return The collection of reference type information
    */
-  def getNestedTypes: Seq[ReferenceTypeInfoProfile]
+  def nestedTypes: Seq[ReferenceTypeInfoProfile]
 
   /**
    * Retrieves the source debug extension for this type.
    *
    * @return The source debug extension
    */
-  def getSourceDebugExtension: String
+  def sourceDebugExtension: String
 
   /**
    * Retrieves the source debug extension for this type.
    *
    * @return Success containing the source debug extension, otherwise a failure
    */
-  def tryGetSourceDebugExtension: Try[String] = Try(getSourceDebugExtension)
+  def trySourceDebugExtension: Try[String] = Try(sourceDebugExtension)
 
   /**
    * Retrieves all identifying names for the source(s) corresponding to this
@@ -332,7 +332,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    *
    * @return The collection of identifying names
    */
-  def getSourceNames: Seq[String]
+  def sourceNames: Seq[String]
 
   /**
    * Retrieves all identifying names for the source(s) corresponding to this
@@ -341,14 +341,14 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of identifying names, otherwise
    *         a failure
    */
-  def tryGetSourceNames: Try[Seq[String]] = Try(getSourceNames)
+  def trySourceNames: Try[Seq[String]] = Try(sourceNames)
 
   /**
    * Retrieves all source paths corresponding to this type.
    *
    * @return The collection of source paths
    */
-  def getSourcePaths: Seq[String]
+  def sourcePaths: Seq[String]
 
   /**
    * Retrieves all source paths corresponding to this type.
@@ -356,7 +356,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of source paths, otherwise a
    *         failure
    */
-  def tryGetSourcePaths: Try[Seq[String]] = Try(getSourcePaths)
+  def trySourcePaths: Try[Seq[String]] = Try(sourcePaths)
 
   /**
    * Returns a string presenting a better human-readable description of
@@ -365,6 +365,6 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile {
    * @return The human-readable description
    */
   override def toPrettyString: String = {
-    this.getName
+    this.name
   }
 }

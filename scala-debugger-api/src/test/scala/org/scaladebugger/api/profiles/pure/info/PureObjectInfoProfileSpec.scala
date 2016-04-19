@@ -24,9 +24,9 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
     mockScalaVirtualMachine,
     mockObjectReference
   )(
-    threadReference = mockThreadReference,
-    virtualMachine = mockVirtualMachine,
-    referenceType = mockReferenceType
+    _threadReference = mockThreadReference,
+    _virtualMachine = mockVirtualMachine,
+    _referenceType = mockReferenceType
   ) {
     override protected def newFieldProfile(field: Field): VariableInfoProfile =
       mockNewFieldProfile(field)
@@ -64,7 +64,7 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#getReferenceType") {
+    describe("#referenceType") {
       it("should return a profile wrapping the object's reference type") {
         val expected = mock[ReferenceTypeInfoProfile]
         val mockReferenceType = mock[ReferenceType]
@@ -75,7 +75,7 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         mockNewReferenceTypeProfile.expects(mockReferenceType)
           .returning(expected).once()
 
-        val actual = pureObjectInfoProfile.getReferenceType
+        val actual = pureObjectInfoProfile.referenceType
 
         actual should be (expected)
       }
@@ -108,9 +108,9 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
           mockScalaVirtualMachine,
           mockObjectReference
         )(
-          threadReference = mockThreadReference,
-          virtualMachine = mockVirtualMachine,
-          referenceType = mockReferenceType
+          _threadReference = mockThreadReference,
+          _virtualMachine = mockVirtualMachine,
+          _referenceType = mockReferenceType
         ) {
           override def invoke(
             methodInfoProfile: MethodInfoProfile,
@@ -121,7 +121,7 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
             arguments,
             jdiArguments
           )
-          override def getMethod(
+          override def method(
             name: String,
             parameterTypeNames: String*
           ): MethodInfoProfile = mockUnsafeMethod(name, parameterTypeNames)
@@ -239,7 +239,7 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#getMethods") {
+    describe("#methods") {
       it("should return a collection of profiles wrapping the object's visible methods") {
         val expected = Seq(mock[MethodInfoProfile])
 
@@ -254,13 +254,13 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
           mockNewMethodProfile.expects(m).returning(e).once()
         }
 
-        val actual = pureObjectInfoProfile.getMethods
+        val actual = pureObjectInfoProfile.methods
 
         actual should be (expected)
       }
     }
 
-    describe("#getMethod") {
+    describe("#method") {
       it("should throw a NoSuchElement exception if no method with matching name is found") {
         val name = "someName"
         val paramTypes = Seq("some.type")
@@ -271,7 +271,7 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
           .returning(Seq[Method]().asJava).once()
 
         intercept[NoSuchElementException] {
-          pureObjectInfoProfile.getMethod(name, paramTypes: _*)
+          pureObjectInfoProfile.method(name, paramTypes: _*)
         }
       }
 
@@ -296,7 +296,7 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
           .returning(false).once()
 
         intercept[NoSuchElementException] {
-          pureObjectInfoProfile.getMethod(name, paramTypes: _*)
+          pureObjectInfoProfile.method(name, paramTypes: _*)
         }
       }
 
@@ -325,13 +325,13 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         // New method profile created
         mockNewMethodProfile.expects(mockMethod).returning(expected).once()
 
-        val actual = pureObjectInfoProfile.getMethod(name, paramTypes: _*)
+        val actual = pureObjectInfoProfile.method(name, paramTypes: _*)
 
         actual should be (expected)
       }
     }
 
-    describe("#getFields") {
+    describe("#fields") {
       it("should return a collection of profiles wrapping the object's visible fields") {
         val expected = Seq(mock[VariableInfoProfile])
 
@@ -346,13 +346,13 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
           mockNewFieldProfile.expects(f).returning(e).once()
         }
 
-        val actual = pureObjectInfoProfile.getFields
+        val actual = pureObjectInfoProfile.fields
 
         actual should be (expected)
       }
     }
 
-    describe("#getField") {
+    describe("#field") {
       it("should throw a NoSuchElement exception if no field with matching name is found") {
         val name = "someName"
 
@@ -361,7 +361,7 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
           .returning(null).once()
 
         intercept[NoSuchElementException] {
-          pureObjectInfoProfile.getField(name)
+          pureObjectInfoProfile.field(name)
         }
       }
 
@@ -377,7 +377,7 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         // Create the new profile
         mockNewFieldProfile.expects(mockField).returning(expected).once()
 
-        val actual = pureObjectInfoProfile.getField(name)
+        val actual = pureObjectInfoProfile.field(name)
 
         actual should be (expected)
       }

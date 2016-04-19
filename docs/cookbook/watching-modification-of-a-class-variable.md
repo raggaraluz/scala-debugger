@@ -22,7 +22,7 @@ import org.scaladebugger.api.utils.JDITools
 object SingleWatchpointExample extends App {
   // Get the executing class name (remove $ from object class name)
   val klass = SingleWatchpointMainClass.getClass
-  val className = klass.getName.replaceAllLiterally("$", "")
+  val className = klass.name.replaceAllLiterally("$", "")
 
   // Add our main class to the classpath used to launch the class
   val classpath = JDITools.jvmClassPath
@@ -37,7 +37,7 @@ object SingleWatchpointExample extends App {
   launchingDebugger.start { s =>
     println("Launched and connected to JVM: " + s.uniqueId)
 
-    val otherClassName = classOf[SingleWatchpointOtherClass].getName
+    val otherClassName = classOf[SingleWatchpointOtherClass].name
     val fieldName = "x"
 
     println(s"Watching $otherClassName.$fieldName")

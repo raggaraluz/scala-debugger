@@ -21,42 +21,42 @@ trait LocationInfoProfile extends CommonInfoProfile {
    *
    * @return The reference type information
    */
-  def getDeclaringType: ReferenceTypeInfoProfile
+  def declaringType: ReferenceTypeInfoProfile
 
   /**
    * Retrieves the method information for the method containing this location.
    *
    * @return The method information
    */
-  def getMethod: MethodInfoProfile
+  def method: MethodInfoProfile
 
   /**
    * Retrieves the code position within the location's method.
    *
    * @return The code position, or -1 if not available
    */
-  def getCodeIndex: Long
+  def codeIndex: Long
 
   /**
    * Retrieves the code position within the location's method.
    *
    * @return Some code position, or None if not available
    */
-  def getCodeIndexOption: Option[Long] = Option(getCodeIndex).filter(_ >= 0)
+  def codeIndexOption: Option[Long] = Option(codeIndex).filter(_ >= 0)
 
   /**
    * Retrieves the line number associated with the location.
    *
    * @return The line number, or -1 if not available
    */
-  def getLineNumber: Int
+  def lineNumber: Int
 
   /**
    * Retrieves the line number associated with the location.
    *
    * @return Some line number, or None if not available
    */
-  def getLineNumberOption: Option[Int] = Option(getLineNumber).filter(_ >= 0)
+  def lineNumberOption: Option[Int] = Option(lineNumber).filter(_ >= 0)
 
   /**
    * Retrieves the identifying name for the source corresponding to this
@@ -64,7 +64,7 @@ trait LocationInfoProfile extends CommonInfoProfile {
    *
    * @return The identifying name
    */
-  def getSourceName: String
+  def sourceName: String
 
   /**
    * Retrieves the identifying name for the source corresponding to this
@@ -72,21 +72,21 @@ trait LocationInfoProfile extends CommonInfoProfile {
    *
    * @return Success containing the identifying name, otherwise a failure
    */
-  def tryGetSourceName: Try[String] = Try(getSourceName)
+  def trySourceName: Try[String] = Try(sourceName)
 
   /**
    * Retrieves the path to the source corresponding to this location.
    *
    * @return The source path
    */
-  def getSourcePath: String
+  def sourcePath: String
 
   /**
    * Retrieves the path to the source corresponding to this location.
    *
    * @return Success containing the source path, otherwise a failure
    */
-  def tryGetSourcePath: Try[String] = Try(getSourcePath)
+  def trySourcePath: Try[String] = Try(sourcePath)
 
   /**
    * Returns a string presenting a better human-readable description of
@@ -95,6 +95,6 @@ trait LocationInfoProfile extends CommonInfoProfile {
    * @return The human-readable description
    */
   override def toPrettyString: String = {
-    tryGetSourcePath.getOrElse("???") + " : " + getLineNumber
+    trySourcePath.getOrElse("???") + " : " + lineNumber
   }
 }

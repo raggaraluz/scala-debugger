@@ -41,7 +41,7 @@ trait ArrayInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    * @param index The location in the array to retrieve a value
    * @return Success containing the retrieved value, otherwise a failure
    */
-  def tryGetValue(index: Int): Try[ValueInfoProfile] = Try(getValue(index))
+  def tryValue(index: Int): Try[ValueInfoProfile] = Try(value(index))
 
   /**
    * Retrieves the value in the array at the specified index.
@@ -49,7 +49,7 @@ trait ArrayInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    * @param index The location in the array to retrieve a value
    * @return The retrieved value
    */
-  def getValue(index: Int): ValueInfoProfile
+  def value(index: Int): ValueInfoProfile
 
   /**
    * Retrieves the value in the array at the specified index.
@@ -57,7 +57,7 @@ trait ArrayInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    * @param index The location in the array to retrieve a value
    * @return The retrieved value
    */
-  def apply(index: Int): ValueInfoProfile = getValue(index)
+  def apply(index: Int): ValueInfoProfile = value(index)
 
   /**
    * Retrieves the values in the array starting from the specified index and
@@ -68,8 +68,8 @@ trait ArrayInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    *               remaining values to the end of the array
    * @return Success containing the retrieved values, otherwise a failure
    */
-  def tryGetValues(index: Int, length: Int): Try[Seq[ValueInfoProfile]] =
-    Try(getValues(index, length))
+  def tryValues(index: Int, length: Int): Try[Seq[ValueInfoProfile]] =
+    Try(values(index, length))
 
   /**
    * Retrieves the values in the array starting from the specified index and
@@ -80,7 +80,7 @@ trait ArrayInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    *               all remaining values to the end of the array
    * @return The retrieved values
    */
-  def getValues(index: Int, length: Int): Seq[ValueInfoProfile]
+  def values(index: Int, length: Int): Seq[ValueInfoProfile]
 
   /**
    * Retrieves the values in the array starting from the specified index and
@@ -92,28 +92,28 @@ trait ArrayInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    * @return The retrieved values
    */
   def apply(index: Int, length: Int): Seq[ValueInfoProfile] =
-    getValues(index, length)
+    values(index, length)
 
   /**
    * Retrieves all values from the array.
    *
    * @return Success containing the retrieved values, otherwise a failure
    */
-  def tryGetValues: Try[Seq[ValueInfoProfile]] = Try(getValues)
+  def tryValues: Try[Seq[ValueInfoProfile]] = Try(values)
 
   /**
    * Retrieves all values from the array.
    *
    * @return The retrieved values
    */
-  def getValues: Seq[ValueInfoProfile]
+  def values: Seq[ValueInfoProfile]
 
   /**
    * Retrieves all values from the array.
    *
    * @return The retrieved values
    */
-  def apply(): Seq[ValueInfoProfile] = getValues
+  def apply(): Seq[ValueInfoProfile] = values
 
   /**
    * Sets the value of the array element at the specified location.
@@ -221,7 +221,7 @@ trait ArrayInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
 
     // Retrieve N arguments if possible, returning less elements (or none)
     // depending on the size of the array
-    val args = this.tryGetValues(0, maxElements)
+    val args = this.tryValues(0, maxElements)
       .map(_.map(_.toPrettyString).mkString(","))
       .getOrElse("<ERROR>")
 

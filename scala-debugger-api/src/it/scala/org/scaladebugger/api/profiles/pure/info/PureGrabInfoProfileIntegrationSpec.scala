@@ -39,10 +39,10 @@ class PureGrabInfoProfileIntegrationSpec extends FunSpec with Matchers
           val id = t.get.uniqueID()
 
           s.withProfile(PureDebugProfile.Name)
-            .getThread(id).uniqueId should be (id)
+            .thread(id).uniqueId should be (id)
 
           s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).uniqueId should be (id)
+            .thread(t.get).uniqueId should be (id)
         })
       }
     }

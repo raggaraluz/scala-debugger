@@ -13,24 +13,24 @@ import scala.util.Try
  *
  * @param scalaVirtualMachine The high-level virtual machine containing the
  *                            array
- * @param arrayReference The reference to the underlying JDI array
- * @param virtualMachine The virtual machine used to mirror local values on
+ * @param _arrayReference The reference to the underlying JDI array
+ * @param _virtualMachine The virtual machine used to mirror local values on
  *                       the remote JVM
- * @param threadReference The thread associated with the array (for method
+ * @param _threadReference The thread associated with the array (for method
  *                        invocation)
- * @param referenceType The reference type for this array
+ * @param _referenceType The reference type for this array
  */
 class PureArrayInfoProfile(
   override val scalaVirtualMachine: ScalaVirtualMachine,
-  private val arrayReference: ArrayReference
+  private val _arrayReference: ArrayReference
 )(
-  private val virtualMachine: VirtualMachine = arrayReference.virtualMachine(),
-  private val threadReference: ThreadReference = arrayReference.owningThread(),
-  private val referenceType: ReferenceType = arrayReference.referenceType()
-) extends PureObjectInfoProfile(scalaVirtualMachine, arrayReference)(
-  virtualMachine = virtualMachine,
-  threadReference = threadReference,
-  referenceType = referenceType
+  private val _virtualMachine: VirtualMachine = _arrayReference.virtualMachine(),
+  private val _threadReference: ThreadReference = _arrayReference.owningThread(),
+  private val _referenceType: ReferenceType = _arrayReference.referenceType()
+) extends PureObjectInfoProfile(scalaVirtualMachine, _arrayReference)(
+  _virtualMachine = _virtualMachine,
+  _threadReference = _threadReference,
+  _referenceType = _referenceType
 ) with ArrayInfoProfile {
   import scala.collection.JavaConverters._
   import org.scaladebugger.api.lowlevel.wrappers.Implicits._
@@ -40,14 +40,14 @@ class PureArrayInfoProfile(
    *
    * @return The JDI instance
    */
-  override def toJdiInstance: ArrayReference = arrayReference
+  override def toJdiInstance: ArrayReference = _arrayReference
 
   /**
    * Returns the length of the array.
    *
    * @return The length of the array
    */
-  override def length: Int = arrayReference.length()
+  override def length: Int = _arrayReference.length()
 
   /**
    * Retrieves the value in the array at the specified index.
@@ -55,8 +55,8 @@ class PureArrayInfoProfile(
    * @param index The location in the array to retrieve a value
    * @return The retrieved value
    */
-  override def getValue(index: Int): ValueInfoProfile = {
-    newValueProfile(arrayReference.getValue(index))
+  override def value(index: Int): ValueInfoProfile = {
+    newValueProfile(_arrayReference.getValue(index))
   }
 
   /**
@@ -76,8 +76,8 @@ class PureArrayInfoProfile(
     srcIndex: Int,
     length: Int
   ): Seq[Any] = {
-    val v = values.map(virtualMachine.mirrorOf(_: Any)).asJava
-    arrayReference.setValues(index, v, srcIndex, length)
+    val v = values.map(_virtualMachine.mirrorOf(_: Any)).asJava
+    _arrayReference.setValues(index, v, srcIndex, length)
 
     val sliceIndex = if (length >= 0) srcIndex + length else values.length
     values.slice(srcIndex, sliceIndex)
@@ -90,8 +90,8 @@ class PureArrayInfoProfile(
    * @return The updated values
    */
   override def setValues(values: Seq[Any]): Seq[Any] = {
-    val v = values.map(virtualMachine.mirrorOf(_: Any)).asJava
-    arrayReference.setValues(v)
+    val v = values.map(_virtualMachine.mirrorOf(_: Any)).asJava
+    _arrayReference.setValues(v)
     values
   }
 
@@ -104,11 +104,11 @@ class PureArrayInfoProfile(
    *               remaining values to the end of the array
    * @return The retrieved values
    */
-  override def getValues(
+  override def values(
     index: Int,
     length: Int
   ): Seq[ValueInfoProfile] = {
-    arrayReference.getValues(index, length).asScala.map(newValueProfile)
+    _arrayReference.getValues(index, length).asScala.map(newValueProfile)
   }
 
   /**
@@ -116,8 +116,8 @@ class PureArrayInfoProfile(
    *
    * @return The retrieved values
    */
-  override def getValues: Seq[ValueInfoProfile] = {
-    arrayReference.getValues.asScala.map(newValueProfile)
+  override def values: Seq[ValueInfoProfile] = {
+    _arrayReference.getValues.asScala.map(newValueProfile)
   }
 
   /**
@@ -128,7 +128,7 @@ class PureArrayInfoProfile(
    * @return The updated value
    */
   override def setValue(index: Int, value: Any): Any = {
-    arrayReference.setValue(index, virtualMachine.mirrorOf(value))
+    _arrayReference.setValue(index, _virtualMachine.mirrorOf(value))
     value
   }
 

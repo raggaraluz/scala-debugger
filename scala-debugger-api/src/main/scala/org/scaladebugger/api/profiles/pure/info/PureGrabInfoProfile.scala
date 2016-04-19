@@ -22,7 +22,7 @@ trait PureGrabInfoProfile extends GrabInfoProfile {
    *                        a thread info profile
    * @return The new thread info profile
    */
-  override def getThread(
+  override def thread(
     threadReference: ThreadReference
   ): ThreadInfoProfile = newThreadProfile(threadReference)
 
@@ -33,7 +33,7 @@ trait PureGrabInfoProfile extends GrabInfoProfile {
    * @param threadId The id of the thread
    * @return The profile of the matching thread, or throws an exception
    */
-  override def getThread(threadId: Long): ThreadInfoProfile = {
+  override def thread(threadId: Long): ThreadInfoProfile = {
     import scala.collection.JavaConverters._
     _virtualMachine.allThreads().asScala
       .find(_.uniqueID() == threadId)
@@ -47,7 +47,7 @@ trait PureGrabInfoProfile extends GrabInfoProfile {
    *
    * @return The collection of reference type info profiles
    */
-  override def getClasses: Seq[ReferenceTypeInfoProfile] = {
+  override def classes: Seq[ReferenceTypeInfoProfile] = {
     import scala.collection.JavaConverters._
     _virtualMachine.allClasses().asScala.map(newReferenceTypeProfile)
   }
@@ -56,7 +56,7 @@ trait PureGrabInfoProfile extends GrabInfoProfile {
     new PureThreadInfoProfile(
       scalaVirtualMachine,
       threadReference
-    )(virtualMachine = _virtualMachine)
+    )(_virtualMachine = _virtualMachine)
 
   protected def newReferenceTypeProfile(
     referenceType: ReferenceType

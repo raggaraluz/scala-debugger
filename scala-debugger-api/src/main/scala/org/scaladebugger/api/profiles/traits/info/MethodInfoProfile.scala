@@ -30,7 +30,7 @@ trait MethodInfoProfile extends CommonInfoProfile {
    * @return Success containing the collection of parameter type names,
    *         otherwise a failure
    */
-  def tryGetParameterTypeNames: Try[Seq[String]] = Try(getParameterTypeNames)
+  def tryParameterTypeNames: Try[Seq[String]] = Try(parameterTypeNames)
 
   /**
    * Returns the fully-qualified class names of the types for the parameters
@@ -38,7 +38,7 @@ trait MethodInfoProfile extends CommonInfoProfile {
    *
    * @return The collection of parameter type names
    */
-  def getParameterTypeNames: Seq[String]
+  def parameterTypeNames: Seq[String]
 
   /**
    * Returns the fully-qualified class name of the type for the return value
@@ -46,7 +46,7 @@ trait MethodInfoProfile extends CommonInfoProfile {
    *
    * @return Success containing the return type name, otherwise a failure
    */
-  def tryGetReturnTypeName: Try[String] = Try(getReturnTypeName)
+  def tryReturnTypeName: Try[String] = Try(returnTypeName)
 
   /**
    * Returns the fully-qualified class name of the type for the return value
@@ -54,7 +54,7 @@ trait MethodInfoProfile extends CommonInfoProfile {
    *
    * @return The return type name
    */
-  def getReturnTypeName: String
+  def returnTypeName: String
 
   /**
    * Returns a string presenting a better human-readable description of
@@ -63,11 +63,11 @@ trait MethodInfoProfile extends CommonInfoProfile {
    * @return The human-readable description
    */
   override def toPrettyString: String = {
-    val params = this.tryGetParameterTypeNames
+    val params = this.tryParameterTypeNames
       .map(_.mkString(","))
       .getOrElse("???")
 
-    val returnType = this.tryGetReturnTypeName.getOrElse("???")
+    val returnType = this.tryReturnTypeName.getOrElse("???")
 
     s"def ${this.name}($params): $returnType"
   }

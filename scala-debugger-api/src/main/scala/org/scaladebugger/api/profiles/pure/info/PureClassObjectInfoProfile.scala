@@ -12,30 +12,30 @@ import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
  *
  * @param scalaVirtualMachine The high-level virtual machine containing the
  *                            class object
- * @param classObjectReference The reference to the underlying JDI class object
- * @param virtualMachine The virtual machine associated with the class object
- * @param threadReference The thread associated with the class object
+ * @param _classObjectReference The reference to the underlying JDI class object
+ * @param _virtualMachine The virtual machine associated with the class object
+ * @param _threadReference The thread associated with the class object
  *                        (for method invocation)
- * @param referenceType The reference type for this class object
+ * @param _referenceType The reference type for this class object
  */
 class PureClassObjectInfoProfile(
   override val scalaVirtualMachine: ScalaVirtualMachine,
-  private val classObjectReference: ClassObjectReference
+  private val _classObjectReference: ClassObjectReference
 )(
-  private val virtualMachine: VirtualMachine = classObjectReference.virtualMachine(),
-  private val threadReference: ThreadReference = classObjectReference.owningThread(),
-  private val referenceType: ReferenceType = classObjectReference.referenceType()
-) extends PureObjectInfoProfile(scalaVirtualMachine, classObjectReference)(
-  virtualMachine = virtualMachine,
-  threadReference = threadReference,
-  referenceType = referenceType
+  private val _virtualMachine: VirtualMachine = _classObjectReference.virtualMachine(),
+  private val _threadReference: ThreadReference = _classObjectReference.owningThread(),
+  private val _referenceType: ReferenceType = _classObjectReference.referenceType()
+) extends PureObjectInfoProfile(scalaVirtualMachine, _classObjectReference)(
+  _virtualMachine = _virtualMachine,
+  _threadReference = _threadReference,
+  _referenceType = _referenceType
 ) with ClassObjectInfoProfile {
   /**
    * Returns the JDI representation this profile instance wraps.
    *
    * @return The JDI instance
    */
-  override def toJdiInstance: ClassObjectReference = classObjectReference
+  override def toJdiInstance: ClassObjectReference = _classObjectReference
 
   /**
    * Retrieves the reference type information corresponding to this class
@@ -43,7 +43,7 @@ class PureClassObjectInfoProfile(
    *
    * @return The reference type information
    */
-  override def getReflectedType: ReferenceTypeInfoProfile = {
-    newReferenceTypeProfile(classObjectReference.reflectedType())
+  override def reflectedType: ReferenceTypeInfoProfile = {
+    newReferenceTypeProfile(_classObjectReference.reflectedType())
   }
 }

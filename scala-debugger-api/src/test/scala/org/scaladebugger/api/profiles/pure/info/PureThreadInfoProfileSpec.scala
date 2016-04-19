@@ -18,8 +18,8 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
     mockScalaVirtualMachine,
     mockThreadReference
   )(
-    virtualMachine = mockVirtualMachine,
-    referenceType = mockReferenceType
+    _virtualMachine = mockVirtualMachine,
+    _referenceType = mockReferenceType
   ) {
     override protected def newFrameProfile(
       stackFrame: StackFrame,
@@ -50,7 +50,7 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#getFrames()") {
+    describe("#frames()") {
       it("should return a collection of profiles wrapping the frames of the suspended thread") {
         val expected = Seq(mock[FrameInfoProfile])
 
@@ -68,13 +68,13 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
           mockNewFrameProfile.expects(sf, i).returning(e).once()
         }
 
-        val actual = pureThreadInfoProfile.getFrames
+        val actual = pureThreadInfoProfile.frames
 
         actual should be (expected)
       }
     }
 
-    describe("#getFrames(index, length)") {
+    describe("#frames(index, length)") {
       it("should return a collection of profiles wrapping the frames of the suspended thread") {
         val index = 1
         val length = 2
@@ -99,13 +99,13 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
           mockNewFrameProfile.expects(sf, i + index).returning(e).once()
         }
 
-        val actual = pureThreadInfoProfile.getFrames(index, length)
+        val actual = pureThreadInfoProfile.frames(index, length)
 
         actual should be (expected)
       }
     }
 
-    describe("#getFrame") {
+    describe("#frame") {
       it("should return a profile wrapping the frame at the specified position in the stack") {
         val expected = mock[FrameInfoProfile]
 
@@ -120,19 +120,19 @@ class PureThreadInfoProfileSpec extends FunSpec with Matchers
         mockNewFrameProfile.expects(mockStackFrame, index)
           .returning(expected).once()
 
-        val actual = pureThreadInfoProfile.getFrame(index)
+        val actual = pureThreadInfoProfile.frame(index)
 
         actual should be (expected)
       }
     }
 
-    describe("#getTotalFrames") {
+    describe("#totalFrames") {
       it("should return the total number of frames available in the stack of the suspended thread") {
         val expected = 999
 
         (mockThreadReference.frameCount _).expects().returning(expected).once()
 
-        val actual = pureThreadInfoProfile.getTotalFrames
+        val actual = pureThreadInfoProfile.totalFrames
 
         actual should be (expected)
       }

@@ -24,7 +24,7 @@ class ArrayInfoProfileSpec extends FunSpec with Matchers
         val arrayInfoProfile = new TestArrayInfoProfile {
           override def length: Int = r.get.length
 
-          override def tryGetValues(
+          override def tryValues(
             index: Int,
             totalElements: Int
           ): Try[Seq[ValueInfoProfile]] = mockUnsafeMethod(index, totalElements)
@@ -51,7 +51,7 @@ class ArrayInfoProfileSpec extends FunSpec with Matchers
         val arrayInfoProfile = new TestArrayInfoProfile {
           override def length: Int = r.get.length
 
-          override def tryGetValues(
+          override def tryValues(
             index: Int,
             totalElements: Int
           ): Try[Seq[ValueInfoProfile]] = mockUnsafeMethod(index, totalElements)
@@ -78,7 +78,7 @@ class ArrayInfoProfileSpec extends FunSpec with Matchers
         val arrayInfoProfile = new TestArrayInfoProfile {
           override def length: Int = r.get.length + 1
 
-          override def tryGetValues(
+          override def tryValues(
             index: Int,
             totalElements: Int
           ): Try[Seq[ValueInfoProfile]] = mockUnsafeMethod(index, totalElements)
@@ -102,7 +102,7 @@ class ArrayInfoProfileSpec extends FunSpec with Matchers
         val arrayInfoProfile = new TestArrayInfoProfile {
           override def length: Int = maxLength
 
-          override def tryGetValues(
+          override def tryValues(
             index: Int,
             totalElements: Int
           ): Try[Seq[ValueInfoProfile]] = mockUnsafeMethod(index, totalElements)
@@ -114,28 +114,28 @@ class ArrayInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#tryGetValue") {
+    describe("#tryValue") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Int, ValueInfoProfile]
 
         val arrayInfoProfile = new TestArrayInfoProfile {
-          override def getValue(index: Int): ValueInfoProfile =
+          override def value(index: Int): ValueInfoProfile =
             mockUnsafeMethod(index)
         }
 
         val a1 = 999
         val r = mock[ValueInfoProfile]
         mockUnsafeMethod.expects(a1).returning(r).once()
-        arrayInfoProfile.tryGetValue(a1).get should be (r)
+        arrayInfoProfile.tryValue(a1).get should be (r)
       }
     }
 
     describe("#apply") {
-      it("should invoke the unsafe getValue method") {
+      it("should invoke the unsafe value method") {
         val mockUnsafeMethod = mockFunction[Int, ValueInfoProfile]
 
         val arrayInfoProfile = new TestArrayInfoProfile {
-          override def getValue(index: Int): ValueInfoProfile =
+          override def value(index: Int): ValueInfoProfile =
             mockUnsafeMethod(index)
         }
 
@@ -180,12 +180,12 @@ class ArrayInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#tryGetValues(index, totalElements)") {
+    describe("#tryValues(index, totalElements)") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Int, Int, Seq[ValueInfoProfile]]
 
         val arrayInfoProfile = new TestArrayInfoProfile {
-          override def getValues(index: Int, totalElements: Int): Seq[ValueInfoProfile] =
+          override def values(index: Int, totalElements: Int): Seq[ValueInfoProfile] =
             mockUnsafeMethod(index, totalElements)
         }
 
@@ -193,21 +193,21 @@ class ArrayInfoProfileSpec extends FunSpec with Matchers
         val a2 = 40
         val r = Seq(mock[ValueInfoProfile])
         mockUnsafeMethod.expects(a1, a2).returning(r).once()
-        arrayInfoProfile.tryGetValues(a1, a2).get should be (r)
+        arrayInfoProfile.tryValues(a1, a2).get should be (r)
       }
     }
 
-    describe("#tryGetValues") {
+    describe("#tryValues") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Seq[ValueInfoProfile]]
 
         val arrayInfoProfile = new TestArrayInfoProfile {
-          override def getValues: Seq[ValueInfoProfile] = mockUnsafeMethod()
+          override def values: Seq[ValueInfoProfile] = mockUnsafeMethod()
         }
 
         val r = Seq(mock[ValueInfoProfile])
         mockUnsafeMethod.expects().returning(r).once()
-        arrayInfoProfile.tryGetValues.get should be (r)
+        arrayInfoProfile.tryValues.get should be (r)
       }
     }
 

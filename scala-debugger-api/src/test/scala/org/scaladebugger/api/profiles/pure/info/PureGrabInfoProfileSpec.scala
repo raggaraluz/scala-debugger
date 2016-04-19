@@ -23,19 +23,19 @@ class PureGrabInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureGrabInfoProfile") {
-    describe("#getThread(threadReference)") {
+    describe("#thread(threadReference)") {
       it("should return a pure thread info profile wrapping the thread") {
         val expected = mock[ThreadReference]
 
         (expected.referenceType _).expects().returning(mock[ReferenceType]).once()
-        val actual = pureGrabInfoProfile.getThread(expected)
+        val actual = pureGrabInfoProfile.thread(expected)
 
         (expected.uniqueID _).expects().returning(999L).twice()
         actual.uniqueId should be (expected.uniqueID())
       }
     }
 
-    describe("#getThread(threadId)") {
+    describe("#thread(threadId)") {
       it("should return a new profile if a thread with matching unique id is found") {
         val expected = mock[ThreadReference]
 
@@ -45,7 +45,7 @@ class PureGrabInfoProfileSpec extends FunSpec with Matchers
 
         (expected.uniqueID _).expects().returning(999L).repeated(3).times()
         (expected.referenceType _).expects().returning(mock[ReferenceType]).once()
-        val actual = pureGrabInfoProfile.getThread(999L)
+        val actual = pureGrabInfoProfile.thread(999L)
 
         actual.uniqueId should be (expected.uniqueID())
       }
@@ -59,12 +59,12 @@ class PureGrabInfoProfileSpec extends FunSpec with Matchers
 
         intercept[NoSuchElementException] {
           (mockThreadReference.uniqueID _).expects().returning(998L).once()
-          pureGrabInfoProfile.getThread(999L)
+          pureGrabInfoProfile.thread(999L)
         }
       }
     }
 
-    describe("#getClasses") {
+    describe("#classes") {
       it("should return a collection of profiles wrapping class reference types") {
         val expected = Seq(mock[ReferenceTypeInfoProfile])
         val referenceTypes = Seq(mock[ReferenceType])
@@ -77,7 +77,7 @@ class PureGrabInfoProfileSpec extends FunSpec with Matchers
           mockNewReferenceTypeProfile.expects(r).returning(e).once()
         }
 
-        val actual = pureGrabInfoProfile.getClasses
+        val actual = pureGrabInfoProfile.classes
 
         actual should be (expected)
       }

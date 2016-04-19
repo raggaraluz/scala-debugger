@@ -35,8 +35,8 @@ class PureFieldInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val field = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("z1")
+            .thread(t.get).topFrame
+            .variable("z1")
 
           field.name should be ("z1")
         })
@@ -58,8 +58,8 @@ class PureFieldInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val field = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("z1")
+            .thread(t.get).topFrame
+            .variable("z1")
 
           field.isField should be (true)
         })
@@ -81,8 +81,8 @@ class PureFieldInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val field = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("z1")
+            .thread(t.get).topFrame
+            .variable("z1")
 
           field.isLocal should be (false)
         })
@@ -104,8 +104,8 @@ class PureFieldInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val field = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("z1")
+            .thread(t.get).topFrame
+            .variable("z1")
 
           field.isArgument should be (false)
         })
@@ -127,8 +127,8 @@ class PureFieldInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val field = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("z1")
+            .thread(t.get).topFrame
+            .variable("z1")
 
           field.setValue(333) should be (333)
         })
@@ -150,8 +150,8 @@ class PureFieldInfoProfileIntegrationSpec extends FunSpec with Matchers
       withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
         logTimeTaken(eventually {
           val field = s.withProfile(PureDebugProfile.Name)
-            .getThread(t.get).getTopFrame
-            .getVariable("z2")
+            .thread(t.get).topFrame
+            .variable("z2")
 
           field.setValue("some value") should be ("some value")
         })

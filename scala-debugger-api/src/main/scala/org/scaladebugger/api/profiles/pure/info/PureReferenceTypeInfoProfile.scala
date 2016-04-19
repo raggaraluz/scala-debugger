@@ -10,43 +10,43 @@ import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
  *
  * @param scalaVirtualMachine The high-level virtual machine containing the
  *                            reference type
- * @param referenceType The reference to the underlying JDI reference type
+ * @param _referenceType The reference to the underlying JDI reference type
  */
 class PureReferenceTypeInfoProfile(
   val scalaVirtualMachine: ScalaVirtualMachine,
-  private val referenceType: ReferenceType
+  private val _referenceType: ReferenceType
 ) extends ReferenceTypeInfoProfile {
-  private lazy val defaultStratum: String = referenceType.defaultStratum()
+  private lazy val defaultStratum: String = _referenceType.defaultStratum()
 
   /**
    * Returns the JDI representation this profile instance wraps.
    *
    * @return The JDI instance
    */
-  override def toJdiInstance: ReferenceType = referenceType
+  override def toJdiInstance: ReferenceType = _referenceType
 
   /**
    * Retrieves the fully-qualified class name of this type.
    *
    * @return The fully-qualified class name
    */
-  override def getName: String = referenceType.name()
+  override def name: String = _referenceType.name()
 
   /**
    * Retrieves the generic signature type if it exists.
    *
    * @return Some signature if it exists, otherwise None
    */
-  override def getGenericSignature: Option[String] =
-    Option(referenceType.genericSignature())
+  override def genericSignature: Option[String] =
+    Option(_referenceType.genericSignature())
 
   /**
    * Retrieves the source debug extension for this type.
    *
    * @return The source debug extension
    */
-  override def getSourceDebugExtension: String =
-    referenceType.sourceDebugExtension()
+  override def sourceDebugExtension: String =
+    _referenceType.sourceDebugExtension()
 
   /**
    * Retrieves all identifying names for the source(s) corresponding to this
@@ -54,9 +54,9 @@ class PureReferenceTypeInfoProfile(
    *
    * @return The collection of identifying names
    */
-  override def getSourceNames: Seq[String] = {
+  override def sourceNames: Seq[String] = {
     import scala.collection.JavaConverters._
-    referenceType.sourceNames(defaultStratum).asScala
+    _referenceType.sourceNames(defaultStratum).asScala
   }
 
   /**
@@ -64,9 +64,9 @@ class PureReferenceTypeInfoProfile(
    *
    * @return The collection of source paths
    */
-  override def getSourcePaths: Seq[String] = {
+  override def sourcePaths: Seq[String] = {
     import scala.collection.JavaConverters._
-    referenceType.sourcePaths(defaultStratum).asScala
+    _referenceType.sourcePaths(defaultStratum).asScala
   }
 
   /**
@@ -75,9 +75,9 @@ class PureReferenceTypeInfoProfile(
    *
    * @return The collection of fields as variable info profiles
    */
-  override def getAllFields: Seq[VariableInfoProfile] = {
+  override def allFields: Seq[VariableInfoProfile] = {
     import scala.collection.JavaConverters._
-    referenceType.allFields().asScala.map(newFieldProfile)
+    _referenceType.allFields().asScala.map(newFieldProfile)
   }
 
   /**
@@ -88,9 +88,9 @@ class PureReferenceTypeInfoProfile(
    *
    * @return The collection of fields as variable info profiles
    */
-  override def getVisibleFields: Seq[VariableInfoProfile] = {
+  override def visibleFields: Seq[VariableInfoProfile] = {
     import scala.collection.JavaConverters._
-    referenceType.visibleFields().asScala.map(newFieldProfile)
+    _referenceType.visibleFields().asScala.map(newFieldProfile)
   }
 
   /**
@@ -99,8 +99,8 @@ class PureReferenceTypeInfoProfile(
    * @param name The name of the field to retrieve
    * @return The field as a variable info profile
    */
-  override def getField(name: String): VariableInfoProfile = {
-    newFieldProfile(Option(referenceType.fieldByName(name)).get)
+  override def field(name: String): VariableInfoProfile = {
+    newFieldProfile(Option(_referenceType.fieldByName(name)).get)
   }
 
   /**
@@ -109,9 +109,9 @@ class PureReferenceTypeInfoProfile(
    *
    * @return The collection of methods as method info profiles
    */
-  override def getAllMethods: Seq[MethodInfoProfile] = {
+  override def allMethods: Seq[MethodInfoProfile] = {
     import scala.collection.JavaConverters._
-    referenceType.allMethods().asScala.map(newMethodProfile)
+    _referenceType.allMethods().asScala.map(newMethodProfile)
   }
 
   /**
@@ -122,9 +122,9 @@ class PureReferenceTypeInfoProfile(
    *
    * @return The collection of methods as method info profiles
    */
-  override def getVisibleMethods: Seq[MethodInfoProfile] = {
+  override def visibleMethods: Seq[MethodInfoProfile] = {
     import scala.collection.JavaConverters._
-    referenceType.visibleMethods().asScala.map(newMethodProfile)
+    _referenceType.visibleMethods().asScala.map(newMethodProfile)
   }
 
   /**
@@ -133,9 +133,9 @@ class PureReferenceTypeInfoProfile(
    * @param name The name of the method to retrieve
    * @return The collection of method info profiles
    */
-  override def getMethods(name: String): Seq[MethodInfoProfile] = {
+  override def methods(name: String): Seq[MethodInfoProfile] = {
     import scala.collection.JavaConverters._
-    referenceType.methodsByName(name).asScala.map(newMethodProfile)
+    _referenceType.methodsByName(name).asScala.map(newMethodProfile)
   }
 
   /**
@@ -144,9 +144,9 @@ class PureReferenceTypeInfoProfile(
    *
    * @return The collection of location information
    */
-  override def getLocationsOfLine(line: Int): Seq[LocationInfoProfile] = {
+  override def locationsOfLine(line: Int): Seq[LocationInfoProfile] = {
     import scala.collection.JavaConverters._
-    referenceType.locationsOfLine(line).asScala.map(newLocationProfile)
+    _referenceType.locationsOfLine(line).asScala.map(newLocationProfile)
   }
 
   /**
@@ -155,9 +155,9 @@ class PureReferenceTypeInfoProfile(
    *
    * @return The collection of location information
    */
-  override def getAllLineLocations: Seq[LocationInfoProfile] = {
+  override def allLineLocations: Seq[LocationInfoProfile] = {
     import scala.collection.JavaConverters._
-    referenceType.allLineLocations().asScala.map(newLocationProfile)
+    _referenceType.allLineLocations().asScala.map(newLocationProfile)
   }
 
   /**
@@ -166,9 +166,9 @@ class PureReferenceTypeInfoProfile(
    *
    * @return The collection of reference type information
    */
-  override def getNestedTypes: Seq[ReferenceTypeInfoProfile] = {
+  override def nestedTypes: Seq[ReferenceTypeInfoProfile] = {
     import scala.collection.JavaConverters._
-    referenceType.nestedTypes().asScala.map(newReferenceTypeProfile)
+    _referenceType.nestedTypes().asScala.map(newReferenceTypeProfile)
   }
 
   /**
@@ -178,11 +178,11 @@ class PureReferenceTypeInfoProfile(
    *                     to get all reachable instances
    * @return The collection of object instances
    */
-  override def getInstances(maxInstances: Long): Seq[ObjectInfoProfile] = {
+  override def instances(maxInstances: Long): Seq[ObjectInfoProfile] = {
     require(maxInstances >= 0, "Max instances cannot be negative!")
 
     import scala.collection.JavaConverters._
-    referenceType.instances(maxInstances).asScala.map(newObjectProfile)
+    _referenceType.instances(maxInstances).asScala.map(newObjectProfile)
   }
 
   /**
@@ -191,8 +191,8 @@ class PureReferenceTypeInfoProfile(
    *
    * @return The profile representing the classloader
    */
-  override def getClassLoader: ClassLoaderInfoProfile = newClassLoaderProfile(
-    referenceType.classLoader()
+  override def classLoader: ClassLoaderInfoProfile = newClassLoaderProfile(
+    _referenceType.classLoader()
   )
 
   /**
@@ -200,8 +200,8 @@ class PureReferenceTypeInfoProfile(
    *
    * @return The profile representing the class
    */
-  override def getClassObject: ClassObjectInfoProfile = newClassObjectProfile(
-    referenceType.classObject()
+  override def classObject: ClassObjectInfoProfile = newClassObjectProfile(
+    _referenceType.classObject()
   )
 
   /**
@@ -209,14 +209,14 @@ class PureReferenceTypeInfoProfile(
    *
    * @return True if final, otherwise false
    */
-  override def isFinal: Boolean = referenceType.isFinal
+  override def isFinal: Boolean = _referenceType.isFinal
 
   /**
    * Indicates whether or not this type's class has been prepared.
    *
    * @return True if prepared, otherwise false
    */
-  override def isPrepared: Boolean = referenceType.isPrepared
+  override def isPrepared: Boolean = _referenceType.isPrepared
 
   /**
    * Indicates whether or not this type has been initialized. This value is
@@ -225,21 +225,21 @@ class PureReferenceTypeInfoProfile(
    *
    * @return True if initialized, otherwise false
    */
-  override def isInitialized: Boolean = referenceType.isInitialized
+  override def isInitialized: Boolean = _referenceType.isInitialized
 
   /**
    * Indicates whether or not this type is static.
    *
    * @return True if static, otherwise false
    */
-  override def isStatic: Boolean = referenceType.isStatic
+  override def isStatic: Boolean = _referenceType.isStatic
 
   /**
    * Indicates whether or not this type is abstract.
    *
    * @return True if abstract, otherwise false
    */
-  override def isAbstract: Boolean = referenceType.isAbstract
+  override def isAbstract: Boolean = _referenceType.isAbstract
 
   /**
    * Indicates whether or not this type has been verified. This value is
@@ -248,7 +248,7 @@ class PureReferenceTypeInfoProfile(
    *
    * @return True if verified, otherwise false
    */
-  override def isVerified: Boolean = referenceType.isVerified
+  override def isVerified: Boolean = _referenceType.isVerified
 
   /**
    * Retrieves the major class version number defined in the class file format
@@ -256,7 +256,7 @@ class PureReferenceTypeInfoProfile(
    *
    * @return The major version number
    */
-  override def getMajorVersion: Int = referenceType.majorVersion()
+  override def majorVersion: Int = _referenceType.majorVersion()
 
   /**
    * Retrieves the minor class version number defined in the class file format
@@ -264,7 +264,7 @@ class PureReferenceTypeInfoProfile(
    *
    * @return The minor version number
    */
-  override def getMinorVersion: Int = referenceType.minorVersion()
+  override def minorVersion: Int = _referenceType.minorVersion()
 
   protected def newFieldProfile(field: Field): VariableInfoProfile =
     new PureFieldInfoProfile(scalaVirtualMachine, null, field)()
@@ -284,7 +284,7 @@ class PureReferenceTypeInfoProfile(
     scalaVirtualMachine,
     classObjectReference
   )(
-    referenceType = referenceType
+    _referenceType = _referenceType
   )
 
   protected def newClassLoaderProfile(
@@ -293,7 +293,7 @@ class PureReferenceTypeInfoProfile(
     scalaVirtualMachine,
     classLoaderReference
   )(
-    referenceType = referenceType
+    _referenceType = _referenceType
   )
 
   protected def newReferenceTypeProfile(
