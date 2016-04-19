@@ -45,6 +45,55 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
   def getFrames: Seq[FrameInfoProfile]
 
   /**
+   * Retrieves profiles for all frames in the stack starting from the specified
+   * index and up to the desired length.
+   *
+   * @param index The index (starting with 0 being top) of the first frame
+   *              whose profile to retrieve
+   * @param length The total number of frames to retrieve starting with the one
+   *               at index, or -1 if all frames including and after the index
+   *               should be retrieved
+   * @return Success of collection of frame profiles, otherwise a failure
+   */
+  def tryGetFrames(index: Int, length: Int): Try[Seq[FrameInfoProfile]] =
+    Try(getFrames(index, length))
+
+  /**
+   * Retrieves profiles for all frames in the stack starting from the specified
+   * index and up to the desired length.
+   *
+   * @param index The index (starting with 0 being top) of the first frame
+   *              whose profile to retrieve
+   * @param length The total number of frames to retrieve starting with the one
+   *               at index, or -1 if all frames including and after the index
+   *               should be retrieved
+   * @return The collection of frame profiles
+   */
+  def getFrames(index: Int, length: Int): Seq[FrameInfoProfile] = {
+    // Cap the length to prevent throwing an exception on index out of bounds
+    // with regard to desired total frames
+    val maxFrames = getTotalFrames
+    val actualLength =
+      if (index + length > maxFrames) maxFrames - index
+      else if (length < 0) maxFrames - index
+      else length
+
+    rawFrames(index, actualLength)
+  }
+
+  /**
+   * Retrieves profiles for all frames in the stack starting from the specified
+   * index and up to the desired length.
+   *
+   * @param index The index (starting with 0 being top) of the first frame
+   *              whose profile to retrieve
+   * @param length The total number of frames to retrieve starting with the one
+   *               at index
+   * @return The collection of frame profiles
+   */
+  protected def rawFrames(index: Int, length: Int): Seq[FrameInfoProfile]
+
+  /**
    * Returns the total frames held in the current frame stack.
    *
    * @return Success containing the total number of frames, otherwise a failure
@@ -159,8 +208,6 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    * @return The human-readable description
    */
   override def toPrettyString: String = {
-    val threadName = this.name
-    val uniqueHexCode = this.uniqueId.toHexString.toUpperCase()
-    s"Thread $threadName (0x$uniqueHexCode)"
+    s"Thread $name (0x$uniqueIdHexString)"
   }
 }

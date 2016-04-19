@@ -188,6 +188,6 @@ trait FrameInfoProfile extends CommonInfoProfile {
    */
   override def toPrettyString: String = {
     val loc = this.tryGetLocation.map(_.toPrettyString).getOrElse("???")
-    s"Frame at ($loc)"
+    s"Frame $index at ($loc)"
   }
 }

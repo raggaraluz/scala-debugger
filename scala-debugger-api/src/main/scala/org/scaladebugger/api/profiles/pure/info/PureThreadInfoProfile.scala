@@ -56,6 +56,26 @@ class PureThreadInfoProfile(
   }
 
   /**
+   * Retrieves profiles for all frames in the stack starting from the specified
+   * index and up to the desired length.
+   *
+   * @param index  The index (starting with 0 being top) of the first frame
+   *               whose profile to retrieve
+   * @param length The total number of frames to retrieve starting with the one
+   *               at index
+   * @return The collection of frame profiles
+   */
+  override protected def rawFrames(
+    index: Int,
+    length: Int
+  ): Seq[FrameInfoProfile] = {
+    import scala.collection.JavaConverters._
+
+    threadReference.frames(index, length).asScala
+      .zipWithIndex.map { case (f, i) => newFrameProfile(f, i + index) }
+  }
+
+  /**
    * Retrieves the profile for the specified frame in the stack.
    *
    * @param index The index (starting with 0 being top) of the frame whose

@@ -19,7 +19,44 @@ class PureThreadInfoProfileIntegrationSpec extends FunSpec with Matchers
     interval = scaled(test.Constants.EventuallyInterval)
   )
 
-  describe("PureGrabInfoProfile") {
+  describe("PureThreadInfoProfile") {
+    it("should be able to get a list of frames for the suspended thread") {
+      val testClass = "org.scaladebugger.test.info.Frames"
+      val testFile = JDITools.scalaClassStringToFileString(testClass)
+
+      @volatile var t: Option[ThreadReference] = None
+      val s = DummyScalaVirtualMachine.newInstance()
+
+      // NOTE: Do not resume so we can check the stack frames
+      s.withProfile(PureDebugProfile.Name)
+        .getOrCreateBreakpointRequest(testFile, 25, NoResume)
+        .foreach(e => t = Some(e.thread()))
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
+        logTimeTaken(eventually {
+          val thread = s.withProfile(PureDebugProfile.Name).getThread(t.get)
+
+          // Should be 5
+          val totalFrames = thread.getTotalFrames
+
+          val index = 1
+          val length = 2
+
+          // Valid list of frames
+          thread.getFrames.slice(index, length + 1).map(_.toPrettyString) should
+            be (thread.getFrames(index, length).map(_.toPrettyString))
+
+          // Length too long when retrieving should revert to all frames
+          thread.getFrames.slice(index, totalFrames).map(_.toPrettyString) should
+            be (thread.getFrames(index, totalFrames + 1).map(_.toPrettyString))
+
+          // Length of -1 should return all remaining frames
+          thread.getFrames.slice(index, totalFrames).map(_.toPrettyString) should
+            be (thread.getFrames(index, -1).map(_.toPrettyString))
+        })
+      }
+    }
+
     it("should be able to find a variable by its name") {
       val testClass = "org.scaladebugger.test.info.Variables"
       val testFile = JDITools.scalaClassStringToFileString(testClass)
