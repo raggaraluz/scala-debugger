@@ -1,6 +1,7 @@
 package org.scaladebugger.api.profiles.pure.info
 
-import com.sun.jdi.Method
+import com.sun.jdi.{Method, Type}
+import org.scaladebugger.api.profiles.traits.info.TypeInfoProfile
 import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -8,12 +9,16 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 class PureMethodInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
+  private val mockNewTypeProfile = mockFunction[Type, TypeInfoProfile]
   private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockMethod = mock[Method]
   private val pureMethodInfoProfile = new PureMethodInfoProfile(
     mockScalaVirtualMachine,
     mockMethod
-  )
+  ) {
+    override protected def newTypeProfile(_type: Type): TypeInfoProfile =
+      mockNewTypeProfile(_type)
+  }
 
   describe("PureMethodInfoProfile") {
     describe("#toJdiInstance") {
@@ -38,6 +43,21 @@ class PureMethodInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#returnTypeInfo") {
+      it("should return the type information for the return type") {
+        val expected = mock[TypeInfoProfile]
+
+        val mockType = mock[Type]
+        (mockMethod.returnType _).expects().returning(mockType).once()
+
+        mockNewTypeProfile.expects(mockType).returning(expected).once()
+
+        val actual = pureMethodInfoProfile.returnTypeInfo
+
+        actual should be (expected)
+      }
+    }
+
     describe("#returnTypeName") {
       it("should return the name of the method's return type") {
         val expected = "some.return.type"
@@ -45,6 +65,25 @@ class PureMethodInfoProfileSpec extends FunSpec with Matchers
         (mockMethod.returnTypeName _).expects().returning(expected).once()
 
         val actual = pureMethodInfoProfile.returnTypeName
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#parameterTypeInfo") {
+      it("should return the type information for the parameter types") {
+        val expected = Seq(mock[TypeInfoProfile])
+
+        import scala.collection.JavaConverters._
+        val mockTypes: Seq[Type] = expected.map(_ => mock[Type])
+        (mockMethod.argumentTypes _).expects()
+          .returning(mockTypes.asJava).once()
+
+        expected.zip(mockTypes).foreach { case (e, t) =>
+          mockNewTypeProfile.expects(t).returning(e).once()
+        }
+
+        val actual = pureMethodInfoProfile.parameterTypeInfo
 
         actual should be (expected)
       }

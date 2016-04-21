@@ -2,7 +2,7 @@ package org.scaladebugger.api.profiles.pure.info
 //import acyclic.file
 
 import com.sun.jdi._
-import org.scaladebugger.api.profiles.traits.info.{FrameInfoProfile, IndexedVariableInfoProfile, ValueInfoProfile, VariableInfoProfile}
+import org.scaladebugger.api.profiles.traits.info._
 import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.util.Try
@@ -43,6 +43,21 @@ class PureLocalVariableInfoProfile(
    * @return The name of the variable
    */
   override def name: String = _localVariable.name()
+
+  /**
+   * Returns the name of the type representing the variable.
+   *
+   * @return The type name as a string
+   */
+  override def typeName: String = _localVariable.typeName()
+
+  /**
+   * Returns the type information for the variable.
+   *
+   * @return The profile containing type information
+   */
+  override def typeInfo: TypeInfoProfile =
+    newTypeProfile(_localVariable.`type`())
 
   /**
    * Returns the index of the stack frame where this variable is located.
@@ -108,4 +123,7 @@ class PureLocalVariableInfoProfile(
 
   protected def newValueProfile(value: Value): ValueInfoProfile =
     new PureValueInfoProfile(scalaVirtualMachine, value)
+
+  protected def newTypeProfile(_type: Type): TypeInfoProfile =
+    new PureTypeInfoProfile(scalaVirtualMachine, _type)
 }

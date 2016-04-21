@@ -1,7 +1,7 @@
 package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
-import org.scaladebugger.api.profiles.traits.info.{FrameInfoProfile, ValueInfoProfile}
+import org.scaladebugger.api.profiles.traits.info.{FrameInfoProfile, TypeInfoProfile, ValueInfoProfile}
 import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -9,6 +9,7 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 class PureLocalVariableInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
+  private val mockNewTypeProfile = mockFunction[Type, TypeInfoProfile]
   private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockVirtualMachine = mock[VirtualMachine]
   private val mockFrameInfoProfile = mock[FrameInfoProfile]
@@ -19,7 +20,10 @@ class PureLocalVariableInfoProfileSpec extends FunSpec with Matchers
     mockFrameInfoProfile,
     mockLocalVariable,
     TestOffsetIndex
-  )(mockVirtualMachine)
+  )(mockVirtualMachine) {
+    override protected def newTypeProfile(_type: Type): TypeInfoProfile =
+      mockNewTypeProfile(_type)
+  }
 
   describe("PureLocalVariableInfoProfile") {
     describe("#toJdiInstance") {
@@ -39,6 +43,34 @@ class PureLocalVariableInfoProfileSpec extends FunSpec with Matchers
         (mockLocalVariable.name _).expects().returning(expected).once()
 
         val actual = pureLocalVariableInfoProfile.name
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#typeName") {
+      it("should return the local variable's type name") {
+        val expected = "some.type.name"
+
+        (mockLocalVariable.typeName _).expects().returning(expected).once()
+
+        val actual = pureLocalVariableInfoProfile.typeName
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#typeInfo") {
+      it("should should return a new type info profile wrapping the type") {
+        val expected = mock[TypeInfoProfile]
+
+        val mockType = mock[Type]
+        (mockLocalVariable.`type` _).expects().returning(mockType).once()
+
+        mockNewTypeProfile.expects(mockType)
+          .returning(expected).once()
+
+        val actual = pureLocalVariableInfoProfile.typeInfo
 
         actual should be (expected)
       }

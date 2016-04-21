@@ -17,11 +17,19 @@ trait ValueInfoProfile extends CommonInfoProfile {
   override def toJdiInstance: Value
 
   /**
-   * Returns the type name of this value.
+   * Returns the type information for the value.
    *
-   * @return The type name (typically a fully-qualified class name)
+   * @return The profile containing type information
    */
-  def typeName: String
+  def typeInfo: TypeInfoProfile
+
+  /**
+   * Returns the type information for the value.
+   *
+   * @return Success containing the profile containing type information,
+   *         otherwise a failure
+   */
+  def tryTypeInfo: Try[TypeInfoProfile] = Try(typeInfo)
 
   /**
    * Returns the value as a value local to this JVM.

@@ -60,7 +60,7 @@ class PureFrameInfoProfileIntegrationSpec extends FunSpec with Matchers
         logTimeTaken(eventually {
           val thisTypeName = s.withProfile(PureDebugProfile.Name)
             .thread(t.get).topFrame
-            .thisObject.typeName
+            .thisObject.typeInfo.name
 
           thisTypeName should be ("org.scaladebugger.test.info.Variables$")
         })

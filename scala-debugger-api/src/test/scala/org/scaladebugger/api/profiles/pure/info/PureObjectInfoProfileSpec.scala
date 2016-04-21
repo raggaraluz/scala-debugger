@@ -13,8 +13,8 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
   private val mockNewFieldProfile = mockFunction[Field, VariableInfoProfile]
   private val mockNewMethodProfile = mockFunction[Method, MethodInfoProfile]
   private val mockNewValueProfile = mockFunction[Value, ValueInfoProfile]
+  private val mockNewTypeProfile = mockFunction[Type, TypeInfoProfile]
   private val mockNewTypeCheckerProfile = mockFunction[TypeCheckerProfile]
-  private val mockNewReferenceTypeProfile = mockFunction[ReferenceType, ReferenceTypeInfoProfile]
   private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockVirtualMachine = mock[VirtualMachine]
   private val mockReferenceType = mock[ReferenceType]
@@ -36,9 +36,8 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
       mockNewValueProfile(value)
     override protected def newTypeCheckerProfile(): TypeCheckerProfile =
       mockNewTypeCheckerProfile()
-    override protected def newReferenceTypeProfile(
-      referenceType: ReferenceType
-    ): ReferenceTypeInfoProfile = mockNewReferenceTypeProfile(referenceType)
+    override protected def newTypeProfile(_type: Type): TypeInfoProfile =
+      mockNewTypeProfile(_type)
   }
 
   describe("PureObjectInfoProfile") {
@@ -47,6 +46,27 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         val expected = mockObjectReference
 
         val actual = pureObjectInfoProfile.toJdiInstance
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#typeInfo") {
+      it("should should return a new reference type profile wrapping the type") {
+        val expected = mock[ReferenceTypeInfoProfile]
+
+        val mockType = mock[Type]
+        (mockObjectReference.`type` _).expects()
+          .returning(mockType).once()
+
+        val mockTypeInfoProfile = mock[TypeInfoProfile]
+        mockNewTypeProfile.expects(mockType)
+          .returning(mockTypeInfoProfile).once()
+
+        (mockTypeInfoProfile.toReferenceType _).expects()
+          .returning(expected).once()
+
+        val actual = pureObjectInfoProfile.typeInfo
 
         actual should be (expected)
       }
@@ -72,7 +92,11 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
         (mockObjectReference.referenceType _).expects()
           .returning(mockReferenceType).once()
 
-        mockNewReferenceTypeProfile.expects(mockReferenceType)
+        val mockTypeInfoProfile = mock[TypeInfoProfile]
+        mockNewTypeProfile.expects(mockReferenceType)
+          .returning(mockTypeInfoProfile).once()
+
+        (mockTypeInfoProfile.toReferenceType _).expects()
           .returning(expected).once()
 
         val actual = pureObjectInfoProfile.referenceType

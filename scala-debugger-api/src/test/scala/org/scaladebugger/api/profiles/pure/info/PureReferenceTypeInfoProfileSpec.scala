@@ -409,6 +409,18 @@ class PureReferenceTypeInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#signature") {
+      it("should return the signature of the underlying reference type") {
+        val expected = "signature"
+
+        (mockReferenceType.signature _).expects().returning(expected).once()
+
+        val actual = pureReferenceTypeInfoProfile.signature
+
+        actual should be (expected)
+      }
+    }
+
     describe("#nestedTypes") {
       it("should return a collection of profiles wrapping all nested types in the underlying reference type") {
         val expected = Seq(mock[ReferenceTypeInfoProfile])

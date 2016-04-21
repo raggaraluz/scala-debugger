@@ -13,9 +13,12 @@ import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
  * @param _referenceType The reference to the underlying JDI reference type
  */
 class PureReferenceTypeInfoProfile(
-  val scalaVirtualMachine: ScalaVirtualMachine,
+  override val scalaVirtualMachine: ScalaVirtualMachine,
   private val _referenceType: ReferenceType
-) extends ReferenceTypeInfoProfile {
+) extends PureTypeInfoProfile(
+  scalaVirtualMachine = scalaVirtualMachine,
+  _type = _referenceType
+) with ReferenceTypeInfoProfile {
   private lazy val defaultStratum: String = _referenceType.defaultStratum()
 
   /**
@@ -31,6 +34,15 @@ class PureReferenceTypeInfoProfile(
    * @return The fully-qualified class name
    */
   override def name: String = _referenceType.name()
+
+  /**
+   * Represents the JNI-style signature for this type. Primitives have the
+   * signature of their corresponding class representation such as "I" for
+   * Integer.TYPE.
+   *
+   * @return The JNI-style signature
+   */
+  override def signature: String = _referenceType.signature()
 
   /**
    * Retrieves the generic signature type if it exists.
@@ -294,12 +306,5 @@ class PureReferenceTypeInfoProfile(
     classLoaderReference
   )(
     _referenceType = _referenceType
-  )
-
-  protected def newReferenceTypeProfile(
-    referenceType: ReferenceType
-  ): ReferenceTypeInfoProfile = new PureReferenceTypeInfoProfile(
-    scalaVirtualMachine,
-    referenceType
   )
 }

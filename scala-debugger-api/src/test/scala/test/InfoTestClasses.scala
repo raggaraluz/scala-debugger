@@ -18,6 +18,7 @@ object InfoTestClasses {
   private def throwException() = throw DefaultException
 
   class TestThreadInfoProfile extends TestObjectInfoProfile with ThreadInfoProfile {
+    override def typeInfo: ReferenceTypeInfoProfile = throwException()
     override def scalaVirtualMachine: ScalaVirtualMachine = throwException()
     override def frames: Seq[FrameInfoProfile] = throwException()
     override def rawFrames(index: Int, length: Int): Seq[FrameInfoProfile] = throwException()
@@ -39,8 +40,8 @@ object InfoTestClasses {
   }
 
   class TestValueInfoProfile extends ValueInfoProfile {
+    override def typeInfo: TypeInfoProfile = throwException()
     override def scalaVirtualMachine: ScalaVirtualMachine = throwException()
-    override def typeName: String = throwException()
     override def isObject: Boolean = throwException()
     override def isPrimitive: Boolean = throwException()
     override def toObject: ObjectInfoProfile = throwException()
@@ -55,6 +56,8 @@ object InfoTestClasses {
   }
 
   class TestVariableInfoProfile extends VariableInfoProfile {
+    override def typeName: String = throwException()
+    override def typeInfo: TypeInfoProfile = throwException()
     override def scalaVirtualMachine: ScalaVirtualMachine = throwException()
     override def name: String = throwException()
     override def toValue: ValueInfoProfile = throwException()
@@ -67,6 +70,7 @@ object InfoTestClasses {
   }
 
   class TestObjectInfoProfile extends TestValueInfoProfile with ObjectInfoProfile {
+    override def typeInfo: ReferenceTypeInfoProfile = throwException()
     override def scalaVirtualMachine: ScalaVirtualMachine = throwException()
     override def uniqueId: Long = throwException()
     override def invoke(methodInfoProfile: MethodInfoProfile, arguments: Seq[Any], jdiArguments: JDIArgument*): ValueInfoProfile = throwException()
@@ -80,6 +84,8 @@ object InfoTestClasses {
   }
 
   class TestMethodInfoProfile extends MethodInfoProfile {
+    override def parameterTypeInfo: Seq[TypeInfoProfile] = throwException()
+    override def returnTypeInfo: TypeInfoProfile = throwException()
     override def scalaVirtualMachine: ScalaVirtualMachine = throwException()
     override def name: String = throwException()
     override def returnTypeName: String = throwException()
@@ -110,6 +116,7 @@ object InfoTestClasses {
   }
 
   class TestArrayInfoProfile extends TestObjectInfoProfile with ArrayInfoProfile {
+    override def typeInfo: ArrayTypeInfoProfile = throwException()
     override def scalaVirtualMachine: ScalaVirtualMachine = throwException()
     override def length: Int = throwException()
     override def value(index: Int): ValueInfoProfile = throwException()
@@ -122,6 +129,7 @@ object InfoTestClasses {
   }
 
   class TestPrimitiveInfoProfile extends TestValueInfoProfile with PrimitiveInfoProfile {
+    override def typeInfo: PrimitiveTypeInfoProfile = throwException()
     override def scalaVirtualMachine: ScalaVirtualMachine = throwException()
     override def toLocalValue: AnyVal = throwException()
     override def isBoolean: Boolean = throwException()
@@ -135,7 +143,25 @@ object InfoTestClasses {
     override def toJdiInstance: PrimitiveValue = throwException()
   }
 
-  class TestReferenceTypeInfoProfile extends ReferenceTypeInfoProfile {
+  class TestTypeInfoProfile extends TypeInfoProfile {
+    override def toPrimitiveType: PrimitiveTypeInfoProfile = throwException()
+    override def toJdiInstance: Type = throwException()
+    override def name: String = throwException()
+    override def signature: String = throwException()
+    override def isArrayType: Boolean = throwException()
+    override def isClassType: Boolean = throwException()
+    override def isInterfaceType: Boolean = throwException()
+    override def isReferenceType: Boolean = throwException()
+    override def isPrimitiveType: Boolean = throwException()
+    override def isNullType: Boolean = throwException()
+    override def toArrayType: ArrayTypeInfoProfile = throwException()
+    override def toClassType: ClassTypeInfoProfile = throwException()
+    override def toInterfaceType: InterfaceTypeInfoProfile = throwException()
+    override def toReferenceType: ReferenceTypeInfoProfile = throwException()
+    override def scalaVirtualMachine: ScalaVirtualMachine = throwException()
+  }
+
+  class TestReferenceTypeInfoProfile extends TestTypeInfoProfile with ReferenceTypeInfoProfile {
     override def scalaVirtualMachine: ScalaVirtualMachine = throwException()
     override def toJdiInstance: ReferenceType = throwException()
     override def isFinal: Boolean = throwException()

@@ -18,6 +18,13 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
   override def toJdiInstance: ObjectReference
 
   /**
+   * Returns the type information for the object.
+   *
+   * @return The profile containing type information
+   */
+  override def typeInfo: ReferenceTypeInfoProfile
+
+  /**
    * Represents the unique id of this object.
    *
    * @return The unique id as a long
@@ -128,7 +135,7 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
   /**
    * Invokes the object's method.
    *
-   * @param methodInfoProfile The method of the object to invoke
+   * @param method The method of the object to invoke
    * @param arguments The arguments to provide to the method
    * @param jdiArguments Optional arguments to provide custom settings to the
    *                     method invocation
@@ -136,11 +143,11 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
    *         a failure
    */
   def tryInvoke(
-    methodInfoProfile: MethodInfoProfile,
+    method: MethodInfoProfile,
     arguments: Seq[Any],
     jdiArguments: JDIArgument*
   ): Try[ValueInfoProfile] = Try(invoke(
-    methodInfoProfile,
+    method,
     arguments,
     jdiArguments: _*
   ))
@@ -148,14 +155,14 @@ trait ObjectInfoProfile extends ValueInfoProfile with CommonInfoProfile {
   /**
    * Invokes the object's method.
    *
-   * @param methodInfoProfile The method of the object to invoke
+   * @param method The method of the object to invoke
    * @param arguments The arguments to provide to the method
    * @param jdiArguments Optional arguments to provide custom settings to the
    *                     method invocation
    * @return The resulting value of the invocation
    */
   def invoke(
-    methodInfoProfile: MethodInfoProfile,
+    method: MethodInfoProfile,
     arguments: Seq[Any],
     jdiArguments: JDIArgument*
   ): ValueInfoProfile

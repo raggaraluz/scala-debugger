@@ -44,6 +44,6 @@ class PureClassObjectInfoProfile(
    * @return The reference type information
    */
   override def reflectedType: ReferenceTypeInfoProfile = {
-    newReferenceTypeProfile(_classObjectReference.reflectedType())
+    newTypeProfile(_classObjectReference.reflectedType()).toReferenceType
   }
 }

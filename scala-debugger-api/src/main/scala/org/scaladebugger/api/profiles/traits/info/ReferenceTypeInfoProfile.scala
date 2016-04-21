@@ -7,7 +7,7 @@ import scala.util.Try
 /**
  * Represents the interface for "reference type"-based interaction.
  */
-trait ReferenceTypeInfoProfile extends CommonInfoProfile {
+trait ReferenceTypeInfoProfile extends CommonInfoProfile with TypeInfoProfile {
   /**
    * Returns the JDI representation this profile instance wraps.
    *

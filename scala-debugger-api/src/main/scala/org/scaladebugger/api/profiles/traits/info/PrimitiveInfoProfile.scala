@@ -15,7 +15,14 @@ trait PrimitiveInfoProfile extends ValueInfoProfile with CommonInfoProfile {
    *
    * @return The JDI instance
    */
-  override def toJdiInstance: PrimitiveValue
+  override def toJdiInstance: Value
+
+  /**
+   * Returns the type information for the value.
+   *
+   * @return The profile containing type information
+   */
+  override def typeInfo: PrimitiveTypeInfoProfile
 
   /**
    * Returns the value as a value local to this JVM.
