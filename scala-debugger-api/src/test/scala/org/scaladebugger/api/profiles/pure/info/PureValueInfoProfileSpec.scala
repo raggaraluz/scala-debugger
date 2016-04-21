@@ -32,6 +32,26 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
     }
 
     describe("#typeInfo") {
+      it("should supply a type info wrapper even if the value is null") {
+        val expected = mock[TypeInfoProfile]
+
+        val pureValueInfoProfile = new PureValueInfoProfile(
+          mockScalaVirtualMachine,
+          null
+        ) {
+          // NOTE: ScalaMock does not allow us to supply null to mock argument,
+          //       so throwing an error if we aren't supplied with null
+          override protected def newTypeProfile(_type: Type): TypeInfoProfile = {
+            require(_type == null)
+            expected
+          }
+        }
+
+        val actual = pureValueInfoProfile.typeInfo
+
+        actual should be (expected)
+      }
+
       it("should should return a new type info profile wrapping the type") {
         val expected = mock[TypeInfoProfile]
 
