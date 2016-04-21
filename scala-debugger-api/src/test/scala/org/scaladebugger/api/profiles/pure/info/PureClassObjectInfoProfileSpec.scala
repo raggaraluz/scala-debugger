@@ -10,7 +10,7 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 class PureClassObjectInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
-  private val mockNewReferenceTypeProfile = mockFunction[ReferenceType, ReferenceTypeInfoProfile]
+  private val mockNewTypeProfile = mockFunction[Type, TypeInfoProfile]
   private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockVirtualMachine = mock[VirtualMachine]
   private val mockReferenceType = mock[ReferenceType]
@@ -23,9 +23,8 @@ class PureClassObjectInfoProfileSpec extends FunSpec with Matchers
     _virtualMachine = mockVirtualMachine,
     _referenceType = mockReferenceType
   ) {
-    override protected def newReferenceTypeProfile(
-      referenceType: ReferenceType
-    ): ReferenceTypeInfoProfile = mockNewReferenceTypeProfile(referenceType)
+    override protected def newTypeProfile(_type: Type): TypeInfoProfile =
+      mockNewTypeProfile(_type)
   }
 
   describe("PureClassObjectInfoProfile") {
@@ -47,7 +46,11 @@ class PureClassObjectInfoProfileSpec extends FunSpec with Matchers
         (mockClassObjectReference.reflectedType _).expects()
           .returning(referenceType).once()
 
-        mockNewReferenceTypeProfile.expects(referenceType)
+        val mockTypeInfoProfile = mock[TypeInfoProfile]
+        mockNewTypeProfile.expects(referenceType)
+          .returning(mockTypeInfoProfile).once()
+
+        (mockTypeInfoProfile.toReferenceType _).expects()
           .returning(expected).once()
 
         val actual = pureClassObjectInfoProfile.reflectedType

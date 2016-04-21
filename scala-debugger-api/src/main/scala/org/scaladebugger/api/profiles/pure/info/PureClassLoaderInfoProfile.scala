@@ -47,7 +47,8 @@ class PureClassLoaderInfoProfile(
    */
   override def definedClasses: Seq[ReferenceTypeInfoProfile] = {
     import scala.collection.JavaConverters._
-    _classLoaderReference.definedClasses().asScala.map(newReferenceTypeProfile)
+    _classLoaderReference.definedClasses().asScala
+      .map(newTypeProfile).map(_.toReferenceType)
   }
 
   /**
@@ -58,6 +59,7 @@ class PureClassLoaderInfoProfile(
    */
   override def visibleClasses: Seq[ReferenceTypeInfoProfile] = {
     import scala.collection.JavaConverters._
-    _classLoaderReference.visibleClasses().asScala.map(newReferenceTypeProfile)
+    _classLoaderReference.visibleClasses().asScala
+      .map(newTypeProfile).map(_.toReferenceType)
   }
 }

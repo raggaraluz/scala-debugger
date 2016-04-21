@@ -42,6 +42,14 @@ class PureObjectInfoProfile(
   override def toJdiInstance: ObjectReference = _objectReference
 
   /**
+   * Returns the type information for the object.
+   *
+   * @return The profile containing type information
+   */
+  override def typeInfo: ReferenceTypeInfoProfile =
+    super.typeInfo.toReferenceType
+
+  /**
    * Represents the unique id of this object.
    *
    * @return The unique id as a long
@@ -57,23 +65,23 @@ class PureObjectInfoProfile(
    * @return The reference type information
    */
   override def referenceType: ReferenceTypeInfoProfile =
-    newReferenceTypeProfile(_objectReference.referenceType())
+    newTypeProfile(_objectReference.referenceType()).toReferenceType
 
   /**
    * Invokes the object's method.
    *
-   * @param methodInfoProfile The method of the object to invoke
+   * @param method The method of the object to invoke
    * @param arguments         The arguments to provide to the method
    * @param jdiArguments      Optional arguments to provide custom settings to the
    *                          method invocation
    * @return The resulting value of the invocation
    */
   override def invoke(
-    methodInfoProfile: MethodInfoProfile,
+    method: MethodInfoProfile,
     arguments: Seq[Any],
     jdiArguments: JDIArgument*
   ): ValueInfoProfile = {
-    val m = methodInfoProfile.toJdiInstance
+    val m = method.toJdiInstance
 
     import org.scaladebugger.api.lowlevel.wrappers.Implicits._
     val v = arguments.map(_virtualMachine.mirrorOf(_: Any))
@@ -94,8 +102,8 @@ class PureObjectInfoProfile(
    * @param parameterTypeNames The names of the parameter types of the method
    *                           to invoke
    * @param arguments          The arguments to provide to the method
-   * @param jdiArguments       Optional arguments to provide custom settings to the
-   *                           method invocation
+   * @param jdiArguments       Optional arguments to provide custom settings to
+   *                           the method invocation
    * @return The resulting value of the invocation
    */
   override def invoke(
@@ -160,15 +168,12 @@ class PureObjectInfoProfile(
     newFieldProfile(Option(_referenceType.fieldByName(name)).get)
   }
 
-  protected def newReferenceTypeProfile(
-    referenceType: ReferenceType
-  ): ReferenceTypeInfoProfile = new PureReferenceTypeInfoProfile(
-    scalaVirtualMachine,
-    referenceType
-  )
-
   protected def newFieldProfile(field: Field): VariableInfoProfile =
-    new PureFieldInfoProfile(scalaVirtualMachine, _objectReference, field)()
+    new PureFieldInfoProfile(
+      scalaVirtualMachine,
+      Left(_objectReference),
+      field
+    )()
 
   protected def newMethodProfile(method: Method): MethodInfoProfile =
     new PureMethodInfoProfile(scalaVirtualMachine, method)

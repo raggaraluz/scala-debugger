@@ -2,7 +2,7 @@ package org.scaladebugger.api.profiles.pure.info
 //import acyclic.file
 
 import com.sun.jdi._
-import org.scaladebugger.api.profiles.traits.info.{ArrayInfoProfile, ValueInfoProfile}
+import org.scaladebugger.api.profiles.traits.info.{ArrayInfoProfile, ArrayTypeInfoProfile, TypeInfoProfile, ValueInfoProfile}
 import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.util.Try
@@ -41,6 +41,13 @@ class PureArrayInfoProfile(
    * @return The JDI instance
    */
   override def toJdiInstance: ArrayReference = _arrayReference
+
+  /**
+   * Returns the type information for the array.
+   *
+   * @return The profile containing type information
+   */
+  override def typeInfo: ArrayTypeInfoProfile = super.typeInfo.toArrayType
 
   /**
    * Returns the length of the array.

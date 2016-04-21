@@ -2,7 +2,7 @@ package org.scaladebugger.api.profiles.pure.info
 //import acyclic.file
 
 import com.sun.jdi._
-import org.scaladebugger.api.profiles.traits.info.{ArrayInfoProfile, ObjectInfoProfile, PrimitiveInfoProfile, ValueInfoProfile}
+import org.scaladebugger.api.profiles.traits.info._
 import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 import scala.util.Try
@@ -31,13 +31,11 @@ class PureValueInfoProfile(
   override def toJdiInstance: Value = _value
 
   /**
-   * Returns the type name of this value.
+   * Returns the type information for the value.
    *
-   * @return The type name (typically a fully-qualified class name)
+   * @return The profile containing type information
    */
-  override def typeName: String =
-    if (!isNull) _value.`type`().name()
-    else PureValueInfoProfile.DefaultNullTypeName
+  override def typeInfo: TypeInfoProfile = newTypeProfile(_value.`type`())
 
   /**
    * Returns the value as an array (profile).
@@ -77,9 +75,13 @@ class PureValueInfoProfile(
    *
    * @return The primitive profile wrapping this value
    */
+  @throws[AssertionError]
   override def toPrimitive: PrimitiveInfoProfile = {
     assert(isPrimitive, "Value must be a primitive!")
-    newPrimitiveProfile(_value.asInstanceOf[PrimitiveValue])
+    _value match {
+      case p: PrimitiveValue => newPrimitiveProfile(p)
+      case v: VoidValue      => newPrimitiveProfile(v)
+    }
   }
 
   /**
@@ -88,7 +90,7 @@ class PureValueInfoProfile(
    * @return True if a primitive, otherwise false
    */
   override def isPrimitive: Boolean =
-    !isNull && _value.isInstanceOf[PrimitiveValue]
+    !isNull && (_value.isInstanceOf[PrimitiveValue] || isVoid)
 
   /**
    * Returns whether or not this value represents an array.
@@ -129,11 +131,17 @@ class PureValueInfoProfile(
   override def isNull: Boolean = _value == null
 
   protected def newPrimitiveProfile(primitiveValue: PrimitiveValue): PrimitiveInfoProfile =
-    new PurePrimitiveInfoProfile(scalaVirtualMachine, primitiveValue)
+    new PurePrimitiveInfoProfile(scalaVirtualMachine, Left(primitiveValue))
+
+  protected def newPrimitiveProfile(voidValue: VoidValue): PrimitiveInfoProfile =
+    new PurePrimitiveInfoProfile(scalaVirtualMachine, Right(voidValue))
 
   protected def newObjectProfile(objectReference: ObjectReference): ObjectInfoProfile =
     new PureObjectInfoProfile(scalaVirtualMachine, objectReference)()
 
   protected def newArrayProfile(arrayReference: ArrayReference): ArrayInfoProfile =
     new PureArrayInfoProfile(scalaVirtualMachine, arrayReference)()
+
+  protected def newTypeProfile(_type: Type): TypeInfoProfile =
+    new PureTypeInfoProfile(scalaVirtualMachine, _type)
 }

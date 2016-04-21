@@ -9,7 +9,7 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 class PureClassLoaderInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
-  private val mockNewReferenceTypeProfile = mockFunction[ReferenceType, ReferenceTypeInfoProfile]
+  private val mockNewTypeProfile = mockFunction[Type, TypeInfoProfile]
   private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockVirtualMachine = mock[VirtualMachine]
   private val mockReferenceType = mock[ReferenceType]
@@ -22,9 +22,8 @@ class PureClassLoaderInfoProfileSpec extends FunSpec with Matchers
     _virtualMachine = mockVirtualMachine,
     _referenceType = mockReferenceType
   ) {
-    override protected def newReferenceTypeProfile(
-      referenceType: ReferenceType
-    ): ReferenceTypeInfoProfile = mockNewReferenceTypeProfile(referenceType)
+    override protected def newTypeProfile(_type: Type): TypeInfoProfile =
+      mockNewTypeProfile(_type)
   }
 
   describe("PureClassLoaderInfoProfile") {
@@ -48,7 +47,9 @@ class PureClassLoaderInfoProfileSpec extends FunSpec with Matchers
           .returning(referenceTypes.asJava).once()
 
         expected.zip(referenceTypes).foreach { case (e, r) =>
-          mockNewReferenceTypeProfile.expects(r).returning(e).once()
+          val mockTypeInfoProfile = mock[TypeInfoProfile]
+          mockNewTypeProfile.expects(r).returning(mockTypeInfoProfile).once()
+          (mockTypeInfoProfile.toReferenceType _).expects().returning(e).once()
         }
 
         val actual = pureClassLoaderInfoProfile.definedClasses
@@ -67,7 +68,9 @@ class PureClassLoaderInfoProfileSpec extends FunSpec with Matchers
           .returning(referenceTypes.asJava).once()
 
         expected.zip(referenceTypes).foreach { case (e, r) =>
-          mockNewReferenceTypeProfile.expects(r).returning(e).once()
+          val mockTypeInfoProfile = mock[TypeInfoProfile]
+          mockNewTypeProfile.expects(r).returning(mockTypeInfoProfile).once()
+          (mockTypeInfoProfile.toReferenceType _).expects().returning(e).once()
         }
 
         val actual = pureClassLoaderInfoProfile.visibleClasses

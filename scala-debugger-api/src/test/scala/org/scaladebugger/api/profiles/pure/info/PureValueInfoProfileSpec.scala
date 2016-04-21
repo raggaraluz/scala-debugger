@@ -1,7 +1,7 @@
 package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
-import org.scaladebugger.api.profiles.traits.info.{ArrayInfoProfile, ObjectInfoProfile, PrimitiveInfoProfile, ValueInfoProfile}
+import org.scaladebugger.api.profiles.traits.info._
 import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -31,34 +31,25 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
-    describe("#typeName") {
-      it("should return the type name of the value") {
-        val expected = "some.type.name"
+    describe("#typeInfo") {
+      it("should should return a new type info profile wrapping the type") {
+        val expected = mock[TypeInfoProfile]
 
         val mockType = mock[Type]
-        (mockType.name _).expects().returning(expected).once()
-
-        val mockValue = mock[Value]
         (mockValue.`type` _).expects().returning(mockType).once()
 
+        val mockNewTypeProfileFunction = mockFunction[Type, TypeInfoProfile]
         val pureValueInfoProfile = new PureValueInfoProfile(
           mockScalaVirtualMachine,
           mockValue
-        )
-        val actual = pureValueInfoProfile.typeName
+        ) {
+          override protected def newTypeProfile(_type: Type): TypeInfoProfile =
+            mockNewTypeProfileFunction(_type)
+        }
 
-        actual should be (expected)
-      }
+        mockNewTypeProfileFunction.expects(mockType).returning(expected).once()
 
-      it("should return the default null type name if the value is null") {
-        val expected = PureValueInfoProfile.DefaultNullTypeName
-
-        val pureValueInfoProfile = new PureValueInfoProfile(
-          mockScalaVirtualMachine,
-          null
-        )
-
-        val actual = pureValueInfoProfile.typeName
+        val actual = pureValueInfoProfile.typeInfo
 
         actual should be (expected)
       }
@@ -132,7 +123,7 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         }
       }
 
-      it("should return an primitive reference wrapped in a profile") {
+      it("should return a primitive value wrapped in a profile") {
         val expected = mock[PrimitiveInfoProfile]
         val mockPrimitiveValue = mock[PrimitiveValue]
 
@@ -146,6 +137,28 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         }
 
         mockNewPrimitiveProfile.expects(mockPrimitiveValue)
+          .returning(expected).once()
+
+        val actual = pureValueInfoProfile.toPrimitive
+
+        actual should be (expected)
+      }
+
+      it("should return a void value wrapped in a profile") {
+        val expected = mock[PrimitiveInfoProfile]
+        val mockVoidValue = mock[VoidValue]
+
+        val mockNewPrimitiveProfile = mockFunction[VoidValue, PrimitiveInfoProfile]
+        val pureValueInfoProfile = new PureValueInfoProfile(
+          mockScalaVirtualMachine,
+          mockVoidValue
+        ) {
+          override protected def newPrimitiveProfile(
+            voidValue: VoidValue
+          ): PrimitiveInfoProfile = mockNewPrimitiveProfile(voidValue)
+        }
+
+        mockNewPrimitiveProfile.expects(mockVoidValue)
           .returning(expected).once()
 
         val actual = pureValueInfoProfile.toPrimitive
@@ -262,6 +275,19 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
         val pureValueInfoProfile = new PureValueInfoProfile(
           mockScalaVirtualMachine,
           mock[PrimitiveValue]
+        )
+
+        val actual = pureValueInfoProfile.isPrimitive
+
+        actual should be (expected)
+      }
+
+      it("should return true if the value is void (considered primitive)") {
+        val expected = true
+
+        val pureValueInfoProfile = new PureValueInfoProfile(
+          mockScalaVirtualMachine,
+          mock[VoidValue]
         )
 
         val actual = pureValueInfoProfile.isPrimitive

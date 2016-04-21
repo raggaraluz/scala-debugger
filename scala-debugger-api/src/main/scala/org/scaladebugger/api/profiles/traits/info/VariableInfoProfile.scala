@@ -24,6 +24,28 @@ trait VariableInfoProfile extends CommonInfoProfile {
   def name: String
 
   /**
+   * Returns the name of the type representing the variable.
+   *
+   * @return The type name as a string
+   */
+  def typeName: String
+
+  /**
+   * Returns the type information for the variable.
+   *
+   * @return The profile containing type information
+   */
+  def typeInfo: TypeInfoProfile
+
+  /**
+   * Returns the type information for the variable.
+   *
+   * @return Success containing the profile containing type information,
+   *         otherwise a failure
+   */
+  def tryTypeInfo: Try[TypeInfoProfile] = Try(typeInfo)
+
+  /**
    * Returns whether or not this variable represents a field.
    *
    * @return True if a field, otherwise false

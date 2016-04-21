@@ -29,6 +29,13 @@ trait ArrayInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
   override def toJdiInstance: ArrayReference
 
   /**
+   * Returns the type information for the array.
+   *
+   * @return The profile containing type information
+   */
+  override def typeInfo: ArrayTypeInfoProfile
+
+  /**
    * Returns the length of the array.
    *
    * @return The length of the array

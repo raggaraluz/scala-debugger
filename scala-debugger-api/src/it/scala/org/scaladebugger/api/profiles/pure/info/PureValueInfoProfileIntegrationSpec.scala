@@ -37,7 +37,7 @@ class PureValueInfoProfileIntegrationSpec extends FunSpec with Matchers
         logTimeTaken(eventually {
           val variableNamesAndTypes = s.withProfile(PureDebugProfile.Name)
             .thread(t.get).topFrame
-            .allVariables.map(v => v.name -> v.toValue.typeName)
+            .allVariables.map(v => v.name -> v.typeInfo.name)
             .toMap
 
           variableNamesAndTypes should contain theSameElementsAs Map(
@@ -57,14 +57,14 @@ class PureValueInfoProfileIntegrationSpec extends FunSpec with Matchers
             "g" -> "double",
             "h" -> "scala.runtime.ObjectRef",
             "i" -> "int[]",
-            "j" -> "scala.collection.immutable.$colon$colon",
+            "j" -> "scala.collection.immutable.List", // Old test was scala.collection.immutable.$colon$colon
             "k" -> "java.lang.Object[]",
             "l" -> "org.scaladebugger.test.info.Variables$NullToString$",
 
             // Field variables
             "z1" -> "int",
             "z2" -> "java.lang.String",
-            "z3" -> "null"
+            "z3" -> "scala.runtime.Null$" // Old test was "null"
           )
         })
       }

@@ -3,7 +3,7 @@ package org.scaladebugger.api.profiles.pure.info
 import java.util
 
 import com.sun.jdi._
-import org.scaladebugger.api.profiles.traits.info.ValueInfoProfile
+import org.scaladebugger.api.profiles.traits.info.{ArrayTypeInfoProfile, ReferenceTypeInfoProfile, TypeInfoProfile, ValueInfoProfile}
 import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
@@ -11,6 +11,7 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 class PureArrayInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
+  private val mockNewTypeProfile = mockFunction[Type, TypeInfoProfile]
   private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockVirtualMachine = mock[VirtualMachine]
   private val mockThreadReference = mock[ThreadReference]
@@ -22,7 +23,10 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
     _virtualMachine = mockVirtualMachine,
     _threadReference = mockThreadReference,
     _referenceType = mockReferenceType
-  )
+  ) {
+    override protected def newTypeProfile(_type: Type): TypeInfoProfile =
+      mockNewTypeProfile(_type)
+  }
 
   describe("PureArrayInfoProfile") {
     describe("#toJdiInstance") {
@@ -30,6 +34,30 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
         val expected = mockArrayReference
 
         val actual = pureArrayInfoProfile.toJdiInstance
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#typeInfo") {
+      it("should should return a new array type profile wrapping the type") {
+        val expected = mock[ArrayTypeInfoProfile]
+
+        val mockArrayType = mock[ArrayType]
+        (mockArrayReference.`type` _).expects().returning(mockArrayType).once()
+
+        val mockTypeInfoProfile = mock[TypeInfoProfile]
+        mockNewTypeProfile.expects(mockArrayType)
+          .returning(mockTypeInfoProfile).once()
+
+        val mockReferenceTypeInfoProfile = mock[ReferenceTypeInfoProfile]
+        (mockTypeInfoProfile.toReferenceType _).expects()
+          .returning(mockReferenceTypeInfoProfile).once()
+
+        (mockReferenceTypeInfoProfile.toArrayType _).expects()
+          .returning(expected).once()
+
+        val actual = pureArrayInfoProfile.typeInfo
 
         actual should be (expected)
       }
