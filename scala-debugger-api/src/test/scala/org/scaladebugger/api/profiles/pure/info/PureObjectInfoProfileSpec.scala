@@ -10,7 +10,7 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 class PureObjectInfoProfileSpec extends FunSpec with Matchers
   with ParallelTestExecution with MockFactory
 {
-  private val mockNewFieldProfile = mockFunction[Field, VariableInfoProfile]
+  private val mockNewFieldProfile = mockFunction[Field, Int, VariableInfoProfile]
   private val mockNewMethodProfile = mockFunction[Method, MethodInfoProfile]
   private val mockNewValueProfile = mockFunction[Value, ValueInfoProfile]
   private val mockNewTypeProfile = mockFunction[Type, TypeInfoProfile]
@@ -28,8 +28,8 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
     _virtualMachine = mockVirtualMachine,
     _referenceType = mockReferenceType
   ) {
-    override protected def newFieldProfile(field: Field): VariableInfoProfile =
-      mockNewFieldProfile(field)
+    override protected def newFieldProfile(field: Field, offsetIndex: Int): VariableInfoProfile =
+      mockNewFieldProfile(field, offsetIndex)
     override protected def newMethodProfile(method: Method): MethodInfoProfile =
       mockNewMethodProfile(method)
     override protected def newValueProfile(value: Value): ValueInfoProfile =
@@ -367,7 +367,7 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
 
         // Create the new profiles for the fields
         mockFields.zip(expected).foreach { case (f, e) =>
-          mockNewFieldProfile.expects(f).returning(e).once()
+          mockNewFieldProfile.expects(f, -1).returning(e).once()
         }
 
         val actual = pureObjectInfoProfile.fields
@@ -399,9 +399,65 @@ class PureObjectInfoProfileSpec extends FunSpec with Matchers
           .returning(mockField).once()
 
         // Create the new profile
-        mockNewFieldProfile.expects(mockField).returning(expected).once()
+        mockNewFieldProfile.expects(mockField, -1).returning(expected).once()
 
         val actual = pureObjectInfoProfile.field(name)
+
+        actual should be(expected)
+      }
+    }
+
+    describe("#indexedFields") {
+      it("should return a collection of profiles wrapping the object's visible fields") {
+        val expected = Seq(mock[VariableInfoProfile])
+
+        // Lookup the visible fields
+        import scala.collection.JavaConverters._
+        val mockFields = Seq(mock[Field])
+        (mockReferenceType.visibleFields _).expects()
+          .returning(mockFields.asJava).once()
+
+        // Create the new profiles for the fields
+        mockFields.zip(expected).zipWithIndex.foreach { case ((f, e), i) =>
+          mockNewFieldProfile.expects(f, i).returning(e).once()
+        }
+
+        val actual = pureObjectInfoProfile.indexedFields
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#indexedField") {
+      it("should throw a NoSuchElement exception if no field with matching name is found") {
+        val name = "someName"
+
+        // Lookup the visible fields (Nil indicates none)
+        import scala.collection.JavaConverters._
+        (mockReferenceType.visibleFields _).expects()
+          .returning(Seq[Field]().asJava).once()
+
+        intercept[NoSuchElementException] {
+          pureObjectInfoProfile.indexedField(name)
+        }
+      }
+
+      it("should return a profile wrapping the associated field if found") {
+        val expected = mock[VariableInfoProfile]
+        val name = "someName"
+
+        // Lookup the visible fields
+        val mockField = mock[Field]
+        (expected.name _).expects().returning(name).once()
+
+        import scala.collection.JavaConverters._
+        (mockReferenceType.visibleFields _).expects()
+          .returning(Seq(mockField).asJava).once()
+
+        // Create the new profile
+        mockNewFieldProfile.expects(mockField, 0).returning(expected).once()
+
+        val actual = pureObjectInfoProfile.indexedField(name)
 
         actual should be (expected)
       }

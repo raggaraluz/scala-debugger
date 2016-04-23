@@ -85,6 +85,7 @@ class PureReferenceTypeInfoProfile(
    * Retrieves all fields declared in this type, its superclasses, implemented
    * interfaces, and superinterfaces.
    *
+   * @note Provides no offset index information!
    * @return The collection of fields as variable info profiles
    */
   override def allFields: Seq[VariableInfoProfile] = {
@@ -98,6 +99,7 @@ class PureReferenceTypeInfoProfile(
    * are not included. Fields that are ambiguously multiply inherited are also
    * not included. All other inherited fields are included.
    *
+   * @note Provides offset index information!
    * @return The collection of fields as variable info profiles
    */
   override def visibleFields: Seq[VariableInfoProfile] = {
@@ -108,11 +110,39 @@ class PureReferenceTypeInfoProfile(
   /**
    * Retrieves the visible field with the matching name.
    *
+   * @note Provides no offset index information!
    * @param name The name of the field to retrieve
    * @return The field as a variable info profile
    */
   override def field(name: String): VariableInfoProfile = {
     newFieldProfile(Option(_referenceType.fieldByName(name)).get)
+  }
+
+  /**
+   * Retrieves unhidden and unambiguous fields in this type. Fields hidden
+   * by other fields with the same name (in a more recently inherited class)
+   * are not included. Fields that are ambiguously multiply inherited are also
+   * not included. All other inherited fields are included. Offset index
+   * information is included.
+   *
+   * @return The collection of fields as variable info profiles
+   */
+  override def indexedVisibleFields: Seq[VariableInfoProfile] = {
+    import scala.collection.JavaConverters._
+    _referenceType.visibleFields().asScala.zipWithIndex.map { case (f, i) =>
+      newFieldProfile(f, i)
+    }
+  }
+
+  /**
+   * Retrieves the visible field with the matching name with offset index
+   * information.
+   *
+   * @param name The name of the field to retrieve
+   * @return The field as a variable info profile
+   */
+  override def indexedField(name: String): VariableInfoProfile = {
+    indexedVisibleFields.reverse.find(_.name == name).get
   }
 
   /**
@@ -279,7 +309,17 @@ class PureReferenceTypeInfoProfile(
   override def minorVersion: Int = _referenceType.minorVersion()
 
   protected def newFieldProfile(field: Field): VariableInfoProfile =
-    new PureFieldInfoProfile(scalaVirtualMachine, null, field)()
+    newFieldProfile(field, -1)
+
+  protected def newFieldProfile(
+    field: Field,
+    offsetIndex: Int
+  ): VariableInfoProfile = new PureFieldInfoProfile(
+    scalaVirtualMachine,
+    Right(_referenceType),
+    field,
+    offsetIndex
+  )()
 
   protected def newMethodProfile(method: Method): MethodInfoProfile =
     new PureMethodInfoProfile(scalaVirtualMachine, method)

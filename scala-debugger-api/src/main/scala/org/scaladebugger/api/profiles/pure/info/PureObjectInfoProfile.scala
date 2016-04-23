@@ -152,6 +152,7 @@ class PureObjectInfoProfile(
   /**
    * Returns all visible fields contained in this object.
    *
+   * @note Provides no offset index information!
    * @return The profiles wrapping the visible fields in this object
    */
   override def fields: Seq[VariableInfoProfile] = {
@@ -159,8 +160,20 @@ class PureObjectInfoProfile(
   }
 
   /**
+   * Returns all visible fields contained in this object with offset index.
+   *
+   * @return The profiles wrapping the visible fields in this object
+   */
+  override def indexedFields: Seq[VariableInfoProfile] = {
+    _referenceType.visibleFields().asScala.zipWithIndex.map { case (f, i) =>
+      newFieldProfile(f, i)
+    }
+  }
+
+  /**
    * Returns the object's field with the specified name.
    *
+   * @note Provides no offset index information!
    * @param name The name of the field
    * @return The profile wrapping the field
    */
@@ -168,12 +181,29 @@ class PureObjectInfoProfile(
     newFieldProfile(Option(_referenceType.fieldByName(name)).get)
   }
 
+  /**
+   * Returns the object's field with the specified name with offset index
+   * information.
+   *
+   * @param name The name of the field
+   * @return The profile wrapping the field
+   */
+  override def indexedField(name: String): VariableInfoProfile = {
+    indexedFields.find(_.name == name).get
+  }
+
   protected def newFieldProfile(field: Field): VariableInfoProfile =
-    new PureFieldInfoProfile(
-      scalaVirtualMachine,
-      Left(_objectReference),
-      field
-    )()
+    newFieldProfile(field, -1)
+
+  protected def newFieldProfile(
+    field: Field,
+    offsetIndex: Int
+  ): VariableInfoProfile = new PureFieldInfoProfile(
+    scalaVirtualMachine,
+    Left(_objectReference),
+    field,
+    offsetIndex
+  )()
 
   protected def newMethodProfile(method: Method): MethodInfoProfile =
     new PureMethodInfoProfile(scalaVirtualMachine, method)
