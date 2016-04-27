@@ -38,6 +38,7 @@ class PureReferenceTypeInfoProfileIntegrationSpec extends FunSpec with Matchers
           //       gets lost when compiling to Java as the package name is
           //       used to generate the Java directory for the output source
           c.sourcePaths.head should not be (testFile)
+          c.sourceNames.head should be ("InvalidSourcePath.scala")
         })
       }
     }
