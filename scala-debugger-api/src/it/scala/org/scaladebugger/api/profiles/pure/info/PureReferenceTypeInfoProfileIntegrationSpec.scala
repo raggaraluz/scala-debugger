@@ -19,6 +19,29 @@ class PureReferenceTypeInfoProfileIntegrationSpec extends FunSpec with Matchers
   )
 
   describe("PureReferenceTypeInfoProfile") {
+    it("should look up the source path using the Java package name") {
+      val testClass = "org.scaladebugger.test.invalid.InvalidSourcePath"
+      val testFile = "org/scaladebugger/test/misc/InvalidSourcePath.scala"
+
+      val s = DummyScalaVirtualMachine.newInstance()
+
+      // NOTE: Do not resume so we can check the class
+      s.withProfile(PureDebugProfile.Name)
+        .getOrCreateBreakpointRequest(testFile, 14, NoResume)
+
+      withVirtualMachine(testClass, pendingScalaVirtualMachines = Seq(s)) { (s) =>
+        logTimeTaken(eventually {
+          val c = s.withProfile(PureDebugProfile.Name)
+            .`class`("org.scaladebugger.test.invalid.InvalidSourcePathClass")
+
+          // NOTE: Would love for this to be the Scala source path, but that
+          //       gets lost when compiling to Java as the package name is
+          //       used to generate the Java directory for the output source
+          c.sourcePaths.head should not be (testFile)
+        })
+      }
+    }
+
     it("should be able to retrieve a specific field from the class") {
       val testClass = "org.scaladebugger.test.info.Classes"
       val testFile = JDITools.scalaClassStringToFileString(testClass)
