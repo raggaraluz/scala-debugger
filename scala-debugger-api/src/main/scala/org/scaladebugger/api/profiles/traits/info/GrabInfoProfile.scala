@@ -1,7 +1,7 @@
 package org.scaladebugger.api.profiles.traits.info
 //import acyclic.file
 
-import com.sun.jdi.{ObjectReference, ThreadReference}
+import com.sun.jdi._
 
 import scala.util.Try
 
@@ -147,8 +147,16 @@ trait GrabInfoProfile {
   def classes: Seq[ReferenceTypeInfoProfile]
 
   /**
+   * Retrieves a reference type profile for the given JDI reference type.
+   *
+   * @return The reference type info profile wrapping the JDI instance
+   */
+  def `class`(referenceType: ReferenceType): ReferenceTypeInfoProfile
+
+  /**
    * Retrieves reference information for the class with the specified name.
    *
+   * @param name The fully-qualified name of the class
    * @return Success containing the reference type info profile for the class,
    *         otherwise a failure
    */
@@ -157,6 +165,7 @@ trait GrabInfoProfile {
   /**
    * Retrieves reference information for the class with the specified name.
    *
+   * @param name The fully-qualified name of the class
    * @return The reference type info profile for the class
    */
   def `class`(name: String): ReferenceTypeInfoProfile = classOption(name).get
@@ -164,8 +173,214 @@ trait GrabInfoProfile {
   /**
    * Retrieves reference information for the class with the specified name.
    *
+   * @param name The fully-qualified name of the class
    * @return Some reference type info profile for the class if found,
    *         otherwise None
    */
   def classOption(name: String): Option[ReferenceTypeInfoProfile]
+
+  /**
+   * Retrieves a field profile for the given JDI field.
+   *
+   * @param referenceType The reference type to associate with the field
+   * @param field The JDI field with which to wrap in a variable info profile
+   * @return Success containing the variable profile representing the field,
+   *         otherwise a failure
+   */
+  def tryField(
+    referenceType: ReferenceType,
+    field: Field
+  ): Try[VariableInfoProfile] = Try(this.field(referenceType, field))
+
+  /**
+   * Retrieves a field profile for the given JDI field.
+   *
+   * @param referenceType The reference type to associate with the field
+   * @param field The JDI field with which to wrap in a variable info profile
+   * @return The variable profile representing the field
+   */
+  def field(referenceType: ReferenceType, field: Field): VariableInfoProfile
+
+  /**
+   * Retrieves a field profile for the given JDI field.
+   *
+   * @param referenceTypeInfo The information about the reference type to
+   *                          associate with the field
+   * @param field The JDI field with which to wrap in a variable info profile
+   * @return Success containing the variable profile representing the field,
+   *         otherwise a failure
+   */
+  def tryField(
+    referenceTypeInfo: ReferenceTypeInfoProfile,
+    field: Field
+  ): Try[VariableInfoProfile] = Try(this.field(referenceTypeInfo, field))
+
+  /**
+   * Retrieves a field profile for the given JDI field.
+   *
+   * @param referenceTypeInfo The information about the reference type to
+   *                          associate with the field
+   * @param field The JDI field with which to wrap in a variable info profile
+   * @return The variable profile representing the field
+   */
+  def field(
+    referenceTypeInfo: ReferenceTypeInfoProfile,
+    field: Field
+  ): VariableInfoProfile = this.field(referenceTypeInfo.toJdiInstance, field)
+
+  /**
+   * Retrieves a field profile for the given JDI field.
+   *
+   * @param objectReference The object reference to associate with the field
+   * @param field The JDI field with which to wrap in a variable info profile
+   * @return Success containing the variable profile representing the field,
+   *         otherwise a failure
+   */
+  def tryField(
+    objectReference: ObjectReference,
+    field: Field
+  ): Try[VariableInfoProfile] = Try(this.field(objectReference, field))
+
+  /**
+   * Retrieves a field profile for the given JDI field.
+   *
+   * @param objectReference The object reference to associate with the field
+   * @param field The JDI field with which to wrap in a variable info profile
+   * @return The variable profile representing the field
+   */
+  def field(objectReference: ObjectReference, field: Field): VariableInfoProfile
+
+  /**
+   * Retrieves a field profile for the given JDI field.
+   *
+   * @param objectInfo The information about the object to associate with
+   *                   the field
+   * @param field The JDI field with which to wrap in a variable info profile
+   * @return Success containing the variable profile representing the field,
+   *         otherwise a failure
+   */
+  def tryField(
+    objectInfo: ObjectInfoProfile,
+    field: Field
+  ): Try[VariableInfoProfile] = Try(this.field(objectInfo, field))
+
+  /**
+   * Retrieves a field profile for the given JDI field.
+   *
+   * @param objectInfo The information about the object to associate with
+   *                   the field
+   * @param field The JDI field with which to wrap in a variable info profile
+   * @return The variable profile representing the field
+   */
+  def field(
+    objectInfo: ObjectInfoProfile,
+    field: Field
+  ): VariableInfoProfile = this.field(objectInfo.toJdiInstance, field)
+
+  /**
+   * Retrieves a local variable profile for the given JDI local variable.
+   *
+   * @param stackFrame The stack frame to associate with the
+   *                      local variable
+   * @param localVariable The JDI local variable with which to wrap in a
+   *                      variable info profile
+   * @return Success containing the variable profile representing the
+   *         local variable, otherwise a failure
+   */
+  def tryLocalVariable(
+    stackFrame: StackFrame,
+    localVariable: LocalVariable
+  ): Try[VariableInfoProfile] = Try(this.localVariable(
+    stackFrame, localVariable
+  ))
+
+  /**
+   * Retrieves a localVariable profile for the given JDI local variable.
+   *
+   * @param stackFrame The stack frame to associate with the
+   *                      local variable
+   * @param localVariable The JDI local variable with which to wrap in a
+   *                      variable info profile
+   * @return The variable profile representing the local variable
+   */
+  def localVariable(
+    stackFrame: StackFrame,
+    localVariable: LocalVariable
+  ): VariableInfoProfile
+
+  /**
+   * Retrieves a localVariable profile for the given JDI local variable.
+   *
+   * @param stackFrameInfo The information about the stack frame to
+   *                          associate with the localVariable
+   * @param localVariable The JDI local variable with which to wrap in a
+   *                      variable info profile
+   * @return Success containing the variable profile representing the
+   *         local variable, otherwise a failure
+   */
+  def tryLocalVariable(
+    stackFrameInfo: FrameInfoProfile,
+    localVariable: LocalVariable
+  ): Try[VariableInfoProfile] = Try(this.localVariable(
+    stackFrameInfo, localVariable
+  ))
+
+  /**
+   * Retrieves a localVariable profile for the given JDI local variable.
+   *
+   * @param stackFrameInfo The information about the stack frame to
+   *                          associate with the local variable
+   * @param localVariable The JDI local variable with which to wrap in a
+   *                      variable info profile
+   * @return The variable profile representing the local variable
+   */
+  def localVariable(
+    stackFrameInfo: FrameInfoProfile,
+    localVariable: LocalVariable
+  ): VariableInfoProfile = this.localVariable(
+    stackFrameInfo.toJdiInstance,
+    localVariable
+  )
+
+  /**
+   * Retrieves a location profile for the given JDI location.
+   *
+   * @param location The JDI location with which to wrap in a location
+   *                 info profile
+   * @return The new location info profile
+   */
+  def location(location: Location): LocationInfoProfile
+
+  /**
+   * Retrieves a method profile for the given JDI method.
+   *
+   * @param method The JDI method with which to wrap in a method info profile
+   * @return The new method info profile
+   */
+  def method(method: Method): MethodInfoProfile
+
+  /**
+   * Retrieves a stack frame profile for the given JDI stack frame.
+   *
+   * @param stackFrame The JDI stack frame with which to wrap in a
+   *                   frame info profile
+   * @return The new frame info profile
+   */
+  def stackFrame(stackFrame: StackFrame): FrameInfoProfile
+
+  /**
+   * Retrieves a type info profile for the given JDI type info.
+   *
+   * @param _type The JDI type with which to wrap in a type info profile
+   * @return The new type info profile
+   */
+  def `type`(_type: Type): TypeInfoProfile
+
+  /**
+   * Retrieves a value info profile for the given JDI value info.
+   *
+   * @param value The JDI value with which to wrap in a value info profile
+   * @return The new value info profile
+   */
+  def value(value: Value): ValueInfoProfile
 }
