@@ -74,17 +74,22 @@ class StandardAccessWatchpointManager(
       ) ++ extraArguments: _*
     ))
 
-    if (request.isSuccess) accessWatchpointRequests.putWithId(
-      requestId,
-      AccessWatchpointRequestInfo(
+    if (request.isSuccess) {
+      val l = s"$className.$fieldName"
+      val i = requestId
+      logger.trace(s"Created access watchpoint request for $l with id '$i'")
+      accessWatchpointRequests.putWithId(
         requestId,
-        isPending = false,
-        className,
-        fieldName,
-        extraArguments
-      ),
-      request.get
-    )
+        AccessWatchpointRequestInfo(
+          requestId,
+          isPending = false,
+          className,
+          fieldName,
+          extraArguments
+        ),
+        request.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)

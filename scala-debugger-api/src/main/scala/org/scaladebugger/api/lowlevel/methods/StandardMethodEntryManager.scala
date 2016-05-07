@@ -62,17 +62,22 @@ class StandardMethodEntryManager(
       ) ++ extraArguments: _*
     ))
 
-    if (request.isSuccess) methodEntryRequests.putWithId(
-      requestId,
-      MethodEntryRequestInfo(
+    if (request.isSuccess) {
+      val m = s"$className.$methodName"
+      val i = requestId
+      logger.trace(s"Created method entry request for $m with id '$i'")
+      methodEntryRequests.putWithId(
         requestId,
-        isPending = false,
-        className,
-        methodName,
-        extraArguments
-      ),
-      request.get
-    )
+        MethodEntryRequestInfo(
+          requestId,
+          isPending = false,
+          className,
+          methodName,
+          extraArguments
+        ),
+        request.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)

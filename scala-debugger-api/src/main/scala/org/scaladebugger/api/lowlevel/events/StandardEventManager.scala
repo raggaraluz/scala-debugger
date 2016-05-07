@@ -105,6 +105,7 @@ class StandardEventManager(
     eventHandler: EventHandler,
     eventArguments: JDIEventArgument*
   ): String = {
+    logger.trace(s"Created event handler with id '$eventHandlerId'")
     wrapAndAddEventHandler(
       eventHandlerId,
       eventType,

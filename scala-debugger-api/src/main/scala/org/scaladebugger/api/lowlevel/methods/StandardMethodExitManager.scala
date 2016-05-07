@@ -62,17 +62,22 @@ class StandardMethodExitManager(
       ) ++ extraArguments: _*
     ))
 
-    if (request.isSuccess) methodExitRequests.putWithId(
-      requestId,
-      MethodExitRequestInfo(
+    if (request.isSuccess) {
+      val m = s"$className.$methodName"
+      val i = requestId
+      logger.trace(s"Created method exit request for $m with id '$i'")
+      methodExitRequests.putWithId(
         requestId,
-        isPending = false,
-        className,
-        methodName,
-        extraArguments
-      ),
-      request.get
-    )
+        MethodExitRequestInfo(
+          requestId,
+          isPending = false,
+          className,
+          methodName,
+          extraArguments
+        ),
+        request.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)

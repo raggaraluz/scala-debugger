@@ -46,11 +46,14 @@ class StandardClassPrepareManager(
       ) ++ extraArguments: _*
     ))
 
-    if (request.isSuccess) classPrepareRequests.putWithId(
-      requestId,
-      ClassPrepareRequestInfo(requestId, isPending = false, extraArguments),
-      request.get
-    )
+    if (request.isSuccess) {
+      logger.trace(s"Created class prepare request with id '$requestId'")
+      classPrepareRequests.putWithId(
+        requestId,
+        ClassPrepareRequestInfo(requestId, isPending = false, extraArguments),
+        request.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)

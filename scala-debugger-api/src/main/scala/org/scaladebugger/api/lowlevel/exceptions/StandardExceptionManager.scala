@@ -69,6 +69,7 @@ class StandardExceptionManager(
     ))
 
     if (request.isSuccess) {
+      logger.trace(s"Created catchall exception request with id '$requestId'")
       exceptionRequests.putWithId(
         requestId,
         ExceptionRequestInfo(
@@ -126,18 +127,22 @@ class StandardExceptionManager(
       )
     ))
 
-    if (requests.isSuccess) exceptionRequests.putWithId(
-      requestId,
-      ExceptionRequestInfo(
-        requestId = requestId,
-        isPending = false,
-        className = exceptionName,
-        notifyCaught = notifyCaught,
-        notifyUncaught = notifyUncaught,
-        extraArguments = extraArguments
-      ),
-      requests.get
-    )
+    if (requests.isSuccess) {
+      val en = exceptionName
+      logger.trace(s"Created exception request for $en with id '$requestId'")
+      exceptionRequests.putWithId(
+        requestId,
+        ExceptionRequestInfo(
+          requestId = requestId,
+          isPending = false,
+          className = exceptionName,
+          notifyCaught = notifyCaught,
+          notifyUncaught = notifyUncaught,
+          extraArguments = extraArguments
+        ),
+        requests.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     requests.map(_ => requestId)

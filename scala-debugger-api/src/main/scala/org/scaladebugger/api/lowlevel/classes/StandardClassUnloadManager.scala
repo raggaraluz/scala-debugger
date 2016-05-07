@@ -46,11 +46,14 @@ class StandardClassUnloadManager(
       ) ++ extraArguments: _*
     ))
 
-    if (request.isSuccess) classUnloadRequests.putWithId(
-      requestId,
-      ClassUnloadRequestInfo(requestId, isPending = false, extraArguments),
-      request.get
-    )
+    if (request.isSuccess) {
+      logger.trace(s"Created class unload request with id '$requestId'")
+      classUnloadRequests.putWithId(
+        requestId,
+        ClassUnloadRequestInfo(requestId, isPending = false, extraArguments),
+        request.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)

@@ -46,11 +46,14 @@ class StandardThreadStartManager(
       ) ++ extraArguments: _*
     ))
 
-    if (request.isSuccess) threadStartRequests.putWithId(
-      requestId,
-      ThreadStartRequestInfo(requestId, isPending = false, extraArguments),
-      request.get
-    )
+    if (request.isSuccess) {
+      logger.trace(s"Created thread start request with id '$requestId'")
+      threadStartRequests.putWithId(
+        requestId,
+        ThreadStartRequestInfo(requestId, isPending = false, extraArguments),
+        request.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)

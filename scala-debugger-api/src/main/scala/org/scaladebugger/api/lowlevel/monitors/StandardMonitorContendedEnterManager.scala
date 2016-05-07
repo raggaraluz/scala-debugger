@@ -50,11 +50,15 @@ class StandardMonitorContendedEnterManager(
       ) ++ extraArguments: _*
     ))
 
-    if (request.isSuccess) monitorContendedEnterRequests.putWithId(
-      requestId,
-      MonitorContendedEnterRequestInfo(requestId, isPending = false, extraArguments),
-      request.get
-    )
+    if (request.isSuccess) {
+      val i = requestId
+      logger.trace(s"Created monitor contended enter request with id '$i'")
+      monitorContendedEnterRequests.putWithId(
+        requestId,
+        MonitorContendedEnterRequestInfo(requestId, isPending = false, extraArguments),
+        request.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)

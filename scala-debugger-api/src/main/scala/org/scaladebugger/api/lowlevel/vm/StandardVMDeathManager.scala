@@ -46,11 +46,14 @@ class StandardVMDeathManager(
       ) ++ extraArguments: _*
     ))
 
-    if (request.isSuccess) vmDeathRequests.putWithId(
-      requestId,
-      VMDeathRequestInfo(requestId, isPending = false, extraArguments),
-      request.get
-    )
+    if (request.isSuccess) {
+      logger.trace(s"Created vm death request with id '$requestId'")
+      vmDeathRequests.putWithId(
+        requestId,
+        VMDeathRequestInfo(requestId, isPending = false, extraArguments),
+        request.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)

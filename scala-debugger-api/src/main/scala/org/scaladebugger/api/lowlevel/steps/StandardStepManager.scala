@@ -74,19 +74,27 @@ class StandardStepManager(
       threadReference, size, depth, arguments: _*
     ))
 
-    if (request.isSuccess) stepRequests.putWithId(
-      requestId,
-      StepRequestInfo(
+    if (request.isSuccess) {
+      val st = (
+        if (depth == StepRequest.STEP_OUT) "out of"
+        else if (depth == StepRequest.STEP_OVER) "over"
+        else "into"
+      ) + " " + (if (size == StepRequest.STEP_LINE) "line" else "min")
+      logger.trace(s"Created step $st request with id '$requestId'")
+      stepRequests.putWithId(
         requestId,
-        isPending = false,
-        removeExistingRequests,
-        threadReference,
-        size,
-        depth,
-        extraArguments
-      ),
-      request.get
-    )
+        StepRequestInfo(
+          requestId,
+          isPending = false,
+          removeExistingRequests,
+          threadReference,
+          size,
+          depth,
+          extraArguments
+        ),
+        request.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)

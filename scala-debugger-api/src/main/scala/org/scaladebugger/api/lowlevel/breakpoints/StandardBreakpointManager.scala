@@ -79,17 +79,21 @@ class StandardBreakpointManager(
     ))
 
     val isPending = false
-    if (requests.isSuccess) breakpointRequests.putWithId(
-      requestId,
-      BreakpointRequestInfo(
+    if (requests.isSuccess) {
+      val l = s"$fileName:$lineNumber"
+      logger.trace(s"Created breakpoint request with id '$requestId' at $l")
+      breakpointRequests.putWithId(
         requestId,
-        isPending,
-        fileName,
-        lineNumber,
-        extraArguments
-      ),
-      requests.get
-    )
+        BreakpointRequestInfo(
+          requestId,
+          isPending,
+          fileName,
+          lineNumber,
+          extraArguments
+        ),
+        requests.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     requests.map(_ => requestId)

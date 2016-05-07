@@ -74,17 +74,23 @@ class StandardModificationWatchpointManager(
       ) ++ extraArguments: _*
     ))
 
-    if (request.isSuccess) modificationWatchpointRequests.putWithId(
-      requestId,
-      ModificationWatchpointRequestInfo(
+    if (request.isSuccess) {
+      val r = "modification watchpoint"
+      val l = s"$className.$fieldName"
+      val i = requestId
+      logger.trace(s"Created $r request for $l with id '$i'")
+      modificationWatchpointRequests.putWithId(
         requestId,
-        isPending = false,
-        className,
-        fieldName,
-        extraArguments
-      ),
-      request.get
-    )
+        ModificationWatchpointRequestInfo(
+          requestId,
+          isPending = false,
+          className,
+          fieldName,
+          extraArguments
+        ),
+        request.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)

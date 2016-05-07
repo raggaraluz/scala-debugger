@@ -49,11 +49,14 @@ class StandardMonitorWaitedManager(
       ) ++ extraArguments: _*
     ))
 
-    if (request.isSuccess) monitorWaitedRequests.putWithId(
-      requestId,
-      MonitorWaitedRequestInfo(requestId, isPending = false, extraArguments),
-      request.get
-    )
+    if (request.isSuccess) {
+      logger.trace(s"Created monitor waited request with id '$requestId'")
+      monitorWaitedRequests.putWithId(
+        requestId,
+        MonitorWaitedRequestInfo(requestId, isPending = false, extraArguments),
+        request.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)

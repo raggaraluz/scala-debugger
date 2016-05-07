@@ -46,11 +46,14 @@ class StandardThreadDeathManager(
       ) ++ extraArguments: _*
     ))
 
-    if (request.isSuccess) threadDeathRequests.putWithId(
-      requestId,
-      ThreadDeathRequestInfo(requestId, isPending = false, extraArguments),
-      request.get
-    )
+    if (request.isSuccess) {
+      logger.trace(s"Created thread death request with id '$requestId'")
+      threadDeathRequests.putWithId(
+        requestId,
+        ThreadDeathRequestInfo(requestId, isPending = false, extraArguments),
+        request.get
+      )
+    }
 
     // If no exception was thrown, assume that we succeeded
     request.map(_ => requestId)
