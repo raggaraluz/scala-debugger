@@ -2,11 +2,12 @@ Scala Debugger
 ==============
 
 [![Build Status](http://fommil.com/api/badges/ensime/scala-debugger/status.svg)](http://fommil.com/ensime/scala-debugger)
+[![Build status](https://ci.appveyor.com/api/projects/status/8mcnhcm1jofomg2f/branch/master?svg=true)](https://ci.appveyor.com/project/chipsenkbeil/scala-debugger/branch/master)
 [![Scaladoc 2.10](https://img.shields.io/badge/Scaladoc-2.10-34B6A8.svg?style=flat)](http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.10)
 [![Scaladoc 2.11](https://img.shields.io/badge/Scaladoc-2.11-34B6A8.svg?style=flat)](http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.11)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ensime/scala-debugger)
 
-A simple debugger library for Scala. Tested on OpenJDK 7.
+A simple debugger library for Scala. Tested on OpenJDK 7 for Windows and Linux.
 - Visit the [main site](https://scala-debugger.org/) for more documentation.
 - Check out the [wiki](https://github.com/ensime/scala-debugger/wiki) for the current roadmap.
 
