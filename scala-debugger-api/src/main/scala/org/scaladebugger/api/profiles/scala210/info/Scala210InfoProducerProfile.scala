@@ -23,4 +23,30 @@ class Scala210InfoProducerProfile extends PureInfoProducerProfile {
     field,
     offsetIndex
   )(virtualMachine)
+
+  override def newReferenceTypeInfoProfile(
+    scalaVirtualMachine: ScalaVirtualMachine,
+    referenceType: ReferenceType
+  ): ReferenceTypeInfoProfile = new Scala210ReferenceTypeInfoProfile(
+    scalaVirtualMachine,
+    this,
+    referenceType
+  )
+
+  override def newObjectInfoProfile(
+    scalaVirtualMachine: ScalaVirtualMachine,
+    objectReference: ObjectReference
+  )(
+    virtualMachine: VirtualMachine,
+    threadReference: ThreadReference,
+    referenceType: ReferenceType
+  ): ObjectInfoProfile = new Scala210ObjectInfoProfile(
+    scalaVirtualMachine,
+    this,
+    objectReference
+  )(
+    _virtualMachine = virtualMachine,
+    _threadReference = threadReference,
+    _referenceType = referenceType
+  )
 }
