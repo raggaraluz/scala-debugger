@@ -96,6 +96,166 @@ class GrabInfoProfileSpec extends FunSpec with Matchers
       }
     }
 
+    describe("#thread(threadName, threadGroupName)") {
+      it("should return the Some result of threadOption(threadName, threadGroupName)") {
+        val mockUnsafeMethod = mockFunction[String, String, Option[ThreadInfoProfile]]
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def threadOption(
+            threadName: String,
+            threadGroupName: String
+          ): Option[ThreadInfoProfile] = mockUnsafeMethod(threadName, threadGroupName)
+        }
+
+        val a1 = "someThreadName"
+        val a2 = "someThreadGroupName"
+        val r = mock[ThreadInfoProfile]
+        mockUnsafeMethod.expects(a1, a2).returning(Some(r)).once()
+        grabInfoProfile.thread(a1, a2) should be (r)
+      }
+    }
+
+    describe("#tryThread(threadName, threadGroupName)") {
+      it("should wrap the unsafe call in a Try") {
+        val mockUnsafeMethod = mockFunction[String, String, ThreadInfoProfile]
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def thread(
+            threadName: String,
+            threadGroupName: String
+          ): ThreadInfoProfile = mockUnsafeMethod(threadName, threadGroupName)
+        }
+
+        val a1 = "someThreadName"
+        val a2 = "someThreadGroupName"
+        val r = mock[ThreadInfoProfile]
+        mockUnsafeMethod.expects(a1, a2).returning(r).once()
+        grabInfoProfile.tryThread(a1, a2).get should be (r)
+      }
+    }
+
+    describe("#threadOption(threadName, threadGroupName)") {
+      it("should return Some(profile) if a thread with the name and thread group name is found") {
+        val expected = Some(mock[ThreadInfoProfile])
+        val threadGroupName = "someThreadGroupName"
+        val threadName = "someThreadName"
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def threads: Seq[ThreadInfoProfile] = Seq(expected.get)
+        }
+
+        val mockThreadGroupInfo = mock[ThreadGroupInfoProfile]
+        (mockThreadGroupInfo.name _).expects().returning(threadGroupName).once()
+
+        (expected.get.threadGroup _).expects()
+          .returning(mockThreadGroupInfo).once()
+        (expected.get.name _).expects().returning(threadName).once()
+
+        val actual = grabInfoProfile.threadOption(threadName, threadGroupName)
+
+        actual should be (expected)
+      }
+
+      it("should return None if no thread with matching name is found") {
+        val expected = None
+        val mockThreadInfo = mock[ThreadInfoProfile]
+        val threadGroupName = "someThreadGroupName"
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def threads: Seq[ThreadInfoProfile] = Seq(mockThreadInfo)
+        }
+
+        (mockThreadInfo.threadGroup _).expects().never() // Short circuit
+        (mockThreadInfo.name _).expects().returning("someOtherName").once()
+        val actual = grabInfoProfile.threadOption("someName", threadGroupName)
+
+        actual should be (expected)
+      }
+
+      it("should return None if no thread with matching thread group name is found") {
+        val expected = None
+        val mockThreadInfo = mock[ThreadInfoProfile]
+        val threadName = "someThreadName"
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def threads: Seq[ThreadInfoProfile] = Seq(mockThreadInfo)
+        }
+
+        val mockThreadGroupInfo = mock[ThreadGroupInfoProfile]
+        (mockThreadGroupInfo.name _).expects().returning("someOtherName").once()
+
+        (mockThreadInfo.threadGroup _).expects()
+          .returning(mockThreadGroupInfo).once()
+        (mockThreadInfo.name _).expects().returning(threadName).once()
+        val actual = grabInfoProfile.threadOption(threadName, "someName")
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#thread(name)") {
+      it("should return the Some result of threadOption(name)") {
+        val mockUnsafeMethod = mockFunction[String, Option[ThreadInfoProfile]]
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def threadOption(name: String): Option[ThreadInfoProfile] =
+            mockUnsafeMethod(name)
+        }
+
+        val a1 = "someName"
+        val r = mock[ThreadInfoProfile]
+        mockUnsafeMethod.expects(a1).returning(Some(r)).once()
+        grabInfoProfile.thread(a1) should be (r)
+      }
+    }
+
+    describe("#tryThread(name)") {
+      it("should wrap the unsafe call in a Try") {
+        val mockUnsafeMethod = mockFunction[String, ThreadInfoProfile]
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def thread(name: String): ThreadInfoProfile =
+            mockUnsafeMethod(name)
+        }
+
+        val a1 = "someName"
+        val r = mock[ThreadInfoProfile]
+        mockUnsafeMethod.expects(a1).returning(r).once()
+        grabInfoProfile.tryThread(a1).get should be (r)
+      }
+    }
+
+    describe("#threadOption(name)") {
+      it("should return Some(profile) if a thread with matching name is found") {
+        val expected = Some(mock[ThreadInfoProfile])
+        val threadName = "someName"
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def threads: Seq[ThreadInfoProfile] = Seq(expected.get)
+        }
+
+        (expected.get.name _).expects().returning(threadName).once()
+
+        val actual = grabInfoProfile.threadOption(threadName)
+
+        actual should be (expected)
+      }
+
+      it("should return None if no thread with a matching name is found") {
+        val expected = None
+        val mockThreadInfo = mock[ThreadInfoProfile]
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def threads: Seq[ThreadInfoProfile] = Seq(mockThreadInfo)
+        }
+
+        (mockThreadInfo.name _).expects().returning("someOtherName").once()
+        val actual = grabInfoProfile.threadOption("someName")
+
+        actual should be (expected)
+      }
+    }
+
     describe("#tryThread(threadId)") {
       it("should wrap the unsafe call in a Try") {
         val mockUnsafeMethod = mockFunction[Long, ThreadInfoProfile]
@@ -125,6 +285,37 @@ class GrabInfoProfileSpec extends FunSpec with Matchers
         val r = mock[ThreadInfoProfile]
         mockUnsafeMethod.expects(a1).returning(Some(r)).once()
         grabInfoProfile.thread(a1) should be (r)
+      }
+    }
+
+    describe("#threadOption(threadId)") {
+      it("should return Some(profile) if a thread with matching unique id is found") {
+        val expected = Some(mock[ThreadInfoProfile])
+        val threadId = 999L
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def threads: Seq[ThreadInfoProfile] = Seq(expected.get)
+        }
+
+        (expected.get.uniqueId _).expects().returning(threadId).once()
+
+        val actual = grabInfoProfile.threadOption(threadId)
+
+        actual should be (expected)
+      }
+
+      it("should return None if no thread with a matching unique id is found") {
+        val expected = None
+        val mockThreadInfo = mock[ThreadInfoProfile]
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def threads: Seq[ThreadInfoProfile] = Seq(mockThreadInfo)
+        }
+
+        (mockThreadInfo.uniqueId _).expects().returning(998L).once()
+        val actual = grabInfoProfile.threadOption(999L)
+
+        actual should be (expected)
       }
     }
 
@@ -384,6 +575,41 @@ class GrabInfoProfileSpec extends FunSpec with Matchers
         val r = mock[ReferenceTypeInfoProfile]
         mockUnsafeMethod.expects(a1).returning(r).once()
         grabInfoProfile.tryClass(a1).get should be (r)
+      }
+    }
+
+    describe("#classOption(name)") {
+      it("should return Some(profile) if a class with matching name is found") {
+        val expected = Some(mock[ReferenceTypeInfoProfile])
+        val name = "some.class.name"
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def classes: Seq[ReferenceTypeInfoProfile] = Seq(expected.get)
+        }
+
+        (expected.get.name _).expects().returning(name).once()
+
+        val actual = grabInfoProfile.classOption(name)
+
+        actual should be (expected)
+      }
+
+      it("should return None if no class with a matching name is found") {
+        val expected = None
+        val name = "some.class.name"
+
+        val mockReferenceTypeInfo = mock[ReferenceTypeInfoProfile]
+
+        val grabInfoProfile = new TestGrabInfoProfile {
+          override def classes: Seq[ReferenceTypeInfoProfile] =
+            Seq(mockReferenceTypeInfo)
+        }
+
+        (mockReferenceTypeInfo.name _).expects().returning(name + 1).once()
+
+        val actual = grabInfoProfile.classOption(name)
+
+        actual should be (expected)
       }
     }
 
