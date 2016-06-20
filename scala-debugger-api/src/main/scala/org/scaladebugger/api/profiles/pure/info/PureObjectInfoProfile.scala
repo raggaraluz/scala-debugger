@@ -18,8 +18,6 @@ import scala.collection.JavaConverters._
  * @param infoProducer The producer of info-based profile instances
  * @param _objectReference The reference to the underlying JDI object
  * @param _virtualMachine The virtual machine associated with the object
- * @param _threadReference The thread associated with the object (for method
- *                        invocation)
  * @param _referenceType The reference type for this object
  */
 class PureObjectInfoProfile(
@@ -28,7 +26,6 @@ class PureObjectInfoProfile(
   private val _objectReference: ObjectReference
 )(
   protected val _virtualMachine: VirtualMachine = _objectReference.virtualMachine(),
-  private val _threadReference: ThreadReference = _objectReference.owningThread(),
   private val _referenceType: ReferenceType = _objectReference.referenceType()
 ) extends PureValueInfoProfile(
   scalaVirtualMachine = scalaVirtualMachine,
@@ -73,6 +70,7 @@ class PureObjectInfoProfile(
   /**
    * Invokes the object's method.
    *
+   * @param thread The thread within which to invoke the method
    * @param method The method of the object to invoke
    * @param arguments         The arguments to provide to the method
    * @param jdiArguments      Optional arguments to provide custom settings to the
@@ -80,11 +78,12 @@ class PureObjectInfoProfile(
    * @return The resulting value of the invocation
    */
   override def invoke(
+    thread: ThreadInfoProfile,
     method: MethodInfoProfile,
     arguments: Seq[Any],
     jdiArguments: JDIArgument*
   ): ValueInfoProfile = {
-    assert(_threadReference != null, "No thread available for invocation!")
+    val t = thread.toJdiInstance
     val m = method.toJdiInstance
 
     import org.scaladebugger.api.lowlevel.wrappers.Implicits._
@@ -95,35 +94,8 @@ class PureObjectInfoProfile(
       case InvokeNonVirtualArgument     => ObjectReference.INVOKE_NONVIRTUAL
     }.fold(0)(_ | _)
 
-    val r = _objectReference.invokeMethod(_threadReference, m, v.asJava, o)
+    val r = _objectReference.invokeMethod(t, m, v.asJava, o)
     newValueProfile(r)
-  }
-
-  /**
-   * Invokes the object's method with matching name and arguments.
-   *
-   * @param methodName         The name of the method to invoke
-   * @param parameterTypeNames The names of the parameter types of the method
-   *                           to invoke
-   * @param arguments          The arguments to provide to the method
-   * @param jdiArguments       Optional arguments to provide custom settings to
-   *                           the method invocation
-   * @return The resulting value of the invocation
-   */
-  override def invoke(
-    methodName: String,
-    parameterTypeNames: Seq[String],
-    arguments: Seq[Any],
-    jdiArguments: JDIArgument*
-  ): ValueInfoProfile = {
-    assert(parameterTypeNames.length == arguments.length,
-      "Inconsistent number of parameter types versus arguments!")
-
-    invoke(
-      method(methodName, parameterTypeNames: _*),
-      arguments,
-      jdiArguments: _*
-    )
   }
 
   /**

@@ -127,8 +127,7 @@ object InfoTestClasses {
     override def typeInfo: ReferenceTypeInfoProfile = throwException()
     override def scalaVirtualMachine: ScalaVirtualMachine = throwException()
     override def uniqueId: Long = throwException()
-    override def invoke(methodInfoProfile: MethodInfoProfile, arguments: Seq[Any], jdiArguments: JDIArgument*): ValueInfoProfile = throwException()
-    override def invoke(methodName: String, parameterTypeNames: Seq[String], arguments: Seq[Any], jdiArguments: JDIArgument*): ValueInfoProfile = throwException()
+    override def invoke(thread: ThreadInfoProfile, methodInfoProfile: MethodInfoProfile, arguments: Seq[Any], jdiArguments: JDIArgument*): ValueInfoProfile = throwException()
     override def fields: Seq[FieldVariableInfoProfile] = throwException()
     override def methods: Seq[MethodInfoProfile] = throwException()
     override def toJdiInstance: ObjectReference = throwException()
@@ -148,7 +147,7 @@ object InfoTestClasses {
   class TestGrabInfoProfile extends GrabInfoProfile {
     override def threadGroup(threadGroupReference: ThreadGroupReference): ThreadGroupInfoProfile = throwException()
     override def threadGroups: Seq[ThreadGroupInfoProfile] = throwException()
-    override def `object`(threadReference: ThreadReference, objectReference: ObjectReference): ObjectInfoProfile = throwException()
+    override def `object`(objectReference: ObjectReference): ObjectInfoProfile = throwException()
     override def thread(threadReference: ThreadReference): ThreadInfoProfile = throwException()
     override def classes: Seq[ReferenceTypeInfoProfile] = throwException()
     override def threads: Seq[ThreadInfoProfile] = throwException()
