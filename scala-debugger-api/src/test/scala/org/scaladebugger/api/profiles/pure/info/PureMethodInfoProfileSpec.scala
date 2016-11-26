@@ -1,13 +1,12 @@
 package org.scaladebugger.api.profiles.pure.info
 
-import com.sun.jdi.{Method, Type}
-import org.scaladebugger.api.profiles.traits.info.{InfoProducerProfile, TypeInfoProfile}
+import com.sun.jdi.{Method, ReferenceType, Type}
+import org.scaladebugger.api.profiles.traits.info.{InfoProducerProfile, MethodInfoProfile, ReferenceTypeInfoProfile, TypeInfoProfile}
 import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
-class PureMethodInfoProfileSpec extends FunSpec with Matchers
-  with ParallelTestExecution with MockFactory
+class PureMethodInfoProfileSpec extends test.ParallelMockFunSpec
 {
   private val mockNewTypeProfile = mockFunction[Type, TypeInfoProfile]
   private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
@@ -23,6 +22,35 @@ class PureMethodInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureMethodInfoProfile") {
+    describe("#toJavaInfo") {
+      it("should return a new instance of the Java profile representation") {
+        val expected = mock[MethodInfoProfile]
+
+        // Get Java version of info producer
+        (mockInfoProducerProfile.toJavaInfo _).expects()
+          .returning(mockInfoProducerProfile).once()
+
+        // Create new info profile using Java version of info producer
+        (mockInfoProducerProfile.newMethodInfoProfile _)
+          .expects(mockScalaVirtualMachine, mockMethod)
+          .returning(expected).once()
+
+        val actual = pureMethodInfoProfile.toJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isJavaInfo") {
+      it("should return true") {
+        val expected = true
+
+        val actual = pureMethodInfoProfile.isJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
     describe("#toJdiInstance") {
       it("should return the JDI instance this profile instance represents") {
         val expected = mockMethod
@@ -67,6 +95,24 @@ class PureMethodInfoProfileSpec extends FunSpec with Matchers
         (mockMethod.returnTypeName _).expects().returning(expected).once()
 
         val actual = pureMethodInfoProfile.returnTypeName
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#declaringTypeInfo") {
+      it("should return a new type info profile wrapping the type that declared this method") {
+        val expected = mock[ReferenceTypeInfoProfile]
+
+        val mockReferenceType = mock[ReferenceType]
+        (mockMethod.declaringType _).expects()
+          .returning(mockReferenceType).once()
+        (mockInfoProducerProfile.newReferenceTypeInfoProfile _)
+          .expects(mockScalaVirtualMachine, mockReferenceType)
+          .returning(expected)
+          .once()
+
+        val actual = pureMethodInfoProfile.declaringTypeInfo
 
         actual should be (expected)
       }

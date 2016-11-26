@@ -10,6 +10,15 @@ import scala.util.Try
  */
 trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
   /**
+   * Converts the current profile instance to a representation of
+   * low-level Java instead of a higher-level abstraction.
+   *
+   * @return The profile instance providing an implementation corresponding
+   *         to Java
+   */
+  override def toJavaInfo: ThreadInfoProfile
+
+  /**
    * Returns the JDI representation this profile instance wraps.
    *
    * @return The JDI instance
@@ -48,6 +57,24 @@ trait ThreadInfoProfile extends ObjectInfoProfile with CommonInfoProfile {
    * Suspends the thread by incrementing the pending suspension counter.
    */
   def suspend(): Unit
+
+  /**
+   * Executes the provided code block, suspending the thread prior to
+   * execution and resuming it after (regardless of success or failure).
+   *
+   * @param thunk The block of code to execute
+   * @tparam T The return type of the block of code
+   * @return Success containing the result of the thunk, or a failure
+   */
+  def suspendAndExecute[T](thunk: => T): Try[T] = {
+    suspend()
+
+    val result = Try(thunk)
+
+    resume()
+
+    result
+  }
 
   /**
    * Retrieves profiles for all frames in the stack.

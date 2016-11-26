@@ -6,8 +6,7 @@ import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
-class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
-  with ParallelTestExecution with MockFactory
+class PurePrimitiveInfoProfileSpec extends test.ParallelMockFunSpec
 {
   private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockInfoProducerProfile = mock[InfoProducerProfile]
@@ -15,6 +14,68 @@ class PurePrimitiveInfoProfileSpec extends FunSpec with Matchers
   private val mockPrimitiveValue = mock[PrimitiveValue]
 
   describe("PurePrimitiveInfoProfile") {
+    describe("#toJavaInfo") {
+      it("should return a new instance of the Java profile representation when wrapping primitive value") {
+        val expected = mock[PrimitiveInfoProfile]
+        val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
+          mockInfoProducerProfile,
+          Left(mockPrimitiveValue)
+        )
+
+        // Get Java version of info producer
+        (mockInfoProducerProfile.toJavaInfo _).expects()
+          .returning(mockInfoProducerProfile).once()
+
+        // Create new info profile using Java version of info producer
+        (mockInfoProducerProfile.newPrimitiveInfoProfile(_: ScalaVirtualMachine, _: PrimitiveValue))
+          .expects(mockScalaVirtualMachine, mockPrimitiveValue)
+          .returning(expected).once()
+
+        val actual = purePrimitiveInfoProfile.toJavaInfo
+
+        actual should be (expected)
+      }
+
+      it("should return a new instance of the Java profile representation when wrapping void value") {
+        val expected = mock[PrimitiveInfoProfile]
+        val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
+          mockInfoProducerProfile,
+          Right(mockVoidValue)
+        )
+
+        // Get Java version of info producer
+        (mockInfoProducerProfile.toJavaInfo _).expects()
+          .returning(mockInfoProducerProfile).once()
+
+        // Create new info profile using Java version of info producer
+        (mockInfoProducerProfile.newPrimitiveInfoProfile(_: ScalaVirtualMachine, _: VoidValue))
+          .expects(mockScalaVirtualMachine, mockVoidValue)
+          .returning(expected).once()
+
+        val actual = purePrimitiveInfoProfile.toJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isJavaInfo") {
+      it("should return true") {
+        val expected = true
+
+        val purePrimitiveInfoProfile = new PurePrimitiveInfoProfile(
+          mockScalaVirtualMachine,
+          mockInfoProducerProfile,
+          Left(mockPrimitiveValue)
+        )
+
+        val actual = purePrimitiveInfoProfile.isJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
     describe("#toJdiInstance") {
       it("should return the JDI instance of void if representing a void") {
         val expected = mockVoidValue

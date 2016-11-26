@@ -10,6 +10,15 @@ import scala.util.Try
  */
 trait MethodInfoProfile extends CommonInfoProfile {
   /**
+   * Converts the current profile instance to a representation of
+   * low-level Java instead of a higher-level abstraction.
+   *
+   * @return The profile instance providing an implementation corresponding
+   *         to Java
+   */
+  override def toJavaInfo: MethodInfoProfile
+
+  /**
    * Returns the JDI representation this profile instance wraps.
    *
    * @return The JDI instance
@@ -84,6 +93,21 @@ trait MethodInfoProfile extends CommonInfoProfile {
    * @return The profile containing type information
    */
   def tryReturnTypeInfo: Try[TypeInfoProfile] = Try(returnTypeInfo)
+
+  /**
+   * Returns the type where this method was declared.
+   *
+   * @return The reference type information that declared this method
+   */
+  def declaringTypeInfo: ReferenceTypeInfoProfile
+
+  /**
+   * Returns the type where this method was declared.
+   *
+   * @return The reference type information that declared this method
+   */
+  def tryDeclaringTypeInfo: Try[ReferenceTypeInfoProfile] =
+    Try(declaringTypeInfo)
 
   /**
    * Returns a string presenting a better human-readable description of

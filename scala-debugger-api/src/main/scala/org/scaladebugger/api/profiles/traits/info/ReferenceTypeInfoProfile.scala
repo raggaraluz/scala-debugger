@@ -9,6 +9,15 @@ import scala.util.Try
  */
 trait ReferenceTypeInfoProfile extends CommonInfoProfile with TypeInfoProfile {
   /**
+   * Converts the current profile instance to a representation of
+   * low-level Java instead of a higher-level abstraction.
+   *
+   * @return The profile instance providing an implementation corresponding
+   *         to Java
+   */
+  override def toJavaInfo: ReferenceTypeInfoProfile
+
+  /**
    * Returns the JDI representation this profile instance wraps.
    *
    * @return The JDI instance
@@ -380,7 +389,7 @@ trait ReferenceTypeInfoProfile extends CommonInfoProfile with TypeInfoProfile {
 
   /**
    * Retrieves reference type information for all types declared inside this
-   * tupe.
+   * type.
    *
    * @return The collection of reference type information
    */

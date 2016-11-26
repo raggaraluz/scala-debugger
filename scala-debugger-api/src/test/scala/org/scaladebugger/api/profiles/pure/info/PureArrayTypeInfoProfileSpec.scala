@@ -3,11 +3,9 @@ package org.scaladebugger.api.profiles.pure.info
 import com.sun.jdi._
 import org.scaladebugger.api.profiles.traits.info.{ArrayInfoProfile, InfoProducerProfile, TypeInfoProfile}
 import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
+import org.scaladebugger.api.profiles.traits.info.ArrayTypeInfoProfile
 
-class PureArrayTypeInfoProfileSpec extends FunSpec with Matchers
-  with ParallelTestExecution with MockFactory
+class PureArrayTypeInfoProfileSpec extends test.ParallelMockFunSpec
 {
   private val mockNewTypeProfile = mockFunction[Type, TypeInfoProfile]
   private val mockNewArrayProfile = mockFunction[ArrayReference, ArrayInfoProfile]
@@ -28,6 +26,35 @@ class PureArrayTypeInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureArrayTypeInfoProfile") {
+    describe("#toJavaInfo") {
+      it("should return a new instance of the Java profile representation") {
+        val expected = mock[ArrayTypeInfoProfile]
+
+        // Get Java version of info producer
+        (mockInfoProducerProfile.toJavaInfo _).expects()
+          .returning(mockInfoProducerProfile).once()
+
+        // Create new info profile using Java version of info producer
+        (mockInfoProducerProfile.newArrayTypeInfoProfile _)
+          .expects(mockScalaVirtualMachine, mockArrayType)
+          .returning(expected).once()
+
+        val actual = pureArrayTypeInfoProfile.toJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isJavaInfo") {
+      it("should return true") {
+        val expected = true
+
+        val actual = pureArrayTypeInfoProfile.isJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
     describe("#toJdiInstance") {
       it("should return the JDI instance this profile instance represents") {
         val expected = mockArrayType

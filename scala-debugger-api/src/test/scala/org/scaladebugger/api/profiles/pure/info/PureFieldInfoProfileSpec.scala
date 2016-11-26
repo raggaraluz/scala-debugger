@@ -7,8 +7,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import test.InfoTestClasses.TestMiscInfoProfileTrait
 
-class PureFieldInfoProfileSpec extends FunSpec with Matchers
-  with ParallelTestExecution with MockFactory
+class PureFieldInfoProfileSpec extends test.ParallelMockFunSpec
 {
   private val mockNewTypeProfile = mockFunction[Type, TypeInfoProfile]
   private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
@@ -27,6 +26,93 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureFieldInfoProfile") {
+    describe("#toJavaInfo") {
+      it("should return a new instance of the Java profile representation when wrapping an object reference") {
+        val expected = mock[FieldVariableInfoProfile]
+
+        val offsetIndex = 999
+        val pureFieldInfoProfile = new PureFieldInfoProfile(
+          mockScalaVirtualMachine,
+          mockInfoProducerProfile,
+          Left(mockObjectReference),
+          mockField,
+          offsetIndex
+        )(mockVirtualMachine)
+
+        // Get Java version of info producer
+        (mockInfoProducerProfile.toJavaInfo _).expects()
+          .returning(mockInfoProducerProfile).once()
+
+        // Create new info profile using Java version of info producer
+        (mockInfoProducerProfile.newFieldInfoProfile(
+          _: ScalaVirtualMachine,
+          _: Either[ObjectReference, ReferenceType],
+          _: Field,
+          _: Int
+        )(
+          _: VirtualMachine
+        )).expects(
+          mockScalaVirtualMachine,
+          Left(mockObjectReference),
+          mockField,
+          offsetIndex,
+          mockVirtualMachine
+        ).returning(expected).once()
+
+        val actual = pureFieldInfoProfile.toJavaInfo
+
+        actual should be (expected)
+      }
+
+      it("should return a new instance of the Java profile representation when wrapping a reference type") {
+        val expected = mock[FieldVariableInfoProfile]
+        val mockReferenceType = mock[ReferenceType]
+
+        val offsetIndex = 999
+        val pureFieldInfoProfile = new PureFieldInfoProfile(
+          mockScalaVirtualMachine,
+          mockInfoProducerProfile,
+          Right(mockReferenceType),
+          mockField,
+          offsetIndex
+        )(mockVirtualMachine)
+
+        // Get Java version of info producer
+        (mockInfoProducerProfile.toJavaInfo _).expects()
+          .returning(mockInfoProducerProfile).once()
+
+        // Create new info profile using Java version of info producer
+        (mockInfoProducerProfile.newFieldInfoProfile(
+          _: ScalaVirtualMachine,
+          _: Either[ObjectReference, ReferenceType],
+          _: Field,
+          _: Int
+        )(
+          _: VirtualMachine
+        )).expects(
+            mockScalaVirtualMachine,
+            Right(mockReferenceType),
+            mockField,
+            offsetIndex,
+            mockVirtualMachine
+          ).returning(expected).once()
+
+        val actual = pureFieldInfoProfile.toJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isJavaInfo") {
+      it("should return true") {
+        val expected = true
+
+        val actual = pureFieldInfoProfile.isJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
     describe("#toJdiInstance") {
       it("should return the JDI instance this profile instance represents") {
         val expected = mockField
@@ -112,6 +198,24 @@ class PureFieldInfoProfileSpec extends FunSpec with Matchers
         }
 
         val actual = pureFieldInfoProfile.parent
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#declaringTypeInfo") {
+      it("should return a new type info profile wrapping the type that declared this field") {
+        val expected = mock[ReferenceTypeInfoProfile]
+
+        val mockReferenceType = mock[ReferenceType]
+        (mockField.declaringType _).expects()
+          .returning(mockReferenceType).once()
+        (mockInfoProducerProfile.newReferenceTypeInfoProfile _)
+          .expects(mockScalaVirtualMachine, mockReferenceType)
+          .returning(expected)
+          .once()
+
+        val actual = pureFieldInfoProfile.declaringTypeInfo
 
         actual should be (expected)
       }

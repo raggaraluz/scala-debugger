@@ -7,10 +7,30 @@ import test.InfoTestClasses.TestThreadInfoProfile
 
 import scala.util.{Success, Failure, Try}
 
-class ThreadInfoProfileSpec extends FunSpec with Matchers
-  with ParallelTestExecution with MockFactory
+class ThreadInfoProfileSpec extends test.ParallelMockFunSpec
 {
   describe("ThreadInfoProfile") {
+    describe("#suspendAndExecute") {
+      it("should suspend the thread, execute the code, and then resume the thread") {
+        val mockSuspend = mockFunction[Unit]
+        val mockResume = mockFunction[Unit]
+
+        val threadInfoProfile = new TestThreadInfoProfile {
+          override def suspend(): Unit = mockSuspend()
+          override def resume(): Unit = mockResume()
+        }
+
+        inSequence {
+          mockSuspend.expects().once()
+          mockResume.expects().once()
+        }
+
+        val result = threadInfoProfile.suspendAndExecute(throw new Throwable)
+
+        result shouldBe a [Failure[_]]
+      }
+    }
+
     describe("#findVariableByName") {
       it("should return None if no variable is found") {
         val expected = None

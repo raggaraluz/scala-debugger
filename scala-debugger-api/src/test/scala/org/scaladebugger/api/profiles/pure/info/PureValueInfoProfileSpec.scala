@@ -6,8 +6,7 @@ import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
-class PureValueInfoProfileSpec extends FunSpec with Matchers
-  with ParallelTestExecution with MockFactory
+class PureValueInfoProfileSpec extends test.ParallelMockFunSpec
 {
   private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
   private val mockInfoProducerProfile = mock[InfoProducerProfile]
@@ -22,6 +21,47 @@ class PureValueInfoProfileSpec extends FunSpec with Matchers
   private val mockNewStringProfile = mockFunction[StringReference, StringInfoProfile]
 
   describe("PureValueInfoProfile") {
+    describe("#toJavaInfo") {
+      it("should return a new instance of the Java profile representation") {
+        val expected = mock[ValueInfoProfile]
+
+        val pureValueInfoProfile = new PureValueInfoProfile(
+          mockScalaVirtualMachine,
+          mockInfoProducerProfile,
+          mockValue
+        )
+
+        // Get Java version of info producer
+        (mockInfoProducerProfile.toJavaInfo _).expects()
+          .returning(mockInfoProducerProfile).once()
+
+        // Create new info profile using Java version of info producer
+        (mockInfoProducerProfile.newValueInfoProfile _)
+          .expects(mockScalaVirtualMachine, mockValue)
+          .returning(expected).once()
+
+        val actual = pureValueInfoProfile.toJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isJavaInfo") {
+      it("should return true") {
+        val expected = true
+
+        val pureValueInfoProfile = new PureValueInfoProfile(
+          mockScalaVirtualMachine,
+          mockInfoProducerProfile,
+          mockValue
+        )
+
+        val actual = pureValueInfoProfile.isJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
     describe("#toJdiInstance") {
       it("should return the JDI instance this profile instance represents") {
         val expected = mockValue

@@ -1,13 +1,12 @@
 package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
-import org.scaladebugger.api.profiles.traits.info.{InfoProducerProfile, TypeInfoProfile}
+import org.scaladebugger.api.profiles.traits.info.{InfoProducerProfile, StringInfoProfile, TypeInfoProfile}
 import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
-class PureStringInfoProfileSpec extends FunSpec with Matchers
-  with ParallelTestExecution with MockFactory
+class PureStringInfoProfileSpec extends test.ParallelMockFunSpec
 {
   private val mockNewTypeProfile = mockFunction[Type, TypeInfoProfile]
   private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
@@ -26,6 +25,44 @@ class PureStringInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureStringInfoProfile") {
+    describe("#toJavaInfo") {
+      it("should return a new instance of the Java profile representation") {
+        val expected = mock[StringInfoProfile]
+
+        // Get Java version of info producer
+        (mockInfoProducerProfile.toJavaInfo _).expects()
+          .returning(mockInfoProducerProfile).once()
+
+        // Create new info profile using Java version of info producer
+        (mockInfoProducerProfile.newStringInfoProfile(
+          _: ScalaVirtualMachine,
+          _: StringReference
+        )(
+          _: VirtualMachine,
+          _: ReferenceType
+        )).expects(
+          mockScalaVirtualMachine,
+          mockStringReference,
+          mockVirtualMachine,
+          mockReferenceType
+        ).returning(expected).once()
+
+        val actual = pureStringInfoProfile.toJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isJavaInfo") {
+      it("should return true") {
+        val expected = true
+
+        val actual = pureStringInfoProfile.isJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
     describe("#toJdiInstance") {
       it("should return the JDI instance this profile instance represents") {
         val expected = mockStringReference

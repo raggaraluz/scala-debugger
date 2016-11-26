@@ -8,8 +8,7 @@ import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
 import scala.util.{Success, Try}
 
-class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
-  with ParallelTestExecution with MockFactory
+class FrameInfoDSLWrapperSpec extends test.ParallelMockFunSpec
 {
   // NOTE: Cannot mock Function0 with no parentheses
   //private val mockFrameInfoProfile = mock[FrameInfoProfile]
@@ -253,6 +252,8 @@ class FrameInfoDSLWrapperSpec extends FunSpec with Matchers
   private val mockToJdiInstanceFunction = mockFunction[StackFrame]
 
   private class TestFrameInfoProfile extends FrameInfoProfile {
+    override def toJavaInfo: FrameInfoProfile = ???
+    override def isJavaInfo: Boolean = ???
     override def thisObjectOption: Option[ObjectInfoProfile] = ???
     override def variableOption(name: String): Option[VariableInfoProfile] = ???
     override def indexedVariableOption(name: String): Option[VariableInfoProfile] = ???

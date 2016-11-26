@@ -6,8 +6,7 @@ import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
-class PureFrameInfoProfileSpec extends FunSpec with Matchers
-  with ParallelTestExecution with MockFactory
+class PureFrameInfoProfileSpec extends test.ParallelMockFunSpec
 {
   private val mockNewLocalVariableProfile = mockFunction[LocalVariable, Int, IndexedVariableInfoProfile]
   private val mockNewObjectProfile = mockFunction[ObjectReference, ObjectInfoProfile]
@@ -49,6 +48,35 @@ class PureFrameInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureFrameInfoProfile") {
+    describe("#toJavaInfo") {
+      it("should return a new instance of the Java profile representation") {
+        val expected = mock[FrameInfoProfile]
+
+        // Get Java version of info producer
+        (mockInfoProducerProfile.toJavaInfo _).expects()
+          .returning(mockInfoProducerProfile).once()
+
+        // Create new info profile using Java version of info producer
+        (mockInfoProducerProfile.newFrameInfoProfile _)
+          .expects(mockScalaVirtualMachine, mockStackFrame, TestFrameIndex)
+          .returning(expected).once()
+
+        val actual = pureFrameInfoProfile.toJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isJavaInfo") {
+      it("should return true") {
+        val expected = true
+
+        val actual = pureFrameInfoProfile.isJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
     describe("#toJdiInstance") {
       it("should return the JDI instance this profile instance represents") {
         val expected = mockStackFrame

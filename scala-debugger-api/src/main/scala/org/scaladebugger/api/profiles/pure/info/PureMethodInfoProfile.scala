@@ -1,8 +1,8 @@
 package org.scaladebugger.api.profiles.pure.info
 //import acyclic.file
 
-import com.sun.jdi.{Method, Type}
-import org.scaladebugger.api.profiles.traits.info.{InfoProducerProfile, MethodInfoProfile, TypeInfoProfile}
+import com.sun.jdi.{Method, ReferenceType, Type}
+import org.scaladebugger.api.profiles.traits.info.{InfoProducerProfile, MethodInfoProfile, ReferenceTypeInfoProfile, TypeInfoProfile}
 import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 /**
@@ -19,6 +19,30 @@ class PureMethodInfoProfile(
   protected val infoProducer: InfoProducerProfile,
   private val _method: Method
 ) extends MethodInfoProfile {
+  /**
+   * Returns whether or not this info profile represents the low-level Java
+   * implementation.
+   *
+   * @return If true, this profile represents the low-level Java information,
+   *         otherwise this profile represents something higher-level like
+   *         Scala, Jython, or JRuby
+   */
+  override def isJavaInfo: Boolean = true
+
+  /**
+   * Converts the current profile instance to a representation of
+   * low-level Java instead of a higher-level abstraction.
+   *
+   * @return The profile instance providing an implementation corresponding
+   *         to Java
+   */
+  override def toJavaInfo: MethodInfoProfile = {
+    infoProducer.toJavaInfo.newMethodInfoProfile(
+      scalaVirtualMachine = scalaVirtualMachine,
+      method = _method
+    )
+  }
+
   /**
    * Returns the JDI representation this profile instance wraps.
    *
@@ -60,6 +84,15 @@ class PureMethodInfoProfile(
    */
   override def returnTypeName: String = _method.returnTypeName()
 
+
+  /**
+   * Returns the type where this method was declared.
+   *
+   * @return The reference type information that declared this method
+   */
+  override def declaringTypeInfo: ReferenceTypeInfoProfile =
+    newReferenceTypeProfile(_method.declaringType())
+
   /**
    * Returns the fully-qualified class names of the types for the parameters
    * of this method.
@@ -70,6 +103,13 @@ class PureMethodInfoProfile(
     import scala.collection.JavaConverters._
     _method.argumentTypeNames().asScala
   }
+
+  protected def newReferenceTypeProfile(
+    referenceType: ReferenceType
+  ): ReferenceTypeInfoProfile = infoProducer.newReferenceTypeInfoProfile(
+    scalaVirtualMachine,
+    referenceType
+  )
 
   protected def newTypeProfile(_type: Type): TypeInfoProfile =
     infoProducer.newTypeInfoProfile(scalaVirtualMachine, _type)

@@ -9,8 +9,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import test.InfoTestClasses.{TestCreateInfoProfileTrait, TestMiscInfoProfileTrait}
 
-class PureArrayInfoProfileSpec extends FunSpec with Matchers
-  with ParallelTestExecution with MockFactory
+class PureArrayInfoProfileSpec extends test.ParallelMockFunSpec
 {
   private val mockNewTypeProfile = mockFunction[Type, TypeInfoProfile]
   private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
@@ -29,6 +28,44 @@ class PureArrayInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureArrayInfoProfile") {
+    describe("#toJavaInfo") {
+      it("should return a new instance of the Java profile representation") {
+        val expected = mock[ArrayInfoProfile]
+
+        // Get Java version of info producer
+        (mockInfoProducerProfile.toJavaInfo _).expects()
+          .returning(mockInfoProducerProfile).once()
+
+        // Create new info profile using Java version of info producer
+        (mockInfoProducerProfile.newArrayInfoProfile(
+          _: ScalaVirtualMachine,
+          _: ArrayReference
+        )(
+          _: VirtualMachine,
+          _: ReferenceType
+        )).expects(
+          mockScalaVirtualMachine,
+          mockArrayReference,
+          mockVirtualMachine,
+          mockReferenceType
+        ).returning(expected).once()
+
+        val actual = pureArrayInfoProfile.toJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isJavaInfo") {
+      it("should return true") {
+        val expected = true
+
+        val actual = pureArrayInfoProfile.isJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
     describe("#toJdiInstance") {
       it("should return the JDI instance this profile instance represents") {
         val expected = mockArrayReference

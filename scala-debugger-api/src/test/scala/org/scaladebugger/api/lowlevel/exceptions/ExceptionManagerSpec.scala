@@ -8,8 +8,7 @@ import test.TestExceptionManager
 
 import scala.util.Success
 
-class ExceptionManagerSpec extends FunSpec with Matchers
-  with ParallelTestExecution with MockFactory
+class ExceptionManagerSpec extends test.ParallelMockFunSpec
 {
   private val TestRequestId = java.util.UUID.randomUUID().toString
   private val mockExceptionManager = mock[ExceptionManager]
@@ -72,10 +71,10 @@ class ExceptionManagerSpec extends FunSpec with Matchers
     }
 
     describe("#createExceptionRequestFromInfo") {
-      it("should invoke createCatchallExceptionRequestWithId if the class name is null") {
+      it("should invoke createCatchallExceptionRequestWithId if is catchall") {
         val expected = Success(TestRequestId)
         val testIsPending = false
-        val testClassName = null
+        val testClassName = ExceptionRequestInfo.DefaultCatchallExceptionName
         val testNotifyCaught = true
         val testNotifyUncaught = false
         val testExtraArguments = Seq(stub[JDIRequestArgument])
@@ -100,7 +99,7 @@ class ExceptionManagerSpec extends FunSpec with Matchers
         actual should be(expected)
       }
 
-      it("should invoke createExceptionRequestWithId if the class name is not null") {
+      it("should invoke createExceptionRequestWithId if is not catchall") {
         val expected = Success(TestRequestId)
         val testIsPending = false
         val testClassName = "some.class.name"

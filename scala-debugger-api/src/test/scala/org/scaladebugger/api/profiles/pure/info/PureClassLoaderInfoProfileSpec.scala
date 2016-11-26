@@ -6,8 +6,7 @@ import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 
-class PureClassLoaderInfoProfileSpec extends FunSpec with Matchers
-  with ParallelTestExecution with MockFactory
+class PureClassLoaderInfoProfileSpec extends test.ParallelMockFunSpec
 {
   private val mockNewTypeProfile = mockFunction[Type, TypeInfoProfile]
   private val mockScalaVirtualMachine = mock[ScalaVirtualMachine]
@@ -26,6 +25,44 @@ class PureClassLoaderInfoProfileSpec extends FunSpec with Matchers
   }
 
   describe("PureClassLoaderInfoProfile") {
+    describe("#toJavaInfo") {
+      it("should return a new instance of the Java profile representation") {
+        val expected = mock[ClassLoaderInfoProfile]
+
+        // Get Java version of info producer
+        (mockInfoProducerProfile.toJavaInfo _).expects()
+          .returning(mockInfoProducerProfile).once()
+
+        // Create new info profile using Java version of info producer
+        (mockInfoProducerProfile.newClassLoaderInfoProfile(
+          _: ScalaVirtualMachine,
+          _: ClassLoaderReference
+        )(
+          _: VirtualMachine,
+          _: ReferenceType
+        )).expects(
+          mockScalaVirtualMachine,
+          mockClassLoaderReference,
+          mockVirtualMachine,
+          mockReferenceType
+        ).returning(expected).once()
+
+        val actual = pureClassLoaderInfoProfile.toJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
+    describe("#isJavaInfo") {
+      it("should return true") {
+        val expected = true
+
+        val actual = pureClassLoaderInfoProfile.isJavaInfo
+
+        actual should be (expected)
+      }
+    }
+
     describe("#toJdiInstance") {
       it("should return the JDI instance this profile instance represents") {
         val expected = mockClassLoaderReference
