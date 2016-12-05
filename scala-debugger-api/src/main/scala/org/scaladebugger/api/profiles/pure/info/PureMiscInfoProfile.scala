@@ -1,5 +1,4 @@
 package org.scaladebugger.api.profiles.pure.info
-//import acyclic.file
 
 import com.sun.jdi.{ReferenceType, Value}
 import org.scaladebugger.api.lowlevel.classes.ClassManager
@@ -17,6 +16,13 @@ trait PureMiscInfoProfile extends MiscInfoProfile with JDIHelperMethods {
   protected val scalaVirtualMachine: ScalaVirtualMachine
   protected val infoProducer: InfoProducerProfile
   protected val classManager: ClassManager
+
+  /**
+   * Retrieves the Scala virtual machine associated with this profile instance.
+   *
+   * @return The Scala virtual machine instance
+   */
+  override def toScalaVirtualMachine: ScalaVirtualMachine = scalaVirtualMachine
 
   /**
    * Retrieves the list of available lines for a specific file.

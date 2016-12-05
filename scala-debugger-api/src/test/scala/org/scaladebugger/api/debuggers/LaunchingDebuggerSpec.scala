@@ -1,13 +1,11 @@
 package org.scaladebugger.api.debuggers
-import acyclic.file
-
 import com.sun.jdi.connect.{Connector, LaunchingConnector}
 import com.sun.jdi.{ReferenceType, VirtualMachine, VirtualMachineManager}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import org.scaladebugger.api.profiles.ProfileManager
 import org.scaladebugger.api.utils.LoopingTaskRunner
-import org.scaladebugger.api.virtualmachines.{ScalaVirtualMachine, StandardScalaVirtualMachine}
+import org.scaladebugger.api.virtualmachines.{ScalaVirtualMachine, ScalaVirtualMachineManager, StandardScalaVirtualMachine}
 
 import scala.collection.JavaConverters._
 
@@ -30,14 +28,18 @@ class LaunchingDebuggerSpec extends test.ParallelMockFunSpec
   private val testSuspend = false
 
   private val mockVirtualMachineManager = mock[VirtualMachineManager]
+  private val mockScalaVirtualMachineManager = mock[ScalaVirtualMachineManager]
+  private val mockVirtualMachine = mock[VirtualMachine]
   private val mockProfileManager = mock[ProfileManager]
   private val mockLoopingTaskRunner = mock[LoopingTaskRunner]
-  private val mockNewScalaVirtualMachineFunc = mockFunction[
-    VirtualMachine, ProfileManager, LoopingTaskRunner, StandardScalaVirtualMachine
+  private val mockAddNewScalaVirtualMachineFunc = mockFunction[
+    ScalaVirtualMachineManager, VirtualMachine, ProfileManager,
+    LoopingTaskRunner, ScalaVirtualMachine
   ]
 
   private class TestScalaVirtualMachine extends StandardScalaVirtualMachine(
-    mockVirtualMachine, mockProfileManager, mockLoopingTaskRunner
+    mockScalaVirtualMachineManager, mockVirtualMachine,
+    mockProfileManager, mockLoopingTaskRunner
   )
   private val mockScalaVirtualMachine = mock[TestScalaVirtualMachine]
 
@@ -53,11 +55,13 @@ class LaunchingDebuggerSpec extends test.ParallelMockFunSpec
     jvmOptions            = testJvmOptions,
     suspend               = testSuspend
   ) {
-    override protected def newScalaVirtualMachine(
+    override protected def addNewScalaVirtualMachine(
+      scalaVirtualMachineManager: ScalaVirtualMachineManager,
       virtualMachine: VirtualMachine,
       profileManager: ProfileManager,
       loopingTaskRunner: LoopingTaskRunner
-    ): StandardScalaVirtualMachine = mockNewScalaVirtualMachineFunc(
+    ): ScalaVirtualMachine = mockAddNewScalaVirtualMachineFunc(
+      scalaVirtualMachineManager,
       virtualMachine,
       profileManager,
       loopingTaskRunner
@@ -66,8 +70,6 @@ class LaunchingDebuggerSpec extends test.ParallelMockFunSpec
     override def assertJdiLoaded(): Unit =
       if (!shouldJdiLoad) throw new AssertionError
   }
-
-  private val mockVirtualMachine = mock[VirtualMachine]
 
   describe("LaunchingDebugger") {
     describe("#start") {
@@ -101,7 +103,7 @@ class LaunchingDebuggerSpec extends test.ParallelMockFunSpec
 
         (mockLaunchingConnector.launch _).expects(*).once()
         (mockLoopingTaskRunner.start _).expects().once()
-        mockNewScalaVirtualMachineFunc.expects(*, *, *)
+        mockAddNewScalaVirtualMachineFunc.expects(*, *, *, *)
           .returning(stub[TestScalaVirtualMachine]).once()
         // MOCK ===============================================================
 
@@ -147,7 +149,7 @@ class LaunchingDebuggerSpec extends test.ParallelMockFunSpec
           .returning(mockVirtualMachine).once()
         (mockLoopingTaskRunner.start _).expects().once()
 
-        mockNewScalaVirtualMachineFunc.expects(*, *, *)
+        mockAddNewScalaVirtualMachineFunc.expects(*, *, *, *)
           .returning(expected).once()
         // MOCK ===============================================================
 
@@ -184,8 +186,9 @@ class LaunchingDebuggerSpec extends test.ParallelMockFunSpec
         (mockLoopingTaskRunner.start _).expects().once()
         // MOCK ===============================================================
 
-        mockNewScalaVirtualMachineFunc.expects(mockVirtualMachine, *, *)
-          .returning(mockScalaVirtualMachine).once()
+        mockAddNewScalaVirtualMachineFunc.expects(
+          launchingDebugger.scalaVirtualMachineManager, mockVirtualMachine, *, *
+        ).returning(mockScalaVirtualMachine).once()
 
         (mockScalaVirtualMachine.processPendingRequests _)
           .expects(expected).once()
@@ -221,8 +224,9 @@ class LaunchingDebuggerSpec extends test.ParallelMockFunSpec
         (mockLoopingTaskRunner.start _).expects().once()
         // MOCK ===============================================================
 
-        mockNewScalaVirtualMachineFunc.expects(mockVirtualMachine, *, *)
-          .returning(mockScalaVirtualMachine).once()
+        mockAddNewScalaVirtualMachineFunc.expects(
+          launchingDebugger.scalaVirtualMachineManager, mockVirtualMachine, *, *
+        ).returning(mockScalaVirtualMachine).once()
 
         (mockScalaVirtualMachine.initialize _)
           .expects(Debugger.DefaultProfileName, true).once()
@@ -255,7 +259,7 @@ class LaunchingDebuggerSpec extends test.ParallelMockFunSpec
         (mockLaunchingConnector.launch _).expects(*)
           .returning(mockVirtualMachine).once()
         (mockLoopingTaskRunner.start _).expects().once()
-        mockNewScalaVirtualMachineFunc.expects(*, *, *)
+        mockAddNewScalaVirtualMachineFunc.expects(*, *, *, *)
           .returning(stub[TestScalaVirtualMachine]).once()
         // MOCK ===============================================================
 
@@ -304,7 +308,7 @@ class LaunchingDebuggerSpec extends test.ParallelMockFunSpec
         (mockLaunchingConnector.launch _).expects(*)
           .returning(mockVirtualMachine).once()
         (mockLoopingTaskRunner.start _).expects().once()
-        mockNewScalaVirtualMachineFunc.expects(*, *, *)
+        mockAddNewScalaVirtualMachineFunc.expects(*, *, *, *)
           .returning(stub[TestScalaVirtualMachine]).once()
         // MOCK ===============================================================
 
@@ -319,92 +323,6 @@ class LaunchingDebuggerSpec extends test.ParallelMockFunSpec
         //(mockVirtualMachine.dispose _).expects().once()
 
         launchingDebugger.stop()
-      }
-    }
-
-    describe("#connectedScalaVirtualMachines") {
-      it("should return an empty list if the debugger has not connected") {
-        val launchingDebugger = new TestLaunchingDebugger()
-
-        launchingDebugger.connectedScalaVirtualMachines should be (empty)
-      }
-
-      it("should return a list with one virtual machine when connected") {
-        val launchingDebugger = new TestLaunchingDebugger()
-        val stubScalaVirtualMachine = stub[TestScalaVirtualMachine]
-
-        // MOCK ===============================================================
-        val mockLaunchingConnector = mock[LaunchingConnector]
-
-        (mockLaunchingConnector.name _).expects()
-          .returning("com.sun.jdi.CommandLineLaunch")
-
-        (mockVirtualMachineManager.launchingConnectors _).expects()
-          .returning(Seq(mockLaunchingConnector).asJava)
-
-        (mockLaunchingConnector.defaultArguments _).expects().returning(Map(
-          "main" -> createConnectorArgumentMock(setter = true),
-          "options" -> createConnectorArgumentMock(
-            setter = true, getter = Some("")
-          ),
-          "suspend" -> createConnectorArgumentMock(setter = true)
-        ).asJava)
-
-        (mockLaunchingConnector.launch _).expects(*)
-          .returning(mockVirtualMachine).once()
-        (mockLoopingTaskRunner.start _).expects().once()
-
-        mockNewScalaVirtualMachineFunc.expects(*, *, *)
-          .returning(stubScalaVirtualMachine).once()
-        // MOCK ===============================================================
-
-        launchingDebugger.start(_ => {})
-
-        launchingDebugger.connectedScalaVirtualMachines should
-          contain (stubScalaVirtualMachine)
-      }
-
-      it("should return an empty list if stopped after a virtual machine has connected") {
-        val launchingDebugger = new TestLaunchingDebugger()
-        val stubScalaVirtualMachine = stub[TestScalaVirtualMachine]
-
-        // MOCK ===============================================================
-        val mockLaunchingConnector = mock[LaunchingConnector]
-
-        (mockLaunchingConnector.name _).expects()
-          .returning("com.sun.jdi.CommandLineLaunch")
-
-        (mockVirtualMachineManager.launchingConnectors _).expects()
-          .returning(Seq(mockLaunchingConnector).asJava)
-
-        (mockLaunchingConnector.defaultArguments _).expects().returning(Map(
-          "main" -> createConnectorArgumentMock(setter = true),
-          "options" -> createConnectorArgumentMock(
-            setter = true, getter = Some("")
-          ),
-          "suspend" -> createConnectorArgumentMock(setter = true)
-        ).asJava)
-
-        (mockLaunchingConnector.launch _).expects(*)
-          .returning(mockVirtualMachine).once()
-        (mockLoopingTaskRunner.start _).expects().once()
-
-        mockNewScalaVirtualMachineFunc.expects(*, *, *)
-          .returning(stubScalaVirtualMachine).once()
-
-        (mockLoopingTaskRunner.stop _).expects(true).once()
-        val mockProcess = mock[Process]
-        (mockProcess.destroy _).expects().once()
-        (mockVirtualMachine.process _).expects().returning(mockProcess).once()
-
-        // TODO: Re-enable when determine why dispose throws exception
-        //(mockVirtualMachine.dispose _).expects().once()
-        // MOCK ===============================================================
-
-        launchingDebugger.start(_ => {})
-        launchingDebugger.stop()
-
-        launchingDebugger.connectedScalaVirtualMachines should be (empty)
       }
     }
 
@@ -432,7 +350,7 @@ class LaunchingDebuggerSpec extends test.ParallelMockFunSpec
         (mockLaunchingConnector.launch _).expects(*)
           .returning(mockVirtualMachine).once()
         (mockLoopingTaskRunner.start _).expects().once()
-        mockNewScalaVirtualMachineFunc.expects(*, *, *)
+        mockAddNewScalaVirtualMachineFunc.expects(*, *, *, *)
           .returning(stub[TestScalaVirtualMachine]).once()
         // MOCK ===============================================================
 

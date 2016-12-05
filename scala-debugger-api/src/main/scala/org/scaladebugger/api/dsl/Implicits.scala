@@ -2,7 +2,7 @@ package org.scaladebugger.api.dsl
 
 import org.scaladebugger.api.dsl.breakpoints.BreakpointDSLWrapper
 import org.scaladebugger.api.dsl.classes.{ClassPrepareDSLWrapper, ClassUnloadDSLWrapper}
-import org.scaladebugger.api.dsl.events.EventDSLWrapper
+import org.scaladebugger.api.dsl.events.EventListenerDSLWrapper
 import org.scaladebugger.api.dsl.exceptions.ExceptionDSLWrapper
 import org.scaladebugger.api.dsl.info._
 import org.scaladebugger.api.dsl.methods.{MethodEntryDSLWrapper, MethodExitDSLWrapper}
@@ -11,17 +11,17 @@ import org.scaladebugger.api.dsl.steps.StepDSLWrapper
 import org.scaladebugger.api.dsl.threads.{ThreadDeathDSLWrapper, ThreadStartDSLWrapper}
 import org.scaladebugger.api.dsl.vm.{VMDeathDSLWrapper, VMDisconnectDSLWrapper, VMStartDSLWrapper}
 import org.scaladebugger.api.dsl.watchpoints.{AccessWatchpointDSLWrapper, ModificationWatchpointDSLWrapper}
-import org.scaladebugger.api.profiles.traits.breakpoints.BreakpointProfile
-import org.scaladebugger.api.profiles.traits.classes.{ClassPrepareProfile, ClassUnloadProfile}
-import org.scaladebugger.api.profiles.traits.events.EventProfile
-import org.scaladebugger.api.profiles.traits.exceptions.ExceptionProfile
+import org.scaladebugger.api.profiles.traits.requests.breakpoints.BreakpointProfile
+import org.scaladebugger.api.profiles.traits.requests.classes.{ClassPrepareProfile, ClassUnloadProfile}
+import org.scaladebugger.api.profiles.traits.requests.events.EventListenerProfile
+import org.scaladebugger.api.profiles.traits.requests.exceptions.ExceptionProfile
 import org.scaladebugger.api.profiles.traits.info._
-import org.scaladebugger.api.profiles.traits.methods.{MethodEntryProfile, MethodExitProfile}
-import org.scaladebugger.api.profiles.traits.monitors.{MonitorContendedEnterProfile, MonitorContendedEnteredProfile, MonitorWaitProfile, MonitorWaitedProfile}
-import org.scaladebugger.api.profiles.traits.steps.StepProfile
-import org.scaladebugger.api.profiles.traits.threads.{ThreadDeathProfile, ThreadStartProfile}
-import org.scaladebugger.api.profiles.traits.vm.{VMDeathProfile, VMDisconnectProfile, VMStartProfile}
-import org.scaladebugger.api.profiles.traits.watchpoints.{AccessWatchpointProfile, ModificationWatchpointProfile}
+import org.scaladebugger.api.profiles.traits.requests.methods.{MethodEntryProfile, MethodExitProfile}
+import org.scaladebugger.api.profiles.traits.requests.monitors.{MonitorContendedEnterProfile, MonitorContendedEnteredProfile, MonitorWaitProfile, MonitorWaitedProfile}
+import org.scaladebugger.api.profiles.traits.requests.steps.StepProfile
+import org.scaladebugger.api.profiles.traits.requests.threads.{ThreadDeathProfile, ThreadStartProfile}
+import org.scaladebugger.api.profiles.traits.requests.vm.{VMDeathProfile, VMDisconnectProfile, VMStartProfile}
+import org.scaladebugger.api.profiles.traits.requests.watchpoints.{AccessWatchpointProfile, ModificationWatchpointProfile}
 
 /**
  * Contains implicit classes to provide DSL-like methods to the debugger API.
@@ -44,10 +44,10 @@ object Implicits {
     classUnloadProfile: ClassUnloadProfile
   ): ClassUnloadDSLWrapper = new ClassUnloadDSLWrapper(classUnloadProfile)
 
-  /** Converts event profile to implicit DSL wrapping. */
-  implicit def EventDSL(
-    eventProfile: EventProfile
-  ): EventDSLWrapper = new EventDSLWrapper(eventProfile)
+  /** Converts event listener profile to implicit DSL wrapping. */
+  implicit def EventListenerDSL(
+    eventListenerProfile: EventListenerProfile
+  ): EventListenerDSLWrapper = new EventListenerDSLWrapper(eventListenerProfile)
 
   /** Converts exception profile to implicit DSL wrapping. */
   implicit def ExceptionDSL(

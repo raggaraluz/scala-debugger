@@ -1,5 +1,4 @@
 package org.scaladebugger.api.virtualmachines
-//import acyclic.file
 
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -21,6 +20,7 @@ import scala.util.Try
 /**
  * Represents a virtual machine running Scala code.
  *
+ * @param manager The manager containing this virtual machine
  * @param _virtualMachine The underlying virtual machine
  * @param profileManager The manager used to provide specific implementations
  *                       of debugging via profiles
@@ -29,6 +29,7 @@ import scala.util.Try
  *                 client (library) side to help distinguish multiple VMs
  */
 class StandardScalaVirtualMachine(
+  override val manager: ScalaVirtualMachineManager,
   protected val _virtualMachine: VirtualMachine,
   protected val profileManager: ProfileManager,
   private val loopingTaskRunner: LoopingTaskRunner,
@@ -92,7 +93,8 @@ class StandardScalaVirtualMachine(
     defaultProfile: String,
     startProcessingEvents: Boolean
   ): Unit = synchronized {
-    assert(!isInitialized, "Scala virtual machine already initialized!")
+    assert(!isInitialized,
+      s"Scala virtual machine '$uniqueId' already initialized!")
 
     logger.debug(vmString("Initializing Scala virtual machine!"))
 
@@ -119,10 +121,11 @@ class StandardScalaVirtualMachine(
 
     // Mark class prepare events to signal refreshing our classes
     this.withProfile(defaultProfile).getOrCreateClassPrepareRequest().foreach(classPrepareEvent => {
-      val referenceType = classPrepareEvent.referenceType()
-      val referenceTypeName = referenceType.name()
-      val fileName =
-        lowlevel.classManager.fileNameForReferenceType(referenceType)
+      val referenceType = classPrepareEvent.referenceType
+      val referenceTypeName = referenceType.name
+      val fileName = lowlevel.classManager.fileNameForReferenceType(
+        referenceType.toJdiInstance
+      )
 
       // TODO: Extract these checks out to helper methods (perhaps in the
       // lowlevel class manager)
@@ -135,7 +138,7 @@ class StandardScalaVirtualMachine(
       } else {
         logger.trace(vmString(s"Received new non-core class: $referenceTypeName"))
       }
-      lowlevel.classManager.refreshClass(referenceType)
+      lowlevel.classManager.refreshClass(referenceType.toJdiInstance)
 
       processPendingForFile(fileName)
       processPendingForClass(referenceTypeName)

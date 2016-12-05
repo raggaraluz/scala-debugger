@@ -1,5 +1,4 @@
 package org.scaladebugger.api.virtualmachines
-import acyclic.file
 
 import com.sun.jdi.VirtualMachine
 import org.scaladebugger.api.profiles.traits.DebugProfile
@@ -16,12 +15,14 @@ class ScalaVirtualMachineSpec extends test.ParallelMockFunSpec
   )
 
   private def newScalaVirtualMachine(
+    scalaVirtualMachineManager: ScalaVirtualMachineManager,
     managerContainer: ManagerContainer,
     _profileManager: ProfileManager
   ) =
     new Object with ScalaVirtualMachine {
       override val cache: ObjectCache = null
       override val lowlevel: ManagerContainer = managerContainer
+      override val manager: ScalaVirtualMachineManager = scalaVirtualMachineManager
       override def startProcessingEvents(): Unit = {}
       override def isInitialized: Boolean = false
       override def isProcessingEvents: Boolean = false
@@ -44,17 +45,23 @@ class ScalaVirtualMachineSpec extends test.ParallelMockFunSpec
   private val mockManagerContainerProcessPendingRequests =
     mockFunction[ManagerContainer, Unit]
   private val mockProfileManager = mock[ProfileManager]
-  private val scalaVirtualMachine = newScalaVirtualMachine(new TestManagerContainer {
-    override def processPendingRequests(
-      managerContainer: ManagerContainer
-    ): Unit = mockManagerContainerProcessPendingRequests(managerContainer)
-  }, mockProfileManager)
+  private val scalaVirtualMachine = newScalaVirtualMachine(
+    ScalaVirtualMachineManager.GlobalInstance,
+    new TestManagerContainer {
+      override def processPendingRequests(
+        managerContainer: ManagerContainer
+      ): Unit = mockManagerContainerProcessPendingRequests(managerContainer)
+    },
+    mockProfileManager
+  )
 
   describe("ScalaVirtualMachine") {
     describe("#processPendingRequests") {
       it("should process the other VM's pending requests using its low-level managers") {
         val otherManagerContainer = new TestManagerContainer
-        val otherScalaVirtualMachine = newScalaVirtualMachine(otherManagerContainer, null)
+        val otherScalaVirtualMachine = newScalaVirtualMachine(
+          null, otherManagerContainer, null
+        )
 
         mockManagerContainerProcessPendingRequests.expects(otherManagerContainer).once()
 

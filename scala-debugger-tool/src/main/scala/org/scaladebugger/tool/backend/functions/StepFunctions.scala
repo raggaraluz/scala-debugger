@@ -1,5 +1,4 @@
 package org.scaladebugger.tool.backend.functions
-import acyclic.file
 import com.sun.jdi.ThreadReference
 import com.sun.jdi.event.StepEvent
 import org.scaladebugger.api.lowlevel.events.JDIEventArgument
@@ -11,6 +10,7 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.scaladebugger.api.dsl.Implicits._
 import org.scaladebugger.api.profiles.traits.info.ThreadInfoProfile
+import org.scaladebugger.api.profiles.traits.info.events.StepEventInfoProfile
 
 /**
  * Represents a collection of functions for managing steps.
@@ -149,7 +149,7 @@ class StepFunctions(
    */
   private def performStep(
     threadInfo: ThreadInfoProfile,
-    stepFunc: (ThreadInfoProfile, Seq[JDIEventArgument]) => Future[StepEvent]
+    stepFunc: (ThreadInfoProfile, Seq[JDIEventArgument]) => Future[StepEventInfoProfile]
   ): Unit = {
     val resumeCount = threadInfo.status.suspendCount
 
@@ -157,12 +157,12 @@ class StepFunctions(
     val f = stepFunc(threadInfo, Seq(NoResume))
 
     f.foreach(e => {
-      val l = e.location()
-      val tn = e.thread().name()
-      val cn = l.declaringType().name()
-      val mn = l.method().name()
-      val sn = l.sourceName()
-      val ln = l.lineNumber()
+      val l = e.location
+      val tn = e.thread.name
+      val cn = l.declaringType.name
+      val mn = l.method.name
+      val sn = l.sourceName
+      val ln = l.lineNumber
 
       writeLine(s"Step completed: 'thread=$tn', $cn.$mn ($sn:$ln)")
     })

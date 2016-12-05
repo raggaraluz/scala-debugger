@@ -1,7 +1,9 @@
 package org.scaladebugger.api.profiles.pure.info
 
 import com.sun.jdi._
+import org.scaladebugger.api.profiles.pure.info.events.PureEventInfoProducerProfile
 import org.scaladebugger.api.profiles.traits.info._
+import org.scaladebugger.api.profiles.traits.info.events.EventInfoProducerProfile
 import org.scaladebugger.api.virtualmachines.ScalaVirtualMachine
 
 /**
@@ -27,6 +29,15 @@ class PureInfoProducerProfile extends InfoProducerProfile {
    */
   override def toJavaInfo: InfoProducerProfile = new PureInfoProducerProfile
 
+  /**
+   * Retrieves the event info producer tied to this info producer.
+   *
+   * @return The information profile for the event producer
+   */
+  override lazy val eventProducer: EventInfoProducerProfile = {
+    new PureEventInfoProducerProfile(this)
+  }
+
   override def newValueInfoProfile(
     scalaVirtualMachine: ScalaVirtualMachine,
     value: Value
@@ -40,8 +51,8 @@ class PureInfoProducerProfile extends InfoProducerProfile {
     scalaVirtualMachine: ScalaVirtualMachine,
     arrayReference: ArrayReference
   )(
-    virtualMachine: VirtualMachine,
-    referenceType: ReferenceType
+    virtualMachine: => VirtualMachine,
+    referenceType: => ReferenceType
   ): ArrayInfoProfile = new PureArrayInfoProfile(
     scalaVirtualMachine, this, arrayReference
   )(
@@ -54,8 +65,8 @@ class PureInfoProducerProfile extends InfoProducerProfile {
     scalaVirtualMachine: ScalaVirtualMachine,
     objectReference: ObjectReference
   )(
-    virtualMachine: VirtualMachine,
-    referenceType: ReferenceType
+    virtualMachine: => VirtualMachine,
+    referenceType: => ReferenceType
   ): ObjectInfoProfile = new PureObjectInfoProfile(
     scalaVirtualMachine,
     this,
@@ -85,7 +96,7 @@ class PureInfoProducerProfile extends InfoProducerProfile {
     localVariable: LocalVariable,
     offsetIndex: Int
   )(
-    virtualMachine: VirtualMachine = scalaVirtualMachine.underlyingVirtualMachine
+    virtualMachine: => VirtualMachine
   ): IndexedVariableInfoProfile = new PureLocalVariableInfoProfile(
     scalaVirtualMachine,
     this,
@@ -98,8 +109,8 @@ class PureInfoProducerProfile extends InfoProducerProfile {
     scalaVirtualMachine: ScalaVirtualMachine,
     threadReference: ThreadReference
   )(
-    virtualMachine: VirtualMachine,
-    referenceType: ReferenceType
+    virtualMachine: => VirtualMachine,
+    referenceType: => ReferenceType
   ): ThreadInfoProfile = new PureThreadInfoProfile(
     scalaVirtualMachine,
     this,
@@ -113,8 +124,8 @@ class PureInfoProducerProfile extends InfoProducerProfile {
     scalaVirtualMachine: ScalaVirtualMachine,
     threadGroupReference: ThreadGroupReference
   )(
-    virtualMachine: VirtualMachine,
-    referenceType: ReferenceType
+    virtualMachine: => VirtualMachine,
+    referenceType: => ReferenceType
   ): ThreadGroupInfoProfile = new PureThreadGroupInfoProfile(
     scalaVirtualMachine,
     this,
@@ -128,8 +139,8 @@ class PureInfoProducerProfile extends InfoProducerProfile {
     scalaVirtualMachine: ScalaVirtualMachine,
     classObjectReference: ClassObjectReference
   )(
-    virtualMachine: VirtualMachine,
-    referenceType: ReferenceType
+    virtualMachine: => VirtualMachine,
+    referenceType: => ReferenceType
   ): ClassObjectInfoProfile = new PureClassObjectInfoProfile(
     scalaVirtualMachine,
     this,
@@ -143,8 +154,8 @@ class PureInfoProducerProfile extends InfoProducerProfile {
     scalaVirtualMachine: ScalaVirtualMachine,
     classLoaderReference: ClassLoaderReference
   )(
-    virtualMachine: VirtualMachine,
-    referenceType: ReferenceType
+    virtualMachine: => VirtualMachine,
+    referenceType: => ReferenceType
   ): ClassLoaderInfoProfile = new PureClassLoaderInfoProfile(
     scalaVirtualMachine,
     this,
@@ -169,7 +180,7 @@ class PureInfoProducerProfile extends InfoProducerProfile {
     field: Field,
     offsetIndex: Int
   )(
-    virtualMachine: VirtualMachine
+    virtualMachine: => VirtualMachine
   ): FieldVariableInfoProfile = new PureFieldInfoProfile(
     scalaVirtualMachine,
     this,
@@ -269,8 +280,8 @@ class PureInfoProducerProfile extends InfoProducerProfile {
     scalaVirtualMachine: ScalaVirtualMachine,
     stringReference: StringReference
   )(
-    virtualMachine: VirtualMachine,
-    referenceType: ReferenceType
+    virtualMachine: => VirtualMachine,
+    referenceType: => ReferenceType
   ): StringInfoProfile = new PureStringInfoProfile(
     scalaVirtualMachine,
     this,

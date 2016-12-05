@@ -1,12 +1,12 @@
 package org.scaladebugger.api.lowlevel.events
-//import acyclic.file
 
 import org.scaladebugger.api.lowlevel.events.data.JDIEventDataResult
 import org.scaladebugger.api.lowlevel.events.misc.Resume
-import org.scaladebugger.api.utils.{MultiMap, LoopingTaskRunner, Logging}
-import com.sun.jdi.event.{EventQueue, EventSet, Event}
-
+import org.scaladebugger.api.utils.{Logging, LoopingTaskRunner, MultiMap}
+import com.sun.jdi.event.{Event, EventQueue, EventSet}
 import EventType._
+
+import scala.util.{Failure, Success, Try}
 
 /**
  * Represents a manager for events coming in from a virtual machine.
@@ -174,12 +174,19 @@ class StandardEventManager(
         case r: Resume => r
       }.lastOption.map(_.value)
 
-      val (passesFilters, data, _) = jdiEventArgumentProcessor.processAll(event)
+      Try(jdiEventArgumentProcessor.processAll(event)) match {
+        case Success(result) =>
+          val (passesFilters, data, _) = result
 
-      if (passesFilters) {
-        val result = eventHandler(event, data)
-        resumeFlag.getOrElse(result)
-      } else true
+          if (passesFilters) {
+            val result = eventHandler(event, data)
+            resumeFlag.getOrElse(result)
+          } else true
+
+        case Failure(throwable) =>
+          logger.error(s"Failed to process event $event", throwable)
+          true
+      }
     }
   }
 

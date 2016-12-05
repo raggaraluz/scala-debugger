@@ -1,5 +1,4 @@
 package org.scaladebugger.api.lowlevel.events.data.processors
-//import acyclic.file
 
 import com.sun.jdi.event.Event
 import org.scaladebugger.api.lowlevel.events.data.{JDIEventDataProcessor, JDIEventDataRequest, JDIEventDataResult}
@@ -24,9 +23,8 @@ class CustomPropertyDataRequestProcessor(
    * @return The collection of results from processing the event
    */
   override def process(event: Event): Seq[JDIEventDataResult] = {
-    val request = event.request()
-
-    val result = Option(request.getProperty(key))
+    val result = Option(event.request())
+      .flatMap(r => Option(r.getProperty(key)))
       .map(v => CustomPropertyDataResult(key, v))
 
     result.toSeq
