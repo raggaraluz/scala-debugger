@@ -12,13 +12,8 @@ import test.{TestUtilities, VirtualMachineFixtures}
 
 class Scala210FieldInfoProfileIntegrationSpec extends FunSpec with Matchers
   with ParallelTestExecution with VirtualMachineFixtures
-  with TestUtilities with Eventually
+  with TestUtilities
 {
-  implicit override val patienceConfig = PatienceConfig(
-    timeout = scaled(test.Constants.EventuallyTimeout),
-    interval = scaled(test.Constants.EventuallyInterval)
-  )
-
   describe("Scala210FieldInfoProfile") {
     it("should fix Scala-specific field names like org$scaladebugger$test$bugs$BugFromGitter$$name") {
       val testClass = "org.scaladebugger.test.bugs.BugFromGitter"
@@ -92,6 +87,9 @@ class Scala210FieldInfoProfileIntegrationSpec extends FunSpec with Matchers
       }
     }
 
+    // NOTE: For Scala 2.10/2.11, x/y are considered fields
+    //       For Scala 2.12, x/y are considered arguments (local variables)
+    //       So, for Scala 2.12, this is testing local variable implementation
     it("should translate names like x$1 to x for function closures") {
       val testClass = "org.scaladebugger.test.info.Scope"
       val testFile = JDITools.scalaClassStringToFileString(testClass)

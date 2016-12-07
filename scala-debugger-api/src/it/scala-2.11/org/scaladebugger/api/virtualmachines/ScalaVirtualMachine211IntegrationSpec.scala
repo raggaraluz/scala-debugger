@@ -1,9 +1,7 @@
-package org.scaladebugger.api.lowlevel.requests
-
+package org.scaladebugger.api.virtualmachines
 
 import org.scaladebugger.api.utils.JDITools
 import org.scalatest.concurrent.Eventually
-import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{FunSpec, Matchers, ParallelTestExecution}
 import test.{TestUtilities, VirtualMachineFixtures}
 
@@ -12,11 +10,6 @@ class ScalaVirtualMachine211IntegrationSpec extends FunSpec with Matchers
   with ParallelTestExecution with VirtualMachineFixtures
   with TestUtilities with Eventually
 {
-  implicit override val patienceConfig = PatienceConfig(
-    timeout = scaled(Span(2, Seconds)),
-    interval = scaled(Span(5, Milliseconds))
-  )
-
   describe("ScalaVirtualMachine for 2.11") {
     it("should return the breakpointable line numbers for the file") {
       val testClass = "org.scaladebugger.test.misc.AvailableLines"
