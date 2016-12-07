@@ -7,6 +7,8 @@ object Tool {
     "Version of Ammonite used in projects"
   )
 
+  lazy val toolName = settingKey[String]("Name of the tool when building")
+
   /** Tool-specific project settings. */
   val settings = Seq(
     // NOTE: Fork needed to avoid mixing in sbt classloader, which is causing
@@ -28,6 +30,19 @@ object Tool {
       "org.scalatest" %% "scalatest" % "3.0.0" % "test,it",
       "org.scalamock" %% "scalamock-scalatest-support" % "3.4.2" % "test,it"
     ),
+
+    // Give our tool a shorter name of "sdb"
+    toolName := "sdb",
+
+    // Assembly name following our tool name
+    assemblyJarName in assembly := {
+      // Either -2.10, -2.11, -2.12, or empty string
+      val postfix = CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((major, minor)) => "-" + major + "." + minor
+        case None => ""
+      }
+      toolName.value + postfix
+    },
 
     // Exclude tools.jar (JDI) since not allowed to ship without JDK
     assemblyExcludedJars in assembly := {
