@@ -41,7 +41,7 @@ object Tool {
         case Some((major, minor)) => "-" + major + "." + minor
         case None => ""
       }
-      toolName.value + postfix
+      toolName.value + "-" + version.value + postfix + ".jar"
     },
 
     // Exclude tools.jar (JDI) since not allowed to ship without JDK
