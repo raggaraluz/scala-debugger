@@ -1,13 +1,12 @@
-package test
+package org.scaladebugger.test.helpers
 
+import java.util.concurrent._
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.{ExecutorService, Executors, ThreadFactory}
 
+import ControlledParallelSuite._
 import org.scalatest.{Args, Distributor, Status, Suite}
 
 import scala.util.Try
-
-import ControlledParallelSuite._
 
 object ControlledParallelSuite {
   lazy val EnvironmentPoolSize: Try[Int] =
@@ -26,13 +25,17 @@ object ControlledParallelSuite {
       thread
     }
   }
+
+  import scala.collection.JavaConverters._
+  val semaMap: collection.mutable.Map[String, Semaphore] =
+    new ConcurrentHashMap[String, Semaphore]().asScala
 }
 
 /**
  * Represents a test suite whose pool size can be overridden.
  */
 trait ControlledParallelSuite extends Suite {
-  protected def poolSize: Int = calculatePoolSize()
+  def poolSize: Int = calculatePoolSize()
 
   protected def newExecutorService(
     poolSize: Int,
@@ -55,5 +58,22 @@ trait ControlledParallelSuite extends Suite {
         newConcurrentDistributor(args, newExecutorService(poolSize, threadFactory)))
       )
     )
+  }
+
+  /**
+   * Uses a semaphore for synchronization, enabling more than one thread to
+   * enter the block at the same time.
+   * @param id The id of the block (to distinguish different blocks of code)
+   * @param thunk The code to execute
+   * @tparam T The return type of the code to execute
+   * @return The result of the code execution
+   */
+  def semaSync[T](id: String)(thunk: => T): T = {
+    val semaphore = semaMap.getOrElseUpdate(id, new Semaphore(poolSize))
+
+    semaphore.acquire()
+    val result = Try(thunk)
+    semaphore.release()
+    result.get
   }
 }
