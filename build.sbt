@@ -1,5 +1,3 @@
-import UnidocKeys._
-
 //
 // DEBUGGER API PROJECT CONFIGURATION
 //
@@ -38,6 +36,15 @@ lazy val scalaDebuggerMacros = project
   .settings(Defaults.itSettings: _*)
   .settings(Macros.settings: _*)
   .settings(name := "scala-debugger-macros")
+
+//
+// DEBUGGER DOC PROJECT CONFIGURATION
+//
+lazy val scalaDebuggerDocs = project
+  .in(file("scala-debugger-docs"))
+  .settings(Common.settings: _*)
+  .settings(Docs.settings: _*)
+  .settings(name := "scala-debugger-docs")
 
 //
 // LANGUAGE PROJECT CONFIGURATION
@@ -84,15 +91,11 @@ lazy val sbtScalaDebuggerPlugin = project
 lazy val root = project
   .in(file("."))
   .settings(Common.settings: _*)
-  .settings(unidocSettings: _*)
   .settings(
     name := "scala-debugger",
     // Do not publish the aggregation project
     publishArtifact := false,
-    publishLocal := {},
-    unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(
-      scalaDebuggerTest
-    )
+    publishLocal := {}
   ).aggregate(
     scalaDebuggerApi,
     scalaDebuggerTest,
