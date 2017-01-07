@@ -98,6 +98,7 @@ lazy val root = project
     publishLocal := {}
   ).aggregate(
     scalaDebuggerApi,
+    scalaDebuggerDocs,
     scalaDebuggerTest,
     scalaDebuggerMacros,
     scalaDebuggerLanguage,
