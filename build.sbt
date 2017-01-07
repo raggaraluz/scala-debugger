@@ -42,7 +42,9 @@ lazy val scalaDebuggerMacros = project
 //
 lazy val scalaDebuggerDocs = project
   .in(file("scala-debugger-docs"))
+  .configs(IntegrationTest)
   .settings(Common.settings: _*)
+  .settings(Defaults.itSettings: _*)
   .settings(Docs.settings: _*)
   .settings(name := "scala-debugger-docs")
 
