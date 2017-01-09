@@ -12,7 +12,7 @@ import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.Parser
 import org.scaladebugger.docs.{Config, Logger}
 import org.scaladebugger.docs.layouts.{Context, Layout}
-import org.scaladebugger.docs.utils.FileUtils
+import org.scaladebugger.docs.utils.FileHelper
 
 import scala.util.Try
 
@@ -45,8 +45,16 @@ class Page private (
       Paths.get(inputDir, srcDir)
     }
 
-    "/" + FileUtils.stripExtension(srcDirPath.relativize(path).toString)
-      .replaceAllLiterally(java.io.File.separator, "/") + "/"
+    val relativePath =
+      if (isIndexPage) srcDirPath.relativize(path.getParent)
+      else srcDirPath.relativize(path)
+
+    val rootPathString = "/" +
+      FileHelper.stripExtension(relativePath.toString)
+        .replaceAllLiterally(java.io.File.separator, "/")
+
+    if (rootPathString.endsWith("/")) rootPathString
+    else rootPathString + "/"
   }
 
   /**
@@ -57,7 +65,7 @@ class Page private (
 
   /** Represents the name of the page, which is based on the file name. */
   lazy val name: String = {
-    FileUtils.stripExtension(
+    FileHelper.stripExtension(
       path.getFileName.toString
     ).replaceAll("[^\\w\\s\\d]", " ")
     .toLowerCase.split(' ').map(_.capitalize).mkString(" ")
@@ -132,7 +140,7 @@ class Page private (
     }
 
     val relativePath = srcDirPath.relativize(path)
-    val fileName = FileUtils.stripExtension(path.getFileName.toString)
+    val fileName = FileHelper.stripExtension(path.getFileName.toString)
 
     // Create the output path to the new html file's directory
     val outputPath = Option(relativePath.getParent)
@@ -152,7 +160,21 @@ class Page private (
    */
   lazy val isIndexPage: Boolean = {
     Files.isRegularFile(path) &&
-      FileUtils.stripExtension(path.getFileName.toString) == "index"
+      FileHelper.stripExtension(path.getFileName.toString) == "index"
+  }
+
+  /**
+   * Represents whether or not this page is at the root of the website.
+   *
+   * E.g. /example.html is at the root while /my/example.html is not.
+   */
+  lazy val isAtRoot: Boolean = {
+    val srcDirPath = {
+      val inputDir = config.inputDir()
+      val srcDir = config.srcDir()
+      Paths.get(inputDir, srcDir)
+    }
+    srcDirPath.relativize(path) == path.getFileName
   }
 
   /**

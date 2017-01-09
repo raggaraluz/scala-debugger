@@ -20,7 +20,10 @@ object Docs {
       "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.10.3", // Tables support
       "com.vladsch.flexmark" % "flexmark-ext-abbreviation" % "0.10.3", // Abbreviation support
 
+      "org.eclipse.jgit" % "org.eclipse.jgit" % "4.6.0.201612231935-r", // Git support
+
       "commons-codec" % "commons-codec" % "1.10", // Base64 encoding support
+      "commons-io" % "commons-io" % "2.5", // File copy support
 
       // For hosting local server containing generated sources
       "ws.unfiltered" %% "unfiltered" % unfilteredVersion.value,

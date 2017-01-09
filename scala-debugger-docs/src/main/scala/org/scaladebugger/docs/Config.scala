@@ -1,5 +1,8 @@
 package org.scaladebugger.docs
 
+import java.net.URL
+import java.nio.file.Paths
+
 import org.rogach.scallop.{ScallopConf, ScallopOption, singleArgConverter}
 
 /**
@@ -66,7 +69,7 @@ class Config(arguments: Seq[String]) extends ScallopConf(arguments) {
   )
 
   /** Represents the weight for a page if not specified. */
-  val defaultPageWeight: ScallopOption[Int] = opt[Int](
+  val defaultPageWeight: ScallopOption[Double] = opt[Double](
     descr = "The weight for a page if one is not specified",
     default = Some(0)
   )
@@ -86,9 +89,36 @@ class Config(arguments: Seq[String]) extends ScallopConf(arguments) {
     default = Some(false)
   )
 
+  /** Represents a flag to NOT generate a .nojekyll file. */
+  val doNotGenerateNoJekyllFile: ScallopOption[Boolean] = opt[Boolean](
+    descr = "If provided, will not generate a .nojekyll file in the output",
+    default = Some(false)
+  )
+
+  /** Represents a flag to NOT generate a sitemap.xml file. */
+  val doNotGenerateSitemapFile: ScallopOption[Boolean] = opt[Boolean](
+    descr = "If provided, will not generate a sitemap.xml file in the output",
+    default = Some(false)
+  )
+
+  /** Represents the site's hostname. */
+  val siteHost: ScallopOption[URL] = opt[URL](
+    descr = Seq(
+      "Represents the host used when generating content such as",
+      "http://www.example.com"
+    ).mkString(" "),
+    default = Some(new URL("http://localhost/"))
+  )
+
   // ===========================================================================
   // = SETTINGS FOR ACTIONS
   // ===========================================================================
+
+  /** Represents the port used when serving content. */
+  val port: ScallopOption[Int] = opt[Int](
+    descr = "The port to use when serving files",
+    default = Some(8080)
+  )
 
   /** Represents the output directory of generated content. */
   val outputDir: ScallopOption[String] = opt[String](
@@ -154,6 +184,46 @@ class Config(arguments: Seq[String]) extends ScallopConf(arguments) {
       "(less than zero uses full stack)"
     ).mkString(" "),
     default = Some(-1)
+  )
+
+  // ===========================================================================
+  // = SETTINGS FOR PUBLISH
+  // ===========================================================================
+
+  val publishRemoteName: ScallopOption[String] = opt[String](
+    descr = "The remote name used as the destination of the publish",
+    default = Some("origin")
+  )
+
+  val publishRemoteBranch: ScallopOption[String] = opt[String](
+    descr = "The branch to publish the content to",
+    default = Some("gh-pages")
+  )
+
+  val publishCacheDir: ScallopOption[String] = opt[String](
+    descr = "The directory where a copy of the repository lives for publishing",
+    default = Some(Paths.get(
+      System.getProperty(
+        "user.home",
+        System.getProperty("java.io.tmpdir")
+      ),
+      ".sdd" // Scala Debugger Docs
+    ).toAbsolutePath.toString)
+  )
+
+  val publishForceCopy: ScallopOption[Boolean] = opt[Boolean](
+    descr = "If provided, forces the copying of the repository to the cache",
+    default = Some(false)
+  )
+
+  val publishAuthorName: ScallopOption[String] = opt[String](
+    descr = "The name to use for both author and committer when publishing",
+    default = None
+  )
+
+  val publishAuthorEmail: ScallopOption[String] = opt[String](
+    descr = "The email to use for both author and committer when publishing",
+    default = None
   )
 
   // ===========================================================================

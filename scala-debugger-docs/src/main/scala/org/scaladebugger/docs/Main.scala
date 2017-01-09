@@ -49,7 +49,7 @@ object Main {
 
     // Publish generated content
     } else if (config.publish()) {
-      logger.fatal("TODO: Implement publish using Scala process to run git")
+      new Publisher(config).run()
 
     // Print help info
     } else if (!config.generate()) {
