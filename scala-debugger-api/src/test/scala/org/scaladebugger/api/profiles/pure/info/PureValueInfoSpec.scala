@@ -37,7 +37,7 @@ class PureValueInfoSpec extends ParallelMockFunSpec
           .returning(mockInfoProducerProfile).once()
 
         // Create new info profile using Java version of info producer
-        (mockInfoProducerProfile.newValueInfoProfile _)
+        (mockInfoProducerProfile.newValueInfo _)
           .expects(mockScalaVirtualMachine, mockValue)
           .returning(expected).once()
 
@@ -96,7 +96,7 @@ class PureValueInfoSpec extends ParallelMockFunSpec
           }
         }
 
-        val actual = pureValueInfoProfile.typeInfo
+        val actual = pureValueInfoProfile.`type`
 
         actual should be (expected)
       }
@@ -119,7 +119,7 @@ class PureValueInfoSpec extends ParallelMockFunSpec
 
         mockNewTypeProfileFunction.expects(mockType).returning(expected).once()
 
-        val actual = pureValueInfoProfile.typeInfo
+        val actual = pureValueInfoProfile.`type`
 
         actual should be (expected)
       }

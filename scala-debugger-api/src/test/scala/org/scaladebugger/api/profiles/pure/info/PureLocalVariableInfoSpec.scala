@@ -40,7 +40,7 @@ class PureLocalVariableInfoSpec extends ParallelMockFunSpec
         // Create new info profile using Java version of info producer
         // NOTE: Cannot validate second set of args because they are
         //       call-by-name, which ScalaMock does not support presently
-        (mockInfoProducerProfile.newLocalVariableInfoProfile(
+        (mockInfoProducerProfile.newLocalVariableInfo(
           _: ScalaVirtualMachine,
           _: FrameInfo,
           _: LocalVariable,
@@ -115,7 +115,7 @@ class PureLocalVariableInfoSpec extends ParallelMockFunSpec
         mockNewTypeProfile.expects(mockType)
           .returning(expected).once()
 
-        val actual = pureLocalVariableInfoProfile.typeInfo
+        val actual = pureLocalVariableInfoProfile.`type`
 
         actual should be (expected)
       }

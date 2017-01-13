@@ -48,7 +48,7 @@ class PureLocalVariableInfo(
    *         to Java
    */
   override def toJavaInfo: IndexedVariableInfo = {
-    infoProducer.toJavaInfo.newLocalVariableInfoProfile(
+    infoProducer.toJavaInfo.newLocalVariableInfo(
       scalaVirtualMachine = scalaVirtualMachine,
       frame = frame,
       localVariable = _localVariable,
@@ -84,7 +84,7 @@ class PureLocalVariableInfo(
    *
    * @return The profile containing type information
    */
-  override def typeInfo: TypeInfo =
+  override def `type`: TypeInfo =
     newTypeProfile(_localVariable.`type`())
 
   /**
@@ -138,8 +138,8 @@ class PureLocalVariableInfo(
   )
 
   protected def newValueProfile(value: Value): ValueInfo =
-    infoProducer.newValueInfoProfile(scalaVirtualMachine, value)
+    infoProducer.newValueInfo(scalaVirtualMachine, value)
 
   protected def newTypeProfile(_type: Type): TypeInfo =
-    infoProducer.newTypeInfoProfile(scalaVirtualMachine, _type)
+    infoProducer.newTypeInfo(scalaVirtualMachine, _type)
 }

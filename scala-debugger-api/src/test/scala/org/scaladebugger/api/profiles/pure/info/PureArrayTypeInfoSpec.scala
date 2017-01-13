@@ -36,7 +36,7 @@ class PureArrayTypeInfoSpec extends ParallelMockFunSpec
           .returning(mockInfoProducerProfile).once()
 
         // Create new info profile using Java version of info producer
-        (mockInfoProducerProfile.newArrayTypeInfoProfile _)
+        (mockInfoProducerProfile.newArrayTypeInfo _)
           .expects(mockScalaVirtualMachine, mockArrayType)
           .returning(expected).once()
 
@@ -102,7 +102,7 @@ class PureArrayTypeInfoSpec extends ParallelMockFunSpec
 
         mockNewTypeProfile.expects(mockType).returning(expected).once()
 
-        val actual = pureArrayTypeInfoProfile.elementTypeInfo
+        val actual = pureArrayTypeInfoProfile.elementType
 
         actual should be (expected)
       }

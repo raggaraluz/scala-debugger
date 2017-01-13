@@ -40,7 +40,7 @@ class PureArrayTypeInfo(
    *         to Java
    */
   override def toJavaInfo: ArrayTypeInfo = {
-    infoProducer.toJavaInfo.newArrayTypeInfoProfile(
+    infoProducer.toJavaInfo.newArrayTypeInfo(
       scalaVirtualMachine = scalaVirtualMachine,
       arrayType = _arrayType
     )
@@ -73,7 +73,7 @@ class PureArrayTypeInfo(
    *
    * @return The profile containing type information
    */
-  override def elementTypeInfo: TypeInfo =
+  override def elementType: TypeInfo =
     newTypeProfile(_arrayType.componentType())
 
   /**
@@ -87,7 +87,7 @@ class PureArrayTypeInfo(
 
   protected def newArrayProfile(
     arrayReference: ArrayReference
-  ): ArrayInfo = infoProducer.newArrayInfoProfile(
+  ): ArrayInfo = infoProducer.newArrayInfo(
     scalaVirtualMachine,
     arrayReference
   )()

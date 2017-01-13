@@ -29,7 +29,7 @@ class PurePrimitiveInfoSpec extends ParallelMockFunSpec
           .returning(mockInfoProducerProfile).once()
 
         // Create new info profile using Java version of info producer
-        (mockInfoProducerProfile.newPrimitiveInfoProfile(_: ScalaVirtualMachine, _: PrimitiveValue))
+        (mockInfoProducerProfile.newPrimitiveInfo(_: ScalaVirtualMachine, _: PrimitiveValue))
           .expects(mockScalaVirtualMachine, mockPrimitiveValue)
           .returning(expected).once()
 
@@ -51,7 +51,7 @@ class PurePrimitiveInfoSpec extends ParallelMockFunSpec
           .returning(mockInfoProducerProfile).once()
 
         // Create new info profile using Java version of info producer
-        (mockInfoProducerProfile.newPrimitiveInfoProfile(_: ScalaVirtualMachine, _: VoidValue))
+        (mockInfoProducerProfile.newPrimitiveInfo(_: ScalaVirtualMachine, _: VoidValue))
           .expects(mockScalaVirtualMachine, mockVoidValue)
           .returning(expected).once()
 
@@ -163,7 +163,7 @@ class PurePrimitiveInfoSpec extends ParallelMockFunSpec
         (mockTypeInfoProfile.toPrimitiveType _).expects()
           .returning(expected).once()
 
-        val actual = purePrimitiveInfoProfile.typeInfo
+        val actual = purePrimitiveInfoProfile.`type`
 
         actual should be (expected)
       }
@@ -192,7 +192,7 @@ class PurePrimitiveInfoSpec extends ParallelMockFunSpec
         (mockTypeInfoProfile.toPrimitiveType _).expects()
           .returning(expected).once()
 
-        val actual = purePrimitiveInfoProfile.typeInfo
+        val actual = purePrimitiveInfoProfile.`type`
 
         actual should be (expected)
       }

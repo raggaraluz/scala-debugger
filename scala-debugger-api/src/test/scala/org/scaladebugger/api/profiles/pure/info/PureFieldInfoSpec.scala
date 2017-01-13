@@ -47,7 +47,7 @@ class PureFieldInfoSpec extends ParallelMockFunSpec
         // Create new info profile using Java version of info producer
         // NOTE: Cannot validate second set of args because they are
         //       call-by-name, which ScalaMock does not support presently
-        (mockInfoProducerProfile.newFieldInfoProfile(
+        (mockInfoProducerProfile.newFieldInfo(
           _: ScalaVirtualMachine,
           _: Either[ObjectReference, ReferenceType],
           _: Field,
@@ -87,7 +87,7 @@ class PureFieldInfoSpec extends ParallelMockFunSpec
         // Create new info profile using Java version of info producer
         // NOTE: Cannot validate second set of args because they are
         //       call-by-name, which ScalaMock does not support presently
-        (mockInfoProducerProfile.newFieldInfoProfile(
+        (mockInfoProducerProfile.newFieldInfo(
           _: ScalaVirtualMachine,
           _: Either[ObjectReference, ReferenceType],
           _: Field,
@@ -162,7 +162,7 @@ class PureFieldInfoSpec extends ParallelMockFunSpec
         mockNewTypeProfile.expects(mockType)
           .returning(expected).once()
 
-        val actual = pureFieldInfoProfile.typeInfo
+        val actual = pureFieldInfoProfile.`type`
 
         actual should be (expected)
       }
@@ -215,12 +215,12 @@ class PureFieldInfoSpec extends ParallelMockFunSpec
         val mockReferenceType = mock[ReferenceType]
         (mockField.declaringType _).expects()
           .returning(mockReferenceType).once()
-        (mockInfoProducerProfile.newReferenceTypeInfoProfile _)
+        (mockInfoProducerProfile.newReferenceTypeInfo _)
           .expects(mockScalaVirtualMachine, mockReferenceType)
           .returning(expected)
           .once()
 
-        val actual = pureFieldInfoProfile.declaringTypeInfo
+        val actual = pureFieldInfoProfile.declaringType
 
         actual should be (expected)
       }

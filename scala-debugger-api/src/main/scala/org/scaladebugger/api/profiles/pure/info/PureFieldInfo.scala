@@ -81,7 +81,7 @@ class PureFieldInfo(
    *         to Java
    */
   override def toJavaInfo: FieldVariableInfo = {
-    infoProducer.toJavaInfo.newFieldInfoProfile(
+    infoProducer.toJavaInfo.newFieldInfo(
       scalaVirtualMachine = scalaVirtualMachine,
       container = _container,
       field = _field,
@@ -117,7 +117,7 @@ class PureFieldInfo(
    *
    * @return The profile containing type information
    */
-  override def typeInfo: TypeInfo = newTypeProfile(_field.`type`())
+  override def `type`: TypeInfo = newTypeProfile(_field.`type`())
 
   /**
    * Returns the parent that contains this field.
@@ -133,7 +133,7 @@ class PureFieldInfo(
    *
    * @return The reference type information that declared this field
    */
-  override def declaringTypeInfo: ReferenceTypeInfo =
+  override def declaringType: ReferenceTypeInfo =
     newReferenceTypeProfile(_field.declaringType())
 
   /**
@@ -188,18 +188,18 @@ class PureFieldInfo(
   })
 
   protected def newObjectProfile(objectReference: ObjectReference): ObjectInfo =
-    infoProducer.newObjectInfoProfile(scalaVirtualMachine, objectReference)()
+    infoProducer.newObjectInfo(scalaVirtualMachine, objectReference)()
 
   protected def newReferenceTypeProfile(
     referenceType: ReferenceType
-  ): ReferenceTypeInfo = infoProducer.newReferenceTypeInfoProfile(
+  ): ReferenceTypeInfo = infoProducer.newReferenceTypeInfo(
     scalaVirtualMachine,
     referenceType
   )
 
   protected def newValueProfile(value: Value): ValueInfo =
-    infoProducer.newValueInfoProfile(scalaVirtualMachine, value)
+    infoProducer.newValueInfo(scalaVirtualMachine, value)
 
   protected def newTypeProfile(_type: Type): TypeInfo =
-    infoProducer.newTypeInfoProfile(scalaVirtualMachine, _type)
+    infoProducer.newTypeInfo(scalaVirtualMachine, _type)
 }

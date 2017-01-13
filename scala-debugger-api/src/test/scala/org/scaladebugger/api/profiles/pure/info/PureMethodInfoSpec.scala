@@ -32,7 +32,7 @@ class PureMethodInfoSpec extends ParallelMockFunSpec
           .returning(mockInfoProducerProfile).once()
 
         // Create new info profile using Java version of info producer
-        (mockInfoProducerProfile.newMethodInfoProfile _)
+        (mockInfoProducerProfile.newMethodInfo _)
           .expects(mockScalaVirtualMachine, mockMethod)
           .returning(expected).once()
 
@@ -83,7 +83,7 @@ class PureMethodInfoSpec extends ParallelMockFunSpec
 
         mockNewTypeProfile.expects(mockType).returning(expected).once()
 
-        val actual = pureMethodInfoProfile.returnTypeInfo
+        val actual = pureMethodInfoProfile.returnType
 
         actual should be (expected)
       }
@@ -108,12 +108,12 @@ class PureMethodInfoSpec extends ParallelMockFunSpec
         val mockReferenceType = mock[ReferenceType]
         (mockMethod.declaringType _).expects()
           .returning(mockReferenceType).once()
-        (mockInfoProducerProfile.newReferenceTypeInfoProfile _)
+        (mockInfoProducerProfile.newReferenceTypeInfo _)
           .expects(mockScalaVirtualMachine, mockReferenceType)
           .returning(expected)
           .once()
 
-        val actual = pureMethodInfoProfile.declaringTypeInfo
+        val actual = pureMethodInfoProfile.declaringType
 
         actual should be (expected)
       }
@@ -132,7 +132,7 @@ class PureMethodInfoSpec extends ParallelMockFunSpec
           mockNewTypeProfile.expects(t).returning(e).once()
         }
 
-        val actual = pureMethodInfoProfile.parameterTypeInfo
+        val actual = pureMethodInfoProfile.parameterTypes
 
         actual should be (expected)
       }

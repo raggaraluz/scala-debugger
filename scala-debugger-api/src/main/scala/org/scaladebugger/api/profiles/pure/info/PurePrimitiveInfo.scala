@@ -45,11 +45,11 @@ class PurePrimitiveInfo(
   override def toJavaInfo: PrimitiveInfo = {
     val producer = infoProducer.toJavaInfo
     eitherValue match {
-      case Left(pv) => producer.newPrimitiveInfoProfile(
+      case Left(pv) => producer.newPrimitiveInfo(
         scalaVirtualMachine = scalaVirtualMachine,
         primitiveValue = pv
       )
-      case Right(vv) => producer.newPrimitiveInfoProfile(
+      case Right(vv) => producer.newPrimitiveInfo(
         scalaVirtualMachine = scalaVirtualMachine,
         voidValue = vv
       )
@@ -61,8 +61,8 @@ class PurePrimitiveInfo(
    *
    * @return The profile containing type information
    */
-  override def typeInfo: PrimitiveTypeInfo =
-    super.typeInfo.toPrimitiveType
+  override def `type`: PrimitiveTypeInfo =
+    super.`type`.toPrimitiveType
 
   /**
    * Returns the value as a value local to this JVM.

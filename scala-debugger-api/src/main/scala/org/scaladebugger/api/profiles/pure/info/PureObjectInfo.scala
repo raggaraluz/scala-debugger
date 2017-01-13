@@ -51,7 +51,7 @@ class PureObjectInfo(
    *         to Java
    */
   override def toJavaInfo: ObjectInfo = {
-    infoProducer.toJavaInfo.newObjectInfoProfile(
+    infoProducer.toJavaInfo.newObjectInfo(
       scalaVirtualMachine = scalaVirtualMachine,
       objectReference = _objectReference
     )(
@@ -72,8 +72,8 @@ class PureObjectInfo(
    *
    * @return The profile containing type information
    */
-  override def typeInfo: ReferenceTypeInfo =
-    super.typeInfo.toReferenceType
+  override def `type`: ReferenceTypeInfo =
+    super.`type`.toReferenceType
 
   /**
    * Represents the unique id of this object.
@@ -201,7 +201,7 @@ class PureObjectInfo(
   protected def newFieldProfile(
     field: Field,
     offsetIndex: Int
-  ): FieldVariableInfo = infoProducer.newFieldInfoProfile(
+  ): FieldVariableInfo = infoProducer.newFieldInfo(
     scalaVirtualMachine,
     Left(_objectReference),
     field,
@@ -209,11 +209,11 @@ class PureObjectInfo(
   )()
 
   protected def newMethodProfile(method: Method): MethodInfo =
-    infoProducer.newMethodInfoProfile(scalaVirtualMachine, method)
+    infoProducer.newMethodInfo(scalaVirtualMachine, method)
 
   protected def newValueProfile(value: Value): ValueInfo =
-    infoProducer.newValueInfoProfile(scalaVirtualMachine, value)
+    infoProducer.newValueInfo(scalaVirtualMachine, value)
 
   protected def newTypeCheckerProfile(): TypeChecker =
-    infoProducer.newTypeCheckerProfile()
+    infoProducer.newTypeChecker()
 }

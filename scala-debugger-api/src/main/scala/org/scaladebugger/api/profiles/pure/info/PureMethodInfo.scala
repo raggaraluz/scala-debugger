@@ -36,7 +36,7 @@ class PureMethodInfo(
    *         to Java
    */
   override def toJavaInfo: MethodInfo = {
-    infoProducer.toJavaInfo.newMethodInfoProfile(
+    infoProducer.toJavaInfo.newMethodInfo(
       scalaVirtualMachine = scalaVirtualMachine,
       method = _method
     )
@@ -61,7 +61,7 @@ class PureMethodInfo(
    *
    * @return The collection of profiles containing type information
    */
-  override def parameterTypeInfo: Seq[TypeInfo] = {
+  override def parameterTypes: Seq[TypeInfo] = {
     import scala.collection.JavaConverters._
 
     _method.argumentTypes().asScala.map(newTypeProfile)
@@ -72,7 +72,7 @@ class PureMethodInfo(
    *
    * @return The profile containing type information
    */
-  override def returnTypeInfo: TypeInfo =
+  override def returnType: TypeInfo =
     newTypeProfile(_method.returnType())
 
   /**
@@ -89,7 +89,7 @@ class PureMethodInfo(
    *
    * @return The reference type information that declared this method
    */
-  override def declaringTypeInfo: ReferenceTypeInfo =
+  override def declaringType: ReferenceTypeInfo =
     newReferenceTypeProfile(_method.declaringType())
 
   /**
@@ -105,11 +105,11 @@ class PureMethodInfo(
 
   protected def newReferenceTypeProfile(
     referenceType: ReferenceType
-  ): ReferenceTypeInfo = infoProducer.newReferenceTypeInfoProfile(
+  ): ReferenceTypeInfo = infoProducer.newReferenceTypeInfo(
     scalaVirtualMachine,
     referenceType
   )
 
   protected def newTypeProfile(_type: Type): TypeInfo =
-    infoProducer.newTypeInfoProfile(scalaVirtualMachine, _type)
+    infoProducer.newTypeInfo(scalaVirtualMachine, _type)
 }
