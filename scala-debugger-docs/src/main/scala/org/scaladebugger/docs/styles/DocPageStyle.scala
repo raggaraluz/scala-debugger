@@ -42,7 +42,8 @@ object DocPageStyle extends CascadingStyleSheet {
 
     a(
       color := "#232F3F",
-      textDecoration := "none"
+      textDecoration := "none",
+      fontWeight := "bold"
     ),
 
     img(
