@@ -11,7 +11,7 @@ The profile system in the Scala debugger API's way of distinguishing specific
 logic to handle breakpoints, steps, and other requests in Scala 2.10, Scala
 2.11, Scala 2.12, the Scala REPL, Java, and other scenarios.
 
-Currently, there is a profile for pure Java debugging and another profile
+Currently, there is a profile for Java debugging and another profile
 for Scala debugging (targeting 2.10). Future plans include adding logic to
 better handle gotchas in Scala 2.10, 2.11, etc.
 
@@ -26,15 +26,15 @@ enable it to utilize different rules on demand.
 
 ![ScalaVirtualMachine][scala-virtual-machine]
 
-## Pure Profile
+## Java Profile
 
-The pure profile is the default profile for the `ScalaVirtualMachine`. It adds
+The Java profile is the default profile for the `ScalaVirtualMachine`. It adds
 no custom logic for any of the Scala versions; therefore, it should be able to
 work with Java code.
 
-![Pure Profile Example][pure-profile-example]
+![Java Profile Example][java-profile-example]
 
-The pure profile adds support for caching requests, which means calls to
+The Java profile adds support for caching requests, which means calls to
 `getOrCreateBreakpointRequest`, `getOrCreateAccessWatchpointRequest`, etc. with
 the same arguments will use the same JDI request underneath. This allows you 
 to refer to the breakpoint in a more flowing manner like the following:
@@ -60,9 +60,9 @@ You can specifically reference the profile using its name:
 ```scala
 val s: ScalaVirtualMachine = /* some virtual machine */
 
-// Use the ScalaVirtualMachine with the pure profile
-import org.scaladebugger.api.profiles.pure.PureDebugProfile
-s.withProfile(PureDebugProfile.Name)
+java
+import org.scaladebugger.api.profiles.java.JavaDebugProfile
+s.withProfile(JavaDebugProfile.Name)
     .getOrCreateBreakpointRequest("myfile.scala", 37)
 ```
 
@@ -77,7 +77,7 @@ meaning that this profile can be used to debug a mixed Java/Scala project.
 
 ![Scala 2.10 Profile Example][scala-210-profile-example]
 
-Like the pure profile, the Scala 2.10 profile supports caching requests that
+Like the Java profile, the Scala 2.10 profile supports caching requests that
 use the same arguments. This allows you to refer to the stream for an existing
 request.
 
@@ -99,10 +99,10 @@ change between different profiles.
 // Inherits the SwappableDebugProfile trait
 val s: ScalaVirtualMachine = /* some virtual machine */
 
-// All future calls to the profile will route to the pure debug profile
-s.use(PureDebugProfile.Name)
+java
+s.use(JavaDebugProfile.Name)
 
-// This will be handled by the pure debug profile
+java
 s.getOrCreateBreakpointRequest("file.scala", 37)
 ```
 
@@ -120,7 +120,7 @@ s.register("profile name", /* profile instance */)
 ```
 
 [scala-virtual-machine]: /img/api/advanced-topics/scala-virtual-machine.png
-[pure-profile-example]: /img/api/advanced-topics/pure-profile-example.png
+[java-profile-example]: /img/api/advanced-topics/java-profile-example.png
 [scala-210-profile-example]: /img/api/advanced-topics/scala-210-profile-example.png
 
 *[JDI]: Java Debugger Interface
