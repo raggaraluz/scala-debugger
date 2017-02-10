@@ -1,372 +1,630 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
-        <meta name="author" content="Chip Senkbeil">
-        <link rel="canonical" href="http://www.scala-debugger.org/about/roadmap/">
-        <link rel="shortcut icon" href="../../../../img/favicon.ico">
-        
+<html><head><meta charset="utf-8" /><link rel="stylesheet" href="/styles/vendor/font-awesome/css/font-awesome.min.css" /><link rel="stylesheet" href="/styles/vendor/highlight/agate.css" /><style>.org-scaladebugger-docs-styles-PageStyle-heroTitle{
+  align-items: center;
+  display: flex;
+  font-size: 5em;
+  justify-content: space-around;
+}
+.org-scaladebugger-docs-styles-PageStyle-heroTitle img{
+  padding: 0.5em;
+}
 
-	<title>Roadmap - Scala Debugger</title>
+.org-scaladebugger-docs-styles-PageStyle-heroSubtitle{
+  font-family: Baskerville, 'Baskerville Old Face', 'Hoefler Text', Garamond, 'Times New Roman', serif;
+  font-size: 2em;
+  font-style: italic;
+  margin: 0em 0em 1.5em 0em;
+  white-space: nowrap;
+}
 
-        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
-        <link href="../../css/font-awesome-4.5.0.css" rel="stylesheet">
-        <link href="../../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="../../css/highlight.css">
-        <link href="../../css/extra.css" rel="stylesheet">
-        <link href="../../css/no-home.css" rel="stylesheet">
-        <link href="../../css/font-mfizz-2.2/font-mfizz.css" rel="stylesheet">
+.org-scaladebugger-docs-styles-PageStyle-sectionDark{
+  background: #3B3E43;
+  color: #EBF0F1;
+}
+.org-scaladebugger-docs-styles-PageStyle-sectionDark a{
+  color: #EBF0F1;
+}
 
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-        <![endif]-->
+.org-scaladebugger-docs-styles-PageStyle-sectionLight{
+  background: #EAEAEC;
+  color: #3B3E43;
+}
+.org-scaladebugger-docs-styles-PageStyle-sectionLight a{
+  color: #3B3E43;
+}
 
-        
-        <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+.org-scaladebugger-docs-styles-PageStyle-section{
+  min-height: 33vh;
+  width: 100%;
+}
 
-            ga('create', 'UA-71733200-1', 'scala-debugger.org');
-            ga('send', 'pageview');
-        </script>
-        
-    </head>
+.org-scaladebugger-docs-styles-PageStyle-sectionContent{
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding: 3em 2em;
+}
+.org-scaladebugger-docs-styles-PageStyle-sectionContent h1{
+  font-size: 5em;
+  margin: 0em;
+}
 
-    <body>
+.org-scaladebugger-docs-styles-PageStyle-footerCls{
+  height: auto;
+  width: 100%;
+}
 
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
+.org-scaladebugger-docs-styles-PageStyle-footerContent{
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  font-size: 0.7em;
+  justify-content: flex-end;
+  padding: 1em 1em;
+}
 
-        <!-- Collapsed navigation -->
-        <div class="navbar-header">
-            
-            <!-- Expander button -->
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            
+.org-scaladebugger-docs-styles-PageStyle-buttonCls{
+  background: #3B3E43;
+  border-radius: 8px;
+  color: #ECF0F1;
+  overflow: hidden;
+  padding: 1em 1.5em;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.org-scaladebugger-docs-styles-PageStyle-buttonCls a{
+  color: #ECF0F1;
+  text-decoration: none;
+}
 
-            <!-- Main title -->
-            <a class="navbar-brand" href="../..">Scala Debugger</a>
-        </div>
+.org-scaladebugger-docs-styles-PageStyle-buttonMargin{
+  margin: 1em 1em;
+}
 
-        <!-- Expanded navigation -->
-        <div class="navbar-collapse collapse">
-            
-                <!-- Main navigation -->
-                <ul class="nav navbar-nav">
-                
-                
-                    <li >
-                        <a href="../..">Home</a>
-                    </li>
-                
-                
-                
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Getting Started <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                        
-                            
-<li >
-    <a href="../../getting-started/what-is-a-debugger/">What is a Debugger?</a>
-</li>
+.org-scaladebugger-docs-styles-PageStyle-videoCls{
+  width: 100%;
+}
 
-                        
-                            
-<li >
-    <a href="../../getting-started/installation/">Installation</a>
-</li>
+.org-scaladebugger-docs-styles-PageStyle-fitContainer{
+  height: 100%;
+  width: 100%;
+}
 
-                        
-                            
-<li >
-    <a href="../../getting-started/available-debugger-connections/">Available Debugger Connections</a>
-</li>
+.org-scaladebugger-docs-styles-PageStyle-linedContent{
+  align-content: space-between;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  padding: 0.5em;
+}
 
-                        
-                            
-<li >
-    <a href="../../getting-started/event-pipelines/">Event Pipelines</a>
-</li>
+.org-scaladebugger-docs-styles-PageStyle-linedContentLeft{
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  width: 22%;
+}
 
-                        
-                            
-<li >
-    <a href="../../getting-started/working-with-breakpoints/">Working with Breakpoints</a>
-</li>
+.org-scaladebugger-docs-styles-PageStyle-linedContentRight{
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  width: 58%;
+}
 
-                        
-                            
-<li >
-    <a href="../../getting-started/stepping-through-code/">Stepping through Code</a>
-</li>
+.org-scaladebugger-docs-styles-PageStyle-marker{
+  background: #3B3E43;
+  color: #ECF0F1;
+  display: inline-block;
+  padding: 1em;
+  position: relative;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.org-scaladebugger-docs-styles-PageStyle-marker::after{
+  background: transparent;
+  border-bottom: 1.59em solid transparent;
+  border-left: 1.59em solid #3B3E43;
+  border-top: 1.59em solid transparent;
+  clear: both;
+  content: '';
+  height: 0px;
+  left: 100%;
+  position: absolute;
+  top: calc(50% - 1.59em);
+  width: 0px;
+}
 
-                        
-                            
-<li >
-    <a href="../../getting-started/watching-class-variables/">Watching class variables</a>
-</li>
+.org-scaladebugger-docs-styles-PageStyle-textbox{
+  background: #ECF0F1;
+  border: 1px solid #979797;
+  border-radius: 8px;
+  color: #3B3E43;
+  display: inline-block;
+  overflow: auto;
+  padding: 1em 0.5em 1em;
+}
+.org-scaladebugger-docs-styles-PageStyle-textbox .hljs{
+  background: #ECF0F1;
+  color: #3B3E43;
+}
 
-                        
-                        </ul>
-                    </li>
-                
-                
-                
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Advanced Topics <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                        
-                            
-<li >
-    <a href="../../advanced-topics/what-is-the-profile-system/">What is the Profile System?</a>
-</li>
+.org-scaladebugger-docs-styles-PageStyle-copyContainer{
+  position: relative;
+}
+.org-scaladebugger-docs-styles-PageStyle-copyContainer:hover .org-scaladebugger-docs-styles-PageStyle-copyButton{
+  opacity: 1;
+}
 
-                        
-                            
-<li >
-    <a href="../../advanced-topics/what-is-the-low-level-api/">What is the Low-Level API?</a>
-</li>
+.org-scaladebugger-docs-styles-PageStyle-copyButton{
+  background: #EF4551;
+  border: transparent;
+  border-radius: 8px;
+  color: #ECF0F1;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1em;
+  opacity: 0;
+  padding: 0.5em 1em;
+  position: absolute;
+  right: 0;
+  text-decoration: none;
+  top: 0;
+  transition: opacity 0.35s ease-in-out;
+}
+.org-scaladebugger-docs-styles-PageStyle-copyButton:active{
+  background: #A84444;
+}
+</style><style>.org-scaladebugger-docs-styles-TopbarNavStyle-headerCls{
+  height: auto;
+  width: 100%;
+}
 
-                        
-                            
-<li >
-    <a href="../../advanced-topics/using-extra-arguments-for-requests/">Using Extra Arguments for Requests</a>
-</li>
+.org-scaladebugger-docs-styles-TopbarNavStyle-navbar{
+  align-items: center;
+  background: #3B3E43;
+  color: #EBF0F1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  font-size: 1.5em;
+  justify-content: space-between;
+  padding: 0.1em 1em;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navbar a{
+  color: #EBF0F1;
+}
 
-                        
-                            
-<li >
-    <a href="../../advanced-topics/making-requests-early/">Making Requests Early</a>
-</li>
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLogo{
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  text-decoration: none;
+  width: 25%;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLogo img{
+  height: 3em;
+  padding-right: 0.5em;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLogo span{
+  font-size: 1em;
+  white-space: nowrap;
+}
 
-                        
-                        </ul>
-                    </li>
-                
-                
-                
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Cookbook <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                        
-                            
-<li >
-    <a href="../../cookbook/creating-a-launching-debugger/">Creating a Launching Debugger</a>
-</li>
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLinks{
+  width: 70%;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLinks ul{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  list-style-type: none;
+  margin: 0em;
+  padding: 0em;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLinks li{
+  align-items: center;
+  display: flex;
+  height: 1em;
+  padding: 0em 0.5em;
+}
 
-                        
-                            
-<li >
-    <a href="../../cookbook/creating-an-attaching-debugger/">Creating an Attaching Debugger</a>
-</li>
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLink{
+  border-bottom: 1px solid #EBF0F1;
+  color: #EBF0F1;
+  cursor: pointer;
+  font-size: 0.65em;
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 
-                        
-                            
-<li >
-    <a href="../../cookbook/creating-a-listening-debugger/">Creating a Listening Debugger</a>
-</li>
+.org-scaladebugger-docs-styles-TopbarNavStyle-selectedNavLink{
+  background: #EBF0F1;
+  padding: 0em;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-selectedNavLink a{
+  border-bottom: 1px solid #3B3E43;
+  color: #3B3E43;
+}
+</style><style>.org-scaladebugger-docs-styles-TabsStyle-tabs{
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  list-style: none;
+  margin: 0px;
+  max-width: 800px;
+  min-width: 750px;
+  padding: 0px;
+  position: relative;
+  width: 100%;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs li{
+  display: inline-block;
+  flex-grow: 1;
+  margin: 0px;
+  padding: 0px;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs input[type='radio']{
+  display: none;
+  position: absolute;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs label{
+  background: #F1626B;
+  color: #ECF0F1;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1.3em;
+  font-weight: normal;
+  outline: none;
+  padding: 0.8em 0em;
+  position: relative;
+  text-align: center;
+  text-transform: uppercase;
+  top: 0.1em;
+  width: 100%;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs label:hover{
+  background: #EF4551;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs [id^='tab']:checked + label{
+  background: #EF4551;
+  padding-top: 0.79em;
+  top: 0;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs [id^='tab']:checked ~ [id^='tab-content']{
+  visibility: visible;
+}
 
-                        
-                            
-<li >
-    <a href="../../cookbook/creating-a-breakpoint/">Creating a Breakpoint</a>
-</li>
+.org-scaladebugger-docs-styles-TabsStyle-firstTab label{
+  border-radius: 8px 0px 0px 0px;
+}
 
-                        
-                            
-<li >
-    <a href="../../cookbook/stepping-over-a-line-of-code/">Stepping over a Line of Code</a>
-</li>
 
-                        
-                            
-<li >
-    <a href="../../cookbook/watching-modification-of-a-class-variable/">Watching Modification of a Class Variable</a>
-</li>
+.org-scaladebugger-docs-styles-TabsStyle-lastTab label{
+  border-radius: 0px 8px 0px 0px;
+}
 
-                        
-                        </ul>
-                    </li>
-                
-                
-                
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Scaladoc <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                        
-                            
-<li >
-    <a href="../../external/scaladoc-2.10/">Scaladoc 2.10</a>
-</li>
+.org-scaladebugger-docs-styles-TabsStyle-tabContent{
+  border-radius: 0px 0px 8px 8px;
+  display: block;
+  font-size: 1.3em;
+  left: 0em;
+  line-height: 25px;
+  max-height: 400px;
+  min-height: 305px;
+  overflow: hidden;
+  position: absolute;
+  top: 2.7em;
+  visibility: hidden;
+  width: 100%;
+  z-index: 2;
+}
 
-                        
-                            
-<li >
-    <a href="../../external/scaladoc-2.11/">Scaladoc 2.11</a>
-</li>
+.org-scaladebugger-docs-styles-TabsStyle-tabsDark .org-scaladebugger-docs-styles-TabsStyle-tabContent{
+  background: #3B3E43;
+  color: #EBF0F1;
+}
 
-                        
-                        </ul>
-                    </li>
-                
-                
-                
-                    <li class="dropdown active">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                        
-                            
-<li class="active">
-    <a href="./">Roadmap</a>
-</li>
+.org-scaladebugger-docs-styles-TabsStyle-tabsLight .org-scaladebugger-docs-styles-TabsStyle-tabContent{
+  background: #EAEAEC;
+  color: #3B3E43;
+}
 
-                        
-                            
-<li >
-    <a href="../release-notes/">Release Notes</a>
-</li>
+.org-scaladebugger-docs-styles-TabsStyle-tabInnerContent{
+  padding: 1em;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabInnerContent .org-scaladebugger-docs-styles-PageStyle-textbox{
+  max-height: 300px;
+}
+</style><style>
+html, body {
+  margin: 0;
+  padding: 0;
+}
 
-                        
-                            
-<li >
-    <a href="../contributing/">Contributing</a>
-</li>
+html, body {
+  font-size: 1em;
+  font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Geneva, Verdana, sans-serif;
+}
+    </style><style>.org-scaladebugger-docs-styles-DocPageStyle-bodyCls{
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-bodyCls header{
+  flex: 0 0 auto;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-bodyCls footer{
+  flex: 0 0 auto;
+}
 
-                        
-                            
-<li >
-    <a href="../license/">License</a>
-</li>
+.org-scaladebugger-docs-styles-DocPageStyle-viewArea{
+  max-width: 75em;
+}
 
-                        
-                        </ul>
-                    </li>
-                
-                
-                </ul>
-            
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent{
+  background: #EAEAEC;
+  color: #3B3E43;
+  display: inline-flex;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 2em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent a{
+  color: #232F3F;
+  font-weight: bold;
+  text-decoration: none;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent a:hover{
+  background: #232F3F;
+  color: #EBF0F1;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent img{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent .hljs{
+  background: #3B3E43;
+  border-radius: 8px;
+  padding: 1em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent pre code:not(.hljs){
+  background: #ECF0F1;
+  border: 1px solid #979797;
+  border-radius: 8px;
+  color: #3B3E43;
+  display: inline-block;
+  font-weight: inherit;
+  overflow: auto;
+  padding: 1em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent code:not(.hljs){
+  color: #9B0000;
+  font-weight: bold;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table{
+  background: #FBFBFB;
+  border: 1px solid #CBCBCB;
+  border-radius: 8px;
+  border-spacing: 0;
+  empty-cells: show;
+  height: auto;
+  margin-bottom: 1em;
+  margin-top: 1em;
+  width: 100%;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table thead{
+  background: #D8D8D8;
+  color: #3B3E43;
+  text-align: left;
+  vertical-align: bottom;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table th{
+  border-left: 1px solid #CBCBCB;
+  border-width: 0px 0px 0px 1px;
+  font-size: inherit;
+  margin: 0em;
+  overflow: visible;
+  padding: 0.5em 1.0em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table th:first-child{
+  border-left-width: 0em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table td{
+  border-left: 1px solid #CBCBCB;
+  border-width: 0px 0px 0px 1px;
+  font-size: inherit;
+  margin: 0em;
+  overflow: visible;
+  padding: 0.5em 1.0em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table td:first-child{
+  border-left-width: 0em;
+}
+</style><style>
+details[open] > summary > .org-scaladebugger-docs-styles-SidebarNavStyle-navLink > .org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon::after {
+ content: '\25BC';
+}
+    </style><style>.org-scaladebugger-docs-styles-SidebarNavStyle-navbar{
+  background: #D8D8D8;
+  color: #3B3E43;
+  display: inline-block;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  width: 16em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navbar a{
+  color: #3B3E43;
+  text-decoration: none;
+}
 
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
-                        <i class="fa fa-search"></i> Search
-                    </a>
-                </li>
-                
-                    <li >
-                        <a rel="next" href="../../external/scaladoc-2.11/">
-                            <i class="fa fa-arrow-left"></i> Previous
-                        </a>
-                    </li>
-                    <li >
-                        <a rel="prev" href="../release-notes/">
-                            Next <i class="fa fa-arrow-right"></i>
-                        </a>
-                    </li>
-                
-                
-                    <li>
-                        <a href="https://github.com/ensime/scala-debugger/">
-                            
-                                <i class="fa fa-github"></i>
-                            
-                            GitHub
-                        </a>
-                    </li>
-                
-            </ul>
-        </div>
-    </div>
-</div>
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks{
+  list-style-type: none;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 0.5em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul{
+  list-style-type: none;
+  padding-left: 0em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul .org-scaladebugger-docs-styles-SidebarNavStyle-navLink{
+  font-size: 1.1em;
+  text-transform: uppercase;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li{
+  margin: 1.5em 0em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul{
+  padding-left: 0.6125em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul .org-scaladebugger-docs-styles-SidebarNavStyle-navLink{
+  font-size: 1em;
+  text-transform: capitalize;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul li{
+  margin: 1em 0em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul li ul{
+  padding-left: 1.25em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul li ul .org-scaladebugger-docs-styles-SidebarNavStyle-navLink{
+  font-size: 0.9em;
+  text-transform: none;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks a{
+  color: #3B3E43;
+  text-decoration: none;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks .org-scaladebugger-docs-styles-SidebarNavStyle-selectedNavLink{
+  background: #3B3E43;
+  color: #D8D8D8;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks .org-scaladebugger-docs-styles-SidebarNavStyle-selectedNavLink a{
+  color: #D8D8D8;
+}
 
-        <div class="container">
-            
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-    
-        <li class="main active"><a href="#roadmap">Roadmap</a></li>
-        
-            <li><a href="#version-110">Version 1.1.0</a></li>
-        
-            <li><a href="#version-100">Version 1.0.0</a></li>
-        
-    
-    </ul>
-</div></div>
-                <div class="col-md-9" role="main">
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLink{
+  display: inline-block;
+  width: 100%;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLink:hover{
+  background: #3B3E43;
+  color: #D8D8D8;
+}
 
-<h1 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h1>
+
+.org-scaladebugger-docs-styles-SidebarNavStyle-summary{
+  cursor: pointer;
+  display: block;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-summary::-webkit-details-marker{
+  display: none;
+}
+
+.org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon{
+  font-size: 0.8em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon::after{
+  content: '\25B6';
+  padding-left: 1em;
+}
+</style><title>Roadmap</title></head><body class=" org-scaladebugger-docs-styles-DocPageStyle-bodyCls"><header class=" org-scaladebugger-docs-styles-TopbarNavStyle-headerCls"><div class=" org-scaladebugger-docs-styles-TopbarNavStyle-navbar"><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLogo" href="/"><img src="/img/ensime-logo-no-text.svg" alt="Ensime Logo" /><span>Scala Debugger</span></a><nav class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLinks"><ul><li><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/api/getting-started/what-is-a-debugger/">Api</a></li><li><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/language/basic-concepts/values/">Language</a></li><li><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/sdb/user-manual/installation/">Sdb</a></li><li><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/sbt-plugin/user-manual/installation/">Sbt Plugin</a></li><li class=" org-scaladebugger-docs-styles-TopbarNavStyle-selectedNavLink"><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/about/us/">About</a></li></ul></nav></div></header><div style="flex: 1 1 auto;min-height: 2em;overflow: auto;display: flex;"><nav class=" org-scaladebugger-docs-styles-SidebarNavStyle-navbar org-scaladebugger-docs-styles-SidebarNavStyle-navLinks" style="flex: 0 0 auto;"><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Api<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Getting Started<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/what-is-a-debugger/">What Is A Debugger</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/installation/">Installation</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/available-debugger-connections/">Available Debugger Connections</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/event-pipelines/">Event Pipelines</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/working-with-breakpoints/">Working With Breakpoints</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/stepping-through-code/">Stepping Through Code</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/watching-class-variables/">Watching Class Variables</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Advanced Topics<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/advanced-topics/what-is-the-profile-system/">What Is The Profile System</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/advanced-topics/what-is-the-low-level-api/">What Is The Low Level Api</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/advanced-topics/using-extra-arguments-for-requests/">Using Extra Arguments For Requests</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/advanced-topics/making-requests-early/">Making Requests Early</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Cookbook<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/creating-a-launching-debugger/">Creating A Launching Debugger</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/creating-an-attaching-debugger/">Creating An Attaching Debugger</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/creating-a-listening-debugger/">Creating A Listening Debugger</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/creating-a-breakpoint/">Creating A Breakpoint</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/stepping-over-a-line-of-code/">Stepping Over A Line Of Code</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/watching-modification-of-a-class-variable/">Watching Modification Of A Class Variable</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Scaladoc<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.10/">Scala 2.10</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.11/">Scala 2.11</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.12/">Scala 2.12</a></summary></details></li></ul></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Language<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Basic Concepts<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/values/">Values</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/variables/">Variables</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/operations/">Operations</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/conditions/">Conditions</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/blocks/">Blocks</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/functions/">Functions</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Scaladoc<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-language_2.10/">Scala 2.10</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-language_2.11/">Scala 2.11</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-language_2.12/">Scala 2.12</a></summary></details></li></ul></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Sdb<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">User Manual<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/sdb/user-manual/installation/">Installation</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/sdb/user-manual/commands/">Commands</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Scaladoc<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-tool_2.10/">Scala 2.10</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-tool_2.11/">Scala 2.11</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-tool_2.12/">Scala 2.12</a></summary></details></li></ul></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Sbt Plugin<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">User Manual<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/sbt-plugin/user-manual/installation/">Installation</a></summary></details></li></ul></details></li></ul></details></li><li><details open="open"><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">About<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/us/">Us</a></summary></details></li><li><details open="open"><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-selectedNavLink org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/roadmap/">Roadmap</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/release-notes/">Release Notes</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/contributing/">Contributing</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/license/">License</a></summary></details></li></ul></details></li></ul></nav><div class=" org-scaladebugger-docs-styles-DocPageStyle-mainContent" style="flex: 1 1 auto;"><div class=" org-scaladebugger-docs-styles-DocPageStyle-viewArea"><h1><a href="#roadmap" id="roadmap">Roadmap</a></h1>
 <p>Contains the current roadmap for the next significant release to the
 Scala debugger API and tooling. The versioning is <code>MAJOR.MINOR.REVISION</code>
 where a major release indicates breaking API changes, a minor release
 indicates new features, and a revision update indicates bug fixes.</p>
 <hr />
-<h2 id="version-110">Version 1.1.0<a class="headerlink" href="#version-110" title="Permanent link">&para;</a></h2>
+<h2><a href="#version-120" id="version-120">Version 1.2.0</a></h2>
 <ul>
-<li>See the <a href="https://github.com/ensime/scala-debugger/wiki">wiki</a> for the current roadmap!</li>
+<li>Add expression evaluator</li>
+<li>Improve Scala debug profiles to handle more scenarios</li>
 </ul>
-<h2 id="version-100">Version 1.0.0<a class="headerlink" href="#version-100" title="Permanent link">&para;</a></h2>
+<h2><a href="#version-110" id="version-110">Version 1.1.0</a></h2>
 <ul>
-<li>Create high-level profile system (only pure profile needed now)</li>
+<li>Add JDB implementation using Scala Debugger API (SDB)</li>
+<li>Add SBT plugin providing JDB-like interface</li>
+<li>Add basic Scala profile to support name demangling</li>
+<li>Add freeze support to serialize/deserialize debug information</li>
+<li>Improve stability of library</li>
+</ul>
+<h2><a href="#version-100" id="version-100">Version 1.0.0</a></h2>
+<ul>
+<li>Create high-level profile system (only Java profile needed now)</li>
 <li>Create low-level managers for <abbr title="Java Debugger Interface">JDI</abbr> requests</li>
 <li>Add support for pending requests to be applied as soon as possible</li>
-<li>Architect "extra argument" system</li>
+<li>Architect &quot;extra argument&quot; system</li>
 <li>Create documentation website</li>
-</ul></div>
-            
-        </div>
+</ul>
+</div></div></div><footer class=" org-scaladebugger-docs-styles-PageStyle-footerCls org-scaladebugger-docs-styles-PageStyle-sectionDark"><div class=" org-scaladebugger-docs-styles-PageStyle-footerContent"><span>Site contents <i class="fa fa-copyright" aria-hidden="true"></i> <a href="https://chipsenkbeil.com/">Chip Senkbeil</a>, 2015-2017</span></div></footer><script src="/scripts/vendor/clipboard/clipboard.min.js"></script><script src="/scripts/vendor/highlight/highlight.pack.js"></script><script>
+var highlightBlocks = document.querySelectorAll('pre code');
+var copyButtons = [];
+for (var index in highlightBlocks) {
+    var hb = highlightBlocks[index];
+    if (!hb) continue;
 
-        <footer class="col-md-12">
-            <hr>
-            
-                <p>Copyright &copy; 2015 <a href="http://chipsenkbeil.com">Chip Senkbeil</a>.</p>
-            
-            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
-        </footer>
+    var hbParent = hb.parentNode;
+    if (!hbParent) continue;
 
-        <script src="../../js/jquery-1.10.2.min.js"></script>
-        <script src="../../js/bootstrap-3.0.3.min.js"></script>
-        <script src="../../js/highlight.pack.js"></script>
-        <script>var base_url = '../..';</script>
-        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
-        <script src="../../js/base.js"></script>
+    hbParent.className += ' org-scaladebugger-docs-styles-PageStyle-copyContainer';
+    var clipboardText = hb.textContent;
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>
-                            From here you can search these documents. Enter
-                            your search terms below.
-                        </p>
-                        <form role="form">
-                            <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
-                            </div>
-                        </form>
-                        <div id="mkdocs-search-results"></div>
-                    </div>
-                    <div class="modal-footer">
-                    </div>
-                </div>
-            </div>
-        </div>
+    var copyButton = document.createElement('button');
+    copyButton.dataset.clipboardText = clipboardText;
+    copyButton.className = 'org-scaladebugger-docs-styles-PageStyle-copyButton';
+    hbParent.insertBefore(copyButton, hb);
 
-    </body>
-</html>
+    var copyButtonText = document.createElement('span');
+    copyButton.appendChild(copyButtonText);
+
+    var copyButtonIcon = document.createElement('i');
+    copyButtonIcon.className = 'fa fa-clipboard';
+    copyButton.appendChild(copyButtonIcon);
+
+    copyButtons.push(copyButton);
+}
+var copyButtonNodeList = (function() {
+    var tempAttr = 'TEMPCOPYATTR';
+    copyButtons.forEach(function(button) {
+        button.setAttribute(tempAttr, '');
+    });
+    var buttonNodeList = document.querySelectorAll('[' + tempAttr + ']');
+    copyButtons.forEach(function(button) {
+        button.removeAttribute(tempAttr);
+    });
+    return buttonNodeList;
+})();
+
+var clipboard = new Clipboard(copyButtonNodeList);
+console.log('Loaded clipboard for', copyButtonNodeList);
+
+var activeTriggers = {};
+clipboard.on('success', function(e) {
+    e.trigger.firstChild.textContent = 'Copied! ';
+
+    // Prevent old timeout interrupting new session
+    if (!!activeTriggers[e.trigger]) {
+        clearTimeout(activeTriggers[e.trigger]);
+    }
+
+    activeTriggers[e.trigger] = setTimeout(function() {
+        e.trigger.firstChild.textContent = '';
+        delete activeTriggers[e.trigger];
+    }, 2000);
+});
+      </script><script>hljs.initHighlightingOnLoad();</script></body></html>

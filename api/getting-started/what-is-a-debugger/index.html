@@ -1,0 +1,690 @@
+<html><head><meta charset="utf-8" /><link rel="stylesheet" href="/styles/vendor/font-awesome/css/font-awesome.min.css" /><link rel="stylesheet" href="/styles/vendor/highlight/agate.css" /><style>.org-scaladebugger-docs-styles-PageStyle-heroTitle{
+  align-items: center;
+  display: flex;
+  font-size: 5em;
+  justify-content: space-around;
+}
+.org-scaladebugger-docs-styles-PageStyle-heroTitle img{
+  padding: 0.5em;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-heroSubtitle{
+  font-family: Baskerville, 'Baskerville Old Face', 'Hoefler Text', Garamond, 'Times New Roman', serif;
+  font-size: 2em;
+  font-style: italic;
+  margin: 0em 0em 1.5em 0em;
+  white-space: nowrap;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-sectionDark{
+  background: #3B3E43;
+  color: #EBF0F1;
+}
+.org-scaladebugger-docs-styles-PageStyle-sectionDark a{
+  color: #EBF0F1;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-sectionLight{
+  background: #EAEAEC;
+  color: #3B3E43;
+}
+.org-scaladebugger-docs-styles-PageStyle-sectionLight a{
+  color: #3B3E43;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-section{
+  min-height: 33vh;
+  width: 100%;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-sectionContent{
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding: 3em 2em;
+}
+.org-scaladebugger-docs-styles-PageStyle-sectionContent h1{
+  font-size: 5em;
+  margin: 0em;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-footerCls{
+  height: auto;
+  width: 100%;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-footerContent{
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  font-size: 0.7em;
+  justify-content: flex-end;
+  padding: 1em 1em;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-buttonCls{
+  background: #3B3E43;
+  border-radius: 8px;
+  color: #ECF0F1;
+  overflow: hidden;
+  padding: 1em 1.5em;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.org-scaladebugger-docs-styles-PageStyle-buttonCls a{
+  color: #ECF0F1;
+  text-decoration: none;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-buttonMargin{
+  margin: 1em 1em;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-videoCls{
+  width: 100%;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-fitContainer{
+  height: 100%;
+  width: 100%;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-linedContent{
+  align-content: space-between;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  padding: 0.5em;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-linedContentLeft{
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  width: 22%;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-linedContentRight{
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  width: 58%;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-marker{
+  background: #3B3E43;
+  color: #ECF0F1;
+  display: inline-block;
+  padding: 1em;
+  position: relative;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.org-scaladebugger-docs-styles-PageStyle-marker::after{
+  background: transparent;
+  border-bottom: 1.59em solid transparent;
+  border-left: 1.59em solid #3B3E43;
+  border-top: 1.59em solid transparent;
+  clear: both;
+  content: '';
+  height: 0px;
+  left: 100%;
+  position: absolute;
+  top: calc(50% - 1.59em);
+  width: 0px;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-textbox{
+  background: #ECF0F1;
+  border: 1px solid #979797;
+  border-radius: 8px;
+  color: #3B3E43;
+  display: inline-block;
+  overflow: auto;
+  padding: 1em 0.5em 1em;
+}
+.org-scaladebugger-docs-styles-PageStyle-textbox .hljs{
+  background: #ECF0F1;
+  color: #3B3E43;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-copyContainer{
+  position: relative;
+}
+.org-scaladebugger-docs-styles-PageStyle-copyContainer:hover .org-scaladebugger-docs-styles-PageStyle-copyButton{
+  opacity: 1;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-copyButton{
+  background: #EF4551;
+  border: transparent;
+  border-radius: 8px;
+  color: #ECF0F1;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1em;
+  opacity: 0;
+  padding: 0.5em 1em;
+  position: absolute;
+  right: 0;
+  text-decoration: none;
+  top: 0;
+  transition: opacity 0.35s ease-in-out;
+}
+.org-scaladebugger-docs-styles-PageStyle-copyButton:active{
+  background: #A84444;
+}
+</style><style>.org-scaladebugger-docs-styles-TopbarNavStyle-headerCls{
+  height: auto;
+  width: 100%;
+}
+
+.org-scaladebugger-docs-styles-TopbarNavStyle-navbar{
+  align-items: center;
+  background: #3B3E43;
+  color: #EBF0F1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  font-size: 1.5em;
+  justify-content: space-between;
+  padding: 0.1em 1em;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navbar a{
+  color: #EBF0F1;
+}
+
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLogo{
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  text-decoration: none;
+  width: 25%;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLogo img{
+  height: 3em;
+  padding-right: 0.5em;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLogo span{
+  font-size: 1em;
+  white-space: nowrap;
+}
+
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLinks{
+  width: 70%;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLinks ul{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  list-style-type: none;
+  margin: 0em;
+  padding: 0em;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLinks li{
+  align-items: center;
+  display: flex;
+  height: 1em;
+  padding: 0em 0.5em;
+}
+
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLink{
+  border-bottom: 1px solid #EBF0F1;
+  color: #EBF0F1;
+  cursor: pointer;
+  font-size: 0.65em;
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.org-scaladebugger-docs-styles-TopbarNavStyle-selectedNavLink{
+  background: #EBF0F1;
+  padding: 0em;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-selectedNavLink a{
+  border-bottom: 1px solid #3B3E43;
+  color: #3B3E43;
+}
+</style><style>.org-scaladebugger-docs-styles-TabsStyle-tabs{
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  list-style: none;
+  margin: 0px;
+  max-width: 800px;
+  min-width: 750px;
+  padding: 0px;
+  position: relative;
+  width: 100%;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs li{
+  display: inline-block;
+  flex-grow: 1;
+  margin: 0px;
+  padding: 0px;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs input[type='radio']{
+  display: none;
+  position: absolute;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs label{
+  background: #F1626B;
+  color: #ECF0F1;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1.3em;
+  font-weight: normal;
+  outline: none;
+  padding: 0.8em 0em;
+  position: relative;
+  text-align: center;
+  text-transform: uppercase;
+  top: 0.1em;
+  width: 100%;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs label:hover{
+  background: #EF4551;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs [id^='tab']:checked + label{
+  background: #EF4551;
+  padding-top: 0.79em;
+  top: 0;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs [id^='tab']:checked ~ [id^='tab-content']{
+  visibility: visible;
+}
+
+.org-scaladebugger-docs-styles-TabsStyle-firstTab label{
+  border-radius: 8px 0px 0px 0px;
+}
+
+
+.org-scaladebugger-docs-styles-TabsStyle-lastTab label{
+  border-radius: 0px 8px 0px 0px;
+}
+
+.org-scaladebugger-docs-styles-TabsStyle-tabContent{
+  border-radius: 0px 0px 8px 8px;
+  display: block;
+  font-size: 1.3em;
+  left: 0em;
+  line-height: 25px;
+  max-height: 400px;
+  min-height: 305px;
+  overflow: hidden;
+  position: absolute;
+  top: 2.7em;
+  visibility: hidden;
+  width: 100%;
+  z-index: 2;
+}
+
+.org-scaladebugger-docs-styles-TabsStyle-tabsDark .org-scaladebugger-docs-styles-TabsStyle-tabContent{
+  background: #3B3E43;
+  color: #EBF0F1;
+}
+
+.org-scaladebugger-docs-styles-TabsStyle-tabsLight .org-scaladebugger-docs-styles-TabsStyle-tabContent{
+  background: #EAEAEC;
+  color: #3B3E43;
+}
+
+.org-scaladebugger-docs-styles-TabsStyle-tabInnerContent{
+  padding: 1em;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabInnerContent .org-scaladebugger-docs-styles-PageStyle-textbox{
+  max-height: 300px;
+}
+</style><style>
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-size: 1em;
+  font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Geneva, Verdana, sans-serif;
+}
+    </style><style>.org-scaladebugger-docs-styles-DocPageStyle-bodyCls{
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-bodyCls header{
+  flex: 0 0 auto;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-bodyCls footer{
+  flex: 0 0 auto;
+}
+
+.org-scaladebugger-docs-styles-DocPageStyle-viewArea{
+  max-width: 75em;
+}
+
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent{
+  background: #EAEAEC;
+  color: #3B3E43;
+  display: inline-flex;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 2em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent a{
+  color: #232F3F;
+  font-weight: bold;
+  text-decoration: none;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent a:hover{
+  background: #232F3F;
+  color: #EBF0F1;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent img{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent .hljs{
+  background: #3B3E43;
+  border-radius: 8px;
+  padding: 1em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent pre code:not(.hljs){
+  background: #ECF0F1;
+  border: 1px solid #979797;
+  border-radius: 8px;
+  color: #3B3E43;
+  display: inline-block;
+  font-weight: inherit;
+  overflow: auto;
+  padding: 1em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent code:not(.hljs){
+  color: #9B0000;
+  font-weight: bold;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table{
+  background: #FBFBFB;
+  border: 1px solid #CBCBCB;
+  border-radius: 8px;
+  border-spacing: 0;
+  empty-cells: show;
+  height: auto;
+  margin-bottom: 1em;
+  margin-top: 1em;
+  width: 100%;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table thead{
+  background: #D8D8D8;
+  color: #3B3E43;
+  text-align: left;
+  vertical-align: bottom;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table th{
+  border-left: 1px solid #CBCBCB;
+  border-width: 0px 0px 0px 1px;
+  font-size: inherit;
+  margin: 0em;
+  overflow: visible;
+  padding: 0.5em 1.0em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table th:first-child{
+  border-left-width: 0em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table td{
+  border-left: 1px solid #CBCBCB;
+  border-width: 0px 0px 0px 1px;
+  font-size: inherit;
+  margin: 0em;
+  overflow: visible;
+  padding: 0.5em 1.0em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table td:first-child{
+  border-left-width: 0em;
+}
+</style><style>
+details[open] > summary > .org-scaladebugger-docs-styles-SidebarNavStyle-navLink > .org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon::after {
+ content: '\25BC';
+}
+    </style><style>.org-scaladebugger-docs-styles-SidebarNavStyle-navbar{
+  background: #D8D8D8;
+  color: #3B3E43;
+  display: inline-block;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  width: 16em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navbar a{
+  color: #3B3E43;
+  text-decoration: none;
+}
+
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks{
+  list-style-type: none;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 0.5em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul{
+  list-style-type: none;
+  padding-left: 0em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul .org-scaladebugger-docs-styles-SidebarNavStyle-navLink{
+  font-size: 1.1em;
+  text-transform: uppercase;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li{
+  margin: 1.5em 0em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul{
+  padding-left: 0.6125em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul .org-scaladebugger-docs-styles-SidebarNavStyle-navLink{
+  font-size: 1em;
+  text-transform: capitalize;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul li{
+  margin: 1em 0em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul li ul{
+  padding-left: 1.25em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul li ul .org-scaladebugger-docs-styles-SidebarNavStyle-navLink{
+  font-size: 0.9em;
+  text-transform: none;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks a{
+  color: #3B3E43;
+  text-decoration: none;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks .org-scaladebugger-docs-styles-SidebarNavStyle-selectedNavLink{
+  background: #3B3E43;
+  color: #D8D8D8;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks .org-scaladebugger-docs-styles-SidebarNavStyle-selectedNavLink a{
+  color: #D8D8D8;
+}
+
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLink{
+  display: inline-block;
+  width: 100%;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLink:hover{
+  background: #3B3E43;
+  color: #D8D8D8;
+}
+
+
+.org-scaladebugger-docs-styles-SidebarNavStyle-summary{
+  cursor: pointer;
+  display: block;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-summary::-webkit-details-marker{
+  display: none;
+}
+
+.org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon{
+  font-size: 0.8em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon::after{
+  content: '\25B6';
+  padding-left: 1em;
+}
+</style><title>What Is A Debugger</title></head><body class=" org-scaladebugger-docs-styles-DocPageStyle-bodyCls"><header class=" org-scaladebugger-docs-styles-TopbarNavStyle-headerCls"><div class=" org-scaladebugger-docs-styles-TopbarNavStyle-navbar"><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLogo" href="/"><img src="/img/ensime-logo-no-text.svg" alt="Ensime Logo" /><span>Scala Debugger</span></a><nav class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLinks"><ul><li class=" org-scaladebugger-docs-styles-TopbarNavStyle-selectedNavLink"><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/api/getting-started/what-is-a-debugger/">Api</a></li><li><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/language/basic-concepts/values/">Language</a></li><li><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/sdb/user-manual/installation/">Sdb</a></li><li><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/sbt-plugin/user-manual/installation/">Sbt Plugin</a></li><li><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/about/us/">About</a></li></ul></nav></div></header><div style="flex: 1 1 auto;min-height: 2em;overflow: auto;display: flex;"><nav class=" org-scaladebugger-docs-styles-SidebarNavStyle-navbar org-scaladebugger-docs-styles-SidebarNavStyle-navLinks" style="flex: 0 0 auto;"><ul><li><details open="open"><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Api<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details open="open"><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Getting Started<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details open="open"><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-selectedNavLink org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/what-is-a-debugger/">What Is A Debugger</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/installation/">Installation</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/available-debugger-connections/">Available Debugger Connections</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/event-pipelines/">Event Pipelines</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/working-with-breakpoints/">Working With Breakpoints</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/stepping-through-code/">Stepping Through Code</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/watching-class-variables/">Watching Class Variables</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Advanced Topics<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/advanced-topics/what-is-the-profile-system/">What Is The Profile System</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/advanced-topics/what-is-the-low-level-api/">What Is The Low Level Api</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/advanced-topics/using-extra-arguments-for-requests/">Using Extra Arguments For Requests</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/advanced-topics/making-requests-early/">Making Requests Early</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Cookbook<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/creating-a-launching-debugger/">Creating A Launching Debugger</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/creating-an-attaching-debugger/">Creating An Attaching Debugger</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/creating-a-listening-debugger/">Creating A Listening Debugger</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/creating-a-breakpoint/">Creating A Breakpoint</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/stepping-over-a-line-of-code/">Stepping Over A Line Of Code</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/watching-modification-of-a-class-variable/">Watching Modification Of A Class Variable</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Scaladoc<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.10/">Scala 2.10</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.11/">Scala 2.11</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.12/">Scala 2.12</a></summary></details></li></ul></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Language<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Basic Concepts<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/values/">Values</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/variables/">Variables</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/operations/">Operations</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/conditions/">Conditions</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/blocks/">Blocks</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/functions/">Functions</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Scaladoc<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-language_2.10/">Scala 2.10</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-language_2.11/">Scala 2.11</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-language_2.12/">Scala 2.12</a></summary></details></li></ul></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Sdb<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">User Manual<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/sdb/user-manual/installation/">Installation</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/sdb/user-manual/commands/">Commands</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Scaladoc<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-tool_2.10/">Scala 2.10</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-tool_2.11/">Scala 2.11</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-tool_2.12/">Scala 2.12</a></summary></details></li></ul></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Sbt Plugin<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">User Manual<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/sbt-plugin/user-manual/installation/">Installation</a></summary></details></li></ul></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">About<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/us/">Us</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/roadmap/">Roadmap</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/release-notes/">Release Notes</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/contributing/">Contributing</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/license/">License</a></summary></details></li></ul></details></li></ul></nav><div class=" org-scaladebugger-docs-styles-DocPageStyle-mainContent" style="flex: 1 1 auto;"><div class=" org-scaladebugger-docs-styles-DocPageStyle-viewArea"><h1><a href="#what-is-a-debugger" id="what-is-a-debugger">What is a debugger?</a></h1>
+<p>In this section, you will get a brief overview of what a debugger is and the
+features that it typically offers. You will also learn how the Scala debugger
+API is related to the Eclipse debugger (described below).</p>
+<hr />
+<h2><a href="#overview" id="overview">Overview</a></h2>
+<p>In a nutshell, a debugger is a program written to aid in testing and debugging
+another computer program. For those unfamiliar, debugging is the process of
+finding and removing defects (bugs) in a computer program and can be
+accomplished in a variety of ways including examining log files for oddities,
+monitoring the memory of an application or system, profiling for performance
+bottlenecks, utilizing test code to discover inconsistencies, and using
+interactive debugging to examine the running state of your program.</p>
+<p>Debuggers come in quite a few different packages and, most likely, you have
+encountered at least one. Several more well-known debuggers include <a href="https://www.gnu.org/software/gdb/">GDB</a>,
+commonly used to interactively debug C and C++ programs from the command line,
+and the <a href="http://www.eclipse.org/eclipse/debug/">Eclipse Debug Project</a>, which is part of the Eclipse IDE and
+available for a variety of languages although most-specifically targeted
+towards Java. If you have done any web-based frontend development, you have
+probably used your browser's debugger such as
+<a href="https://developers.google.com/web/tools/chrome-devtools/debug/?hl=en">Google Chrome's DevTools</a> or <a href="https://developer.mozilla.org/en-US/docs/Tools/Debugger">Mozilla Firefox's Debugger</a>.</p>
+<p>While debuggers themselves are an old concept, the latest debuggers are
+continuing to demonstrate new, clever ideas to make the everyday programmer's
+life a little easier. If interested in modern developments in the debugger
+space, check out Elm's <a href="http://elm-lang.org/blog/time-travel-made-easy">time traveling debugger</a> or Scala IDE's new
+<a href="http://scala-ide.org/docs/current-user-doc/features/async-debugger/index.html">async debugger</a>.</p>
+<h2><a href="#features" id="features">Features</a></h2>
+<p>A debugger can offer a wide range of features to aid the programmer in
+discovering and fixing defects. The most common features found in modern
+debuggers are the ability to step through a program, stop (break) a program to
+examine its state, and track the values of variables in a program.</p>
+<h3><a href="#running-a-program-step-by-step" id="running-a-program-step-by-step">Running a program step-by-step</a></h3>
+<p>This involves running a target program one &quot;line&quot; at a time, breaking at each
+next &quot;line&quot; to observe the state of the program such as the values of variables
+in the stack frame. While line-by-line stepping is one of the most common and
+useful forms of stepping through your program, some debuggers offer other step
+increments such as frame-by-frame.</p>
+<p>Newer debuggers like Scala IDE's <a href="http://scala-ide.org/docs/current-user-doc/features/async-debugger/index.html">async debugger</a> offer the ability
+to step through your program even when the code execution path is not
+straightforward (in this case when running distributed, message-driven programs
+using the <a href="http://akka.io/">Akka toolkit and runtime</a>).</p>
+<h3><a href="#breaking-a-program-to-examine-its-state" id="breaking-a-program-to-examine-its-state">Breaking a program to examine its state</a></h3>
+<p>This involves setting what is known as a breakpoint, a marker in a program
+indicating that you want to stop execution temporarily, to be able to examine
+the running state of a program. Often, breakpoints are placed on specific
+source lines of a program indicating that the developer wishes to stop the
+program when executing a specific line to examine the current state. Earlier
+breakpoints would be placed on specific instructions (assembly).</p>
+<p>Other forms of breakpoints can also exist including setting a conditional
+breakpoint that triggers when reading/writing memory (watchpoints) or the
+evaluation of an expression yields true.</p>
+<h3><a href="#watching-variables-in-a-program" id="watching-variables-in-a-program">Watching variables in a program</a></h3>
+<p>When debugging a program, a common scenario is that a developer wants to
+know when a variable's value is accessed or changed. This typically involves
+the temporary suspension of the program allowing the developer to inspect the
+current stack frame to understand what led to the access/modification of the
+variable. Furthermore, more restrictions might be placed on the modification
+of a variable such that a developer is only notified when a variable is changed
+to a certain value, allowing more accurate understanding of specific problems
+such as when a variable unexpectedly becomes <em>null</em>.</p>
+<h3><a href="#evaluating-expressions" id="evaluating-expressions">Evaluating expressions</a></h3>
+<p>A useful feature in many debuggers is the ability to evaluate an expression
+(snippet of code) in the target program while it is suspended due to a
+breakpoint. This allows developers to quickly test functions and perform
+modifications to the state of the program using the same language as the
+program itself.</p>
+<h2><a href="#more-about-eclipse-and-how-it-relates-to-this-project" id="more-about-eclipse-and-how-it-relates-to-this-project">More about Eclipse and how it relates to this project</a></h2>
+<p>The <a href="http://www.eclipse.org/eclipse/debug/">Eclipse Debug Project</a> offers two subprojects for debugging with
+the Eclipse tooling: platform debug and JDT debug. Platform debug focuses on
+defining language-independent debugging capabilities including defining
+breakpoints (see features for more info), launching programs, and
+notification of events from target programs. JDT debug is more specific as it
+implements the Java debugging support to launch or attach to a JVM, evaluate
+expressions in the context of a stack frame, and dynamically reload classes
+into the target JVM.</p>
+<p>The underlying API driving Eclipse's debugging framework for Java (and other
+JVM-based languages) is the <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/jpda/index.html">Java Platform Debugger Architecture</a> (JPDA).
+The JDPA is a collection of APIs to debug Java code and includes the Java Debug
+Wire Protocol (JDWP) defining communication between the debugger and target
+JVMs, the Java Virtual Machine Tools Interface (JVMTI) providing a native
+interface (C++) to inspect state and control execution of programs running in
+a JVM, and the <a href="http://docs.oracle.com/javase/7/docs/jdk/api/jpda/jdi/index.html">Java Debugger Interface</a> (<abbr title="Java Debugger Interface">JDI</abbr>) that defines a high-level
+API in Java to debug remote JVMs.</p>
+<p>The Scala debugger API is built on top of the <abbr title="Java Debugger Interface">JDI</abbr>, wrapping existing <abbr title="Java Debugger Interface">JDI</abbr>
+functionality in Scala-friendly wrappers and providing higher-level
+abstractions to aid Scala developers in writing debugger tooling and utilize
+debugger functionality in their own applications.</p>
+</div></div></div><footer class=" org-scaladebugger-docs-styles-PageStyle-footerCls org-scaladebugger-docs-styles-PageStyle-sectionDark"><div class=" org-scaladebugger-docs-styles-PageStyle-footerContent"><span>Site contents <i class="fa fa-copyright" aria-hidden="true"></i> <a href="https://chipsenkbeil.com/">Chip Senkbeil</a>, 2015-2017</span></div></footer><script src="/scripts/vendor/clipboard/clipboard.min.js"></script><script src="/scripts/vendor/highlight/highlight.pack.js"></script><script>
+var highlightBlocks = document.querySelectorAll('pre code');
+var copyButtons = [];
+for (var index in highlightBlocks) {
+    var hb = highlightBlocks[index];
+    if (!hb) continue;
+
+    var hbParent = hb.parentNode;
+    if (!hbParent) continue;
+
+    hbParent.className += ' org-scaladebugger-docs-styles-PageStyle-copyContainer';
+    var clipboardText = hb.textContent;
+
+    var copyButton = document.createElement('button');
+    copyButton.dataset.clipboardText = clipboardText;
+    copyButton.className = 'org-scaladebugger-docs-styles-PageStyle-copyButton';
+    hbParent.insertBefore(copyButton, hb);
+
+    var copyButtonText = document.createElement('span');
+    copyButton.appendChild(copyButtonText);
+
+    var copyButtonIcon = document.createElement('i');
+    copyButtonIcon.className = 'fa fa-clipboard';
+    copyButton.appendChild(copyButtonIcon);
+
+    copyButtons.push(copyButton);
+}
+var copyButtonNodeList = (function() {
+    var tempAttr = 'TEMPCOPYATTR';
+    copyButtons.forEach(function(button) {
+        button.setAttribute(tempAttr, '');
+    });
+    var buttonNodeList = document.querySelectorAll('[' + tempAttr + ']');
+    copyButtons.forEach(function(button) {
+        button.removeAttribute(tempAttr);
+    });
+    return buttonNodeList;
+})();
+
+var clipboard = new Clipboard(copyButtonNodeList);
+console.log('Loaded clipboard for', copyButtonNodeList);
+
+var activeTriggers = {};
+clipboard.on('success', function(e) {
+    e.trigger.firstChild.textContent = 'Copied! ';
+
+    // Prevent old timeout interrupting new session
+    if (!!activeTriggers[e.trigger]) {
+        clearTimeout(activeTriggers[e.trigger]);
+    }
+
+    activeTriggers[e.trigger] = setTimeout(function() {
+        e.trigger.firstChild.textContent = '';
+        delete activeTriggers[e.trigger];
+    }, 2000);
+});
+      </script><script>hljs.initHighlightingOnLoad();</script></body></html>

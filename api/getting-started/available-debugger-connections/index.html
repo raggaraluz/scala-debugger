@@ -1,0 +1,781 @@
+<html><head><meta charset="utf-8" /><link rel="stylesheet" href="/styles/vendor/font-awesome/css/font-awesome.min.css" /><link rel="stylesheet" href="/styles/vendor/highlight/agate.css" /><style>.org-scaladebugger-docs-styles-PageStyle-heroTitle{
+  align-items: center;
+  display: flex;
+  font-size: 5em;
+  justify-content: space-around;
+}
+.org-scaladebugger-docs-styles-PageStyle-heroTitle img{
+  padding: 0.5em;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-heroSubtitle{
+  font-family: Baskerville, 'Baskerville Old Face', 'Hoefler Text', Garamond, 'Times New Roman', serif;
+  font-size: 2em;
+  font-style: italic;
+  margin: 0em 0em 1.5em 0em;
+  white-space: nowrap;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-sectionDark{
+  background: #3B3E43;
+  color: #EBF0F1;
+}
+.org-scaladebugger-docs-styles-PageStyle-sectionDark a{
+  color: #EBF0F1;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-sectionLight{
+  background: #EAEAEC;
+  color: #3B3E43;
+}
+.org-scaladebugger-docs-styles-PageStyle-sectionLight a{
+  color: #3B3E43;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-section{
+  min-height: 33vh;
+  width: 100%;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-sectionContent{
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding: 3em 2em;
+}
+.org-scaladebugger-docs-styles-PageStyle-sectionContent h1{
+  font-size: 5em;
+  margin: 0em;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-footerCls{
+  height: auto;
+  width: 100%;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-footerContent{
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  font-size: 0.7em;
+  justify-content: flex-end;
+  padding: 1em 1em;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-buttonCls{
+  background: #3B3E43;
+  border-radius: 8px;
+  color: #ECF0F1;
+  overflow: hidden;
+  padding: 1em 1.5em;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.org-scaladebugger-docs-styles-PageStyle-buttonCls a{
+  color: #ECF0F1;
+  text-decoration: none;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-buttonMargin{
+  margin: 1em 1em;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-videoCls{
+  width: 100%;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-fitContainer{
+  height: 100%;
+  width: 100%;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-linedContent{
+  align-content: space-between;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  padding: 0.5em;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-linedContentLeft{
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  width: 22%;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-linedContentRight{
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  width: 58%;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-marker{
+  background: #3B3E43;
+  color: #ECF0F1;
+  display: inline-block;
+  padding: 1em;
+  position: relative;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.org-scaladebugger-docs-styles-PageStyle-marker::after{
+  background: transparent;
+  border-bottom: 1.59em solid transparent;
+  border-left: 1.59em solid #3B3E43;
+  border-top: 1.59em solid transparent;
+  clear: both;
+  content: '';
+  height: 0px;
+  left: 100%;
+  position: absolute;
+  top: calc(50% - 1.59em);
+  width: 0px;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-textbox{
+  background: #ECF0F1;
+  border: 1px solid #979797;
+  border-radius: 8px;
+  color: #3B3E43;
+  display: inline-block;
+  overflow: auto;
+  padding: 1em 0.5em 1em;
+}
+.org-scaladebugger-docs-styles-PageStyle-textbox .hljs{
+  background: #ECF0F1;
+  color: #3B3E43;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-copyContainer{
+  position: relative;
+}
+.org-scaladebugger-docs-styles-PageStyle-copyContainer:hover .org-scaladebugger-docs-styles-PageStyle-copyButton{
+  opacity: 1;
+}
+
+.org-scaladebugger-docs-styles-PageStyle-copyButton{
+  background: #EF4551;
+  border: transparent;
+  border-radius: 8px;
+  color: #ECF0F1;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1em;
+  opacity: 0;
+  padding: 0.5em 1em;
+  position: absolute;
+  right: 0;
+  text-decoration: none;
+  top: 0;
+  transition: opacity 0.35s ease-in-out;
+}
+.org-scaladebugger-docs-styles-PageStyle-copyButton:active{
+  background: #A84444;
+}
+</style><style>.org-scaladebugger-docs-styles-TopbarNavStyle-headerCls{
+  height: auto;
+  width: 100%;
+}
+
+.org-scaladebugger-docs-styles-TopbarNavStyle-navbar{
+  align-items: center;
+  background: #3B3E43;
+  color: #EBF0F1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  font-size: 1.5em;
+  justify-content: space-between;
+  padding: 0.1em 1em;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navbar a{
+  color: #EBF0F1;
+}
+
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLogo{
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  text-decoration: none;
+  width: 25%;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLogo img{
+  height: 3em;
+  padding-right: 0.5em;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLogo span{
+  font-size: 1em;
+  white-space: nowrap;
+}
+
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLinks{
+  width: 70%;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLinks ul{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  list-style-type: none;
+  margin: 0em;
+  padding: 0em;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLinks li{
+  align-items: center;
+  display: flex;
+  height: 1em;
+  padding: 0em 0.5em;
+}
+
+.org-scaladebugger-docs-styles-TopbarNavStyle-navLink{
+  border-bottom: 1px solid #EBF0F1;
+  color: #EBF0F1;
+  cursor: pointer;
+  font-size: 0.65em;
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.org-scaladebugger-docs-styles-TopbarNavStyle-selectedNavLink{
+  background: #EBF0F1;
+  padding: 0em;
+}
+.org-scaladebugger-docs-styles-TopbarNavStyle-selectedNavLink a{
+  border-bottom: 1px solid #3B3E43;
+  color: #3B3E43;
+}
+</style><style>.org-scaladebugger-docs-styles-TabsStyle-tabs{
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  list-style: none;
+  margin: 0px;
+  max-width: 800px;
+  min-width: 750px;
+  padding: 0px;
+  position: relative;
+  width: 100%;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs li{
+  display: inline-block;
+  flex-grow: 1;
+  margin: 0px;
+  padding: 0px;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs input[type='radio']{
+  display: none;
+  position: absolute;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs label{
+  background: #F1626B;
+  color: #ECF0F1;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1.3em;
+  font-weight: normal;
+  outline: none;
+  padding: 0.8em 0em;
+  position: relative;
+  text-align: center;
+  text-transform: uppercase;
+  top: 0.1em;
+  width: 100%;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs label:hover{
+  background: #EF4551;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs [id^='tab']:checked + label{
+  background: #EF4551;
+  padding-top: 0.79em;
+  top: 0;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabs [id^='tab']:checked ~ [id^='tab-content']{
+  visibility: visible;
+}
+
+.org-scaladebugger-docs-styles-TabsStyle-firstTab label{
+  border-radius: 8px 0px 0px 0px;
+}
+
+
+.org-scaladebugger-docs-styles-TabsStyle-lastTab label{
+  border-radius: 0px 8px 0px 0px;
+}
+
+.org-scaladebugger-docs-styles-TabsStyle-tabContent{
+  border-radius: 0px 0px 8px 8px;
+  display: block;
+  font-size: 1.3em;
+  left: 0em;
+  line-height: 25px;
+  max-height: 400px;
+  min-height: 305px;
+  overflow: hidden;
+  position: absolute;
+  top: 2.7em;
+  visibility: hidden;
+  width: 100%;
+  z-index: 2;
+}
+
+.org-scaladebugger-docs-styles-TabsStyle-tabsDark .org-scaladebugger-docs-styles-TabsStyle-tabContent{
+  background: #3B3E43;
+  color: #EBF0F1;
+}
+
+.org-scaladebugger-docs-styles-TabsStyle-tabsLight .org-scaladebugger-docs-styles-TabsStyle-tabContent{
+  background: #EAEAEC;
+  color: #3B3E43;
+}
+
+.org-scaladebugger-docs-styles-TabsStyle-tabInnerContent{
+  padding: 1em;
+}
+.org-scaladebugger-docs-styles-TabsStyle-tabInnerContent .org-scaladebugger-docs-styles-PageStyle-textbox{
+  max-height: 300px;
+}
+</style><style>
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-size: 1em;
+  font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Geneva, Verdana, sans-serif;
+}
+    </style><style>.org-scaladebugger-docs-styles-DocPageStyle-bodyCls{
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-bodyCls header{
+  flex: 0 0 auto;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-bodyCls footer{
+  flex: 0 0 auto;
+}
+
+.org-scaladebugger-docs-styles-DocPageStyle-viewArea{
+  max-width: 75em;
+}
+
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent{
+  background: #EAEAEC;
+  color: #3B3E43;
+  display: inline-flex;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 2em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent a{
+  color: #232F3F;
+  font-weight: bold;
+  text-decoration: none;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent a:hover{
+  background: #232F3F;
+  color: #EBF0F1;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent img{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent .hljs{
+  background: #3B3E43;
+  border-radius: 8px;
+  padding: 1em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent pre code:not(.hljs){
+  background: #ECF0F1;
+  border: 1px solid #979797;
+  border-radius: 8px;
+  color: #3B3E43;
+  display: inline-block;
+  font-weight: inherit;
+  overflow: auto;
+  padding: 1em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent code:not(.hljs){
+  color: #9B0000;
+  font-weight: bold;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table{
+  background: #FBFBFB;
+  border: 1px solid #CBCBCB;
+  border-radius: 8px;
+  border-spacing: 0;
+  empty-cells: show;
+  height: auto;
+  margin-bottom: 1em;
+  margin-top: 1em;
+  width: 100%;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table thead{
+  background: #D8D8D8;
+  color: #3B3E43;
+  text-align: left;
+  vertical-align: bottom;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table th{
+  border-left: 1px solid #CBCBCB;
+  border-width: 0px 0px 0px 1px;
+  font-size: inherit;
+  margin: 0em;
+  overflow: visible;
+  padding: 0.5em 1.0em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table th:first-child{
+  border-left-width: 0em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table td{
+  border-left: 1px solid #CBCBCB;
+  border-width: 0px 0px 0px 1px;
+  font-size: inherit;
+  margin: 0em;
+  overflow: visible;
+  padding: 0.5em 1.0em;
+}
+.org-scaladebugger-docs-styles-DocPageStyle-mainContent table td:first-child{
+  border-left-width: 0em;
+}
+</style><style>
+details[open] > summary > .org-scaladebugger-docs-styles-SidebarNavStyle-navLink > .org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon::after {
+ content: '\25BC';
+}
+    </style><style>.org-scaladebugger-docs-styles-SidebarNavStyle-navbar{
+  background: #D8D8D8;
+  color: #3B3E43;
+  display: inline-block;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  width: 16em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navbar a{
+  color: #3B3E43;
+  text-decoration: none;
+}
+
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks{
+  list-style-type: none;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 0.5em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul{
+  list-style-type: none;
+  padding-left: 0em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul .org-scaladebugger-docs-styles-SidebarNavStyle-navLink{
+  font-size: 1.1em;
+  text-transform: uppercase;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li{
+  margin: 1.5em 0em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul{
+  padding-left: 0.6125em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul .org-scaladebugger-docs-styles-SidebarNavStyle-navLink{
+  font-size: 1em;
+  text-transform: capitalize;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul li{
+  margin: 1em 0em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul li ul{
+  padding-left: 1.25em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks ul li ul li ul .org-scaladebugger-docs-styles-SidebarNavStyle-navLink{
+  font-size: 0.9em;
+  text-transform: none;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks a{
+  color: #3B3E43;
+  text-decoration: none;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks .org-scaladebugger-docs-styles-SidebarNavStyle-selectedNavLink{
+  background: #3B3E43;
+  color: #D8D8D8;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLinks .org-scaladebugger-docs-styles-SidebarNavStyle-selectedNavLink a{
+  color: #D8D8D8;
+}
+
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLink{
+  display: inline-block;
+  width: 100%;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-navLink:hover{
+  background: #3B3E43;
+  color: #D8D8D8;
+}
+
+
+.org-scaladebugger-docs-styles-SidebarNavStyle-summary{
+  cursor: pointer;
+  display: block;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-summary::-webkit-details-marker{
+  display: none;
+}
+
+.org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon{
+  font-size: 0.8em;
+}
+.org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon::after{
+  content: '\25B6';
+  padding-left: 1em;
+}
+</style><title>Available Debugger Connections</title></head><body class=" org-scaladebugger-docs-styles-DocPageStyle-bodyCls"><header class=" org-scaladebugger-docs-styles-TopbarNavStyle-headerCls"><div class=" org-scaladebugger-docs-styles-TopbarNavStyle-navbar"><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLogo" href="/"><img src="/img/ensime-logo-no-text.svg" alt="Ensime Logo" /><span>Scala Debugger</span></a><nav class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLinks"><ul><li class=" org-scaladebugger-docs-styles-TopbarNavStyle-selectedNavLink"><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/api/getting-started/what-is-a-debugger/">Api</a></li><li><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/language/basic-concepts/values/">Language</a></li><li><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/sdb/user-manual/installation/">Sdb</a></li><li><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/sbt-plugin/user-manual/installation/">Sbt Plugin</a></li><li><a class=" org-scaladebugger-docs-styles-TopbarNavStyle-navLink" href="/about/us/">About</a></li></ul></nav></div></header><div style="flex: 1 1 auto;min-height: 2em;overflow: auto;display: flex;"><nav class=" org-scaladebugger-docs-styles-SidebarNavStyle-navbar org-scaladebugger-docs-styles-SidebarNavStyle-navLinks" style="flex: 0 0 auto;"><ul><li><details open="open"><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Api<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details open="open"><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Getting Started<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/what-is-a-debugger/">What Is A Debugger</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/installation/">Installation</a></summary></details></li><li><details open="open"><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-selectedNavLink org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/available-debugger-connections/">Available Debugger Connections</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/event-pipelines/">Event Pipelines</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/working-with-breakpoints/">Working With Breakpoints</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/stepping-through-code/">Stepping Through Code</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/getting-started/watching-class-variables/">Watching Class Variables</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Advanced Topics<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/advanced-topics/what-is-the-profile-system/">What Is The Profile System</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/advanced-topics/what-is-the-low-level-api/">What Is The Low Level Api</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/advanced-topics/using-extra-arguments-for-requests/">Using Extra Arguments For Requests</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/advanced-topics/making-requests-early/">Making Requests Early</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Cookbook<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/creating-a-launching-debugger/">Creating A Launching Debugger</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/creating-an-attaching-debugger/">Creating An Attaching Debugger</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/creating-a-listening-debugger/">Creating A Listening Debugger</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/creating-a-breakpoint/">Creating A Breakpoint</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/stepping-over-a-line-of-code/">Stepping Over A Line Of Code</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/api/cookbook/watching-modification-of-a-class-variable/">Watching Modification Of A Class Variable</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Scaladoc<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.10/">Scala 2.10</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.11/">Scala 2.11</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.12/">Scala 2.12</a></summary></details></li></ul></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Language<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Basic Concepts<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/values/">Values</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/variables/">Variables</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/operations/">Operations</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/conditions/">Conditions</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/blocks/">Blocks</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/language/basic-concepts/functions/">Functions</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Scaladoc<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-language_2.10/">Scala 2.10</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-language_2.11/">Scala 2.11</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-language_2.12/">Scala 2.12</a></summary></details></li></ul></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Sdb<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">User Manual<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/sdb/user-manual/installation/">Installation</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/sdb/user-manual/commands/">Commands</a></summary></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Scaladoc<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-tool_2.10/">Scala 2.10</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-tool_2.11/">Scala 2.11</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="https://www.javadoc.io/doc/org.scala-debugger/scala-debugger-tool_2.12/">Scala 2.12</a></summary></details></li></ul></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">Sbt Plugin<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">User Manual<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/sbt-plugin/user-manual/installation/">Installation</a></summary></details></li></ul></details></li></ul></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><span class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink">About<span class=" org-scaladebugger-docs-styles-SidebarNavStyle-summaryExpandIcon"></span></span></summary><ul><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/us/">Us</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/roadmap/">Roadmap</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/release-notes/">Release Notes</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/contributing/">Contributing</a></summary></details></li><li><details><summary class=" org-scaladebugger-docs-styles-SidebarNavStyle-summary"><a class=" org-scaladebugger-docs-styles-SidebarNavStyle-navLink" href="/about/license/">License</a></summary></details></li></ul></details></li></ul></nav><div class=" org-scaladebugger-docs-styles-DocPageStyle-mainContent" style="flex: 1 1 auto;"><div class=" org-scaladebugger-docs-styles-DocPageStyle-viewArea"><h1><a href="#available-debugger-connections" id="available-debugger-connections">Available Debugger Connections</a></h1>
+<p>In this section, you will get a brief overview of the available options for
+connecting a debugger programmatically to one or more target JVMs.</p>
+<hr />
+<h2><a href="#overview" id="overview">Overview</a></h2>
+<p>When you want to debug a JVM, you need to establish some form of communication
+between the target JVM, the one you want to debug, and the debugger, the
+JVM used to perform the debugging. When using the Java Debugger Interface,
+there is an abstraction called a <a href="http://docs.oracle.com/javase/7/docs/technotes/guides/jpda/conninv.html">connector</a> that is used when
+establishing the connection between a debugger application (using <abbr title="Java Debugger Interface">JDI</abbr>) and the
+target JVM.</p>
+<p>The two common means of transport are socket-based and memory-based. As the
+shared memory transport is limited to Windows, all of the connectors available
+in the Scala debugger API use connectors that use socket transportation.</p>
+<p>The three most common ways to establish a connection between the debugger and
+a target JVM are to launch the target JVM and connect to it, to attach to an
+already-running JVM, or to listen for connections from target JVMs.</p>
+<p>Below, you will read about these three methods of starting communication with
+a target JVM and how you can perform these using the Scala debugger API.</p>
+<h2><a href="#launching-debugger" id="launching-debugger">Launching Debugger</a></h2>
+<p>The launching debugger is the commonly-used method in IDEs like Scala IDE and
+IntelliJ when you have a program that you both want to start and debug.</p>
+<h3><a href="#instantiating" id="instantiating">Instantiating</a></h3>
+<p>To create the launching debugger using the Scala debugger API, you instantiate
+a new instance of the debugger using the companion object:</p>
+<pre><code class="language-scala">val launchingDebugger = LaunchingDebugger(className = &quot;some.class.name&quot;)
+</code></pre>
+<p>The only required argument for the launching debugger is the fully-qualified
+class name that you want to use as the entrypoint for the target JVM. The
+current classpath of the debugger is used when launching the target JVM; so,
+the specified class must exist in your current classpath.</p>
+<p>The launching debugger can also take additional arguments including command
+line options to pass to the main method, jvm options to provide to the target
+JVM when started, and a flag indicating whether or not to suspend the target
+JVM until the debugger has connected to it.</p>
+<h3><a href="#starting" id="starting">Starting</a></h3>
+<p>When you are ready to launch the target JVM using the provided class as the
+entrypoint to the target JVM, call the <code>start</code> method.</p>
+<pre><code class="language-scala">launchingDebugger.start { s =&gt;
+  println(&quot;Launched and connected to JVM: &quot; + s.uniqueId)
+}
+</code></pre>
+<p>When you call <code>start</code> with the launching debugger, you provide a function that
+takes a <code>ScalaVirtualMachine</code> as an argument. This is treated as a callback
+that is invoked when the launching debugger connects to the started target JVM
+process.</p>
+<h3><a href="#stopping" id="stopping">Stopping</a></h3>
+<p>To stop the launching debugger, you can call the <code>stop</code> function:</p>
+<pre><code class="language-scala">launchingDebugger.stop()
+</code></pre>
+<p>This kills the target JVM process and stops the debugger.</p>
+<h3><a href="#cookbook" id="cookbook">Cookbook</a></h3>
+<p>The <code>ScalaVirtualMachine</code> contains the majority of debugger-related functions
+that you can use to invoke <abbr title="Java Debugger Interface">JDI</abbr> operations.</p>
+<p>See the <a href="/cookbook/creating-a-launching-debugger/">cookbook</a> for a full example.</p>
+<h2><a href="#attaching-debugger" id="attaching-debugger">Attaching Debugger</a></h2>
+<p>The attaching debugger is the next most-used method in IDEs like Scala IDE and
+IntelliJ when you have the source code for the target JVM loaded up but want to
+connect to an already-running JVM process.</p>
+<p>It begins with the target JVM already running with the necessary JDWP arguments
+to expose a TCP port that the debugger will use to connect (attach):</p>
+<pre><code># Allow debuggers to attach via port 5005
+-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+</code></pre>
+<h3><a href="#instantiating-1" id="instantiating-1">Instantiating</a></h3>
+<p>To create the attaching debugger using the Scala debugger API, you instantiate
+a new instance of the debugger using the companion object:</p>
+<pre><code class="language-scala">val attachingDebugger = AttachingDebugger(port = 5005)
+</code></pre>
+<p>The only required argument for the attaching debugger is the port that the
+debugger will use when connecting to the target JVM. This port should match the
+port you provided in the JDWP arguments to the target JVM when starting it on
+your own.</p>
+<p>The attaching debugger can also take additional arguments including the hostname
+used when connecting to the target JVM (defaulting to localhost) and the maximum
+time to wait (in milliseconds) for a successful connection before timing out.</p>
+<h3><a href="#starting-1" id="starting-1">Starting</a></h3>
+<p>When you are ready to attach to the target JVM, call the <code>start</code> method.</p>
+<pre><code class="language-scala">attachingDebugger.start { s =&gt;
+  println(&quot;Attached to JVM: &quot; + s.uniqueId)
+}
+</code></pre>
+<p>As with the launching debugger, when you call <code>start</code>, you provide a function
+that takes a <code>ScalaVirtualMachine</code> as an argument. This function is treated as
+a callback that is invoked when the attaching debugger connects to the target
+JVM process.</p>
+<h3><a href="#stopping-1" id="stopping-1">Stopping</a></h3>
+<p>To stop the attaching debugger, you can call the <code>stop</code> function:</p>
+<pre><code class="language-scala">attachingDebugger.stop()
+</code></pre>
+<p>This disconnects from the target JVM and stops the debugger. The target JVM
+will continue to run and, if suspended, should resume normal execution.</p>
+<h3><a href="#cookbook-1" id="cookbook-1">Cookbook</a></h3>
+<p>See the <a href="/cookbook/creating-an-attaching-debugger/">cookbook</a> for a full example.</p>
+<h2><a href="#listening-debugger" id="listening-debugger">Listening Debugger</a></h2>
+<p>The listening debugger is less frequently used as it offers the opposite mode
+of connecting. While the launching and attaching debuggers serve to perform the
+connection themselves, the listening debugger merely waits for target JVMs to
+connect to it.</p>
+<pre><code># Connect to a listening debugger via port 5005
+-agentlib:jdwp=transport=dt_socket,server=n,suspend=n,address=5005
+</code></pre>
+<p>!!! note &quot;Note:&quot;
+The listening debugger is often capable of supporting more than one target
+JVM connecting at once. This means that you could have a single debugger
+process managing multiple target JVMs such as with a cluster setup.</p>
+<h3><a href="#instantiating-2" id="instantiating-2">Instantiating</a></h3>
+<p>To create the listening debugger using the Scala debugger API, you instantiate
+a new instance of the debugger using the companion object:</p>
+<pre><code class="language-scala">val listeningDebugger = ListeningDebugger(port = 5005)
+</code></pre>
+<p>The only required argument for the listening debugger is the port that the
+debugger will use to listen for incoming connections from target JVMs. This
+port should match the port you provid in the JDWP arguments to the target
+JVMs when starting them. The debugger itself should be started before the
+target JVMs as the target JVMs only try to connect once.</p>
+<p>The listening debugger can also take additional arguments including the hostname
+to bind to when listening for connections (defaulting to localhost) and the
+number of worker threads to use when processing new JVM connections (defaulting
+to a single thread).</p>
+<h3><a href="#starting-2" id="starting-2">Starting</a></h3>
+<p>When you are ready to begin listening for target JVMs, call the <code>start</code> method.</p>
+<pre><code class="language-scala">listeningDebugger.start { s =&gt;
+  println(&quot;Received connection from JVM: &quot; + s.uniqueId)
+}
+</code></pre>
+<p>While the listening debugger's <code>start</code> method does take a callback function
+like the other two debuggers, this function can be invoked more than once. For
+each connection with a target JVM that the debugger receives, it will invoke
+the callback and pass it the <code>ScalaVirtualMachine</code> instance representing the
+new connection.</p>
+<h3><a href="#stopping-2" id="stopping-2">Stopping</a></h3>
+<p>To stop the listening debugger, you can call the <code>stop</code> function:</p>
+<pre><code class="language-scala">listeningDebugger.stop()
+</code></pre>
+<p>This stops the debugger from listening for JVM connections. The target JVMs
+that were connected will continue to run and, if suspended, should resume
+normal execution.</p>
+<h3><a href="#cookbook-2" id="cookbook-2">Cookbook</a></h3>
+<p>See the <a href="/cookbook/creating-a-listening-debugger/">cookbook</a> for a full example.</p>
+<h2><a href="#process-debugger" id="process-debugger">Process Debugger</a></h2>
+<p>The process debugger is much less frequently used and is a convenience to
+connect to processes that have exposed <abbr title="Java Debugger Interface">JDI</abbr> sockets and whose PIDs are also
+known.</p>
+<p>It begins with the target JVM already running with the necessary JDWP arguments
+to expose a TCP port that the debugger will use to connect behind the scenes:</p>
+<pre><code># Allow debuggers to attach via port 5005
+-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+</code></pre>
+<h3><a href="#instantiating-3" id="instantiating-3">Instantiating</a></h3>
+<p>To create the process debugger using the Scala debugger API, you instantiate
+a new instance of the debugger using the companion object:</p>
+<pre><code class="language-scala">val processDebugger = ProcessDebugger(port = 5005)
+</code></pre>
+<p>The only required argument for the process debugger is the pid of the process
+that the debugger will treat as the target JVM. This process should still have
+a port exposed in the JDWP arguments as the debugger will determine the
+port and connect using it.</p>
+<p>The process debugger can also take a timeout argument, which is the maximum
+time to wait (in milliseconds) for a successful connection before timing out.</p>
+<h3><a href="#starting-3" id="starting-3">Starting</a></h3>
+<p>When you are ready to connect to the target JVM, call the <code>start</code> method.</p>
+<pre><code class="language-scala">processDebugger.start { s =&gt;
+  println(&quot;Connected to JVM: &quot; + s.uniqueId)
+}
+</code></pre>
+<p>As with the other debuggers, when you call <code>start</code>, you provide a function
+that takes a <code>ScalaVirtualMachine</code> as an argument. This function is treated as
+a callback that is invoked when the process debugger connects to the target
+JVM process.</p>
+<h3><a href="#stopping-3" id="stopping-3">Stopping</a></h3>
+<p>To stop the process debugger, you can call the <code>stop</code> function:</p>
+<pre><code class="language-scala">processDebugger.stop()
+</code></pre>
+<p>This disconnects from the target JVM and stops the debugger. The target JVM
+will continue to run and, if suspended, should resume normal execution.</p>
+<h3><a href="#cookbook-3" id="cookbook-3">Cookbook</a></h3>
+<p>See the <a href="/cookbook/creating-a-process-debugger/">cookbook</a> for a full example.</p>
+</div></div></div><footer class=" org-scaladebugger-docs-styles-PageStyle-footerCls org-scaladebugger-docs-styles-PageStyle-sectionDark"><div class=" org-scaladebugger-docs-styles-PageStyle-footerContent"><span>Site contents <i class="fa fa-copyright" aria-hidden="true"></i> <a href="https://chipsenkbeil.com/">Chip Senkbeil</a>, 2015-2017</span></div></footer><script src="/scripts/vendor/clipboard/clipboard.min.js"></script><script src="/scripts/vendor/highlight/highlight.pack.js"></script><script>
+var highlightBlocks = document.querySelectorAll('pre code');
+var copyButtons = [];
+for (var index in highlightBlocks) {
+    var hb = highlightBlocks[index];
+    if (!hb) continue;
+
+    var hbParent = hb.parentNode;
+    if (!hbParent) continue;
+
+    hbParent.className += ' org-scaladebugger-docs-styles-PageStyle-copyContainer';
+    var clipboardText = hb.textContent;
+
+    var copyButton = document.createElement('button');
+    copyButton.dataset.clipboardText = clipboardText;
+    copyButton.className = 'org-scaladebugger-docs-styles-PageStyle-copyButton';
+    hbParent.insertBefore(copyButton, hb);
+
+    var copyButtonText = document.createElement('span');
+    copyButton.appendChild(copyButtonText);
+
+    var copyButtonIcon = document.createElement('i');
+    copyButtonIcon.className = 'fa fa-clipboard';
+    copyButton.appendChild(copyButtonIcon);
+
+    copyButtons.push(copyButton);
+}
+var copyButtonNodeList = (function() {
+    var tempAttr = 'TEMPCOPYATTR';
+    copyButtons.forEach(function(button) {
+        button.setAttribute(tempAttr, '');
+    });
+    var buttonNodeList = document.querySelectorAll('[' + tempAttr + ']');
+    copyButtons.forEach(function(button) {
+        button.removeAttribute(tempAttr);
+    });
+    return buttonNodeList;
+})();
+
+var clipboard = new Clipboard(copyButtonNodeList);
+console.log('Loaded clipboard for', copyButtonNodeList);
+
+var activeTriggers = {};
+clipboard.on('success', function(e) {
+    e.trigger.firstChild.textContent = 'Copied! ';
+
+    // Prevent old timeout interrupting new session
+    if (!!activeTriggers[e.trigger]) {
+        clearTimeout(activeTriggers[e.trigger]);
+    }
+
+    activeTriggers[e.trigger] = setTimeout(function() {
+        e.trigger.firstChild.textContent = '';
+        delete activeTriggers[e.trigger];
+    }, 2000);
+});
+      </script><script>hljs.initHighlightingOnLoad();</script></body></html>
