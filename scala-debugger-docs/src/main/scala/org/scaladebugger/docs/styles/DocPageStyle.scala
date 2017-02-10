@@ -7,6 +7,8 @@ import scalatags.stylesheet._
  * Represents stylesheet for the doc page.
  */
 object DocPageStyle extends CascadingStyleSheet {
+  initStyleSheet()
+
   /** To be placed in a <style> tag. */
   lazy val global: String =
     """
@@ -36,7 +38,8 @@ object DocPageStyle extends CascadingStyleSheet {
   )
 
   lazy val mainContent: Cls = cls(
-    display := "inline-block",
+    display := "inline-flex",
+    justifyContent := "center",
 
     background := "#EAEAEC",
     color := "#3B3E43",
@@ -47,7 +50,11 @@ object DocPageStyle extends CascadingStyleSheet {
     a(
       color := "#232F3F",
       textDecoration := "none",
-      fontWeight := "bold"
+      fontWeight := "bold",
+      &.hover(
+        background := "#232F3F",
+        color := "#EBF0F1"
+      )
     ),
 
     img(
@@ -88,6 +95,7 @@ object DocPageStyle extends CascadingStyleSheet {
     ),
 
     table(
+      background := "#FBFBFB",
       emptyCells := "show",
       width := "100%",
       height := "auto",

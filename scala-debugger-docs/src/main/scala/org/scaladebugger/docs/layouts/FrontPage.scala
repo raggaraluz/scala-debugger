@@ -10,7 +10,10 @@ import org.scaladebugger.docs.styles.Implicits._
  * Represents the layout for the front page of the site.
  */
 class FrontPage extends Page(
-  postHeadContent = Seq(FrontPageStyle.global.toStyleTag),
+  postHeadContent = Seq(
+    FrontPageStyle.global.toStyleTag,
+    FrontPageStyle.toStyleTag
+  ),
   syntaxHighlightTheme = "default"
 ) {
   private val ApiExampleCode =
@@ -51,8 +54,18 @@ class FrontPage extends Page(
           span(PageStyle.heroSubtitle)(
             "Scala abstractions and tooling around the Java Debugger Interface."
           ),
-          div(PageStyle.buttonCls)(
-            a(href := "/about")("Learn More")
+          span(FrontPageStyle.inlineButtonContainer)(
+            Button("Learn More", "/about", PageStyle.buttonMargin),
+            Button(
+              "Source Code",
+              "https://www.github.com/ensime/scala-debugger",
+              PageStyle.buttonMargin
+            ),
+            Button(
+              "Community",
+              "https://www.gitter.im/ensime/scala-debugger",
+              PageStyle.buttonMargin
+            )
           )
         )
       ),
