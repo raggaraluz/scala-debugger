@@ -20,7 +20,7 @@ Installing with sbt
 Hosted on Maven Central and can be installed via the following:
 
 ```scala
-libraryDependencies += "org.scala-debugger" %% "scala-debugger-api" % "1.0.0"
+libraryDependencies += "org.scala-debugger" %% "scala-debugger-api" % "1.1.0-M3"
 ```
     
 You also need to install the sbt plugin to make the Java Debugger Interface jar (tools.jar) available
@@ -36,8 +36,10 @@ Building from source
 From the root of the project:
 
 ```scala
-sbt compile
+sbt +compile
 ```
+
+This will build for Scala 2.10, 2.11, and 2.12.
 
 Running tests
 -------------
@@ -50,8 +52,10 @@ installed as it will pick up memory and compiler options from `.jvmopts`.
 From the root of the project:
 
 ```scala
-sbt test
+sbt +test
 ```
+
+This will run unit tests for Scala 2.10, 2.11, and 2.12.
 
 _Note: Roughly 2.5 GB of RAM is needed to compile the unit tests._
 
@@ -60,8 +64,10 @@ _Note: Roughly 2.5 GB of RAM is needed to compile the unit tests._
 From the root of the project:
 
 ```scala
-sbt it:test
+sbt +it:test
 ```
+
+This will run integration tests for Scala 2.10, 2.11, and 2.12.
 
 License
 -------
