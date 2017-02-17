@@ -1,12 +1,22 @@
 
+.PHONY: \
+	build build-scala-2.10 build-scala-2.11 build-scala-2.12 \
+	test unit-test-all unit-test-scala-2.10 unit-test-scala-2.11 \
+	unit-test-scala-2.12 it-test-all it-test-scala-2.10 it-test-scala-2.11 \
+	it-test-scala-2.12 assembly assembly-scala-2.10 assembly-scala-2.11 \
+	assembly-scala-2.12 build-docker push-docker docs serve-docs push-docs \
+	stats
+
 # =============================================================================
 # = CONFIG SECTION
 # =============================================================================
 
 # Binaries
+JAVA=$(shell which java 2> /dev/null)
 SBT=$(shell which sbt 2> /dev/null)
 CLOC=$(shell which cloc 2> /dev/null)
 DOCKER=$(shell which docker 2> /dev/null)
+SCALA_DOC_GEN=scala-debugger-docs/target/scala-2.10/scala-debugger-docs-assembly-1.1.0-M3.jar
 
 # Scala config
 SCALA_2.10_VERSION=2.10.6
@@ -95,6 +105,30 @@ build-docker:
 push-docker:
 	@$(DOCKER) login
 	@$(DOCKER) push $(DOCKER_IMAGE)
+
+# =============================================================================
+# = DOCS SECTION
+# =============================================================================
+docs: $(SCALA_DOC_GEN)
+	@$(JAVA) -jar $(SCALA_DOC_GEN) --generate
+
+serve-docs: $(SCALA_DOC_GEN)
+	@$(JAVA) -jar $(SCALA_DOC_GEN) \
+		--generate \
+		--serve \
+		--allow-unsupported-media-types
+
+push-docs: $(SCALA_DOC_GEN)
+	@$(JAVA) -jar $(SCALA_DOC_GEN) \
+		--generate \
+		--publish \
+		--site-host='https://scala-debugger.org' \
+		--publish-author-email='chip.senkbeil@gmail.com' \
+		--publish-author-name='Chip Senkbeil' \
+		--publish-remote-name='upstream'
+
+scala-debugger-docs/target/scala-2.10/scala-debugger-docs-assembly-%:
+	@$(SBT) "scalaDebuggerDocs/assembly"
 
 # =============================================================================
 # = STATISTICS SECTION

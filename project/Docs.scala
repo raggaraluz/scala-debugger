@@ -29,7 +29,10 @@ object Docs {
       // For hosting local server containing generated sources
       "ws.unfiltered" %% "unfiltered" % unfilteredVersion.value,
       "ws.unfiltered" %% "unfiltered-filter" % unfilteredVersion.value,
-      "ws.unfiltered" %% "unfiltered-jetty" % unfilteredVersion.value
+      "ws.unfiltered" %% "unfiltered-jetty" % unfilteredVersion.value,
+
+      // For logging used with jetty from unfiltered
+      "org.slf4j" % "slf4j-log4j12" % "1.7.5"
     )
   )
 }
