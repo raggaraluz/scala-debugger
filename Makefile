@@ -134,4 +134,6 @@ scala-debugger-docs/target/scala-2.10/scala-debugger-docs-assembly-%:
 # = STATISTICS SECTION
 # =============================================================================
 stats:
-	@$(CLOC) --exclude-list-file=$(CLOC_IGNORE_FILE) .
+	@$(CLOC) \
+		--exclude-dir=$(shell tr '\n' ',' < $(CLOC_IGNORE_FILE)) \
+		.
