@@ -5,8 +5,8 @@ MAINTAINER Chip Senkbeil <chip.senkbeil@gmail.com>
 RUN jenv global 1.8
 
 # Mark location of project to download
-ENV GIT_REPO https://github.com/chipsenkbeil/scala-debugger.git
-ENV GIT_BRANCH FixBrokenBuild
+ENV GIT_REPO https://github.com/ensime/scala-debugger.git
+ENV GIT_BRANCH master
 ENV GIT_SRC_DIR scala-debugger
 
 # Clone the main repository, build all sources (to get dependencies)
@@ -16,5 +16,5 @@ WORKDIR /cache
 RUN git clone $GIT_REPO $GIT_SRC_DIR && \
     cd scala-debugger/ && \
     git checkout $GIT_BRANCH && \
-    sbt +compile +test:compile +it:compile
+    sbt +update +test:update +it:update
 

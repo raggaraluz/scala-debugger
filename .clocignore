@@ -1,0 +1,16 @@
+.idea
+
+project/project/target
+project/target
+target
+sbt-scala-debugger-plugin/target
+scala-debugger-api/target
+scala-debugger-docs/target
+scala-debugger-language/target
+scala-debugger-macros/target
+scala-debugger-test/target
+scala-debugger-tool/target
+
+docs/static/styles/vendor
+docs/static/scripts/vendor
+
