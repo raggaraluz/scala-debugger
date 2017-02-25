@@ -5,7 +5,7 @@
 	unit-test-scala-2.12 it-test-all it-test-scala-2.10 it-test-scala-2.11 \
 	it-test-scala-2.12 assembly assembly-scala-2.10 assembly-scala-2.11 \
 	assembly-scala-2.12 build-docker push-docker docs serve-docs push-docs \
-	stats
+	stats stats-split
 
 # =============================================================================
 # = CONFIG SECTION
@@ -15,6 +15,7 @@
 JAVA=$(shell which java 2> /dev/null)
 SBT=$(shell which sbt 2> /dev/null)
 CLOC=$(shell which cloc 2> /dev/null)
+FIND=$(shell which find 2> /dev/null)
 DOCKER=$(shell which docker 2> /dev/null)
 SCALA_DOC_GEN=scala-debugger-docs/target/scala-2.10/scala-debugger-docs-assembly-1.1.0-M3.jar
 
@@ -35,6 +36,13 @@ CLOC_IGNORE_FILE=.clocignore
 
 # Docker config
 DOCKER_IMAGE="chipsenkbeil/scala-debugger:latest"
+
+# Call F_HEADER with text argument
+DIVIDER=$(strip ================================================================================)
+F_HEADER=\
+		 $(info $(DIVIDER))\
+		 $(info = $(1))\
+		 $(info $(DIVIDER))
 
 # =============================================================================
 # = DEFAULT ENTRY
@@ -134,6 +142,25 @@ scala-debugger-docs/target/scala-2.10/scala-debugger-docs-assembly-%:
 # = STATISTICS SECTION
 # =============================================================================
 stats:
+	@$(info All Code)
 	@$(CLOC) \
 		--exclude-dir=$(shell tr '\n' ',' < $(CLOC_IGNORE_FILE)) \
 		.
+
+stats-split: stats-main stats-unit-test stats-it-test
+
+stats-main:
+	@$(call F_HEADER,Main Code)
+	@$(CLOC) \
+		--exclude-dir=$(shell tr '\n' ',' < $(CLOC_IGNORE_FILE)) \
+		$(shell $(FIND) . -path "*/src/main" -type d -not -path "*/target/*")
+stats-unit-test:
+	@$(call F_HEADER,Unit Test Code)
+	@$(CLOC) \
+		--exclude-dir=$(shell tr '\n' ',' < $(CLOC_IGNORE_FILE)) \
+		$(shell $(FIND) . -path "*/src/test" -type d -not -path "*/target/*")
+stats-it-test:
+	@$(call F_HEADER,Integration Test Code)
+	@$(CLOC) \
+		--exclude-dir=$(shell tr '\n' ',' < $(CLOC_IGNORE_FILE)) \
+		$(shell $(FIND) . -path "*/src/it" -type d -not -path "*/target/*")
