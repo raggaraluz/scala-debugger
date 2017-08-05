@@ -2,162 +2,162 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
         <url>
         <loc>https://scala-debugger.org/about/contributing/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/about/license/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/about/release-notes/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/about/roadmap/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/about/us/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/advanced-topics/making-requests-early/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/advanced-topics/using-extra-arguments-for-requests/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/advanced-topics/what-is-the-low-level-api/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/advanced-topics/what-is-the-profile-system/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/cookbook/creating-a-breakpoint/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/cookbook/creating-a-launching-debugger/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/cookbook/creating-a-listening-debugger/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/cookbook/creating-an-attaching-debugger/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/cookbook/stepping-over-a-line-of-code/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/cookbook/watching-modification-of-a-class-variable/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/getting-started/available-debugger-connections/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/getting-started/event-pipelines/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/getting-started/installation/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/getting-started/stepping-through-code/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/getting-started/watching-class-variables/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/getting-started/what-is-a-debugger/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/api/getting-started/working-with-breakpoints/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
       </url><url>
         <loc>https://scala-debugger.org/language/basic-concepts/blocks/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/language/basic-concepts/conditions/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/language/basic-concepts/functions/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/language/basic-concepts/operations/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/language/basic-concepts/values/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/language/basic-concepts/variables/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/sbt-plugin/user-manual/installation/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/sdb/user-manual/commands/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url><url>
         <loc>https://scala-debugger.org/sdb/user-manual/installation/</loc>
-        <lastmod>2017-02-17</lastmod>
+        <lastmod>2017-08-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.5</priority>
       </url>

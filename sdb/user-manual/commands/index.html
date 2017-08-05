@@ -1,4 +1,4 @@
-<html><head><meta charset="utf-8" /><link rel="stylesheet" href="/styles/vendor/font-awesome/css/font-awesome.min.css" /><link rel="stylesheet" href="/styles/vendor/highlight/agate.css" /><style>.org-scaladebugger-docs-styles-PageStyle-heroTitle{
+<html><head><link rel="stylesheet" href="/styles/vendor/font-awesome/css/font-awesome.min.css" /><link rel="stylesheet" href="/styles/vendor/highlight/agate.css" /><style>.org-scaladebugger-docs-styles-PageStyle-heroTitle{
   align-items: center;
   display: flex;
   font-size: 5em;
@@ -349,7 +349,7 @@
 .org-scaladebugger-docs-styles-TabsStyle-tabInnerContent .org-scaladebugger-docs-styles-PageStyle-textbox{
   max-height: 300px;
 }
-</style><style>
+</style><meta charset="utf-8" /><meta name="generator" content="site-generator 0.1.0" /><meta name="generation-date" content="2017-08-04 21:32:11" /><style>
 html, body {
   margin: 0;
   padding: 0;
@@ -631,8 +631,8 @@ the <code>file</code> and <code>line</code> arguments are provided.</p>
 <tr><th>Argument Name</th><th>Type</th><th>Description</th><th>Default</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td>filter</td><td>Text</td><td>The filter to use to limit which classes are returned. Supports wildcards. E.g. &quot;org.scaladebugger.*&quot;.</td><td>&quot;*&quot;</td><td>No</td></tr>
-<tr><td>filterNot</td><td>Text</td><td>The filter to use to limit which classes are not returned. Supports wildcards. E.g. &quot;java.*&quot;.</td><td>&quot;*&quot;</td><td>No</td></tr>
+<tr><td>filter</td><td>Text</td><td>The filter to use to limit which classes are returned. Supports wildcards. E.g. &quot;org.scaladebugger.<em>&quot;.&quot;</em>&quot;</td><td>No</td></tr>
+<tr><td>filterNot</td><td>Text</td><td>The filter to use to limit which classes are not returned. Supports wildcards. E.g. &quot;java.<em>&quot;.&quot;</em>&quot;</td><td>No</td></tr>
 </tbody>
 </table>
 <h3><a href="#methods" id="methods">methods</a></h3>
@@ -668,7 +668,7 @@ caught in a <code>try</code> as well as exceptions that are uncaught.</p>
 <tr><th>Argument Name</th><th>Type</th><th>Description</th><th>Default</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td>filter</td><td>Text</td><td>The filter to use to limit which exceptions to handle. Supports wildcards. E.g. &quot;my.exceptions.*&quot;.</td><td>&quot;*&quot;</td><td>No</td></tr>
+<tr><td>filter</td><td>Text</td><td>The filter to use to limit which exceptions to handle. Supports wildcards. E.g. &quot;my.exceptions.<em>&quot;.&quot;</em>&quot;</td><td>No</td></tr>
 </tbody>
 </table>
 <h3><a href="#catchc" id="catchc">catchc</a></h3>
@@ -679,7 +679,7 @@ caught in a <code>try</code>.</p>
 <tr><th>Argument Name</th><th>Type</th><th>Description</th><th>Default</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td>filter</td><td>Text</td><td>The filter to use to limit which exceptions to handle. Supports wildcards. E.g. &quot;my.exceptions.*&quot;.</td><td>&quot;*&quot;</td><td>No</td></tr>
+<tr><td>filter</td><td>Text</td><td>The filter to use to limit which exceptions to handle. Supports wildcards. E.g. &quot;my.exceptions.<em>&quot;.&quot;</em>&quot;</td><td>No</td></tr>
 </tbody>
 </table>
 <h3><a href="#catchu" id="catchu">catchu</a></h3>
@@ -690,7 +690,7 @@ uncaught.</p>
 <tr><th>Argument Name</th><th>Type</th><th>Description</th><th>Default</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td>filter</td><td>Text</td><td>The filter to use to limit which exceptions to handle. Supports wildcards. E.g. &quot;my.exceptions.*&quot;.</td><td>&quot;*&quot;</td><td>No</td></tr>
+<tr><td>filter</td><td>Text</td><td>The filter to use to limit which exceptions to handle. Supports wildcards. E.g. &quot;my.exceptions.<em>&quot;.&quot;</em>&quot;</td><td>No</td></tr>
 </tbody>
 </table>
 <h3><a href="#catchlist" id="catchlist">catchlist</a></h3>
@@ -704,7 +704,7 @@ uncaught exceptions.</p>
 <tr><th>Argument Name</th><th>Type</th><th>Description</th><th>Default</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td>filter</td><td>Text</td><td>The filter to use to limit which exception requests to remove. Supports wildcards. E.g. &quot;my.exceptions.*&quot;.</td><td>&quot;*&quot;</td><td>No</td></tr>
+<tr><td>filter</td><td>Text</td><td>The filter to use to limit which exception requests to remove. Supports wildcards. E.g. &quot;my.exceptions.<em>&quot;.&quot;</em>&quot;</td><td>No</td></tr>
 </tbody>
 </table>
 <h3><a href="#ignorec" id="ignorec">ignorec</a></h3>
@@ -715,7 +715,7 @@ argument provided, removes the global exception handler for caught exceptions.</
 <tr><th>Argument Name</th><th>Type</th><th>Description</th><th>Default</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td>filter</td><td>Text</td><td>The filter to use to limit which exception requests to remove. Supports wildcards. E.g. &quot;my.exceptions.*&quot;.</td><td>&quot;*&quot;</td><td>No</td></tr>
+<tr><td>filter</td><td>Text</td><td>The filter to use to limit which exception requests to remove. Supports wildcards. E.g. &quot;my.exceptions.<em>&quot;.&quot;</em>&quot;</td><td>No</td></tr>
 </tbody>
 </table>
 <h3><a href="#ignoreu" id="ignoreu">ignoreu</a></h3>
@@ -726,7 +726,7 @@ argument provided, removes the global exception handler for uncaught exceptions.
 <tr><th>Argument Name</th><th>Type</th><th>Description</th><th>Default</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td>filter</td><td>Text</td><td>The filter to use to limit which exception requests to remove. Supports wildcards. E.g. &quot;my.exceptions.*&quot;.</td><td>&quot;*&quot;</td><td>No</td></tr>
+<tr><td>filter</td><td>Text</td><td>The filter to use to limit which exception requests to remove. Supports wildcards. E.g. &quot;my.exceptions.<em>&quot;.&quot;</em>&quot;</td><td>No</td></tr>
 </tbody>
 </table>
 <h2><a href="#expressions" id="expressions">Expressions</a></h2>
