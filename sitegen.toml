@@ -1,0 +1,16 @@
+[generate]
+default_page_layout="org.scaladebugger.docs.layouts.DocPage"
+site_host="https://scala-debugger.org"
+sbt_project_theme="scala-debugger-docs"
+
+[serve]
+default_page_layout="org.scaladebugger.docs.layouts.DocPage"
+site_host="https://scala-debugger.org"
+sbt_project_theme="scala-debugger-docs"
+allow_unsupported_media_types=true
+
+[publish]
+author_email="chip.senkbeil@gmail.com"
+author_name="Chip Senkbeil"
+remote_name="upstream"
+
