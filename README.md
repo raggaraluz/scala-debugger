@@ -9,24 +9,36 @@
 [![Scaladoc 2.12](https://img.shields.io/badge/Scaladoc-2.12-34B6A8.svg?style=flat)](http://www.javadoc.io/doc/org.scala-debugger/scala-debugger-api_2.12)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ensime/scala-debugger)
 
-A simple debugger library for Scala. Tested on OpenJDK 7 for Windows and Linux.
+A simple debugger library and tooling for Scala. Tested on OpenJDK 7 for Windows and Linux.
 - Visit the [main site](https://scala-debugger.org/) for more documentation.
 - Check out the [wiki](https://github.com/ensime/scala-debugger/wiki) for the current roadmap.
 
-## Installing with sbt
+## About
 
-Hosted on Maven Central and can be installed via the following:
+The project contains several modules including
+- A wrapper library around the Java Debugger Interface
+- A tool similar to `jdb`, written to allow debugging Java and Scala interactively
+- A programming language used as the interactive CLI for the debugger tool
+- An sbt plugin leveraging the debugger tool for interactive debugging
 
-```scala
-libraryDependencies += "org.scala-debugger" %% "scala-debugger-api" % "1.1.0-M3"
+## Installing the debugger tool
+
+### Homebrew
+
+The formula for `sdb`, the interactive debugger tool for the command line, is
+available via `brew install chipsenkbeil/personal/scala-debugger`.
+
+Once installed, you can run `sdb` on the command line.
+
+### sbt
+
+With `sbt` installed, add the following plugin to `~/.sbt/0.13/plugins/sdb.sbt`:
+
+```
+addSbtPlugin("org.scala-debugger" %% "sbt-scala-debugger" % "1.1.0-M3")
 ```
 
-You also need to install the sbt plugin to make the Java Debugger Interface jar
-(tools.jar) available on your classpath when you are compiling and testing:
-
-```scala
-addSbtPlugin("org.scala-debugger" % "sbt-jdi-tools" % "1.0.0")
-```
+You can now run the plugin via `sbt sdb:run`.
 
 ## Building from source
 
@@ -63,13 +75,12 @@ This will assemble relevant modules such as `sdb` for Scala 2.10, 2.11, and 2.12
 
 Make sure that you have some form of _sbt_ installed and available on your path
 as it is used to compile the Scala Debugger documentation module. Furthermore,
-you must have the
-[Scala Site Generator](https://github.com/chipsenkbeil/scala-site-generator)
-plugin enabled for your version of sbt. This can be done by adding the
-following to `~/.sbt/0.13/plugins/sitegen.sbt`:
+you must have the [grus](https://github.com/chipsenkbeil/grus) plugin enabled for
+your version of sbt. This can be done by adding the
+following to `~/.sbt/0.13/plugins/grus.sbt`:
 
 ```
-addSbtPlugin("org.senkbeil" %% "sbt-site-generator" % "0.1.0")
+addSbtPlugin("org.senkbeil" %% "sbt-grus" % "0.1.0")
 ```
 
 ### Building the documentation
