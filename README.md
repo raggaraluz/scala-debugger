@@ -28,15 +28,25 @@ The project contains several modules including
 ### Homebrew
 
 The formula for `sdb`, the interactive debugger tool for the command line, is
-available via `brew install chipsenkbeil/personal/scala-debugger`.
+available via the [chipsenkbeil/personal tap](https://github.com/chipsenkbeil/homebrew-personal).
+
+Install via:
+
+```bash
+brew install chipsenkbeil/personal/scala-debugger
+```
 
 Once installed, you can run `sdb` on the command line.
+
+```bash
+sdb
+```
 
 ### sbt
 
 With `sbt` installed, add the following plugin to `~/.sbt/0.13/plugins/sdb.sbt`:
 
-```
+```sbt
 addSbtPlugin("org.scala-debugger" %% "sbt-scala-debugger" % "1.1.0-M3")
 ```
 
@@ -81,7 +91,7 @@ you must have the [grus](https://github.com/chipsenkbeil/grus) plugin enabled fo
 your version of sbt. This can be done by adding the
 following to `~/.sbt/0.13/plugins/grus.sbt`:
 
-```
+```sbt
 addSbtPlugin("org.senkbeil" %% "sbt-grus" % "0.1.0")
 ```
 
