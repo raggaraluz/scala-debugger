@@ -21,6 +21,8 @@ The project contains several modules including
 - A programming language used as the interactive CLI for the debugger tool
 - An sbt plugin leveraging the debugger tool for interactive debugging
 
+![Debugger Tool a.k.a. sdb](https://github.com/ensime/scala-debugger/blob/media/gifs/sdb.gif)
+
 ## Installing the debugger tool
 
 ### Homebrew
