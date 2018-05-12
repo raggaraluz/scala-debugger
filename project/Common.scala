@@ -20,11 +20,6 @@ object Common {
 
     homepage := Some(url("https://scala-debugger.org")),
 
-    // Default version when not cross-compiling
-    scalaVersion := "2.10.6",
-
-    crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1"),
-
     scalacOptions ++= Seq(
       "-encoding", "UTF-8",
       "-deprecation", "-unchecked", "-feature",
@@ -135,6 +130,24 @@ object Common {
       else
         Some("releases"  at nexus + "service/local/staging/deploy/maven2")
     }
-  ) ++ Macros.pluginSettings
+  ) ++ Macros.pluginSettings ++ {
+      val v = VersionNumber(sys.props("java.specification.version"))
+
+      // If JDK 8 or lower
+      if (v._1.exists(_ == 1) && v._2.exists(_ < 9))
+        Seq(
+          // Default version when not cross-compiling
+          scalaVersion := "2.10.6",
+          crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1"),
+          addSbtPlugin("org.scala-debugger" % "sbt-jdi-tools" % "1.0.0")
+        )
+      // If JDK 9 or higher
+      else
+        Seq(
+          // Default version when not cross-compiling
+          scalaVersion := "2.12.1",
+          crossScalaVersions := Seq("2.12.1")
+        )
+    }
 }
 
