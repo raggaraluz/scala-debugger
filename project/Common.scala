@@ -134,20 +134,20 @@ object Common {
       val v = VersionNumber(sys.props("java.specification.version"))
 
       // If JDK 8 or lower
-      if (v._1.exists(_ == 1) && v._2.exists(_ < 9))
+      if (v._1.exists(_ == 1) && v._2.exists(_ < 9)) {
         Seq(
           // Default version when not cross-compiling
           scalaVersion := "2.10.6",
-          crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1"),
-          addSbtPlugin("org.scala-debugger" % "sbt-jdi-tools" % "1.0.0")
+          crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1")
         )
       // If JDK 9 or higher
-      else
+      } else {
         Seq(
           // Default version when not cross-compiling
           scalaVersion := "2.12.1",
           crossScalaVersions := Seq("2.12.1")
         )
+      }
     }
 }
 
